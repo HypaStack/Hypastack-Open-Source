@@ -13,12 +13,12 @@ export default function PrivacyPolicy() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Privacy Policy
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-12 border-b border-white/5 pb-6">
+          <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
             <p>Effective Date: May 7, 2026</p>
             <p>Last Updated: May 25, 2026</p>
           </div>
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
                 Hypastack operates on a strict zero-knowledge paradigm. This means we design our systems under the assumption that our own servers cannot be trusted with your unencrypted data.
               </p>
               <p className="mb-4">
-                Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption. All files uploaded to our network are encrypted locally on your device using AES-GCM (256-bit) before transmission.
+                Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption for its Secure File Sharing pipeline. All files uploaded through this pipeline are encrypted locally on your device using AES-GCM (256-bit) before transmission. (Note: Our Permanent CDN Hosting pipeline is designed for public assets and is intentionally unencrypted, as detailed below).
               </p>
               <p>
                 The encryption key (found in the URL fragment <code className="text-primary font-medium">#key=...</code>) is processed only by your local browser environment. Because web browsers are architecturally designed to never transmit the URL fragment to the server during a request, it is mathematically impossible for our infrastructure to intercept, record, or utilize your decryption keys. We have no "master key", no backdoor, and no ability to decrypt your files.
@@ -43,8 +43,8 @@ export default function PrivacyPolicy() {
                 Because of our cryptographic design, the amount of data we can collect is fundamentally limited. What we do collect is strictly necessary for operational stability, billing (where applicable), and abuse prevention.
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">Encrypted Ciphertext:</strong> We store the raw encrypted binary data of the files you upload. This data is entirely opaque to us.</li>
-                <li><strong className="text-foreground">Metadata:</strong> We collect non-identifying metadata necessary for routing and storage, including the total size of the encrypted blob, expiration timestamps, and the cryptographic parameters (such as chunk sizing and total parts) required by your browser to reassemble the file. Note that filenames and custom notes are also encrypted using a distinct server-side key wrapper to prevent passive metadata leakage.</li>
+                <li><strong className="text-foreground">Encrypted Ciphertext & Public Assets:</strong> For Secure File Sharing, we store the raw encrypted binary data. This data is entirely opaque to us. For Permanent CDN Hosting, we store the unencrypted assets as they are intended for public distribution via direct links.</li>
+                <li><strong className="text-foreground">Metadata:</strong> We collect non-identifying metadata necessary for routing and storage, including the total size of the file, expiration timestamps, and cryptographic parameters required by your browser to reassemble encrypted files. For encrypted shares, filenames and custom notes are also encrypted using a distinct server-side key wrapper to prevent passive metadata leakage.</li>
                 <li><strong className="text-foreground">Account Identifiers:</strong> To maintain quotas, we use one-way cryptographic hashes to uniquely identify sessions or accounts without requiring personally identifiable information (PII).</li>
                 <li><strong className="text-foreground">Bandwidth Telemetry:</strong> We monitor aggregated egress traffic at the edge node level to prevent DDoS attacks and enforce service limits. This data is anonymized and cannot be traced back to individual unencrypted file contents.</li>
               </ul>
@@ -57,8 +57,8 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Decryption Keys:</strong> Never transmitted, never stored.</li>
-                <li><strong className="text-foreground">Unencrypted File Contents:</strong> Never transmitted to our servers. We cannot scan for keywords, viruses, or copyrighted material using traditional deep-packet or at-rest inspection tools.</li>
-                <li><strong className="text-foreground">Persistent IP Logs:</strong> We do not maintain historical logs correlating IP addresses with specific file uploads or downloads beyond short-lived rate-limiting caches. All access logs are aggregated and subsequently purged from edge nodes within 24 hours.</li>
+                <li><strong className="text-foreground">Unencrypted Private File Contents:</strong> For files uploaded via the Secure File Sharing pipeline, the unencrypted content is never transmitted to our servers. We cannot scan for keywords, viruses, or copyrighted material using traditional deep-packet or at-rest inspection tools on these encrypted files.</li>
+                <li><strong className="text-foreground">IP Addresses:</strong> We do not store, log, or maintain records of your IP address in our databases or application logs. Any necessary IP-based abuse prevention or rate limiting happens ephemerally at the network edge via Cloudflare and is never stored by Hypastack.</li>
               </ul>
             </section>
 

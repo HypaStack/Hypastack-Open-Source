@@ -9,18 +9,48 @@ export function CtaSection() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <section className="mt-24 sm:mt-32 relative flex flex-col items-center overflow-visible">
+    <section className="mt-32 sm:mt-48 lg:mt-64 relative flex flex-col items-center overflow-visible">
 
-      {/* The Block — switched back to white background to match other sections */}
-      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-10 border-y border-[rgba(0,0,0,0.15)]">
+      {/* The Block */}
+      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.15)] border-r-[rgba(0,0,0,0.08)]">
         {/* Horizontal extending lines */}
         <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
 
+        {/* Corner dots */}
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, top: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, top: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, bottom: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, bottom: -5, right: -5 }} />
+        {/* Outer rail dots */}
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, top: -5, left: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, top: -5, right: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, bottom: -5, left: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, bottom: -5, right: -125 }} />
 
-        <div className="w-full px-8 sm:px-16 pt-16 pb-16 text-left">
+
+
+        {/* Subtle corner gradients inside the block */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div 
+            className="absolute top-0 left-0 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px]"
+            style={{
+              background: 'radial-gradient(100% 100% at 0% 0%, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
+              filter: 'blur(60px)'
+            }}
+          />
+          <div 
+            className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px]"
+            style={{
+              background: 'radial-gradient(100% 100% at 100% 100%, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
+              filter: 'blur(60px)'
+            }}
+          />
+        </div>
+
+        <div className="w-full px-8 sm:px-16 pt-16 pb-16 text-left relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -31,8 +61,8 @@ export function CtaSection() {
             {isAuthenticated && user ? (
               <>
                 <h2
-                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#171717] flex items-center gap-3 sm:gap-4"
-                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700 }}
+                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-transparent bg-clip-text pb-1 flex items-center gap-3 sm:gap-4"
+                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700, backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)' }}
                 >
                   <MIcon name="verified" size="1em" className="tracking-normal shrink-0 text-[#171717]" />
                   <div className="flex-1 min-w-0 truncate">
@@ -64,8 +94,8 @@ export function CtaSection() {
             ) : (
               <>
                 <h2
-                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#171717] whitespace-nowrap"
-                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700 }}
+                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-transparent bg-clip-text pb-1 whitespace-nowrap"
+                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700, backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)' }}
                 >
                   Secure sharing. Zero tracking.
                 </h2>

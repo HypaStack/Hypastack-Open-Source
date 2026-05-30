@@ -30,36 +30,56 @@ export function Faq() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="mt-24 sm:mt-32 relative flex flex-col items-center overflow-visible">
+    <section id="faq" className="mt-32 sm:mt-48 lg:mt-64 relative flex flex-col items-center overflow-visible">
 
-      {/* The Block — same template as reference */}
-      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-10 border-y border-[rgba(0,0,0,0.15)]">
+      {/* The Block */}
+      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.15)] border-r-[rgba(0,0,0,0.08)]">
         {/* Horizontal extending lines */}
         <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
         <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
 
-        <div
-          className="absolute top-0 bottom-0 left-[-50vw] right-[100%] pointer-events-none -z-10"
-          style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.04) 10px, rgba(0,0,0,0.04) 20px)' }}
-        />
-        <div
-          className="absolute top-0 bottom-0 left-[100%] right-[-50vw] pointer-events-none -z-10"
-          style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.04) 10px, rgba(0,0,0,0.04) 20px)' }}
-        />
+        {/* Corner dots */}
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, top: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, top: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, bottom: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, bottom: -5, right: -5 }} />
+        {/* Outer rail dots */}
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, top: -5, left: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, top: -5, right: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, bottom: -5, left: -125 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 200, bottom: -5, right: -125 }} />
 
-        {/* Header text — same as reference */}
+
+        {/* Subtle corner gradients inside the block */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div 
+            className="absolute top-0 right-0 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px]"
+            style={{
+              background: 'radial-gradient(100% 100% at 100% 0%, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
+              filter: 'blur(60px)'
+            }}
+          />
+          <div 
+            className="absolute bottom-0 left-0 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px]"
+            style={{
+              background: 'radial-gradient(100% 100% at 0% 100%, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.05) 50%, transparent 100%)',
+              filter: 'blur(60px)'
+            }}
+          />
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="w-full px-8 sm:px-16 pt-16 pb-14"
+          className="w-full px-8 sm:px-16 pt-16 pb-14 relative z-10 pointer-events-none"
         >
           <h2
-            className="text-[clamp(28px,3.5vw,40px)] tracking-[-0.03em] leading-[1.1] text-[#171717]"
-            style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700 }}
+            className="text-[clamp(28px,3.5vw,40px)] tracking-[-0.03em] leading-[1.1] text-transparent bg-clip-text pb-1"
+            style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700, backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)' }}
           >
             Things you might ask.
           </h2>
@@ -78,7 +98,7 @@ export function Faq() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.04 }}
-              className="border-t border-[rgba(0,0,0,0.15)]"
+              className="border-t border-[rgba(0,0,0,0.15)] relative z-10"
             >
               <button
                 type="button"

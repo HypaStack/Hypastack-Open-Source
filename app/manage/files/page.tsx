@@ -94,6 +94,7 @@ function FilesPageInner() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [wtStep, setWtStep] = useState(0)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
@@ -172,6 +173,7 @@ function FilesPageInner() {
     const onMouseDown = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpenMenuId(null)
+        setContextMenuPos(null)
       }
     }
     document.addEventListener("mousedown", onMouseDown)
@@ -519,7 +521,7 @@ function FilesPageInner() {
                   <div 
                     key={folder.id} 
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="group flex items-center gap-3 bg-[#171717] hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-white/5"
+                    className="group flex items-center gap-3 bg-[#111111] hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-white/5"
                     style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                   >
                     <MIcon name="folder" size={16} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
@@ -561,6 +563,8 @@ function FilesPageInner() {
                   openMenuId={openMenuId}
                   setOpenMenuId={setOpenMenuId}
                   menuRef={menuRef}
+                  contextMenuPos={contextMenuPos}
+                  setContextMenuPos={setContextMenuPos}
                 />
               ) : (
                 <GridView
@@ -573,6 +577,17 @@ function FilesPageInner() {
                   deleteLoading={deleteLoading}
                   onToggleStar={handleToggleStar}
                   starLoading={starLoading}
+                  onContextMenu={(e, id) => {
+                    e.preventDefault();
+                    setOpenMenuId(id);
+                    const mainEl = e.currentTarget.closest('main');
+                    if (mainEl) {
+                      const rect = mainEl.getBoundingClientRect();
+                      setContextMenuPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+                    } else {
+                      setContextMenuPos({ x: e.clientX, y: e.clientY });
+                    }
+                  }}
                 />
               )}
             </div>
@@ -639,8 +654,7 @@ function FilesPageInner() {
                 initial={{ opacity: 0, scale: 0.97, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 6 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[32px] bg-[#1f1f1f]/95 backdrop-blur-2xl shadow-2xl overflow-hidden pointer-events-auto"
+                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[32px] bg-[#111111] border border-white/5 overflow-hidden pointer-events-auto"
               >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#222] shrink-0">
                   <h2 className="text-[18px] font-semibold text-white">Upload files</h2>
@@ -733,7 +747,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[16px] bg-[#1f1f1f] border border-[#3a3a3b] mb-5">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[16px] bg-[#111111] border border-white/10 mb-5">
             <MIcon name="search" size={28} className="text-[#a1a1aa]" />
           </div>
         ) : null}
@@ -826,6 +840,8 @@ function ListView({
   openMenuId,
   setOpenMenuId,
   menuRef,
+  contextMenuPos,
+  setContextMenuPos,
 }: {
   files: FileItem[]
   selectedFiles: Set<string>
@@ -844,9 +860,11 @@ function ListView({
   openMenuId: string | null
   setOpenMenuId: (id: string | null) => void
   menuRef: React.RefObject<HTMLDivElement | null>
+  contextMenuPos: { x: number; y: number } | null
+  setContextMenuPos: (pos: { x: number; y: number } | null) => void
 }) {
   return (
-    <div style={{ borderRadius: 14, backgroundColor: '#171717', padding: 4 }}>
+    <div style={{ borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
       {/* Header row */}
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
@@ -866,7 +884,7 @@ function ListView({
       </div>
 
       {/* Rows */}
-      <div>
+      <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
@@ -876,7 +894,27 @@ function ListView({
             <div
               key={file.id}
               data-selected={isSelected}
-              className="drive-row group grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-3"
+              className="drive-row group grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-3 cursor-pointer select-none"
+              onClick={(e) => {
+                // If they clicked the checkbox or buttons, ignore
+                if ((e.target as HTMLElement).closest('input') || (e.target as HTMLElement).closest('button')) return;
+                onToggleSelect(file.id);
+              }}
+              onDoubleClick={(e) => {
+                if ((e.target as HTMLElement).closest('input') || (e.target as HTMLElement).closest('button')) return;
+                window.open(`/d/${file.id}`, '_blank');
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setOpenMenuId(file.id);
+                const mainEl = e.currentTarget.closest('main');
+                if (mainEl) {
+                  const rect = mainEl.getBoundingClientRect();
+                  setContextMenuPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+                } else {
+                  setContextMenuPos({ x: e.clientX, y: e.clientY });
+                }
+              }}
             >
               <input
                 type="checkbox"
@@ -886,7 +924,7 @@ function ListView({
                 aria-label={`Select ${file.name}`}
               />
 
-              <Link href={`/d/${file.id}`} className="flex items-center gap-3.5 min-w-0">
+              <div className="flex items-center gap-3.5 min-w-0">
                 <div className="relative h-8 w-8 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-white">
                   <MIcon name={getFileIconForType(file.contentType, file.name)} size={22} />
                 </div>
@@ -913,7 +951,7 @@ function ListView({
                     <span>{formatDate(file.uploadedAt).split(' at ')[0]}</span>
                   </div>
                 </div>
-              </Link>
+              </div>
 
               <span className="hidden md:block text-[13px] text-[#555] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatDate(file.uploadedAt)}
@@ -924,53 +962,50 @@ function ListView({
               </span>
 
               <div className="relative flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setOpenMenuId(isMenuOpen ? null : file.id)}
-                  className={`p-1.5 rounded-[8px] text-[#555] hover:text-white hover:bg-[#222] transition-all ${
-                    isMenuOpen
-                      ? "opacity-100 bg-[#222] text-white"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                  aria-label="More actions"
-                >
-                  <MIcon name="more_horiz" size={16} />
-                </button>
 
                 <AnimatePresence>
                   {isMenuOpen && (
                     <motion.div
                       ref={menuRef}
-                      initial={{ opacity: 0, y: 4, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                      initial={{ opacity: 0, scale: 0.98, ...(contextMenuPos ? {} : { y: 4 }) }}
+                      animate={{ opacity: 1, scale: 1, ...(contextMenuPos ? {} : { y: 0 }) }}
+                      exit={{ opacity: 0, scale: 0.98, ...(contextMenuPos ? {} : { y: 4 }) }}
                       transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-                      className="absolute right-0 top-full mt-1.5 z-30"
-                      style={{ width: 200, padding: 4, borderRadius: 20, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)', transformOrigin: 'top right' }}
+                      className={contextMenuPos ? "fixed z-[9999]" : "absolute right-0 top-full mt-1.5 z-30"}
+                      style={{ 
+                        width: 220, 
+                        padding: 6,
+                        borderRadius: 20, 
+                        backgroundColor: '#171717', 
+                        boxShadow: '0 0 0 1px rgba(255,255,255,0.04)', 
+                        transformOrigin: contextMenuPos ? 'top left' : 'top right',
+                        ...(contextMenuPos ? { left: contextMenuPos.x, top: contextMenuPos.y } : {})
+                      }}
+                      onClick={(e) => {
+                        const target = e.target as HTMLElement;
+                        if (!target.closest('button') && !target.closest('a')) {
+                          setOpenMenuId(null);
+                          setContextMenuPos(null);
+                        }
+                      }}
                     >
                       <ActionItem
                         icon={copiedId === file.id ? "check" : "content_copy"}
                         label={copiedId === file.id ? "Copied" : "Copy link"}
-                        onClick={() => {
-                          onCopyLink(file.shareUrl, file.id)
-                        }}
+                        onClick={() => { onCopyLink(file.shareUrl, file.id); setOpenMenuId(null); setContextMenuPos(null) }}
                         accent={copiedId === file.id ? "success" : undefined}
                       />
-                      <ActionLink icon="visibility" label="View" href={`/d/${file.id}`} />
+                      <ActionLink icon="visibility" label="View" href={`/d/${file.id}`} onClick={() => { setOpenMenuId(null); setContextMenuPos(null) }} />
                       <ActionItem
                         icon="star"
                         label={file.starred ? "Unstar" : "Star"}
-                        onClick={() => {
-                          onToggleStar(file.id, file.starred)
-                          setOpenMenuId(null)
-                        }}
+                        onClick={() => { onToggleStar(file.id, file.starred); setOpenMenuId(null); setContextMenuPos(null) }}
                         disabled={starLoading === file.id}
                       />
-                      <div style={{ height: 1, margin: '2px 6px', backgroundColor: 'rgba(255,255,255,0.07)' }} />
                       <ActionItem
                         icon="delete"
                         label={deleteLoading === file.id ? "Deleting…" : "Delete"}
-                        onClick={() => onDelete(file.id)}
+                        onClick={() => { onDelete(file.id); setContextMenuPos(null) }}
                         disabled={deleteLoading === file.id}
                         accent="danger"
                       />
@@ -1004,8 +1039,8 @@ function ActionItem({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full flex items-center bg-transparent hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
-      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, border: 'none' }}
+      className="w-full flex items-center bg-transparent hover:bg-[#282828] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
+      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: accent === 'danger' ? '#f87171' : accent === 'success' ? '#4ade80' : 'rgba(255,255,255,0.6)' }}>
@@ -1021,16 +1056,19 @@ function ActionLink({
   icon,
   label,
   href,
+  onClick,
 }: {
   icon: string
   label: string
   href: string
+  onClick?: () => void
 }) {
   return (
     <Link
       href={href}
-      className="flex items-center hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16 }}
+      onClick={onClick}
+      className="flex items-center hover:bg-[#282828] active:scale-[0.97] transition-all duration-75 cursor-pointer"
+      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -1092,6 +1130,7 @@ function GridView({
   deleteLoading: string | null
   onToggleStar: (id: string, current: boolean) => void
   starLoading: string | null
+  onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -1100,13 +1139,15 @@ function GridView({
         const iconName = getFileIconForType(file.contentType, file.name)
         const isImage = isImagePreviewable(file.contentType, file.name)
         return (
-          <div key={file.id} className="group relative bg-[#171717] rounded-[24px] p-2.5">
+          <div key={file.id} className="group relative bg-[#1f1f1f] rounded-[24px] p-[3px]" style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
           <div
             role="button"
             tabIndex={0}
             onClick={() => onToggleSelect(file.id)}
+            onDoubleClick={() => window.open(`/d/${file.id}`, '_blank')}
+            onContextMenu={(e) => onContextMenu(e, file.id)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleSelect(file.id) } }}
-            className={`relative w-full aspect-square rounded-[16px] overflow-hidden bg-transparent cursor-pointer transition-all select-none ${
+            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#111111] cursor-pointer transition-all select-none ${
               isSelected ? "opacity-80" : "hover:opacity-90"
             }`}
           >

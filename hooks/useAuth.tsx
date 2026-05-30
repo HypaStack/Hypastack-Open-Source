@@ -180,27 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchUser()
   }, [fetchUser])
 
-  // Real loader logic: trigger exit animations only when auth finishes loading
-  useEffect(() => {
-    if (!isLoading) {
-      const preloader = document.getElementById("global-preloader")
-      const logo = preloader?.querySelector(".preloader-logo") as HTMLElement | null
-      const content = document.getElementById("app-content-wrapper")
 
-      if (preloader && logo && content) {
-        logo.style.animation = "logo-poof 0.4s forwards"
-        
-        setTimeout(() => {
-          preloader.style.animation = "preloader-fade-out 0.2s ease-out forwards"
-          content.style.animation = "cloud-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards"
-          
-          setTimeout(() => {
-            if (preloader) preloader.style.display = "none"
-          }, 300)
-        }, 150)
-      }
-    }
-  }, [isLoading])
 
   const logout = async () => {
     try {

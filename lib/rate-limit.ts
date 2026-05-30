@@ -90,11 +90,11 @@ async function checkRateLimit(
 // NOTE: All functions now accept accountId (userId) instead of IP
 
 export async function checkUploadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
-  let maxAttempts = 5
-  if (tier === 'essential') maxAttempts = 50
-  if (tier === 'premium') maxAttempts = 150
-  if (tier === 'ultimate') maxAttempts = 500
-  return checkRateLimit(accountId, 'upload', 10, maxAttempts)
+  let maxAttempts = 30
+  if (tier === 'essential') maxAttempts = 200
+  if (tier === 'premium') maxAttempts = 500
+  if (tier === 'ultimate') maxAttempts = 1500
+  return checkRateLimit(accountId, 'upload', 1, maxAttempts)
 }
 
 export async function checkCdnUploadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {

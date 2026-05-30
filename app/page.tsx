@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="theme-marketing relative min-h-screen bg-background text-foreground w-full overflow-x-hidden">
+      <main className="relative min-h-screen bg-background text-foreground w-full overflow-hidden">
       <Hero />
 
       <div className="relative">

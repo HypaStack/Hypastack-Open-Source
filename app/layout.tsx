@@ -339,15 +339,17 @@ export default function RootLayout({
         {/* Tauri detection for pure black background */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');`
+            __html: `
+              if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');
+              if (window.location.pathname.startsWith('/manage')) document.documentElement.classList.add('is-dashboard');
+              else document.documentElement.classList.add('is-public');
+            `
           }}
         />
       </head>
       <body className={`${jetbrains.variable} ${syne.variable} ${dmSans.variable} font-sans antialiased`}>
         <TauriTitleBar />
-        <div id="global-preloader">
-          <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" alt="" className="preloader-logo pointer-events-none select-none" draggable={false} style={{ userSelect: "none", WebkitUserDrag: "none" } as React.CSSProperties} />
-        </div>
+
         <div id="app-content-wrapper">
           <AuthProvider>
             <DesktopGate>

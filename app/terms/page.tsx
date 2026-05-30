@@ -13,12 +13,12 @@ export default function TermsOfService() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Terms of Service
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-12 border-b border-white/5 pb-6">
+          <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
             <p>Effective Date: May 7, 2026</p>
             <p>Last Updated: May 25, 2026</p>
           </div>

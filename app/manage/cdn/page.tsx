@@ -451,18 +451,16 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleSelectAll}
-                  className="inline-flex items-center gap-2 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[16px] bg-[#1f1f1f] text-white font-medium text-[15px] hover:bg-[#313131] transition-colors leading-none"
                 >
-                  <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={15} className="shrink-0" />
+                  <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
                   <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleBulkDelete}
                   disabled={deleteLoading === "bulk"}
-                  className="inline-flex items-center gap-2 hover:bg-red-600 active:scale-[0.97] transition-all duration-75 disabled:opacity-50"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#fefeff', backgroundColor: 'rgb(239,68,68)' }}
+                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[16px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50 leading-none"
                 >
                   <MIcon name="delete" size={18} />
                   {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
@@ -474,27 +472,24 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleSelectAll}
-                    className="inline-flex items-center gap-2 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75"
-                    style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[16px] bg-[#1f1f1f] text-[#e3e3e3] font-medium text-[15px] hover:bg-[#313131] transition-colors leading-none"
                   >
-                    <MIcon name="select_all" size={15} className="shrink-0" />
+                    <MIcon name="select_all" size={17} className="shrink-0" />
                     <span className="hidden sm:inline">Select all</span>
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={handleCreateFolder}
-                  className="inline-flex items-center gap-2 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#ffffff', backgroundColor: '#1f1f1f' }}
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[16px] bg-[#1f1f1f] text-white font-medium text-[15px] hover:bg-[#313131] transition-colors leading-none"
                 >
-                  <MIcon name="create_new_folder" size={15} className="shrink-0" />
+                  <MIcon name="create_new_folder" size={17} className="shrink-0" />
                   <span className="hidden sm:inline">New Folder</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 hover:bg-[#e2e2e8] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[16px] bg-white text-black font-medium text-[15px] hover:bg-[#e2e2e8] transition-colors leading-none"
                 >
                   <MIcon name="cloud_upload" size={15} className="shrink-0" />
                   <span>Upload files</span>
@@ -595,7 +590,7 @@ export default function CdnPage() {
               <div>
                 {currentFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#7a7a80] mb-3 px-2">Assets</h2>}
                 <motion.div
-                  className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2"
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
                   initial="hidden"
                   animate="visible"
                   variants={gridVariants}
@@ -711,7 +706,7 @@ function CdnAssetTile({
   }
 
   return (
-    <motion.div variants={gridItemVariants} className="group relative">
+    <motion.div variants={gridItemVariants} className="group relative" style={{ backgroundColor: '#1f1f1f', borderRadius: 20, padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
       {/* Square tile */}
       <div
         onClick={(e) => {
@@ -738,14 +733,14 @@ function CdnAssetTile({
             onToggleSelect()
           }
         }}
-        className={`relative aspect-square overflow-hidden bg-[#171717] cursor-pointer transition-all select-none ${
+        className={`relative w-full aspect-square overflow-hidden bg-[#111111] cursor-pointer transition-all select-none ${
           selected ? "" : "hover:opacity-90"
         }`}
-        style={{ borderRadius: 14 }}
+        style={{ borderRadius: 17 }}
       >
         {/* Reveal gate for images */}
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#171717]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#111111]">
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#a1a1aa' }} />
             </div>
@@ -770,8 +765,8 @@ function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#171717]">
-                <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" className="select-none pointer-events-none h-6 w-6 rounded-[5px] animate-[spin_1.2s_ease-in-out_infinite]" alt="" draggable={false} />
+              <div className="absolute inset-0 flex items-center justify-center bg-[#111111]">
+                <svg className="animate-spin h-6 w-6 text-[#555]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -852,7 +847,7 @@ function CdnAssetTile({
       </div>
 
       {/* Filename + meta */}
-      <div className="mt-1.5 px-0.5 min-w-0">
+      <div className="mt-2 px-1.5 pb-1 min-w-0">
         <p
           className="truncate"
           style={{ fontSize: 12, fontWeight: 500, color: '#e3e3e3' }}

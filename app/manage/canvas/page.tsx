@@ -671,10 +671,10 @@ export default function CanvasPage() {
                 {/* Card body — kind-specific layout wrapped in card-in-card */}
                 <div 
                   onContextMenu={(e) => onNodeCtx(e, node.id)}
-                  style={{ width: nw, height: nh, borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
+                  style={{ width: nw, height: nh, borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
                   className="flex flex-col cursor-context-menu"
                 >
-                  <div className="w-full h-full bg-[#111111] flex flex-col overflow-hidden" style={{ borderRadius: 16 }}>
+                  <div className="w-full h-full bg-[#111111] flex flex-col overflow-hidden" style={{ borderRadius: 17 }}>
                     {(() => {
                       const k = node.kind ?? "service"
                       const updTitle = (e: React.FocusEvent<HTMLDivElement>) => { const t = e.currentTarget?.textContent || "Untitled"; setNodes(ns => ns.map(n => n.id === node.id ? { ...n, title: t } : n)); setWtStep(s => s === 2 ? 3 : s) }
@@ -876,8 +876,8 @@ export default function CanvasPage() {
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                   exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="overflow-hidden min-w-[210px] pointer-events-auto"
-                  style={{ transformOrigin: "top left", borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
+                  className="overflow-hidden min-w-[210px] pointer-events-auto p-[3px]"
+                  style={{ transformOrigin: "top left", borderRadius: 20, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
                 >
               {ctxMenu.action.t === "canvas" && (() => {
                 const iconMap: Record<string, React.ReactNode> = {
@@ -892,7 +892,7 @@ export default function CanvasPage() {
                   FileText: <MIcon name="article" size={14} />,
                 }
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
                     <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold text-[#555] uppercase tracking-wider">Add Component</p>
                     {NODE_PRESETS.map(p => (
                       <button key={p.key} onClick={() => addComponent(p.key)}
@@ -911,7 +911,7 @@ export default function CanvasPage() {
                 const node = nodes.find(n => n.id === nid)
                 const totalPorts = node ? (node.leftPorts.length + node.rightPorts.length + (node.topPorts?.length||0) + (node.bottomPorts?.length||0)) : 0
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden', padding: 2 }}>
                     <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold text-[#555] uppercase tracking-wider">Ports</p>
                     {totalPorts < maxPorts ? (
                       <div className="grid grid-cols-2 gap-1 px-1 mb-1">
@@ -937,7 +937,7 @@ export default function CanvasPage() {
                 const edgeColor = edge?.color ?? "#ffffff"
                 const swatches = ["#ffffff","#60a5fa","#34d399","#f87171","#fbbf24","#a78bfa","#f472b6","#fb923c"]
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
                     {/* Color row */}
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5">
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#a1a1aa' }}>Color</span>
@@ -988,7 +988,7 @@ export default function CanvasPage() {
               {ctxMenu.action.t === "port" && (() => {
                 const a = ctxMenu.action as { t: "port"; nid: string; pid: string }
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
                     <button onClick={() => deletePort(a.nid, a.pid)}
                       className="flex items-center gap-2 w-full text-left hover:bg-[#2a1414] active:scale-[0.97] transition-all duration-75"
                       style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}

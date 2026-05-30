@@ -13,7 +13,7 @@ export default function AcceptableUse() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Acceptable Use Policy
           </h1>
@@ -76,12 +76,29 @@ export default function AcceptableUse() {
               <p className="mt-4">
                 When a valid violation is confirmed, the offending ciphertext is permanently deleted from the R2 edge storage, and the associated uploader's session or account may be terminated.
               </p>
+              <p className="mt-4">
+                <strong className="text-foreground">CDN Assets are different.</strong> Files uploaded through the Permanent CDN Hosting pipeline are <em>not</em> encrypted — they are publicly accessible by design. This means CDN assets are not subject to the zero-knowledge constraint above. We plan to introduce client-side scanning for CDN uploads in a future update, which will flag prohibited content before it is ever transmitted to our servers. Until that is in place, CDN asset uploads remain subject to the same user-report and traffic-analysis mechanisms above, and prohibited content will be removed upon discovery.
+              </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Reporting Abuse</h2>
-              <p>
-                If you encounter content hosted on Hypastack that violates this policy, immediately forward the full URL (including the <code className="text-primary font-medium">#key=...</code> fragment) and a brief description of the violation to <strong>abuse@hypastack.com</strong>. Reports missing the key fragment cannot be verified due to our encryption architecture and may be dismissed.
+              <p className="mb-4">
+                If you encounter content hosted on Hypastack that violates this policy, send a report to <strong>abuse@hypastack.com</strong> with the file link and a brief description of the violation.
+              </p>
+              <p className="mb-4">
+                <strong className="text-foreground">Do not include the decryption key fragment.</strong> We will not ask for it, and you should not send it. Receiving the key would require us to actively decrypt and view potentially illegal content — including CSAM — which creates direct legal liability for us under laws governing possession and viewing of such material. We are not equipped or willing to act as a human review queue for illegal content.
+              </p>
+              <p className="mb-4">
+                Instead, include:
+              </p>
+              <ul className="list-disc list-inside space-y-2 ml-2">
+                <li>The URL of the file (without the <code className="text-foreground font-medium">#key=...</code> fragment)</li>
+                <li>A screenshot, description, or any other contextual proof that does not require us to decrypt the content</li>
+                <li>The nature of the violation (e.g. CSAM, malware, phishing)</li>
+              </ul>
+              <p className="mt-4">
+                For CSAM specifically: <strong className="text-foreground">do not screenshot or preserve the content.</strong> Report the URL directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a> and send us the file URL so we can remove it immediately. That is all we need.
               </p>
             </section>
           </div>

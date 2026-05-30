@@ -110,7 +110,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               style={{
                 backgroundColor: '#1f1f1f',
                 borderRadius: 20,
-                boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)',
+                boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
                 padding: 3,
               }}
             >
@@ -457,10 +457,11 @@ function AvatarCropperModal({
         style={{
           backgroundColor: '#1f1f1f',
           borderRadius: 20,
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
           padding: 3,
         }}
       >
+        <div className="relative w-full flex flex-col" style={{ backgroundColor: '#111111', borderRadius: 17 }}>
         {/* Cropper */}
         <div className="relative w-full overflow-hidden" style={{ height: 400, borderRadius: 17 }}>
           <Cropper
@@ -493,6 +494,7 @@ function AvatarCropperModal({
           >
             Save
           </button>
+        </div>
         </div>
       </motion.div>
     </div>
@@ -832,7 +834,7 @@ function EditProfileDialog({
             style={{
               backgroundColor: '#1f1f1f',
               borderRadius: 20,
-              boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)',
+              boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
               padding: 3,
             }}
             onKeyDown={(e) => {

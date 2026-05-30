@@ -80,6 +80,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
   const [note, setNote] = useState("")
   const [filenameError, setFilenameError] = useState("")
   const [noteError, setNoteError] = useState("")
+  const [zipMultipleFiles, setZipMultipleFiles] = useState(true)
   const [trayCollapsed, setTrayCollapsed] = useState(false)
   const [optionsOpen, setOptionsOpen] = useState(false)
   const turnstileRef = useRef<any>(null)
@@ -490,7 +491,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     
     let fileToUpload: File | null = null
     const isMultipleOrNested = files.length > 1 || files.some(f => f.path?.includes("/"))
-    const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested
+    const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested && zipMultipleFiles
 
     if (shouldZip) {
       // Ensure the filename stored in the DB always carries the .zip extension
@@ -535,12 +536,24 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
             setUploadingIndex(i)
             const f = files[i]
             let url = ""
-            if (shouldUseMultipart(f.file.size)) {
-              url = await handleMultipartUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
-            } else {
-              url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
+            try {
+              if (shouldUseMultipart(f.file.size)) {
+                url = await handleMultipartUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
+              } else {
+                url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
+              }
+              urls.push(`${f.file.name}: ${url}`)
+            } catch (err: any) {
+              if (urls.length > 0) {
+                setShareUrl(urls.join("\n"))
+                setErrorMessage(err.message || "Upload partially failed.")
+                setState("error")
+                setIsUploading(false)
+                return
+              } else {
+                throw err
+              }
             }
-            urls.push(`${f.file.name}: ${url}`)
           }
           setShareUrl(urls.join("\n"))
         }
@@ -1316,7 +1329,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
             exit={{ opacity: 0, x: 500 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[20px] sm:rounded-[20px] bg-[#1f1f1f] font-sans mb-8 sm:mb-0"
-            style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)', padding: 4 }}
+            style={{ padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
             <div className="w-full h-full bg-[#111111] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
           <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
@@ -1425,7 +1438,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                                 {f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
                               </span>
                               <span style={{ fontSize: 13, color: '#a1a1aa' }}>
-                                {state === "done" ? "Uploaded" : state === "error" ? "Failed" : state === "uploading" ? (index < uploadingIndex ? "Uploaded" : index === uploadingIndex ? `${formatFileSize(f.file.size * (progress / 100))} / ${formatFileSize(f.file.size)}` : "Pending") : "Pending"}
+                                {state === "done" ? "Uploaded" : state === "error" ? (index < uploadingIndex ? "Uploaded" : index === uploadingIndex ? "Failed" : "Skipped") : state === "uploading" ? (index < uploadingIndex ? "Uploaded" : index === uploadingIndex ? `${formatFileSize(f.file.size * (progress / 100))} / ${formatFileSize(f.file.size)}` : "Pending") : "Pending"}
                               </span>
                             </div>
                           </div>
@@ -1487,22 +1500,51 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                     {/* Rename / Archive name */}
                     {isMultiFile ? (
                       <>
-                        <div style={{ padding: '6px 8px 4px' }}>
-                          <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                            <MIcon name="folder_zip" size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                            <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Archive name</span>
+                        <div
+                          className="flex items-center justify-between cursor-pointer hover:bg-[#1a1a1a] transition-all duration-75"
+                          style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
+                          onClick={() => setZipMultipleFiles(!zipMultipleFiles)}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <MIcon name="folder_zip" size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
+                            <span style={{ fontSize: 13, color: '#ccc' }}>Zip the files</span>
                           </div>
-                          <input
-                            type="text"
-                            value={customFilename}
-                            onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
-                            placeholder="hypastack-archive"
-                            className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
-                            style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
-                          />
-                          {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
+                          <div
+                            className="relative shrink-0 transition-colors"
+                            style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: zipMultipleFiles ? '#9b9b9b' : '#2a2a2a', border: zipMultipleFiles ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
+                          >
+                            <div
+                              className="absolute top-[3px] transition-transform bg-white"
+                              style={{ width: 14, height: 14, borderRadius: 7, left: zipMultipleFiles ? 17 : 3 }}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ padding: '0 12px 6px' }}>
+                          <p style={{ fontSize: 11, color: '#666', lineHeight: 1.4 }}>
+                            Uploading multiple files in a ZIP counts as 1 file, uploading multiple files without ZIP'ing, will count normally.
+                          </p>
                         </div>
                         <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                        {zipMultipleFiles && (
+                          <>
+                            <div style={{ padding: '6px 8px 4px' }}>
+                              <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
+                                <MIcon name="folder_zip" size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                                <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Archive name</span>
+                              </div>
+                              <input
+                                type="text"
+                                value={customFilename}
+                                onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
+                                placeholder="hypastack-archive"
+                                className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
+                                style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+                              />
+                              {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
+                            </div>
+                            <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                          </>
+                        )}
                       </>
                     ) : (
                       <>
@@ -1594,7 +1636,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                         Start
                       </button>
                     </div>
-                  ) : state === "done" && shareUrl && shareUrl.includes("\n") ? (
+                  ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
                     <button
                       type="button"
                       onClick={handleCopy}

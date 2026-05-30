@@ -13,12 +13,12 @@ export default function CoppaGdpr() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             COPPA & GDPR Compliance
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-12 border-b border-white/5 pb-6">
+          <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
             <p>Effective Date: May 7, 2026</p>
             <p>Last Updated: May 25, 2026</p>
           </div>
@@ -41,7 +41,7 @@ export default function CoppaGdpr() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Right to be Forgotten (Erasure):</strong> You have the absolute right to delete your data. Because you control the decryption keys, you can unilaterally render the data unreadable at any time by simply destroying your URL. Furthermore, you can actively trigger a deletion of the ciphertext from our edge nodes at any time using our platform tools, fulfilling the right to erasure instantly.</li>
-                <li><strong className="text-foreground">Data Minimization:</strong> We practice absolute data minimization. We collect zero PII during anonymous usage. Even for registered users, we collect only an email address for authentication, which is cryptographically hashed and salted. We do not run analytics on your encrypted files.</li>
+                <li><strong className="text-foreground">Data Minimization:</strong> We practice absolute data minimization. We collect zero PII. There is no account registration with email — users authenticate with a cryptographic access key generated locally on their device. We do not run analytics on your encrypted files.</li>
                 <li><strong className="text-foreground">Data Processing:</strong> Because the server never possesses the decryption keys, we do not "process" your personal data in the traditional sense. We merely route indistinguishable blocks of ciphertext. Any PII contained within your files remains entirely obfuscated from our servers.</li>
               </ul>
             </section>

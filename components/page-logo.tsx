@@ -7,6 +7,7 @@ interface PageLogoProps {
   borderRadius?: number
   pulse?: boolean
   className?: string
+  disableLayoutAnimation?: boolean
 }
 
 /**
@@ -15,10 +16,11 @@ interface PageLogoProps {
  * this element between its positions when pages transition.
  * Render this ONCE per page — never render it multiple times on the same page.
  */
-export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className = "" }: PageLogoProps) {
+export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className = "", disableLayoutAnimation = false }: PageLogoProps) {
   return (
     <motion.img
-      layoutId="hypa-logo"
+      {...(!disableLayoutAnimation ? { layoutId: "hypa-logo" } : {})}
+      initial={false}
       src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp"
       alt="Hypastack"
       animate={

@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import Link from "next/link"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
 
 // ── Types ──────────────────────────────────────────────────────
@@ -45,24 +47,17 @@ function formatUptime(s: number) {
 }
 
 function msColor(ms: number, good = 20, warn = 80) {
-  if (ms < 0) return "text-[#555]"
-  if (ms <= good) return "text-emerald-400"
-  if (ms <= warn) return "text-amber-400"
-  return "text-red-400"
-}
-
-function msBg(ms: number, good = 20, warn = 80) {
-  if (ms < 0) return "bg-[#1f1f1f]"
-  if (ms <= good) return "bg-[#1f1f1f]"
-  if (ms <= warn) return "bg-[#171717]"
-  return "bg-[#1f1f1f]"
+  if (ms < 0) return "text-[#aaa]"
+  if (ms <= good) return "text-emerald-600"
+  if (ms <= warn) return "text-amber-600"
+  return "text-red-500"
 }
 
 function StatusDot({ ms, good = 20, warn = 80, isLoading = false }: { ms: number; good?: number; warn?: number; isLoading?: boolean }) {
   if (isLoading) {
-    return <MIcon name="progress_activity" size={14} className="text-[#888] animate-spin" />
+    return <MIcon name="progress_activity" size={14} className="text-muted-foreground animate-spin" />
   }
-  const c = ms < 0 ? "bg-[#555]" : ms <= good ? "bg-emerald-400" : ms <= warn ? "bg-amber-400" : "bg-red-400"
+  const c = ms < 0 ? "bg-[#ccc]" : ms <= good ? "bg-emerald-500" : ms <= warn ? "bg-amber-500" : "bg-red-500"
   return (
     <span className="relative flex h-2.5 w-2.5">
       {ms >= 0 && ms <= good && (
@@ -79,14 +74,14 @@ function MetricRow({ label, value, unit = "ms", good = 20, warn = 80, isLoading 
   label: string; value: number; unit?: string; good?: number; warn?: number; isLoading?: boolean
 }) {
   return (
-    <div className="flex items-center justify-between hover:bg-[#313131] active:scale-[0.97] transition-all cursor-default" style={{ height: '34px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '16px' }}>
-      <span className="text-[14px] text-[#e3e3e3]">{label}</span>
+    <div className="flex items-center justify-between hover:bg-black/5 active:scale-[0.97] transition-all cursor-default" style={{ height: '36px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '12px' }}>
+      <span className="text-[14px] text-foreground">{label}</span>
       <div className="flex items-center gap-2">
         <StatusDot ms={value} good={good} warn={warn} isLoading={isLoading} />
         <span className={`text-[13px] font-mono tabular-nums ${msColor(value, good, warn)}`}>
           {value < 0 ? "err" : `${value.toFixed(2)}`}
         </span>
-        <span className="text-[11px] text-[#555] font-medium">{unit}</span>
+        <span className="text-[11px] text-muted-foreground font-medium">{unit}</span>
       </div>
     </div>
   )
@@ -103,16 +98,16 @@ function SectionCard({ icon, title, badge, children, delay = 0 }: {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`rounded-[20px] overflow-hidden relative`}
-      style={{ backgroundColor: '#1f1f1f', padding: '4px' }}
+      className="rounded-[20px] overflow-hidden border border-border bg-card"
+      style={{ padding: '4px' }}
     >
       <div className="flex items-center gap-3 px-3 py-2 mb-1">
-        <div className="h-8 w-8 rounded-[12px] flex items-center justify-center bg-transparent">
-          <MIcon name={icon} size={15} style={{ color: 'rgba(255,255,255,0.6)' }} />
+        <div className="h-8 w-8 rounded-[12px] flex items-center justify-center bg-muted">
+          <MIcon name={icon} size={15} className="text-muted-foreground" />
         </div>
-        <h2 className="text-[14px] font-semibold text-[#e3e3e3] tracking-tight">{title}</h2>
+        <h2 className="text-[14px] font-semibold text-foreground tracking-tight">{title}</h2>
         {badge && (
-          <span className="ml-auto text-[10px] font-bold uppercase tracking-widest text-[#555] px-2.5 py-1 rounded-[10px]" style={{ backgroundColor: '#111' }}>
+          <span className="ml-auto text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2.5 py-1 rounded-[10px] bg-muted">
             {badge}
           </span>
         )}
@@ -139,7 +134,7 @@ function Sparkline({ data, color = "#10b981", height = 32 }: {
   }).join(" ")
 
   return (
-    <svg width={w} height={height} className="shrink-0 opacity-70">
+    <svg width={w} height={height} className="shrink-0 opacity-50">
       <polyline fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" points={points} />
     </svg>
   )
@@ -149,40 +144,22 @@ function Sparkline({ data, color = "#10b981", height = 32 }: {
 
 const MAX_HISTORY = 30
 
-function useHistory() {
-  const ref = useRef<number[]>([])
-  const push = useCallback((v: number) => {
-    ref.current = [...ref.current.slice(-(MAX_HISTORY - 1)), v]
-    return ref.current
-  }, [])
-  return { data: ref.current, push }
-}
-
 // ── Main Page ──────────────────────────────────────────────────
 
 export default function StatusPage() {
   const [snapshot, setSnapshot] = useState<StatusSnapshot | null>(null)
   
-  // Track visual cascade loading state
   const [updating, setUpdating] = useState({
-    top: false,
-    postgres: false,
-    r2: false,
-    auth: false,
-    crypto: false,
-    system: false
+    top: false, postgres: false, r2: false, auth: false, crypto: false, system: false
   })
   
   const [connected, setConnected] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [tickCount, setTickCount] = useState(0)
 
-  // History buffers for sparklines
   const pingHistory = useRef<number[]>([])
   const r2History = useRef<number[]>([])
   const authHistory = useRef<number[]>([])
-
-  // Store timeouts so we can clean them up if the component unmounts
   const timeoutRefs = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
@@ -202,7 +179,6 @@ export default function StatusPage() {
           
           setSnapshot(prevSnapshot => {
             if (!prevSnapshot) {
-              // Initial load, no cascade needed
               setTickCount(1)
               pingHistory.current = [...pingHistory.current.slice(-(MAX_HISTORY - 1)), incoming.postgres.ping]
               r2History.current = [...r2History.current.slice(-(MAX_HISTORY - 1)), incoming.r2.headMs]
@@ -210,10 +186,8 @@ export default function StatusPage() {
               return incoming
             }
 
-            // Start cascade for subsequent updates
             setUpdating({ top: true, postgres: true, r2: true, auth: true, crypto: true, system: true })
             
-            // Clear any existing cascading timeouts if they overlap
             timeoutRefs.current.forEach(clearTimeout)
             timeoutRefs.current = []
 
@@ -243,16 +217,15 @@ export default function StatusPage() {
             }, 750))
 
             timeoutRefs.current.push(setTimeout(() => {
-              // Final sync and system
               setTickCount((p) => p + 1)
               pingHistory.current = [...pingHistory.current.slice(-(MAX_HISTORY - 1)), incoming.postgres.ping]
               r2History.current = [...r2History.current.slice(-(MAX_HISTORY - 1)), incoming.r2.headMs]
               authHistory.current = [...authHistory.current.slice(-(MAX_HISTORY - 1)), incoming.auth.jwtVerifyMs]
               setUpdating(u => ({ ...u, system: false }))
-              setSnapshot(incoming) // ensure perfectly synchronized with incoming payload
+              setSnapshot(incoming)
             }, 900))
 
-            return prevSnapshot // Don't change snapshot synchronously if we are cascading
+            return prevSnapshot
           })
           
         } catch (err) {
@@ -277,25 +250,27 @@ export default function StatusPage() {
   const s = snapshot
 
   return (
-    <main className="min-h-screen bg-[#0c0c0e] text-white">
-      {/* Header */}
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/" className="flex items-center gap-2 text-[#888] hover:text-white transition-colors">
-            <MIcon name="arrow_back" size={16} />
-            <span className="text-[13px] font-medium">Back</span>
-          </Link>
-        </div>
+    <main className="min-h-screen bg-background text-foreground">
+      <Navbar />
 
+      {/* Header */}
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-32 pb-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
           <div className="flex items-center gap-4 mb-2">
-            <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" alt="" className="select-none pointer-events-none h-10 w-10 rounded-[10px]" draggable={false} />
-            <h1 className="text-[32px] sm:text-[40px] font-bold tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+            <h1 className="text-[32px] sm:text-[40px] font-bold tracking-tight text-foreground" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
               System Status
             </h1>
+            {/* Live indicator */}
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-emerald-600">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              Live
+            </span>
           </div>
-          <p className="text-[15px] text-[#888] max-w-xl leading-relaxed mt-2 mb-1">
-            Real-time infrastructure metrics.
+          <p className="text-[15px] text-muted-foreground max-w-xl leading-relaxed mt-2 mb-1">
+            Real-time infrastructure metrics. Benchmarks run server-side every 3s.
           </p>
         </motion.div>
       </div>
@@ -303,17 +278,17 @@ export default function StatusPage() {
       {/* Error state */}
       {error && !s && (
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <MIcon name="error" size={48} className="text-red-400 mx-auto mb-4" />
-          <p className="text-[18px] font-semibold text-red-400 mb-2">Failed to load status</p>
-          <p className="text-[14px] text-[#888]">{error}</p>
+          <MIcon name="error" size={48} className="text-red-500 mx-auto mb-4" />
+          <p className="text-[18px] font-semibold text-red-500 mb-2">Failed to load status</p>
+          <p className="text-[14px] text-muted-foreground">{error}</p>
         </div>
       )}
 
       {/* Loading state */}
       {!s && !error && (
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" alt="" className="select-none pointer-events-none h-8 w-8 rounded-[6px] mx-auto mb-4 animate-[spin_1.2s_ease-in-out_infinite]" draggable={false} />
-          <p className="text-[14px] text-[#888]">Running benchmarks…</p>
+          <div className="preloader-box mx-auto mb-4" style={{ width: 36, height: 36 }} />
+          <p className="text-[14px] text-muted-foreground">Running benchmarks…</p>
         </div>
       )}
 
@@ -331,17 +306,16 @@ export default function StatusPage() {
                 key={m.label}
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 * i }}
-                className={`rounded-[20px] p-5 flex items-center justify-between relative`}
-                style={{ backgroundColor: '#1f1f1f' }}
+                className="rounded-[20px] p-5 flex items-center justify-between border border-border bg-card"
               >
                 <div>
                   <div className="flex items-center gap-1.5 mb-1">
-                    {updating.top && <MIcon name="progress_activity" size={12} className="text-[#888] animate-spin" />}
-                    <p className="text-[11px] uppercase tracking-wider text-[#555] font-semibold">{m.label}</p>
+                    {updating.top && <MIcon name="progress_activity" size={12} className="text-muted-foreground animate-spin" />}
+                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{m.label}</p>
                   </div>
                   <p className={`text-[26px] font-bold font-mono tabular-nums leading-none ${msColor(m.value)}`}>
                     {m.value < 0 ? "ERR" : m.value.toFixed(1)}
-                    <span className="text-[12px] text-[#555] ml-1 font-medium">ms</span>
+                    <span className="text-[12px] text-muted-foreground ml-1 font-medium">ms</span>
                   </p>
                 </div>
                 <Sparkline data={m.history} color={m.color} />
@@ -361,20 +335,20 @@ export default function StatusPage() {
               <MetricRow label="COUNT users" value={s.postgres.countLatency.usersMs} isLoading={updating.postgres} />
               <MetricRow label="COUNT files" value={s.postgres.countLatency.filesMs} isLoading={updating.postgres} />
               <MetricRow label="COUNT cdn_assets" value={s.postgres.countLatency.cdnMs} isLoading={updating.postgres} />
-              <div className="flex items-center justify-between hover:bg-[#313131] active:scale-[0.97] transition-all cursor-default" style={{ height: '34px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '16px' }}>
-                <span className="text-[14px] text-[#e3e3e3]">Pool connections</span>
+              <div className="flex items-center justify-between hover:bg-black/5 transition-all cursor-default" style={{ height: '36px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '12px' }}>
+                <span className="text-[14px] text-foreground">Pool connections</span>
                 <div className="flex items-center gap-2">
-                  {updating.postgres && <MIcon name="progress_activity" size={14} className="text-[#888] animate-spin" />}
-                  <span className="text-[13px] font-mono text-[#aaa] tabular-nums">
+                  {updating.postgres && <MIcon name="progress_activity" size={14} className="text-muted-foreground animate-spin" />}
+                  <span className="text-[13px] font-mono text-muted-foreground tabular-nums">
                     {s.postgres.pool.totalCount} total · {s.postgres.pool.idleCount} idle · {s.postgres.pool.waitingCount} waiting
                   </span>
                 </div>
               </div>
-              <div className="flex items-center justify-between hover:bg-[#313131] active:scale-[0.97] transition-all cursor-default" style={{ height: '34px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '16px' }}>
-                <span className="text-[14px] text-[#e3e3e3]">Row counts</span>
+              <div className="flex items-center justify-between hover:bg-black/5 transition-all cursor-default" style={{ height: '36px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '12px' }}>
+                <span className="text-[14px] text-foreground">Row counts</span>
                 <div className="flex items-center gap-2">
-                  {updating.postgres && <MIcon name="progress_activity" size={14} className="text-[#888] animate-spin" />}
-                  <span className="text-[13px] font-mono text-[#aaa] tabular-nums">
+                  {updating.postgres && <MIcon name="progress_activity" size={14} className="text-muted-foreground animate-spin" />}
+                  <span className="text-[13px] font-mono text-muted-foreground tabular-nums">
                     {s.postgres.counts.users} users · {s.postgres.counts.files} files · {s.postgres.counts.cdnAssets} cdn
                   </span>
                 </div>
@@ -384,7 +358,7 @@ export default function StatusPage() {
             {/* R2 Storage */}
             <SectionCard icon="cloud" title="Cloudflare R2" badge="S3" delay={0.15}>
               <MetricRow label="HEAD (Network Latency)" value={s.r2.headMs} good={150} warn={400} isLoading={updating.r2} />
-              <p className="mt-2 mb-2 px-3 text-[13px] text-[#888] leading-relaxed">
+              <p className="mt-2 mb-2 px-3 text-[13px] text-muted-foreground leading-relaxed">
                 Measures raw network round-trip time to the Cloudflare storage bucket. Uploads and deletions are intentionally excluded from the automated benchmark to prevent exhausting Class A billing limits.
               </p>
             </SectionCard>
@@ -404,11 +378,11 @@ export default function StatusPage() {
               <MetricRow label="SHA-256 (1MB)" value={s.crypto.sha256Ms} good={5} warn={20} isLoading={updating.crypto} />
               <MetricRow label="HMAC-SHA256 (4KB)" value={s.crypto.hmacMs} good={1} warn={5} isLoading={updating.crypto} />
               <MetricRow label="CSPRNG (1KB)" value={s.crypto.csprngMs} good={1} warn={5} isLoading={updating.crypto} />
-              <div className="flex items-center justify-between hover:bg-[#313131] active:scale-[0.97] transition-all cursor-default" style={{ height: '34px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '16px' }}>
-                <span className="text-[14px] text-[#e3e3e3]">SHA-256 throughput</span>
+              <div className="flex items-center justify-between hover:bg-black/5 transition-all cursor-default" style={{ height: '36px', paddingLeft: '12px', paddingRight: '12px', borderRadius: '12px' }}>
+                <span className="text-[14px] text-foreground">SHA-256 throughput</span>
                 <div className="flex items-center gap-2">
-                  {updating.crypto && <MIcon name="progress_activity" size={14} className="text-[#888] animate-spin" />}
-                  <span className="text-[13px] font-mono font-semibold text-emerald-400 tabular-nums">
+                  {updating.crypto && <MIcon name="progress_activity" size={14} className="text-muted-foreground animate-spin" />}
+                  <span className="text-[13px] font-mono font-semibold text-emerald-600 tabular-nums">
                     {s.crypto.sha256ThroughputMBps.toFixed(0)} MB/s
                   </span>
                 </div>
@@ -420,14 +394,13 @@ export default function StatusPage() {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.35 }}
-            className={`mt-5 rounded-[20px] p-6 relative`}
-            style={{ backgroundColor: '#1f1f1f' }}
+            className="mt-5 rounded-[20px] p-6 border border-border bg-card"
           >
             <div className="flex items-center gap-2 mb-4">
-              <MIcon name="dns" size={16} className="text-[#555]" />
-              <h3 className="text-[12px] font-semibold text-[#555] uppercase tracking-wider flex items-center gap-2">
+              <MIcon name="dns" size={16} className="text-muted-foreground" />
+              <h3 className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                 Runtime
-                {updating.system && <MIcon name="progress_activity" size={12} className="text-[#888] animate-spin" />}
+                {updating.system && <MIcon name="progress_activity" size={12} className="text-muted-foreground animate-spin" />}
               </h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -441,19 +414,20 @@ export default function StatusPage() {
                 { label: "Heap Total", value: `${s.system.memoryTotalMB} MB` },
               ].map((item) => (
                 <div key={item.label}>
-                  <p className="text-[10px] text-[#555] font-semibold uppercase tracking-wider mb-0.5">{item.label}</p>
-                  <p className="text-[13px] font-mono text-[#ccc] tabular-nums">{item.value}</p>
+                  <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-0.5">{item.label}</p>
+                  <p className="text-[13px] font-mono text-foreground tabular-nums">{item.value}</p>
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* Footer note */}
-          <p className="text-center text-[12px] text-[#444] mt-8">
+          <p className="text-center text-[12px] text-muted-foreground mt-8">
             Benchmarks run server-side every 3s. Data streamed via SSE.
           </p>
         </div>
       )}
+
+      <Footer />
     </main>
   )
 }

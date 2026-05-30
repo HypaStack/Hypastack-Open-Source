@@ -27,37 +27,41 @@ export default function ErrorPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="rounded-[20px] border border-[#2c2c30] bg-[#1f1f1f] p-8 sm:p-12 text-center max-w-md w-full shadow-2xl"
+          className="max-w-md w-full"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#2c2c30] bg-[#1c1c1c] mx-auto mb-5">
-            <MIcon name="error" className="text-[#e5484d]" size={28} />
-          </div>
-          <h1 className="text-[clamp(28px,5vw,40px)] font-bold tracking-tight text-foreground mb-3 leading-tight">
-            Something went wrong
-          </h1>
-          <p className="text-[15px] text-[#7a7a80] mb-8 leading-relaxed">
-            An unexpected error occurred. Please try again or contact support if the problem persists.
-          </p>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-            <button
-              onClick={reset}
-              className="w-full sm:w-auto rounded-[10px] bg-[#e0e0e0] px-6 py-3.5 text-[15px] font-semibold text-[#111111] transition-all hover:bg-white text-center"
-            >
-              Try Again
-            </button>
-            <Link
-              href="/"
-              className="w-full sm:w-auto rounded-[10px] border border-[#2c2c30] bg-transparent px-6 py-3.5 text-[15px] font-medium text-[#a1a1aa] transition-all hover:border-[#48484b] hover:text-foreground hover:bg-[#1c1c1c] text-center"
-            >
-              Back to Home
-            </Link>
+          <div style={{ borderRadius: 20, backgroundColor: '#111111', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ backgroundColor: '#111111', borderRadius: 16, padding: 24 }}>
+              <div className="flex items-center gap-3 mb-3">
+                <MIcon name="error" className="text-red-500" size={28} />
+                <h2 className="text-[20px] font-semibold text-white tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+                  Something went wrong
+                </h2>
+              </div>
+              <p className="text-[13px] text-[#777] mb-6 leading-relaxed text-left">
+                An unexpected error occurred. Please try again or contact support if the problem persists.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={reset}
+                  className="hover:bg-[#e2e2e8] active:scale-[0.97] transition-all duration-75 flex items-center justify-center flex-1"
+                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13, fontWeight: 600, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+                >
+                  Try Again
+                </button>
+                <Link
+                  href="/"
+                  className="hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 flex items-center justify-center flex-1"
+                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#ccc', backgroundColor: '#171717' }}
+                >
+                  Home
+                </Link>
+              </div>
+            </div>
           </div>
         </motion.div>
       </section>
 
-      <div className="relative px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-5 lg:px-8 lg:pt-6 lg:pb-6">
-        <Footer />
-      </div>
+      <Footer />
     </main>
   )
 }

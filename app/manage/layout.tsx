@@ -81,12 +81,12 @@ function NavRow({
       href={item.href}
       onClick={onNavigate}
       title={collapsed ? item.label : undefined}
-      className={`group relative flex items-center leading-normal transition-all duration-75 ${
+      className={`group relative flex items-center leading-normal transition-colors duration-150 ${
         collapsed ? 'justify-center' : ''
       } ${
         active
           ? 'bg-[#313131] text-white font-medium'
-          : 'bg-transparent text-[#a1a1aa] hover:bg-[#313131] hover:text-white active:scale-[0.97] font-normal'
+          : 'bg-transparent text-[#a1a1aa] hover:bg-[#313131] hover:text-white font-medium'
       }`}
       style={{
         height: collapsed ? 40 : 34,
@@ -277,7 +277,7 @@ export default function ManageLayout({
   return (
     <>
     <div
-      className={`theme-dashboard theme-${resolvedTheme} flex h-screen w-full overflow-hidden bg-[#1f1f1f] text-foreground p-[3px] gap-[3px]`}
+      className={`theme-dark theme-dashboard theme-${resolvedTheme} flex h-screen w-full overflow-hidden bg-[#0f0f0f] text-foreground`}
       data-theme={resolvedTheme}
     >
       {/* ── Sidebar ── */}
@@ -285,8 +285,7 @@ export default function ManageLayout({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 h-full relative overflow-hidden"
         style={{
           width: `${sidebarWidth}px`,
-          backgroundColor: '#111111',
-          borderRadius: 17,
+          backgroundColor: 'transparent',
           transition: isDragging ? 'none' : (sidebarReady ? 'width 300ms cubic-bezier(0.4,0,0.2,1), background-color 300ms ease' : 'none'),
         }}
       >
@@ -302,6 +301,7 @@ export default function ManageLayout({
             <PageLogo
               size={sidebarWidth < SIDEBAR_SNAP_THRESHOLD ? 32 : 42}
               borderRadius={sidebarWidth < SIDEBAR_SNAP_THRESHOLD ? 8 : 10}
+              disableLayoutAnimation={true}
             />
           </Link>
         </div>
@@ -517,7 +517,7 @@ export default function ManageLayout({
       </AnimatePresence>
 
       {/* ── Main column ── */}
-      <div className="flex flex-1 min-w-0 flex-col h-full bg-[#111111] overflow-hidden rounded-[16px] relative">
+      <div className="flex flex-1 min-w-0 flex-col h-full overflow-hidden relative">
         {/* Mobile-only top bar */}
         <header
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-[#1a1a1a] lg:hidden safe-area-top relative z-10"
@@ -537,7 +537,7 @@ export default function ManageLayout({
         </header>
 
         {/* Page content */}
-        <div className="flex-1 relative bg-[#111111] overflow-hidden">
+        <div className="flex-1 relative overflow-hidden">
           <div className="absolute inset-0 overflow-y-auto">
             <motion.main
               key={pathname}
@@ -579,10 +579,10 @@ export default function ManageLayout({
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
             className="fixed w-[400px] z-[100]"
-            style={{ bottom: '20px', left: `${sidebarWidth + 40}px`, transformOrigin: "bottom left", backgroundColor: '#1f1f1f', borderRadius: 20, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)', padding: 3 }}
+            style={{ bottom: '20px', left: `${sidebarWidth + 40}px`, transformOrigin: "bottom left", backgroundColor: '#111111', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}
             ref={menuRef}
           >
-            <div className="w-full h-full bg-[#111111] overflow-hidden flex flex-col" style={{ borderRadius: 17 }}>
+            <div className="w-full h-full flex flex-col">
 
 
             {/* Centered avatar + greeting */}

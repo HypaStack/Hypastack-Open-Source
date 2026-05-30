@@ -88,7 +88,7 @@ export default function ManageLandingPage() {
   const barColor = usedPct > 90 ? "#ef4444" : usedPct > 70 ? "#f59e0b" : "#9b9b9b"
 
   return (
-    <div className="flex-1 flex flex-col gap-4">
+    <div className="flex-1 flex flex-col gap-6">
 
       {/* Greeting — full width above the grid */}
       <motion.div
@@ -96,74 +96,69 @@ export default function ManageLandingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="text-[38px] font-semibold text-white tracking-tight leading-tight">
+        <h1 className="text-[32px] md:text-[38px] font-semibold text-white tracking-tight leading-tight">
           {greeting(name)}
         </h1>
       </motion.div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 items-stretch">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6 items-stretch">
 
       {/* ── Left column ── */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
 
         {/* Storage + Quick actions side by side */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
           {/* Storage card */}
-          <div className="flex flex-col h-full" style={{ borderRadius: 16, padding: '14px 16px', backgroundColor: '#171717' }}>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <MIcon name="database" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-                  <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Storage</span>
+          <div className="flex flex-col h-full" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
+            <div className="flex flex-col h-full bg-[#111111] rounded-[17px] p-5">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2 text-[#e3e3e3]">
+                  <MIcon name="database" size={18} className="text-white/60" />
+                  <span className="text-[15px] font-medium">Storage</span>
                 </div>
-                <span style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase',
-                  paddingLeft: 6, paddingRight: 6, paddingTop: 2, paddingBottom: 2,
-                  borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.08)', color: '#ffffff'
-                }}>
+                <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-white/10 text-white">
                   {tier}
                 </span>
               </div>
-              <div style={{ height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.06)', marginBottom: 10 }}>
-                <div style={{
-                  height: '100%', borderRadius: 2,
-                  width: `${Math.min(usedPct, 100)}%`,
-                  backgroundColor: barColor,
-                  transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-                }} />
+              <div className="h-1.5 rounded-full bg-white/5 mb-3 overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${Math.min(usedPct, 100)}%`, backgroundColor: barColor }} />
               </div>
-              <span style={{ fontSize: 13, color: '#e3e3e3' }}>
-                <span style={{ fontWeight: 500 }}>{formatStorage(usedBytes)}</span>
-                <span style={{ color: 'rgba(255,255,255,0.3)' }}> of </span>
+              <div className="text-[13px] text-[#e3e3e3]">
+                <span className="font-medium">{formatStorage(usedBytes)}</span>
+                <span className="text-white/30 mx-1.5">of</span>
                 {formatStorage(maxBytes)}
-              </span>
+              </div>
+            </div>
           </div>
 
           {/* Stats card */}
-          <div className="flex flex-col h-full" style={{ borderRadius: 16, padding: '14px 16px', backgroundColor: '#171717' }}>
-              <div className="flex items-center gap-2 mb-3">
-                <MIcon name="bar_chart" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-                <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Overview</span>
+          <div className="flex flex-col h-full" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
+            <div className="flex flex-col h-full bg-[#111111] rounded-[17px] p-5">
+              <div className="flex items-center gap-2 mb-5 text-[#e3e3e3]">
+                <MIcon name="bar_chart" size={18} className="text-white/60" />
+                <span className="text-[15px] font-medium">Overview</span>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3.5">
                 {[
                   { label: "Files", value: fileCount, icon: "description" },
                   { label: "Starred", value: starredCount, icon: "star" },
                   { label: "CDN Assets", value: cdnAssets.length, icon: "cloud" },
                 ].map(s => (
                   <div key={s.label} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <MIcon name={s.icon} size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                      <span style={{ fontSize: 13, color: '#e3e3e3' }}>{s.label}</span>
+                    <div className="flex items-center gap-2.5 text-[#e3e3e3]">
+                      <MIcon name={s.icon} size={15} className="text-white/40" />
+                      <span className="text-[13px]">{s.label}</span>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#ffffff' }}>{s.value}</span>
+                    <span className="text-[14px] font-semibold text-white">{s.value}</span>
                   </div>
                 ))}
               </div>
+            </div>
           </div>
         </motion.div>
 
@@ -172,9 +167,10 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col h-full overflow-hidden" 
-          style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+          className="flex flex-col" 
+          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
         >
+          <div className="flex flex-col bg-[#111111] rounded-[17px] p-1.5 gap-0.5">
             {[
               { icon: "hard_drive", label: "Drive", desc: "Manage your encrypted files", href: "/manage/files" },
               { icon: "cloud", label: "CDN Assets", desc: "Public asset hosting", href: "/manage/cdn" },
@@ -183,15 +179,15 @@ export default function ManageLandingPage() {
               <Link
                 key={action.label}
                 href={action.href}
-                className="flex items-center gap-3 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                style={{ height: 42, paddingLeft: 12, paddingRight: 12, borderRadius: 12, margin: '2px 4px' }}
+                className="flex items-center gap-3.5 hover:bg-[#1a1a1a] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[12px]"
               >
-                <MIcon name={action.icon} size={15} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
-                <span style={{ fontSize: 14, fontWeight: 400, color: '#e3e3e3', flex: 1 }}>{action.label}</span>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{action.desc}</span>
-                <MIcon name="chevron_right" size={14} style={{ color: 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+                <MIcon name={action.icon} size={18} className="text-white/60 shrink-0" />
+                <span className="text-[14px] text-[#e3e3e3] flex-1 font-medium">{action.label}</span>
+                <span className="text-[13px] text-white/30 hidden sm:block">{action.desc}</span>
+                <MIcon name="chevron_right" size={16} className="text-white/30 shrink-0" />
               </Link>
             ))}
+          </div>
         </motion.div>
 
         {/* Recent files */}
@@ -201,59 +197,55 @@ export default function ManageLandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center justify-between mb-2" style={{ paddingLeft: 4, paddingRight: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.4)' }}>Recent files</span>
-              <Link
-                href="/manage/files"
-                className="flex items-center gap-1 hover:text-white transition-colors duration-75"
-                style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}
-              >
-                View all <MIcon name="arrow_forward" size={11} />
+            <div className="flex items-center justify-between mb-3 px-1">
+              <span className="text-[13px] font-medium text-white/40">Recent files</span>
+              <Link href="/manage/files" className="flex items-center gap-1 text-[13px] text-white/40 hover:text-white transition-colors">
+                View all <MIcon name="arrow_forward" size={12} />
               </Link>
             </div>
-            <div className="flex flex-col h-full overflow-hidden py-2" style={{ borderRadius: 16, backgroundColor: '#171717' }}>
+            <div className="flex flex-col" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
+              <div className="flex flex-col bg-[#111111] rounded-[17px] p-1.5 gap-0.5">
                 {recentFiles.map((file) => (
                   <Link
-                    key={file.id}
-                    href={`/d/${file.id}`}
-                    className="flex items-center gap-3 hover:bg-[#1a1a1a] active:scale-[0.99] transition-all duration-75"
-                    style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 12, margin: '2px 4px' }}
+                     key={file.id}
+                     href={`/d/${file.id}`}
+                     className="flex items-center gap-3.5 hover:bg-[#1a1a1a] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[12px]"
                   >
-                    <span style={{
-                      fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.5)',
-                      backgroundColor: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: 5, flexShrink: 0
-                    }}>
+                    <span className="text-[10px] font-bold tracking-wider text-white/50 bg-white/5 px-2 py-0.5 rounded-md shrink-0">
                       {getFileExt(file.name)}
                     </span>
-                    <span style={{ fontSize: 13, fontWeight: 400, color: '#e3e3e3', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span className="text-[14px] text-[#e3e3e3] flex-1 min-w-0 truncate font-medium">
                       {file.name}
                     </span>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {file.starred && <MIcon name="star" size={12} style={{ color: '#ca8a04' }} />}
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {file.starred && <MIcon name="star" size={14} className="text-yellow-500" />}
+                      <span className="text-[13px] text-white/30 hidden sm:block">
                         {new Date(file.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </span>
                     </div>
                   </Link>
                 ))}
+              </div>
             </div>
           </motion.div>
         )}
       </div>
 
       {/* ── Right column ── */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
 
         {/* Tip */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-start gap-3 h-full"
-          style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+          className="flex items-start h-auto"
+          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
         >
-          <MIcon name={tip.icon} size={15} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0, marginTop: 2 }} />
-          <p style={{ fontSize: 13, color: '#e3e3e3', lineHeight: 1.55 }}>{tip.text}</p>
+          <div className="flex items-start gap-3 w-full bg-[#111111] rounded-[17px] p-5">
+            <MIcon name={tip.icon} size={18} className="text-white/60 shrink-0 mt-0.5" />
+            <p className="text-[14px] text-[#e3e3e3] leading-relaxed font-medium">{tip.text}</p>
+          </div>
         </motion.div>
 
 
@@ -263,14 +255,15 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="flex-1 flex flex-col"
-          style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+          className="flex-1 flex flex-col min-h-[240px]"
+          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
         >
-            <div className="flex items-center gap-2 mb-2">
-              <MIcon name="mail" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-              <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Send Feedback</span>
+          <div className="flex-1 flex flex-col bg-[#111111] rounded-[17px] p-5">
+            <div className="flex items-center gap-2 mb-2 text-[#e3e3e3]">
+              <MIcon name="mail" size={18} className="text-white/60" />
+              <span className="text-[15px] font-medium">Send Feedback</span>
             </div>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 10, lineHeight: 1.5 }}>
+            <p className="text-[13px] text-white/40 mb-4 leading-relaxed">
               Anonymous. We read every message.
             </p>
             <textarea
@@ -280,44 +273,25 @@ export default function ManageLandingPage() {
               placeholder="What's on your mind?"
               maxLength={1000}
               disabled={feedbackState === "sending" || feedbackState === "sent"}
-              className="flex-1 w-full resize-none outline-none placeholder:text-[rgba(255,255,255,0.2)] transition-colors focus:bg-[#1a1a1a]"
-              style={{
-                backgroundColor: '#1f1f1f',
-                borderRadius: 14,
-                padding: '10px 12px',
-                fontSize: 13,
-                color: '#e3e3e3',
-                fontFamily: 'inherit',
-                border: 'none',
-                marginBottom: 8,
-                minHeight: 60,
-              }}
+              className="flex-1 w-full resize-none outline-none placeholder:text-white/20 transition-colors focus:bg-[#1f1f1f] bg-[#171717] rounded-[14px] p-3 text-[14px] text-[#e3e3e3] mb-4 min-h-[80px]"
             />
             <div className="flex items-center justify-between">
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{feedback.length}/1000</span>
+              <span className="text-[12px] text-white/20 font-medium">{feedback.length}/1000</span>
               <button
                 onClick={sendFeedback}
                 disabled={!feedback.trim() || feedbackState === "sending" || feedbackState === "sent"}
-                className="flex items-center gap-1.5 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75"
-                style={{
-                  height: 34,
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  borderRadius: 12,
-                  fontSize: 13,
-                  fontWeight: 400,
-                  color: feedbackState === "sent" ? '#4ade80' : feedbackState === "error" ? '#f87171' : (!feedback.trim() ? 'rgba(255,255,255,0.25)' : '#e3e3e3'),
-                  cursor: (!feedback.trim() || feedbackState !== "idle") ? 'not-allowed' : 'pointer',
-                  backgroundColor: '#1f1f1f',
-                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-[12px] text-[13px] font-medium transition-all duration-75 bg-[#171717] active:scale-[0.97]
+                  ${feedbackState === "sent" ? "text-emerald-400" : feedbackState === "error" ? "text-red-400" : !feedback.trim() ? "text-white/20 cursor-not-allowed" : "text-[#e3e3e3] hover:bg-[#222]"}
+                `}
               >
                 <MIcon
                   name={feedbackState === "sent" ? "check" : feedbackState === "error" ? "error" : feedbackState === "sending" ? "hourglass_empty" : "send"}
-                  size={14}
+                  size={16}
                 />
                 {feedbackState === "sent" ? "Sent!" : feedbackState === "error" ? "Failed" : feedbackState === "sending" ? "Sending…" : "Send"}
               </button>
             </div>
+          </div>
         </motion.div>
 
       </div>

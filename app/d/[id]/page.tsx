@@ -35,6 +35,7 @@ export default function DownloadPage() {
   const [downloaded, setDownloaded] = useState(false);
   const [burned, setBurned] = useState(false);
   const [encryptionKeyBase64, setEncryptionKeyBase64] = useState<string | null>(null);
+  const [missingKey, setMissingKey] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [decryptProgress, setDecryptProgress] = useState(0);
   const [downloadPhase, setDownloadPhase] = useState<'idle' | 'downloading' | 'decrypting' | 'done'>('idle');
@@ -51,20 +52,22 @@ export default function DownloadPage() {
 
   useEffect(() => {
     const m = window.location.hash.match(/key=([A-Za-z0-9_-]+)/);
-    if (m) setEncryptionKeyBase64(m[1]);
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch(`/api/v2/files/${fileId}`);
-        const d = await r.json();
-        if (!r.ok) { setError(d.error || "File not found"); return }
-        setFileInfo(d.file);
-        if (d.file?.name) document.title = `Download ${d.file.customFilename || d.file.name} — Hypastack`;
-      } catch { setError("Failed to load file information") }
-      finally { setLoading(false) }
-    })();
+    if (m) {
+      setEncryptionKeyBase64(m[1]);
+      (async () => {
+        try {
+          const r = await fetch(`/api/v2/files/${fileId}`);
+          const d = await r.json();
+          if (!r.ok) { setError(d.error || "File not found"); return }
+          setFileInfo(d.file);
+          if (d.file?.name) document.title = `Download ${d.file.customFilename || d.file.name} — Hypastack`;
+        } catch { setError("Failed to load file information") }
+        finally { setLoading(false) }
+      })();
+    } else {
+      setMissingKey(true);
+      setLoading(false);
+    }
   }, [fileId]);
 
   const handleDownload = async () => {
@@ -74,7 +77,7 @@ export default function DownloadPage() {
     try {
       const r = await fetch(`/api/v2/files/${fileId}/download`, { method: "POST" });
       const data = await r.json();
-      if (r.status === 429) { setRateLimitError({ message: data.message || "Too many downloads.", retryAfter: data.retryAfter || 60 }); setDownloadCooldown(data.retryAfter || 60); setDownloading(false); return }
+      if (r.status === 429) { setRateLimitError({ message: data.message || "Too many downloads.", retryAfter: Math.ceil(data.retryAfter || 60) }); setDownloadCooldown(Math.ceil(data.retryAfter || 60)); setDownloading(false); return }
       if (!r.ok) { setError(data.error || "Download failed"); return }
       if (data.burned) {
         setBurned(true);
@@ -120,31 +123,54 @@ export default function DownloadPage() {
   const displayName = fileInfo ? (fileInfo.customFilename || fileInfo.name) : "";
   const ext = displayName.includes(".") ? displayName.split(".").pop()?.toUpperCase() : "FILE";
 
+  if (missingKey) {
+    return (
+      <main className="min-h-screen relative font-sans" style={{ backgroundColor: '#0f0f0f' }}>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          className="absolute inset-0 flex flex-col justify-center items-center px-4" 
+        >
+          <div className="max-w-[440px] w-full text-center flex flex-col items-center">
+            <div className="flex items-center gap-3 mb-3">
+              <MIcon name="key_off" style={{ color: '#ef4444' }} size={28} />
+              <h2 className="text-[20px] font-semibold text-white tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+                Locked
+              </h2>
+            </div>
+            <p className="text-[14px] text-[#aaa] leading-relaxed">
+              You are missing the #key= portion of the URL, viewing and downloading is completely disabled.
+            </p>
+          </div>
+        </motion.div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans" style={{ backgroundColor: '#0f0f0f' }}>
-      {/* Subtle radial glow */}
-      <div className="fixed inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,255,255,0.02) 0%, transparent 70%)" }} />
-
       <div className="relative w-full max-w-[440px]">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8">
-          <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" className="select-none pointer-events-none h-7 w-7 rounded-[6px]" alt="Hypastack" draggable={false} />
-          <span className="text-[14px] font-medium text-[#555] tracking-tight">hypastack</span>
+        <div className="flex justify-center mb-8">
+          <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
+            <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" className="select-none h-14 w-14 rounded-[12px]" alt="Hypastack" draggable={false} />
+          </Link>
         </div>
 
         {/* Loading */}
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24">
-            <img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" className="select-none pointer-events-none h-10 w-10 rounded-[8px] animate-[spin_1.5s_ease-in-out_infinite] mb-5 opacity-40" alt="" draggable={false} />
-            <p className="text-[13px] text-[#555] font-medium">Decrypting metadata…</p>
+            <svg className="animate-spin h-8 w-8 text-[#555]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
           </motion.div>
         )}
 
         {/* Error */}
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <div style={{ padding: 4, borderRadius: 20, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}>
-              <div style={{ backgroundColor: '#111111', borderRadius: 16, padding: 24 }}>
+            <div style={{ backgroundColor: '#111111', borderRadius: 20, padding: 24 }}>
                 <div className="flex items-center gap-3 mb-3">
                   <MIcon name="error" className="text-red-500" size={28} />
                   <h2 className="text-[20px] font-semibold text-white tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
@@ -167,15 +193,13 @@ export default function DownloadPage() {
                   >Home</Link>
                 </div>
               </div>
-            </div>
           </motion.div>
         )}
 
         {/* File card */}
-        {fileInfo && !error && (
+        {fileInfo && !error && !missingKey && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div style={{ padding: 4, borderRadius: 20, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}>
-              <div style={{ backgroundColor: '#111111', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#111111', borderRadius: 20, overflow: 'hidden' }}>
               {/* Header */}
               <div style={{ padding: '20px 20px 16px' }}>
                 <h1 className={`text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 ${!encryptionKeyBase64 ? 'text-zinc-500 italic' : 'text-white'}`} style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
@@ -202,7 +226,7 @@ export default function DownloadPage() {
                 {[
                   { icon: "schedule", label: "Expires", value: encryptionKeyBase64 ? `${daysLeft(fileInfo.expiresAt)} days` : "Unavailable", show: true, color: !encryptionKeyBase64 ? "text-zinc-600" : undefined },
                   { icon: "local_fire_department", label: "Burn on read", value: burned ? "Burned" : "Active", show: !!fileInfo.burnOnRead && !!encryptionKeyBase64, color: burned ? "text-red-400" : "text-amber-400" },
-                  { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-emerald-400" : "text-zinc-500" },
+                  { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-[#e3e3e3] underline underline-offset-2" : "text-zinc-500" },
                 ].filter(r => r.show).map((r, i, arr) => (
                   <div key={i}>
                     <div
@@ -218,38 +242,6 @@ export default function DownloadPage() {
                   </div>
                 ))}
               </div>
-
-              {/* Progress */}
-              {downloading && encryptionKeyBase64 && downloadPhase !== 'idle' && (
-                <div style={{ margin: '0 20px 16px' }} className="space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between text-[12px] mb-1.5">
-                      <span className={`font-medium flex items-center gap-1.5 ${downloadPhase === 'downloading' ? 'text-white' : 'text-[#666]'}`}>
-                        {downloadPhase === 'downloading' && <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />}
-                        {downloadProgress >= 100 ? '✓ Downloaded' : 'Downloading…'}
-                      </span>
-                      <span className="text-[#555] font-mono tabular-nums">{downloadProgress}%</span>
-                    </div>
-                    <div style={{ height: 3, borderRadius: 2, backgroundColor: '#171717', overflow: 'hidden' }}>
-                      <div className={`h-full transition-all ${downloadProgress >= 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${downloadProgress}%`, borderRadius: 2 }} />
-                    </div>
-                  </div>
-                  {(downloadPhase === 'decrypting' || downloadPhase === 'done') && (
-                    <div>
-                      <div className="flex items-center justify-between text-[12px] mb-1.5">
-                        <span className={`font-medium flex items-center gap-1.5 ${downloadPhase === 'decrypting' ? 'text-white' : 'text-[#666]'}`}>
-                          {downloadPhase === 'decrypting' && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
-                          {downloadPhase === 'done' ? '✓ Decrypted' : 'Decrypting…'}
-                        </span>
-                        <span className="text-[#555] font-mono tabular-nums">{decryptProgress}%</span>
-                      </div>
-                      <div style={{ height: 3, borderRadius: 2, backgroundColor: '#171717', overflow: 'hidden' }}>
-                        <div className={`h-full transition-all ${decryptProgress >= 100 ? 'bg-emerald-500' : 'bg-emerald-400'}`} style={{ width: `${decryptProgress}%`, borderRadius: 2 }} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* Action area */}
               <div style={{ padding: '0 12px 12px' }}>
@@ -280,11 +272,11 @@ export default function DownloadPage() {
                 ) : (
                   <div className="space-y-3">
                     <button onClick={handleDownload} disabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
-                      className="w-full flex items-center justify-center gap-2 hover:bg-[#e2e2e8] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ height: 42, borderRadius: 14, fontSize: 14, fontWeight: 600, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+                      className="w-full flex items-center justify-center gap-2 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ height: 42, borderRadius: 14, fontSize: 14, fontWeight: 600, color: '#e3e3e3', backgroundColor: '#171717' }}
                     >
                       {downloading && !forceLocked ? (
-                        <><img src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp" className="select-none pointer-events-none h-4 w-4 rounded-[3px] animate-[spin_1.2s_ease-in-out_infinite]" alt="" draggable={false} />Preparing…</>
+                        <><svg className="animate-spin h-4 w-4 text-[#888]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Preparing…</>
                       ) : downloadCooldown > 0 ? (
                         <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
                       ) : !encryptionKeyBase64 || forceLocked ? (
@@ -293,30 +285,9 @@ export default function DownloadPage() {
                         <><MIcon name="download" size={16} />Download</>
                       )}
                     </button>
-                    {!encryptionKeyBase64 && (
-                      <div className="text-center mt-4 px-2">
-                        <p className="text-[13px] leading-relaxed text-red-400 font-bold mb-2">
-                          This file is completely locked down due to a missing key fragment.
-                        </p>
-                        <p className="text-[12px] leading-relaxed text-zinc-400 mb-3">
-                          You are missing the <code className="text-zinc-300">#key=</code> portion of the URL. Downloading is completely disabled because the file contents are mathematically impossible to read without it.
-                        </p>
-                        <p className="text-[11px] text-zinc-500 font-medium pb-2">
-                          Ask the person who sent this to give you the full URL.
-                        </p>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="mt-6 flex items-center justify-center gap-4 px-1">
-              <Link href="/about" className="text-[12px] text-[#555] hover:text-[#999] transition-colors font-medium">What is Hypastack</Link>
-              <span className="text-[#333] text-[10px]">●</span>
-              <Link href="/goal" className="text-[12px] text-[#555] hover:text-[#999] transition-colors font-medium">What&apos;s our goal</Link>
             </div>
           </motion.div>
         )}

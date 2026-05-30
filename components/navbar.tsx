@@ -46,13 +46,13 @@ export function Navbar() {
 
   const content = (
     <header
-      className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${
+      className={`fixed z-[9999] transition-all duration-300 left-0 right-0 mx-auto ${
         scrolled
-          ? "bg-white/80 backdrop-blur-xl border-b border-[rgba(0,0,0,0.1)] py-3 shadow-sm"
-          : "bg-transparent py-5"
+          ? "top-4 sm:top-6 w-[calc(100%-32px)] max-w-[800px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl border border-[rgba(0,0,0,0.15)] shadow-[0_16px_48px_rgba(0,0,0,0.12)] rounded-[24px] py-2 px-3"
+          : "top-0 w-full max-w-[1200px] bg-transparent border border-transparent shadow-none rounded-none py-5 px-6"
       }`}
     >
-      <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
+      <div className="w-full flex items-center justify-between">
         
         {/* Left: Logo & Brand */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -73,7 +73,7 @@ export function Navbar() {
             <div className="relative" ref={popoverRef}>
               <button
                 onClick={() => setPopoverOpen(!popoverOpen)}
-                className="flex items-center gap-2 hover:bg-[#f4f4f5] active:bg-[#e4e4e7] transition-colors pl-3 pr-2 py-1.5 rounded-full border border-[rgba(0,0,0,0.1)] bg-white"
+                className="flex items-center gap-2 hover:bg-[rgba(0,0,0,0.04)] active:bg-[rgba(0,0,0,0.08)] transition-colors pl-3 pr-2 py-1.5 rounded-full border border-[rgba(0,0,0,0.06)] bg-white/50"
               >
                 <span className="text-[14px] font-medium text-[#171717]">{user.nickname}</span>
                 <MIcon name="expand_more" size={18} style={{ color: '#171717' }} />
@@ -87,7 +87,7 @@ export function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute top-[calc(100%+8px)] right-0 w-[200px] z-50 bg-white border border-[rgba(0,0,0,0.1)] shadow-lg rounded-2xl overflow-hidden p-1.5"
+                    className="absolute top-[calc(100%+8px)] right-0 w-[200px] z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl border border-[rgba(0,0,0,0.08)] shadow-[0_16px_64px_rgba(0,0,0,0.08)] rounded-[24px] overflow-hidden p-2"
                   >
                     <Link
                       href="/manage/dashboard"
@@ -126,13 +126,13 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/signin"
-                className="hidden sm:inline-flex items-center justify-center hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75 px-5 h-10 rounded-xl text-[14px] font-medium text-[#171717] bg-transparent"
+                className="hidden sm:inline-flex items-center justify-center hover:bg-[rgba(0,0,0,0.04)] active:scale-[0.97] transition-all duration-75 px-5 h-10 rounded-full text-[14px] font-medium text-[#171717] bg-transparent"
               >
                 Sign In
               </Link>
               <Link
                 href="/new"
-                className="inline-flex items-center justify-center hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 px-5 h-10 rounded-xl text-[14px] font-semibold text-white bg-[#030303]"
+                className="inline-flex items-center justify-center hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 px-5 h-10 rounded-full text-[14px] font-semibold text-white bg-[#030303]"
               >
                 Start for free
               </Link>

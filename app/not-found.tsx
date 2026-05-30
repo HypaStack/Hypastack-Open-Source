@@ -18,7 +18,7 @@ export default function NotFoundPage() {
           transition={{ duration: 0.5 }}
           className="max-w-md w-full"
         >
-          <div style={{ padding: 4, borderRadius: 20, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}>
+          <div style={{ borderRadius: 20, backgroundColor: '#111111', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ backgroundColor: '#111111', borderRadius: 16, padding: 24 }}>
               <div className="flex items-center gap-3 mb-3">
                 <MIcon name="error" className="text-red-500" size={28} />
@@ -50,9 +50,7 @@ export default function NotFoundPage() {
         </motion.div>
       </section>
 
-      <div className="relative px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-5 lg:px-8 lg:pt-6 lg:pb-6">
-        <Footer />
-      </div>
+      <Footer />
     </main>
   )
 }

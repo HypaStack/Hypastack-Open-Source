@@ -13,7 +13,7 @@ export default function ChildSafety() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-20">
-        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             Child Safety Policy
           </h1>
@@ -69,8 +69,7 @@ export default function ChildSafety() {
                 <li>Inactive accounts are purged after 7 days</li>
               </ul>
               <p className="mt-4">
-                We do not proactively scan file contents. We rely on reports and the technical 
-                barriers above.
+                For encrypted file shares, we cannot proactively scan contents — we rely on reports and the technical barriers above. CDN asset uploads are not encrypted and will be subject to client-side content scanning in a future update.
               </p>
             </section>
 
@@ -86,18 +85,13 @@ export default function ChildSafety() {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">Reporting</h2>
               <p className="mb-4">
-                If you encounter CSAM or any content that endangers children on our platform:
+                If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="font-medium">#key=...</code> fragment) to <strong>abuse@hypastack.com</strong>. We will act within 24 hours.
               </p>
-              <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Email: <strong>abuse@hypastack.com</strong></li>
-                <li>Include the file link or CDN URL</li>
-                <li>We will act within 24 hours</li>
-              </ul>
-              <p className="mt-4">
-                You can also report directly to{" "}
-                <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
-                  NCMEC CyberTipline
-                </a>.
+              <p className="mb-4">
+                <strong className="text-foreground">Do not send us the decryption key.</strong> We will not ask for it. Receiving and decrypting content to verify a CSAM report creates direct legal liability for us. We do not and will not do this.
+              </p>
+              <p className="mb-4">
+                <strong className="text-foreground">Do not screenshot or preserve CSAM.</strong> Simply send us the URL so we can delete the file immediately, and report it directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a>. That is all we need from you.
               </p>
             </section>
           </div>
