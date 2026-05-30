@@ -1,0 +1,5 @@
+[build]
+# Serialize compilation to 1 job — prevents Windows file-lock race conditions
+# (os error 32) caused by antivirus / indexer scanning .o files mid-build.
+# Remove this once the first successful build completes (incremental builds are fine).
+jobs = 5

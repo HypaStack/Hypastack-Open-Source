@@ -1,0 +1,110 @@
+import type { Metadata } from "next"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
+
+export const metadata: Metadata = {
+  title: "Child Safety Policy - Hypastack",
+  description: "How Hypastack handles child safety and CSAM prevention.",
+}
+
+export default function ChildSafety() {
+  return (
+    <main className="flex min-h-screen flex-col bg-background">
+      <Navbar />
+      
+      <section className="flex-1 pt-32 pb-20">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Child Safety Policy
+          </h1>
+          
+          <div className="text-sm text-muted-foreground mb-8">
+            <p>Effective: May 7, 2026</p>
+          </div>
+          
+          <div className="space-y-8 text-muted-foreground">
+            <p className="text-foreground">
+              Hypastack has zero tolerance for child sexual abuse material (CSAM). 
+              This is not negotiable.
+            </p>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Our Position</h2>
+              <p className="mb-4">
+                Any content that sexually exploits or endangers children will be removed immediately 
+                upon discovery or report. The associated account will be terminated. All available 
+                information will be reported to NCMEC (National Center for Missing &amp; Exploited Children) 
+                and relevant law enforcement.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">What We Can Provide to Authorities</h2>
+              <p className="mb-4">
+                Due to our zero-knowledge architecture, the data we can provide is limited to:
+              </p>
+              <ul className="list-disc list-inside space-y-2 ml-4">
+                <li>The hashed nickname associated with the account</li>
+                <li>The encrypted nickname blob</li>
+                <li>Account creation timestamp</li>
+                <li>Last activity timestamp</li>
+                <li>File metadata (encrypted filename, size, upload time)</li>
+                <li>The file content itself (before deletion)</li>
+              </ul>
+              <p className="mt-4">
+                We do not have email addresses, IP addresses, or real identities. We are transparent 
+                about this limitation. It is a consequence of the zero-knowledge model, not an 
+                attempt to shield abusers.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Prevention Measures</h2>
+              <ul className="list-disc list-inside space-y-2 ml-4">
+                <li>Dangerous file types (executables, scripts) are strictly blocked for CDN uploads</li>
+                <li>File type verification checks magic bytes, not just extensions</li>
+                <li>Rate limits prevent mass-upload abuse</li>
+                <li>CAPTCHA verification on uploads (Cloudflare Turnstile)</li>
+                <li>Temporary files auto-expire within 1–7 days</li>
+                <li>Inactive accounts are purged after 7 days</li>
+              </ul>
+              <p className="mt-4">
+                We do not proactively scan file contents. We rely on reports and the technical 
+                barriers above.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Age Requirements</h2>
+              <p className="mb-4">
+                Minimum age to use Hypastack: 18. 
+                We cannot verify age because we do not collect identity information. 
+                If we learn a user is underage, we delete the account.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Reporting</h2>
+              <p className="mb-4">
+                If you encounter CSAM or any content that endangers children on our platform:
+              </p>
+              <ul className="list-disc list-inside space-y-2 ml-4">
+                <li>Email: <strong>abuse@hypastack.com</strong></li>
+                <li>Include the file link or CDN URL</li>
+                <li>We will act within 24 hours</li>
+              </ul>
+              <p className="mt-4">
+                You can also report directly to{" "}
+                <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                  NCMEC CyberTipline
+                </a>.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+      
+      <Footer />
+    </main>
+  )
+}
