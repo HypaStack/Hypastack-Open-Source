@@ -19,7 +19,6 @@ Hypastack is a secure, high-performance file sharing and permanent CDN asset hos
 - **Database:** PostgreSQL (via `pg`)
 - **Storage:** AWS S3 compatible object storage (`@aws-sdk/client-s3`)
 - **Validation:** Zod
-- **Analytics:** Vercel Analytics
 - **Security:** Turnstile (Cloudflare) for bot protection, DOMPurify
 
 ### Key Utilities
