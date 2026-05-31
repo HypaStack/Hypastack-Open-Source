@@ -193,7 +193,7 @@ export async function handleUploadPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[Upload] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to generate upload URL" },
+      { error: "Failed to generate upload URL" },
       { status: 500 }
     )
   }

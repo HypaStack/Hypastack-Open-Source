@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server"
 
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1508820293861249235/_KjfNZ50Afk1j0tfVPdaUL87546TaDStgRqL7AY48J4tZvyaSM8CRNairdOTrD1nPcsL"
+const WEBHOOK_URL = process.env.DISCORD_FEEDBACK_WEBHOOK
 
 export async function POST(req: Request) {
+  if (!WEBHOOK_URL) {
+    return NextResponse.json({ error: "Feedback not configured" }, { status: 503 })
+  }
+
   try {
     let body: any
     try {
       body = await req.json()
-    } catch (e) {
-      console.error("[feedback] Failed to parse JSON body:", e)
+    } catch {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
     }
 
     const { message } = body
-    console.log("[feedback] Received message:", JSON.stringify(message))
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })

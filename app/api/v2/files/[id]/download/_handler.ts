@@ -7,6 +7,7 @@ import {
 import { checkDownloadRateLimit } from "@/lib/rate-limit"
 import { getPresignedDownloadUrl, deleteByKey } from "@/lib/r2"
 import { decryptFilename } from "@/lib/filename-crypto"
+import { getHashedIp } from "@/lib/ip"
 
 /**
  * Download Route
@@ -66,7 +67,7 @@ export async function handleDownloadPost(
   try {
     const { id } = await params
 
-    const rateLimit = await checkDownloadRateLimit('anonymous')
+    const rateLimit = await checkDownloadRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {

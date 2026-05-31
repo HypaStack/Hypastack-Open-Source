@@ -83,7 +83,9 @@ async function checkRateLimit(
     }
   } catch (error) {
     console.error(`[RateLimit] Error checking ${action} rate limit:`, error)
-    return { allowed: true, remaining: maxAttempts, resetInSeconds: 0 }
+    // Fail CLOSED — if we can't confirm the limit state, block the request.
+    // Returning allowed:true on DB errors would silently disable all rate limiting.
+    return { allowed: false, remaining: 0, resetInSeconds: 60 }
   }
 }
 
@@ -151,7 +153,7 @@ export async function verifyDownloadRateLimit(accountId: string, tier: string = 
     return { allowed: true, remaining: maxAttempts - record.attempt_count, resetInSeconds }
   } catch (error) {
     console.error('[RateLimit] Error verifying download rate limit:', error)
-    return { allowed: true, remaining: 5, resetInSeconds: 0 }
+    return { allowed: false, remaining: 0, resetInSeconds: 60 }
   }
 }
 

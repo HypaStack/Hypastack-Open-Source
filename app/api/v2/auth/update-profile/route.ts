@@ -13,7 +13,6 @@ const UpdateProfileSchema = z.object({
     .max(500, "Ciphertext too long")
     .regex(CIPHERTEXT_REGEX, "Invalid ciphertext format")
     .optional(),
-  avatarUrl: z.string().url("Must be a valid URL").max(500, "URL too long").optional().or(z.literal(''))
 })
 
 export async function POST(request: NextRequest) {
@@ -39,20 +38,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { nickname_encrypted, avatarUrl } = validation.data
+    const { nickname_encrypted } = validation.data
     const user = await getUserById(currentUser.userId)
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     if (nickname_encrypted !== undefined) {
-      // updateNickname stores the encrypted nickname directly
       await updateNickname(currentUser.userId, nickname_encrypted)
-    }
-
-    if (avatarUrl !== undefined) {
-      const { updateAvatarUrl } = await import("@/lib/user-model")
-      await updateAvatarUrl(currentUser.userId, avatarUrl === '' ? null : avatarUrl)
     }
 
     return NextResponse.json({

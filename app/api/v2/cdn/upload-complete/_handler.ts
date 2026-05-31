@@ -118,7 +118,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
   } catch (error: any) {
     console.error("[CDN Complete] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to complete upload" },
+      { error: "Failed to complete upload" },
       { status: 500 },
     )
   }

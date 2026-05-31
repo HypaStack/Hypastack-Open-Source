@@ -43,10 +43,14 @@ export async function POST(request: NextRequest) {
 
     const user = await getUserById(currentUser.userId)
     if (user?.avatar_url) {
-      try {
-        await deleteByKey(user.avatar_url)
-      } catch (err) {
-        console.error("[Avatar] Failed to delete old avatar:", err)
+      // Only delete if the key belongs to this user's profile directory
+      const expectedPrefix = `profiles/${currentUser.userId}/`
+      if (user.avatar_url.startsWith(expectedPrefix)) {
+        try {
+          await deleteByKey(user.avatar_url)
+        } catch (err) {
+          console.error("[Avatar] Failed to delete old avatar:", err)
+        }
       }
     }
 
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("[Avatar] Upload error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to upload avatar" },
+      { error: "Failed to upload avatar" },
       { status: 500 }
     )
   }

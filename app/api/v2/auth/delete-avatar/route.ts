@@ -22,10 +22,14 @@ export async function POST(request: NextRequest) {
 
     const user = await getUserById(currentUser.userId)
     if (user?.avatar_url) {
-      try {
-        await deleteByKey(user.avatar_url)
-      } catch (err) {
-        console.error("[Avatar] Failed to delete avatar from R2:", err)
+      // Only delete if the key belongs to this user's profile directory
+      const expectedPrefix = `profiles/${currentUser.userId}/`
+      if (user.avatar_url.startsWith(expectedPrefix)) {
+        try {
+          await deleteByKey(user.avatar_url)
+        } catch (err) {
+          console.error("[Avatar] Failed to delete avatar from R2:", err)
+        }
       }
       await updateAvatarUrl(currentUser.userId, null)
     }
@@ -34,7 +38,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("[Avatar] Delete error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to delete avatar" },
+      { error: "Failed to delete avatar" },
       { status: 500 }
     )
   }

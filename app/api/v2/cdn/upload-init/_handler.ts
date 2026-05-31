@@ -183,7 +183,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[CDN Init] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to initialize upload" },
+      { error: "Failed to initialize upload" },
       { status: 500 },
     )
   }

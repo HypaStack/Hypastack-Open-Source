@@ -38,9 +38,29 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",
           },
+          // Content Security Policy
+          // - 'self': own origin for scripts, styles, images, fonts, connections
+          // - challenges.cloudflare.com: Cloudflare Turnstile widget
+          // - r2.hypastack.com: CDN for user-uploaded assets and app images
+          // - *.cloudflare.com: Cloudflare scripts and analytics
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://r2.hypastack.com",
+              "font-src 'self'",
+              "connect-src 'self' https://r2.hypastack.com https://challenges.cloudflare.com https://cloudflareinsights.com",
+              "frame-src https://challenges.cloudflare.com",
+              "media-src 'self' blob: https://r2.hypastack.com",
+              "worker-src 'self' blob:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'self'",
+              "upgrade-insecure-requests",
+            ].join("; "),
           },
           {
             key: "Referrer-Policy",

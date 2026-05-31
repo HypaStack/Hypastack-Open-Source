@@ -8,23 +8,14 @@ export async function cleanupExpiredFiles(): Promise<{
 }> {
   const errors: string[] = []
   let cleaned = 0
-  
-  console.error('[Cleanup] Starting cleanup of expired files...')
-  
+
   try {
     const expiredFiles = await getExpiredFiles()
-    console.error(`[Cleanup] Found ${expiredFiles.length} expired files`)
-    
+
     for (const file of expiredFiles) {
       try {
-        // Delete from R2 using the opaque r2_key
         await deleteByKey(file.r2_key)
-        console.error(`[Cleanup] Deleted from R2: ${file.r2_key}`)
-        
-        // Delete from database
         await deleteFileRecord(file.id)
-        console.error(`[Cleanup] Deleted record: ${file.id}`)
-        
         cleaned++
       } catch (error: any) {
         const errorMsg = `Failed to delete ${file.id}: ${error.message}`
@@ -32,20 +23,20 @@ export async function cleanupExpiredFiles(): Promise<{
         errors.push(errorMsg)
       }
     }
-    
-    console.error(`[Cleanup] Complete. Cleaned: ${cleaned}, Errors: ${errors.length}`)
+
+    if (cleaned > 0 || errors.length > 0) {
+      console.error(`[Cleanup] Expired files: cleaned=${cleaned}, errors=${errors.length}`)
+    }
   } catch (error: any) {
-    console.error('[Cleanup] Fatal error:', error)
+    console.error('[Cleanup] Fatal error in cleanupExpiredFiles:', error)
     errors.push(`Fatal error: ${error.message}`)
   }
-  
+
   return { cleaned, errors }
 }
 
 // Start scheduled cleanup (runs every hour)
 export function startCleanupScheduler(): NodeJS.Timeout {
-  console.error('[Cleanup] Scheduler started - runs every hour')
-
   // Run immediately on startup
   cleanupExpiredFiles().catch(console.error)
   cleanupStaging().catch(console.error)
@@ -54,24 +45,22 @@ export function startCleanupScheduler(): NodeJS.Timeout {
   return setInterval(() => {
     cleanupExpiredFiles().catch(console.error)
     cleanupStaging().catch(console.error)
-  }, 60 * 60 * 1000) // 1 hour
+  }, 60 * 60 * 1000)
 }
 
-// Cleanup expired staging records (orphaned uploads that never completed)
+// Cleanup orphaned staging records (uploads that never completed)
 export async function cleanupStaging(): Promise<{
   cleaned: number
   errors: string[]
 }> {
-  console.error('[Cleanup] Starting cleanup of staging records...')
-  
   const result = await cleanupExpiredStaging()
-  
-  console.error(`[Cleanup] Staging cleanup complete. Cleaned: ${result.cleaned}, Errors: ${result.errors.length}`)
+  if (result.cleaned > 0 || result.errors.length > 0) {
+    console.error(`[Cleanup] Staging: cleaned=${result.cleaned}, errors=${result.errors.length}`)
+  }
   return result
 }
 
 // Stop scheduler
 export function stopCleanupScheduler(timer: NodeJS.Timeout): void {
   clearInterval(timer)
-  console.error('[Cleanup] Scheduler stopped')
 }

@@ -183,7 +183,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[UploadProxy] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Upload failed" },
+      { error: "Upload failed" },
       { status: 500 }
     )
   }

@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("[Upload Resume] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to check upload status" },
+      { error: "Failed to check upload status" },
       { status: 500 }
     )
   }

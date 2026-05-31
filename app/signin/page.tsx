@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import Script from "next/script"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
@@ -35,10 +36,29 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
+      // 1. Fetch CSRF token
+      const csrfRes = await fetch("/api/v2/csrf", { credentials: "include" })
+      const csrfData = await csrfRes.json()
+      const csrfToken: string = csrfData.token
+
+      // 2. Execute Turnstile challenge
+      let turnstileToken = ""
+      if (typeof window !== "undefined" && (window as any).turnstile) {
+        turnstileToken = await new Promise<string>((resolve, reject) => {
+          ;(window as any).turnstile.render("#turnstile-login", {
+            sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+            callback: resolve,
+            "error-callback": () => reject(new Error("Bot check failed")),
+            execution: "execute",
+          })
+        })
+      }
+
+      // 3. Submit
       const response = await fetch("/api/v2/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accessKey }),
+        body: JSON.stringify({ accessKey, turnstileToken, csrfToken }),
       })
 
       const data = await response.json()
@@ -53,7 +73,13 @@ export default function SignInPage() {
       const masterKey = await deriveMasterKey(accessKey, userId)
       await storeSessionKey(masterKey)
 
-      window.location.href = "/manage/files"
+      // Redirect to intended page (relative paths only)
+      const params = new URLSearchParams(window.location.search)
+      const redirect = params.get("redirect")
+      const target = redirect && redirect.startsWith("/") && !redirect.startsWith("//") && !redirect.includes("://")
+        ? redirect
+        : "/manage/files"
+      window.location.href = target
     } catch (err: any) {
       setError(err.message)
       setIsLoading(false)
@@ -137,6 +163,8 @@ export default function SignInPage() {
                 >
                   Sign in
                 </button>
+                {/* Invisible Turnstile container */}
+                <div id="turnstile-login" className="hidden" />
               </motion.form>
             ) : (
               <motion.div

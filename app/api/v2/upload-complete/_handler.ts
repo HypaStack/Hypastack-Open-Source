@@ -56,7 +56,6 @@ export async function handleUploadCompletePost(request: NextRequest) {
           uploadId,
           parts,
         })
-        console.error(`[UploadComplete] Multipart upload finalized: ${fileId} (${parts.length} parts)`)
       } catch (mpError: any) {
         console.error(`[UploadComplete] Multipart completion failed:`, mpError)
         // Attempt cleanup
@@ -82,7 +81,6 @@ export async function handleUploadCompletePost(request: NextRequest) {
     // so magic bytes are meaningless. Extension validation already ran at init time.
     const isMultipart = !!(uploadId && Array.isArray(parts) && parts.length > 0)
     if (!isMultipart) {
-      console.error(`[UploadComplete] Validating magic bytes for: ${fileId}`)
       try {
         const fileHead = await downloadHeadByKey(record.r2_key, 65536)
         const validation = await validateFileType(fileHead)
@@ -115,8 +113,6 @@ export async function handleUploadCompletePost(request: NextRequest) {
       )
     }
     
-    console.error(`[UploadComplete] File ${fileId} promoted to main table`)
-
     // Decrypt filenames for display in activity log
     const displayName = decryptFilename(record.custom_filename || record.original_name)
 

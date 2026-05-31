@@ -40,13 +40,11 @@ export async function POST(request: NextRequest) {
     // Delete the staging record from DB
     await deleteStagingRecord(fileId)
 
-    console.error(`[Upload Abort] Aborted multipart upload: ${fileId}`)
-
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error("[Upload Abort] Error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to abort upload" },
+      { error: "Failed to abort upload" },
       { status: 500 }
     )
   }

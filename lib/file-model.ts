@@ -161,7 +161,7 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
 
   try {
     const result = await pool.query(
-      `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '5 minutes'`
+      `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours'`
     )
 
     for (const record of result.rows) {
@@ -211,12 +211,10 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
     )
 
     if (result.rows.length === 0) {
-      console.error('[DB] File not found:', id)
       return null
     }
 
     const row = result.rows[0]
-    console.error('[DB] File found:', row.id, row.original_name)
     return {
       id: row.id,
       r2_key: row.r2_key,
@@ -240,14 +238,11 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
       folder_id: row.folder_id,
     }
   } catch (error: any) {
-    console.error(`[DB] Error getting file (retries left: ${retries}):`, error.message, '- Code:', error.code)
-
     if (retries > 0 && (error.code === 'ECONNREFUSED' || error.code === 'ECONNRESET' || error.code === '57P01')) {
-      console.error('[DB] Retrying after delay...')
       await new Promise(r => setTimeout(r, 100))
       return getFileById(id, retries - 1)
     }
-
+    console.error(`[DB] Error getting file:`, error.message, '- Code:', error.code)
     return null
   }
 }
