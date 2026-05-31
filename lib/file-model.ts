@@ -382,13 +382,16 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
   const pool = getPool()
 
   const result = await pool.query(
-    `SELECT * FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
+    `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
+            pin, burn_on_read, upload_completed, upload_started_at,
+            custom_filename, note, starred, folder_id
+     FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
     [userId]
   )
 
   return result.rows.map(row => ({
     id: row.id,
-    r2_key: row.r2_key,
+    r2_key: '',
     original_name: row.original_name,
     file_size: Number(row.file_size),
     content_type: row.content_type,
@@ -398,7 +401,7 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
     burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
     upload_completed: row.upload_completed,
     upload_started_at: row.upload_started_at,
-    file_hash: row.file_hash,
+    file_hash: null,
     custom_filename: row.custom_filename,
     note: row.note,
     starred: row.starred,

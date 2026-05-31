@@ -20,9 +20,9 @@ export function getPool(): Pool {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      max: 8,
+      max: 15,
       idleTimeoutMillis: 60000,
-      connectionTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
     })
 
@@ -117,6 +117,8 @@ export async function initDatabase(): Promise<void> {
     `)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_expires_at ON basedrop_files(expires_at)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_user_id ON basedrop_files(user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_user_upload_date ON basedrop_files(user_id, upload_date DESC)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_upload_incomplete ON basedrop_files(upload_completed) WHERE upload_completed = FALSE`)
 
     // Rate limiting table — account_id stores the user's ID or identifier
     // Migration: drop legacy table if it doesn't have account_id
@@ -197,6 +199,7 @@ export async function initDatabase(): Promise<void> {
     `)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_revoked ON user_sessions(revoked)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
 
     // Create CDN assets table
     await client.query(`

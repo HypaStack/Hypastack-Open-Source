@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById } from "@/lib/user-model"
-import { getUserFileStats, getFilesByUserId } from "@/lib/file-model"
-import { getUserCdnStats, getTotalStorageUsed, getCdnAssetsByUserId } from "@/lib/cdn-model"
+import { getFilesByUserId } from "@/lib/file-model"
+import { getCdnAssetsByUserId } from "@/lib/cdn-model"
 import { getFoldersByUserId } from "@/lib/folder-model"
 import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { decryptFilename } from "@/lib/filename-crypto"
@@ -21,12 +21,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Single parallel fan-out — one session check, all data in one round-trip
-    const [user, fileStats, cdnStats, totalStorage, rawFiles, rawCdnAssets, rawFolders, rawCdnFolders] = await Promise.all([
+    // 5 queries in parallel (down from 8 — stats derived from raw data in JS)
+    const [user, rawFiles, rawCdnAssets, rawFolders, rawCdnFolders] = await Promise.all([
       getUserById(currentUser.userId),
-      getUserFileStats(currentUser.userId),
-      getUserCdnStats(currentUser.userId),
-      getTotalStorageUsed(currentUser.userId),
       getFilesByUserId(currentUser.userId),
       getCdnAssetsByUserId(currentUser.userId),
       getFoldersByUserId(currentUser.userId),
@@ -44,7 +41,11 @@ export async function GET(request: NextRequest) {
     const lastAcknowledgedTier = normalizeTier(user.last_acknowledged_tier)
     const tierLimits = getTierLimits(tier)
 
-    // Transform files into the same shape the /api/v2/files endpoint used
+    const now = Date.now()
+    const fileStorageUsed = rawFiles.reduce((sum, f) => sum + f.file_size, 0)
+    const cdnStorageUsed = rawCdnAssets.reduce((sum, a) => sum + a.file_size, 0)
+    const totalStorage = fileStorageUsed + cdnStorageUsed
+
     const files = rawFiles.map(f => ({
       id: f.id,
       name: decryptFilename(f.custom_filename || f.original_name),
@@ -59,7 +60,6 @@ export async function GET(request: NextRequest) {
       folderId: f.folder_id || null,
     }))
 
-    // Transform CDN assets into the same shape the /api/v2/cdn/assets endpoint used
     const cdnAssets = rawCdnAssets.map(a => ({
       id: a.id,
       name: a.original_name,
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user: {
         id: user.id,
-        nickname_encrypted: user.nickname_encrypted, // to be decrypted client-side
+        nickname_encrypted: user.nickname_encrypted,
         avatarUrl: user.avatar_url,
         createdAt: user.created_at,
         premium: isPaidTier(tier),
@@ -83,9 +83,12 @@ export async function GET(request: NextRequest) {
         is_insider: user.is_insider ?? 0,
       },
       stats: {
-        ...fileStats,
-        cdnAssets: cdnStats.totalAssets,
-        cdnStorage: cdnStats.totalSize,
+        totalUploads: rawFiles.length,
+        activeFiles: rawFiles.filter(f => new Date(f.expires_at).getTime() > now).length,
+        totalDownloads: 0,
+        storageUsed: fileStorageUsed,
+        cdnAssets: rawCdnAssets.length,
+        cdnStorage: cdnStorageUsed,
         totalStorage,
         maxStorage: tierLimits.maxCdnStorage,
         storagePercent: Math.min(100, Math.round((totalStorage / tierLimits.maxCdnStorage) * 100)),

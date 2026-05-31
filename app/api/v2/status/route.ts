@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         } catch (err: any) {
           console.error("[Status API] Benchmark tick failed:", err)
         }
-      }, 3000)
+      }, 10000)
 
       // Clean up when client disconnects
       request.signal.addEventListener("abort", () => {
