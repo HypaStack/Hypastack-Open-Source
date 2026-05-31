@@ -1120,6 +1120,7 @@ function GridView({
   deleteLoading,
   onToggleStar,
   starLoading,
+  onContextMenu,
 }: {
   files: FileItem[]
   selectedFiles: Set<string>

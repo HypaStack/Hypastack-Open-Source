@@ -432,8 +432,8 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     if (files.length === 0 || isUploading) return
     setErrorMessage("")
 
-    const finalFilename: string | null = customFilename.trim() || null
-    const finalNote: string | null = note.trim() || null
+    let finalFilename: string | null = customFilename.trim() || null
+    let finalNote: string | null = note.trim() || null
     
     // Always fetch a fresh CSRF token to avoid stale/expired tokens
     let currentCsrfToken = csrfToken
