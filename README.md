@@ -8,7 +8,7 @@ Hypastack is a secure, high-performance file sharing and permanent CDN asset hos
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 - **UI Library:** [React 19](https://react.dev/)
 - **Language:** [TypeScript 5](https://www.typescriptlang.org/)
-- **Desktop Wrapper:** [Tauri v2](https://v2.tauri.app/) (Rust-based cross-platform framework)
+- **Desktop Wrapper:** [Tauri v2](https://v2.tauri.app/) (Rust-based cross-platform framework) - Heavily in development, haven't worked much on it yet
 
 ### Styling & Animation
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
