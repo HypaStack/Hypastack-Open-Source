@@ -46,7 +46,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://r2.hypastack.com",
               "font-src 'self' https://r2.hypastack.com https://fonts.gstatic.com",
-              "connect-src 'self' https://r2.hypastack.com https://challenges.cloudflare.com https://cloudflareinsights.com",
+              "connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com",
               "frame-src https://challenges.cloudflare.com",
               "media-src 'self' blob: https://r2.hypastack.com",
               "worker-src 'self' blob:",
