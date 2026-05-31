@@ -3,9 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { isExtensionBlocked } from "@/lib/file-validation"
-import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
-import { validateCustomFilename, validateNote } from "@/lib/validation"
+import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { useAuth } from "@/hooks/useAuth"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/lib/tier-limits"
 import Turnstile from "react-turnstile"
@@ -13,7 +11,7 @@ import Turnstile from "react-turnstile"
 const TurnstileWithRef = Turnstile as React.ComponentType<
   React.ComponentProps<typeof Turnstile> & { ref?: React.RefObject<{ reset(): void }> }
 >
-import { QRCodeSVG } from "qrcode.react"
+
 import JSZip from "jszip"
 
 function formatFileSize(bytes: number): string {
@@ -24,12 +22,7 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
 }
 
-function getLinkDuration(bytes: number): string {
-  const mb = bytes / (1024 * 1024)
-  if (mb < 25) return "7 days"
-  if (mb < 50) return "5 days"
-  return "3 days"
-}
+
 
 type UploadState = "idle" | "selected" | "zipping" | "encrypting" | "uploading" | "done" | "error" | "copied"
 
@@ -78,8 +71,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
   const [customFilename, setCustomFilename] = useState("")
   const [zippedFile, setZippedFile] = useState<File | null>(null)
   const [note, setNote] = useState("")
-  const [filenameError, setFilenameError] = useState("")
-  const [noteError, setNoteError] = useState("")
+
   const [zipMultipleFiles, setZipMultipleFiles] = useState(true)
   const [trayCollapsed, setTrayCollapsed] = useState(false)
   const [optionsOpen, setOptionsOpen] = useState(false)
@@ -436,42 +428,12 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     return response.shareUrl
   }
 
-  const calculateFileHash = async (file: File): Promise<string> => {
-    const buffer = await file.arrayBuffer()
-    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-  }
-
   const handleUpload = async () => {
     if (files.length === 0 || isUploading) return
-    
-    // Clear previous errors
-    setFilenameError("")
-    setNoteError("")
     setErrorMessage("")
-    
-    // Validate custom filename if provided
-    let finalFilename: string | null = null
-    if (customFilename.trim()) {
-      const validation = validateCustomFilename(customFilename)
-      if (!validation.valid) {
-        setFilenameError(validation.error || "Invalid filename")
-        return
-      }
-      finalFilename = validation.sanitized || null
-    }
-    
-    // Validate note if provided
-    let finalNote: string | null = null
-    if (note.trim()) {
-      const validation = validateNote(note)
-      if (!validation.valid) {
-        setNoteError(validation.error || "Invalid note")
-        return
-      }
-      finalNote = validation.sanitized || null
-    }
+
+    const finalFilename: string | null = customFilename.trim() || null
+    const finalNote: string | null = note.trim() || null
     
     // Always fetch a fresh CSRF token to avoid stale/expired tokens
     let currentCsrfToken = csrfToken
@@ -685,10 +647,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
   }
 
 
-  /**
-   * Single-part upload: presigned PUT directly to R2.
-   * Used for files <=50MB.
-   */
+
   const handleSingleUpload = async (
     fileToUpload: File,
     currentCsrfToken: string,
@@ -763,17 +722,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     }
   }
 
-  /**
-   * Multipart upload with client-side encryption.
-   * Files >50MB: chunk → encrypt each chunk (AES-256-GCM) → upload directly to R2.
-   *
-   * When running in Tauri desktop, uses the Rust-native upload engine:
-   *   - AES-NI hardware-accelerated encryption (~2-4 GB/s)
-   *   - 16 parallel upload streams via reqwest
-   *   - File streamed from disk (no full-file RAM copy)
-   *
-   * Falls back to the browser Web Crypto engine otherwise.
-   */
+
   const handleMultipartUpload = async (
     fileToUpload: File,
     currentCsrfToken: string,
@@ -1012,8 +961,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     setShowQr(false)
     setCustomFilename("")
     setNote("")
-    setFilenameError("")
-    setNoteError("")
+
     setInterruptedSession(null)
     setShowResumePopup(false)
     setResuming(false)
@@ -1535,12 +1483,11 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                               <input
                                 type="text"
                                 value={customFilename}
-                                onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
+                                onChange={(e) => setCustomFilename(e.target.value)}
                                 placeholder="hypastack-archive"
                                 className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
                                 style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
                               />
-                              {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
                             </div>
                             <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
                           </>
@@ -1556,12 +1503,11 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                           <input
                             type="text"
                             value={customFilename}
-                            onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
+                            onChange={(e) => setCustomFilename(e.target.value)}
                             placeholder={files[0]?.file.name || "example.pdf"}
                             className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
                             style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
                           />
-                          {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
                         </div>
                         <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
                       </>
@@ -1575,14 +1521,13 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                       </div>
                       <textarea
                         value={note}
-                        onChange={(e) => { setNote(e.target.value); setNoteError("") }}
+                        onChange={(e) => setNote(e.target.value)}
                         placeholder="Optional message…"
                         maxLength={100}
                         rows={2}
                         className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)] resize-none"
                         style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
                       />
-                      {noteError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{noteError}</p>}
                     </div>
                   </div>
                 )}

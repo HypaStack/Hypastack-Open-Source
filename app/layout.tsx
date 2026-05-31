@@ -329,7 +329,7 @@ export default function RootLayout({
                   "@type": "ListItem",
                   position: 2,
                   name: "Dashboard",
-                  item: `${siteUrl}/manage/dashboard`,
+                  item: `${siteUrl}/manage`,
                 },
               ],
             }),
