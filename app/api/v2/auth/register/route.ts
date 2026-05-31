@@ -15,7 +15,7 @@ const RegisterSchema = z.object({
     .min(10, "Ciphertext too short")
     .max(500, "Ciphertext too long")
     .regex(CIPHERTEXT_REGEX, "Invalid ciphertext format"),
-  turnstileToken: z.string().min(1, "Turnstile token required"),
+  turnstileToken: z.string().optional().default(""),
   csrfToken: z.string().min(1, "CSRF token required"),
 })
 

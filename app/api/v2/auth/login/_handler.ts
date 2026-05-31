@@ -12,7 +12,7 @@ const DUMMY_HASH = hashPassword("hpsk_0000000000000000000000000000000000000000_d
 
 const LoginSchema = z.object({
   accessKey: z.string().min(1, "Access key is required"),
-  turnstileToken: z.string().min(1, "Turnstile token required"),
+  turnstileToken: z.string().optional().default(""),
   csrfToken: z.string().min(1, "CSRF token required"),
 })
 
