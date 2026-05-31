@@ -1,26 +1,9 @@
-/**
- * Client-side multipart upload with AES-256-GCM encryption.
- *
- * DATA ARCHITECTURE (from skill file):
- * - 100% of encryption and chunking happens in the USER'S RAM
- * - Frontend encrypts chunks in the browser (Web Crypto API)
- * - Frontend pipes encrypted chunks DIRECTLY to Cloudflare R2
- * - Origin server only handles metadata and URL signing (<31ms target)
- *
- * Files >50MB use multipart uploads with presigned URLs per chunk.
- * Files <=50MB use a single presigned PUT (existing flow).
- */
-
 /** Minimum size to trigger multipart upload (50MB) */
 export const MULTIPART_THRESHOLD = 50 * 1024 * 1024
 
 /** Default chunk size for multipart uploads (10MB) */
 export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
 
-/**
- * Generate a random AES-256-GCM key in the browser.
- * Returns the CryptoKey and its raw bytes encoded as base64url.
- */
 export async function generateEncryptionKey(): Promise<{
   key: CryptoKey
   keyBase64: string
@@ -35,11 +18,7 @@ export async function generateEncryptionKey(): Promise<{
   return { key, keyBase64 }
 }
 
-/**
- * Encrypt a single chunk with AES-256-GCM.
- * Returns: iv (12 bytes) || ciphertext || authTag (16 bytes)
- * The IV is prepended so each chunk is self-contained.
- */
+// Output layout: [12-byte IV] [ciphertext + 16-byte authTag] — each chunk is self-contained
 export async function encryptChunk(
   key: CryptoKey,
   plaintext: ArrayBuffer
@@ -50,16 +29,12 @@ export async function encryptChunk(
     key,
     plaintext
   )
-  // Combine: [12-byte IV] [ciphertext + 16-byte authTag]
   const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength)
   combined.set(iv, 0)
   combined.set(new Uint8Array(ciphertext), iv.byteLength)
   return combined.buffer
 }
 
-/**
- * Decrypt a single chunk (reverses encryptChunk).
- */
 export async function decryptChunk(
   key: CryptoKey,
   data: ArrayBuffer
@@ -74,9 +49,6 @@ export async function decryptChunk(
   )
 }
 
-/**
- * Split a file into chunks and return ArrayBuffer slices.
- */
 export function* chunkFile(
   file: File,
   chunkSize: number = DEFAULT_CHUNK_SIZE
@@ -89,17 +61,11 @@ export function* chunkFile(
   }
 }
 
-/**
- * Read a slice of a File as an ArrayBuffer.
- */
 export function readFileSlice(file: File, start: number, end: number): Promise<ArrayBuffer> {
   return file.slice(start, end).arrayBuffer()
 }
 
-/**
- * Upload a single chunk to a presigned URL via PUT.
- * Returns the ETag from the response headers (needed for multipart completion).
- */
+// Returns the ETag needed for multipart completion
 export async function uploadChunkToR2(
   presignedUrl: string,
   data: ArrayBuffer,
@@ -127,15 +93,6 @@ export async function uploadChunkToR2(
   })
 }
 
-/**
- * Full multipart upload flow with PARALLEL chunk uploads:
- * 1. Chunk the file
- * 2. Encrypt each chunk with AES-256-GCM (Web Crypto)
- * 3. Upload encrypted chunks to R2 via presigned URLs — up to MAX_CONCURRENT at once
- * 4. Return ETags (ordered by part number) for server-side multipart completion
- *
- * Parallel uploads saturate the user's bandwidth for maximum throughput.
- */
 const MAX_CONCURRENT = 10
 
 export async function uploadFileMultipart(opts: {
@@ -149,7 +106,6 @@ export async function uploadFileMultipart(opts: {
   const chunks = [...chunkFile(file, chunkSize)]
   const totalBytes = file.size
 
-  // Per-chunk progress tracking for accurate aggregate progress
   const chunkProgress = new Float64Array(chunks.length) // bytes uploaded per chunk
   const etags: { partNumber: number; etag: string }[] = new Array(chunks.length)
 
@@ -159,7 +115,6 @@ export async function uploadFileMultipart(opts: {
     onProgress?.(Math.min(99, (total / totalBytes) * 100))
   }
 
-  // Worker pool: process chunks in parallel
   let nextChunkIndex = 0
 
   const worker = async () => {
@@ -170,13 +125,9 @@ export async function uploadFileMultipart(opts: {
       const chunk = chunks[idx]
       const chunkBytes = chunk.end - chunk.start
 
-      // Read chunk from file
       const plaintext = await readFileSlice(file, chunk.start, chunk.end)
-
-      // Encrypt in browser RAM
       const encrypted = await encryptChunk(encryptionKey, plaintext)
 
-      // Upload encrypted chunk directly to R2
       const partNumber = chunk.index + 1
       const etag = await uploadChunkToR2(
         presignedUrls[chunk.index],
@@ -193,7 +144,6 @@ export async function uploadFileMultipart(opts: {
     }
   }
 
-  // Spawn workers (capped at chunk count)
   const workerCount = Math.min(MAX_CONCURRENT, chunks.length)
   const workers: Promise<void>[] = []
   for (let i = 0; i < workerCount; i++) {
@@ -204,14 +154,10 @@ export async function uploadFileMultipart(opts: {
   return { etags }
 }
 
-/**
- * Determine whether a file should use multipart upload.
- */
 export function shouldUseMultipart(fileSize: number): boolean {
   return fileSize > MULTIPART_THRESHOLD
 }
 
-// Utility: ArrayBuffer to base64url
 function bufferToBase64url(buffer: Uint8Array): string {
   let binary = ""
   for (let i = 0; i < buffer.byteLength; i++) {
@@ -220,7 +166,6 @@ function bufferToBase64url(buffer: Uint8Array): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
 }
 
-// Utility: base64url to CryptoKey
 export async function importKeyFromBase64(keyBase64: string): Promise<CryptoKey> {
   const binary = atob(keyBase64.replace(/-/g, "+").replace(/_/g, "/"))
   const bytes = new Uint8Array(binary.length)

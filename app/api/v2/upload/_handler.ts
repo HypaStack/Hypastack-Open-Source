@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate, getR2Endpoint, getBucketName } from "@/lib/r2"
+import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate } from "@/lib/r2"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
 import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
 import { ensureFolderPath } from "@/lib/folder-model"
 import { getUserCdnStats } from "@/lib/cdn-model"
-import { isExtensionBlocked } from "@/lib/file-validation"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 import { checkUploadRateLimit } from "@/lib/rate-limit"
@@ -26,7 +25,6 @@ export async function handleUploadPost(request: NextRequest) {
     const body = await request.json()
     const { fileName, fileSize, contentType, pin, burnOnRead, turnstileToken, csrfToken, customFilename, note, path, folderId } = body
 
-    // Validation
     if (!fileName || !fileSize || !contentType) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -34,7 +32,6 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Check filename length (prevent DB bloat)
     if (fileName.length > 200) {
       return NextResponse.json(
         { error: "Filename too long. Max 200 characters." },
@@ -42,13 +39,13 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Fetch tier, file stats, and CDN stats in parallel — they're independent
     const [userTier, fileStats, cdnStats] = await Promise.all([
       getUserTier(currentUser.userId),
       getUserFileStats(currentUser.userId),
       getUserCdnStats(currentUser.userId),
     ])
     const tier = getTierLimits(userTier)
+
     if (fileSize > tier.maxNormalUploadSize) {
       const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
       return NextResponse.json(
@@ -57,7 +54,6 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Check file link limits
     if (fileStats.activeFiles >= tier.maxFileLinks) {
       return NextResponse.json(
         { error: `You have reached your limit of ${tier.maxFileLinks} active file links on your current plan. Please delete a link or wait for one to expire to upload new ones.` },
@@ -65,7 +61,6 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Check total file cap (Drive + CDN combined) — applies to free tier
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
@@ -76,7 +71,6 @@ export async function handleUploadPost(request: NextRequest) {
       }
     }
 
-    // Validate CSRF token
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
       return NextResponse.json(
@@ -85,7 +79,6 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Check upload rate limit (5 uploads per 10 minutes)
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -94,10 +87,6 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // File extension blocklist check removed for normal uploads
-    // to allow executables and scripts.
-
-    // Verify Turnstile token (skipped in development)
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
@@ -108,22 +97,13 @@ export async function handleUploadPost(request: NextRequest) {
       }
     }
 
-    // Generate unique ID and opaque R2 storage name
     const fileId = generateFileId()
     const storageName = generateOpaqueStorageName()
     const r2Key = `uploads/${fileId}/${storageName}`
 
-    // Calculate expiration (premium gets longer retention)
     const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
-
-    // Generate presigned URL using the opaque r2Key (hides real filename from R2)
     const uploadUrl = await getPresignedUploadUrlByKey(r2Key, contentType)
 
-    console.error("[Upload] Generated presigned URL for r2Key:", r2Key)
-    console.error("[Upload] Endpoint:", getR2Endpoint())
-    console.error("[Upload] Bucket:", getBucketName())
-
-    // Validate PIN if provided
     if (pin && (!/^\d{6}$/.test(pin))) {
       return NextResponse.json(
         { error: "PIN must be exactly 6 digits" },
@@ -131,29 +111,24 @@ export async function handleUploadPost(request: NextRequest) {
       )
     }
 
-    // Sanitize custom filename and note
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
     const sanitizedNote = note ? sanitizeNote(note) : null
 
-    // Encrypt filename and custom filename before storing in DB
     const encryptedOriginalName = encryptFilename(fileName)
     const encryptedCustomFilename = sanitizedCustomFilename
       ? encryptFilename(sanitizedCustomFilename)
       : null
 
-    // Ensure folder hierarchy exists if a path was provided
     let finalFolderId = folderId || null
     if (path) {
-      // path might be "Folder/Subfolder/file.ext", we only care about the dir part
       const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null
       if (dirPath) {
         finalFolderId = await ensureFolderPath(currentUser.userId, dirPath, folderId || null)
       }
     }
 
-    // Create staging record (will be promoted to main table after upload completes)
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
 
     await createStagingRecord({
@@ -169,18 +144,13 @@ export async function handleUploadPost(request: NextRequest) {
       custom_filename: encryptedCustomFilename,
       note: sanitizedNote,
       user_id: currentUser.userId,
-      // Single-part upload: 1 encrypted chunk, no chunk_size needed
       encryption_total_parts: 1,
       encryption_chunk_size: null,
       folder_id: finalFolderId,
     })
 
-    console.error("[Upload] Created staging record:", fileId)
-
-    // Generate a short-lived proxy token for CORS fallback
     const proxyToken = generateProxyToken(fileId)
 
-    // Return upload URL and file info
     return NextResponse.json({
       success: true,
       fileId,

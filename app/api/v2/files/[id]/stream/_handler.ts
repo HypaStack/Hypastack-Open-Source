@@ -6,21 +6,6 @@ import { createDecryptStream } from "@/lib/security/zero-trust"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { Readable } from "stream"
 
-/**
- * Encrypted-at-rest streaming proxy.
- *
- * Only used for legacy files uploaded via /api/v2/upload-proxy that have
- * AES-256-GCM ciphertext in R2 (server holds the only key). Streams
- * R2 -> decrypt -> response without ever buffering the file into RAM.
- *
- * All side effects (burn-mark, tracking, activity, count) are handled
- * by /api/download/[id]. This route only re-verifies the gates so a
- * direct hit cannot bypass them.
- *
- * Unencrypted files never reach this route — they get a presigned R2
- * URL from /api/download/[id] and download directly from Cloudflare.
- */
-
 export async function handleStreamGet(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -46,8 +31,6 @@ export async function handleStreamGet(
     if (!valid) {
       return NextResponse.json({ error: "File has expired" }, { status: 410 })
     }
-
-
 
     // Unencrypted files have no business going through this proxy — bounce
     // them back to the share page so they go through /api/download/[id].

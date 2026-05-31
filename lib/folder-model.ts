@@ -60,20 +60,11 @@ export async function createFolder(userId: string, plaintextName: string, parent
   }
 }
 
-/**
- * Ensures that a given folder path exists for a user.
- * Since folder names are encrypted with a random IV, we must fetch all folders,
- * decrypt them, and traverse the path in memory.
- * 
- * @param userId The owner
- * @param path The relative path string e.g. "Photos/Summer"
- * @param baseFolderId Optional starting folder ID
- * @returns The final folder ID
- */
+// Folder names are encrypted with a random IV so we can't compare in SQL —
+// must fetch all folders, decrypt, and traverse the path in memory.
 export async function ensureFolderPath(userId: string, path: string, baseFolderId: string | null = null): Promise<string | null> {
   if (!path || path === '.' || path === '/') return baseFolderId
 
-  // Clean the path
   const parts = path.split('/').filter(p => p.trim().length > 0)
   if (parts.length === 0) return baseFolderId
 
@@ -82,15 +73,13 @@ export async function ensureFolderPath(userId: string, path: string, baseFolderI
   let currentParentId = baseFolderId
 
   for (const part of parts) {
-    // Look for existing folder in current parent
     const existing = existingFolders.find(f => f.parentId === currentParentId && f.name === part)
     
     if (existing) {
       currentParentId = existing.id
     } else {
-      // Create new folder
       const newFolder = await createFolder(userId, part, currentParentId)
-      existingFolders.push(newFolder) // Add to in-memory list for subsequent parts
+      existingFolders.push(newFolder) // keep in-memory list consistent for subsequent path segments
       currentParentId = newFolder.id
     }
   }
@@ -98,18 +87,13 @@ export async function ensureFolderPath(userId: string, path: string, baseFolderI
   return currentParentId
 }
 
-/**
- * Recursively deletes a folder and all its contents (subfolders and files).
- */
 export async function deleteFolderRecursively(userId: string, folderId: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
 
-  // We need to find all subfolders and files.
   const allFolders = await getFoldersByUserId(userId)
-  const allFiles = await getFilesByUserId(userId) // Note: getFilesByUserId needs to return folder_id now!
+  const allFiles = await getFilesByUserId(userId)
 
-  // Build a tree to find all descendants
   const foldersToDelete = new Set<string>([folderId])
   let added = true
   while (added) {
@@ -122,13 +106,11 @@ export async function deleteFolderRecursively(userId: string, folderId: string):
     }
   }
 
-  // Find all files in these folders
   const filesToDelete = allFiles.filter(f => f.folder_id && foldersToDelete.has(f.folder_id))
 
   const userTier = await getUserTier(userId)
   const delayMs = getTierDelayMs(userTier)
 
-  // Delete files from R2 and DB
   let i = 0
   for (const file of filesToDelete) {
     if (i > 0 && delayMs > 0) {
@@ -144,10 +126,8 @@ export async function deleteFolderRecursively(userId: string, folderId: string):
     }
   }
 
-  // Delete all identified folders
   if (foldersToDelete.size > 0) {
     const ids = Array.from(foldersToDelete)
-    // Delete in chunks or single query
     const placeholders = ids.map((_, i) => '$' + (i + 1)).join(',')
     await pool.query(
       `DELETE FROM basedrop_folders WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1}`,

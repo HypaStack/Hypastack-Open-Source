@@ -11,18 +11,6 @@ import { processTaxRecord } from "@/lib/tax"
 
 export const dynamic = "force-dynamic"
 
-/**
- * GET /api/v2/payments/status?id=<paymentId>
- *
- * Polls the Monero wallet for incoming transfers to the payment's
- * subaddress and updates the payment status accordingly.
- *
- * Returns:
- *   - status: "pending" | "confirming" | "confirmed" | "expired" | "cancelled"
- *   - confirmations: number (if confirming/confirmed)
- *   - requiredConfirmations: number
- *   - txid: string (if found)
- */
 export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
@@ -38,7 +26,6 @@ export async function GET(request: NextRequest) {
     await ensureDatabase()
     const pool = getPool()
 
-    // Get the payment record
     const result = await pool.query(
       `SELECT * FROM xmr_payments WHERE id = $1 AND user_id = $2`,
       [paymentId, currentUser.userId]
@@ -50,7 +37,6 @@ export async function GET(request: NextRequest) {
 
     const payment = result.rows[0]
 
-    // If already confirmed, just return status
     if (payment.status === "confirmed") {
       return NextResponse.json({
         status: "confirmed",
@@ -62,7 +48,6 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // If expired, cancelled, or underpaid, return that
     if (payment.status === "expired" || payment.status === "cancelled" || payment.status === "underpaid") {
       return NextResponse.json({
         status: payment.status,
@@ -71,7 +56,6 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Check if expired by time
     if (new Date(payment.expires_at) < new Date()) {
       await pool.query(
         `UPDATE xmr_payments SET status = 'expired', updated_at = NOW() WHERE id = $1`,
@@ -84,11 +68,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Poll the Monero wallet for transfers to this subaddress
     const { confirmed, pending } = await getTransfers(payment.subaddress_index)
     const allTransfers = [...confirmed, ...pending]
 
-    // Find a transfer that matches our expected amount (within tolerance)
     const expectedAtomic = BigInt(payment.amount_atomic)
     const toleranceAtomic = BigInt(Math.floor(Number(expectedAtomic) * AMOUNT_TOLERANCE))
     const minAccepted = expectedAtomic - toleranceAtomic
@@ -101,7 +83,7 @@ export async function GET(request: NextRequest) {
         matchedTx = tx
         break
       }
-      // Also accept overpayments
+      // Accept overpayments
       if (txAmount > maxAccepted) {
         matchedTx = tx
         break
@@ -109,7 +91,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (!matchedTx) {
-      // No matching transfer found yet
       return NextResponse.json({
         status: "pending",
         confirmations: 0,
@@ -121,14 +102,11 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // We found a matching transfer — check confirmations
     const confs = matchedTx.confirmations || 0
 
     if (confs >= REQUIRED_CONFIRMATIONS) {
-      // Payment confirmed! Upgrade the user's tier.
       const paidUntil = new Date(Date.now() + PAYMENT_DURATION_DAYS * 24 * 60 * 60 * 1000)
 
-      // Update payment record
       await pool.query(
         `UPDATE xmr_payments
          SET status = 'confirmed',
@@ -140,7 +118,6 @@ export async function GET(request: NextRequest) {
         [matchedTx.txid, confs, paymentId]
       )
 
-      // Upgrade the user's tier
       await pool.query(
         `UPDATE users
          SET tier = $1,
@@ -152,7 +129,6 @@ export async function GET(request: NextRequest) {
       )
 
       try {
-        // Process tax record and generate PDF receipt
         const pdfBuffer = await processTaxRecord(
           currentUser.userId,
           matchedTx.txid,
@@ -180,8 +156,6 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Transfer found but not enough confirmations yet
-    // Update the stored txid/confirmations
     await pool.query(
       `UPDATE xmr_payments
        SET status = 'confirming',

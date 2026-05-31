@@ -9,39 +9,23 @@ import { getPresignedDownloadUrl, deleteByKey } from "@/lib/r2"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { getHashedIp } from "@/lib/ip"
 
-/**
- * Download Route
- * Performs all gating + side effects (rate limit, PIN, burn-on-read,
- * unique-IP tracking, download counter, uploader activity log), then issues
- * a download URL that the client navigates to directly.
- *
- * - Unencrypted files (primary upload path) -> presigned R2 URL.
- *   The browser hits R2 directly; origin RAM is not touched.
- * - Encrypted files (legacy /api/v2/upload-proxy uploads) -> proxy URL.
- *   /api/download-file streams + decrypts without buffering.
- */
-
 const PRESIGNED_TTL_SECONDS = 300
-// Burn-on-read uses shorter TTL and faster deletion
 const BURN_PRESIGNED_TTL_SECONDS = 60
-// Delete from R2 after 90 seconds (allows download to complete)
+// Delete from R2 after 90 seconds (allows the download to complete before removal)
 const BURN_DELETE_DELAY_MS = 90_000
 
 const executeBurnDeletion = async (id: string, r2Key: string) => {
   let attempts = 0;
   const maxAttempts = 5; // 1 initial + 4 retries
-  const retryIntervalMs = 7500; // 30s / 4
+  const retryIntervalMs = 7500;
 
   while (attempts < maxAttempts) {
     try {
-      // 1. Delete DB record
       await deleteFileRecord(id);
-      // 2. Delete from R2
       await deleteByKey(r2Key);
-      // Success, exit
       return;
     } catch (error) {
-      attempts++;
+      attempts++
       if (attempts >= maxAttempts) {
         const msg = `[BurnDeletionFailed] completely failed to delete file id: ${id}, key: ${r2Key}, err: ${error instanceof Error ? error.message : String(error)}`;
         if (process.env.NODE_ENV === 'production') {
@@ -89,8 +73,6 @@ export async function handleDownloadPost(
       return NextResponse.json({ error: "File has expired" }, { status: 410 })
     }
 
-
-
     // Atomic burn-mark BEFORE issuing any URL so concurrent requests can't
     // all succeed. markFileBurned uses SELECT ... FOR UPDATE.
     let burned = false
@@ -105,14 +87,11 @@ export async function handleDownloadPost(
       burned = true
     }
 
-
-    // Decrypt filenames for display
     const displayName = decryptFilename(record.custom_filename || record.original_name)
     const originalDisplayName = decryptFilename(record.original_name)
 
     const isEncrypted = !!(record.encryption_iv && record.encryption_auth_tag)
 
-    // Use shorter TTL for burn-on-read files
     const ttl = burned ? BURN_PRESIGNED_TTL_SECONDS : PRESIGNED_TTL_SECONDS
 
     let downloadUrl: string
@@ -120,8 +99,6 @@ export async function handleDownloadPost(
       // Legacy encrypted-at-rest fallback (server must decrypt).
       downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/v2/files/${id}/stream`
     } else {
-      // Direct R2 — strict header mapping for filename + content type.
-      // Decrypt the original_name so the user gets their real filename back.
       downloadUrl = await getPresignedDownloadUrl({
         r2Key: record.r2_key,
         originalName: originalDisplayName,
@@ -131,7 +108,6 @@ export async function handleDownloadPost(
     }
 
     if (burned) {
-      // Asynchronously handle the deletion with retries
       executeBurnDeletion(id, record.r2_key);
     }
 

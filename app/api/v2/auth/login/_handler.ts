@@ -7,16 +7,7 @@ import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 import { getHashedIp } from "@/lib/ip"
 
-/**
- * Zero-Knowledge Login
- *
- * User enters their access key (hpsk_...) — that's it.
- * Server hashes it and finds the matching user via PBKDF2 verification.
- * No email, no username, no IP, nothing else.
- */
-
-// Pre-computed dummy hash used when the user ID is not found,
-// so the timing for non-existent vs wrong-password is indistinguishable.
+// Dummy hash used when the user isn't found — keeps timing consistent with wrong-password path
 const DUMMY_HASH = hashPassword("hpsk_0000000000000000000000000000000000000000_dummy").hash
 
 const LoginSchema = z.object({
@@ -29,7 +20,6 @@ export async function handleLoginPost(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate input
     const validation = LoginSchema.safeParse(body)
     if (!validation.success) {
       return NextResponse.json(
@@ -40,7 +30,6 @@ export async function handleLoginPost(request: NextRequest) {
 
     const { accessKey, turnstileToken, csrfToken } = validation.data
 
-    // Verify CSRF token
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
       return NextResponse.json(
@@ -49,7 +38,6 @@ export async function handleLoginPost(request: NextRequest) {
       )
     }
 
-    // Verify Turnstile token (bot protection)
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
@@ -60,9 +48,7 @@ export async function handleLoginPost(request: NextRequest) {
       }
     }
 
-    // Rate limit by hashed IP — prevents prefix-rotation bypass
-    const hashedIp = getHashedIp(request)
-    const rateLimit = await checkLoginRateLimit(hashedIp)
+    const rateLimit = await checkLoginRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: "Rate limit reached, try again later" },
@@ -70,8 +56,7 @@ export async function handleLoginPost(request: NextRequest) {
       )
     }
 
-    // Find user by verifying the access key
-    // Key format: hpsk_<uuid_no_hyphens>_<secret> → O(1) direct lookup
+    // Key format: hpsk_<uuid_no_hyphens>_<secret>
     let matchedUserId: string | null = null
     const parts = accessKey.split("_")
 
@@ -85,12 +70,9 @@ export async function handleLoginPost(request: NextRequest) {
           matchedUserId = user.id
         }
       } else {
-        // Run dummy compare to prevent timing oracle — "user not found" and
-        // "wrong password" paths should take the same wall-clock time.
         verifyPassword(accessKey, DUMMY_HASH)
       }
     } else {
-      // Malformed key — still run a dummy compare to equalise timing
       verifyPassword(accessKey, DUMMY_HASH)
     }
 
@@ -101,21 +83,12 @@ export async function handleLoginPost(request: NextRequest) {
       )
     }
 
-    // Update last login
     await updateLastLogin(matchedUserId)
-
-    // Generate JWT token — zero-knowledge: userId only
     const token = generateToken({ userId: matchedUserId })
-
-    // Set auth cookie
     await setAuthCookie(token)
-
-    // Create session
     await createUserSession(matchedUserId)
 
-    return NextResponse.json({
-      success: true,
-    })
+    return NextResponse.json({ success: true })
 
   } catch (error) {
     console.error("[Auth] Login error:", error)

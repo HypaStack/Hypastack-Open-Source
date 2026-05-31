@@ -1,15 +1,3 @@
-/**
- * Zero-Trust File Upload Security
- * 
- * Contains:
- * - Zod schema validation
- * - DOMPurify sanitization
- * - Magic bytes verification
- * - Path traversal protection
- * - EXIF metadata stripping
- * - AES-256-GCM encryption
- */
-
 import { z } from "zod"
 import { JSDOM } from "jsdom"
 import DOMPurify from "dompurify"
@@ -18,13 +6,9 @@ import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
 
-// server-side dompurify use
 const window = new JSDOM("").window
 const purify = DOMPurify(window)
 
-// ---------------------------------------------------------------------------
-// BLOCKED types — dangerous executables/scripts. Used for ALL upload paths.
-// ---------------------------------------------------------------------------
 const BLOCKED_MIME_TYPES_SET = new Set([
   "application/x-msdownload",
   "application/x-ms-installer",
@@ -86,9 +70,6 @@ export const CDN_ALLOWED_EXTENSIONS = new Set([
 export const MAX_FILE_SIZE = 500 * 1024 * 1024 // equals 500MB
 const MAX_NOTE_LENGTH = 100
 
-/**
- * Zod Schema Validation
- */
 export const UploadRequestSchema = z.object({
   fileName: z
     .string()
@@ -124,13 +105,6 @@ export const UploadRequestSchema = z.object({
 
 export type UploadRequest = z.infer<typeof UploadRequestSchema>
 
-/**
- * DOMPurify Sanitization
- */
-/**
- * Strip injection patterns common to SQL, NoSQL, template engines, and XSS.
- * Applied as a post-processing pass after DOMPurify.
- */
 function stripInjectionPatterns(input: string): string {
   return input
     // Control characters
@@ -150,9 +124,6 @@ function stripInjectionPatterns(input: string): string {
     .trim()
 }
 
-/**
- * DOMPurify + injection-pattern sanitization for notes.
- */
 export function sanitizeNote(note: string | null | undefined): string | null {
   if (!note || note.trim().length === 0) return null
 
@@ -171,11 +142,6 @@ export function sanitizeNote(note: string | null | undefined): string | null {
   return sanitized.length > 0 ? sanitized : null
 }
 
-/**
- * General-purpose text sanitizer for any user-supplied string field
- * (bio, location, role, music title, etc.).
- * Strips HTML, injection patterns, and enforces a max length.
- */
 export function sanitizeString(
   input: string | null | undefined,
   maxLength: number = 500,
@@ -197,10 +163,6 @@ export function sanitizeString(
   return sanitized.length > 0 ? sanitized : null
 }
 
-/**
- * URL sanitizer — only allows http/https, blocks javascript:, data:, and
- * any URL containing injection payloads.
- */
 export function sanitizeUrl(url: string | null | undefined): string | null {
   if (!url || url.trim().length === 0) return null
 
@@ -237,9 +199,6 @@ export function sanitizeUrl(url: string | null | undefined): string | null {
 }
 
 
-/**
- * filename sanitization with path traversal protection
- */
 export function sanitizeFilename(filename: string): {
   sanitized: string
   extension: string
@@ -303,9 +262,6 @@ export function sanitizeFilename(filename: string): {
   return { sanitized, extension, isValid: true }
 }
 
-/**
- * verifies file type by analyzing actual file content not trusting headers
- */
 export async function verifyFileType(
   buffer: Buffer
 ): Promise<{
@@ -356,9 +312,6 @@ export async function verifyFileType(
   }
 }
 
-/**
- * checks if buffer is text
- */
 function isLikelyTextFile(buffer: Buffer): boolean {
   // bom
   if (
@@ -375,9 +328,6 @@ function isLikelyTextFile(buffer: Buffer): boolean {
   return !sample.includes(0)
 }
 
-/**
- * CDN-specific filename sanitization — enforces the CDN extension allowlist.
- */
 export function sanitizeCdnFilename(filename: string): {
   sanitized: string
   extension: string
@@ -426,11 +376,6 @@ export function sanitizeCdnFilename(filename: string): {
   return { sanitized, extension, isValid: true }
 }
 
-/**
- * CDN file type check — extension allowlist (via sanitizeCdnFilename) is the gate.
- * This only blocks magic-byte-detected dangerous types (e.g. someone renaming an
- * .exe to .png). Returns the detected MIME so the upload can set Content-Type.
- */
 export async function verifyCdnFileType(
   buffer: Buffer,
   extension: string,
@@ -459,9 +404,6 @@ export async function verifyCdnFileType(
   }
 }
 
-/**
- * exif and metadata stripping
- */
 export async function stripMetadata(buffer: Buffer, mimeType: string): Promise<Buffer> {
   // Only process images
   if (!mimeType.startsWith("image/")) {
@@ -489,9 +431,6 @@ export async function stripMetadata(buffer: Buffer, mimeType: string): Promise<B
   }
 }
 
-/**
- * AES-256-GCM Encryption
- */
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
 
 function getEncryptionKey(): Buffer {
@@ -536,15 +475,6 @@ export function decryptFile(
   return Buffer.concat([decipher.update(encrypted), decipher.final()])
 }
 
-/**
- * Streaming variant of decryptFile. Returns a Decipher (Transform stream)
- * pre-configured with the key, IV and auth tag so callers can pipe an R2 body
- * straight through without ever buffering the whole file in memory.
- *
- * GCM caveat: bytes are emitted before the auth tag is verified at .final().
- * If verification fails, the stream errors AFTER content has been delivered
- * (browser sees a truncated/error file). Acceptable for a legacy-only path.
- */
 export function createDecryptStream(iv: string, authTag: string): crypto.DecipherGCM {
   const key = getEncryptionKey()
   const decipher = crypto.createDecipheriv(
@@ -556,9 +486,6 @@ export function createDecryptStream(iv: string, authTag: string): crypto.Deciphe
   return decipher
 }
 
-/**
- * Comprehensive File Processing Pipeline
- */
 export async function processFileUpload(
   buffer: Buffer,
   claimedMimeType: string,
@@ -579,7 +506,6 @@ export async function processFileUpload(
   const originalSize = buffer.length
 
   try {
-    // 1. Verify file type with magic bytes
     const typeVerification = await verifyFileType(buffer)
     if (!typeVerification.valid) {
       return {
@@ -592,7 +518,6 @@ export async function processFileUpload(
       }
     }
 
-    // 2. Sanitize filename
     const filenameSanitization = sanitizeFilename(filename)
     if (!filenameSanitization.isValid) {
       return {
@@ -605,10 +530,7 @@ export async function processFileUpload(
       }
     }
 
-    // 3. Strip metadata
     let processedBuffer = await stripMetadata(buffer, typeVerification.mimeType!)
-
-    // 4. Encrypt file
     const encryption = encryptFile(processedBuffer)
     processedBuffer = encryption.encrypted
 

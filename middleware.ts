@@ -37,7 +37,6 @@ export async function middleware(request: NextRequest) {
     if (!authed) {
       const url = request.nextUrl.clone()
       url.pathname = '/signin'
-      // Only allow relative redirects to prevent open redirect attacks
       const redirectParam = pathname
       if (redirectParam.startsWith('/') && !redirectParam.startsWith('//') && !redirectParam.includes('://')) {
         url.searchParams.set('redirect', redirectParam)

@@ -6,21 +6,12 @@ const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
 const PROXY_SECRET = (process.env.PROXY_SECRET || JWT_SECRET) as string
 
-
-
-/**
- * Generate a short-lived signed token for upload-proxy fallback
- * Proves the user already passed Turnstile + CSRF in /api/v2/
- */
 export function generateProxyToken(fileId: string): string {
   const payload = JSON.stringify({ fileId, exp: Math.floor(Date.now() / 1000) + 300 })
   const signature = crypto.createHmac("sha256", PROXY_SECRET).update(payload).digest("base64url")
   return `${Buffer.from(payload).toString("base64url")}.${signature}`
 }
 
-/**
- * Verify a proxy token
- */
 export function verifyProxyToken(token: string, fileId: string): boolean {
   try {
     const [payloadB64, signature] = token.split(".")
@@ -35,33 +26,23 @@ export function verifyProxyToken(token: string, fileId: string): boolean {
   }
 }
 
-/**
- * Generate a random salt
- */
 export function generateSalt(): string {
   return crypto.randomBytes(16).toString("hex")
 }
 
-/**
- * Hash password/access-key with PBKDF2 (100k iterations, SHA-512, 64-byte output)
- * Format: salt:hash
- */
+// PBKDF2 100k iterations, SHA-512, 64-byte output. Stored as salt:hash
 export function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
   const useSalt = salt || generateSalt()
   const hash = crypto
     .pbkdf2Sync(password, useSalt, 100000, 64, "sha512")
     .toString("hex")
 
-  // Store as: salt:hash
   return {
     salt: useSalt,
     hash: `${useSalt}:${hash}`
   }
 }
 
-/**
- * Verify password/access-key against stored hash
- */
 export function verifyPassword(password: string, storedHash: string): boolean {
   const [salt] = storedHash.split(":")
   if (!salt) return false
@@ -69,11 +50,7 @@ export function verifyPassword(password: string, storedHash: string): boolean {
   return hash === storedHash
 }
 
-/**
- * Generate a cryptographically secure access key.
- * Format for new keys: hpsk_<userId_no_hyphens>_<64 hex chars>
- * This allows O(1) lookup during login.
- */
+// Format: hpsk_<userId_no_hyphens>_<64 hex chars> — enables O(1) lookup during login
 export function generateAccessKey(userId?: string): string {
   const secret = crypto.randomBytes(32).toString("hex")
   if (userId) {
@@ -83,9 +60,6 @@ export function generateAccessKey(userId?: string): string {
   return `hpsk_${secret}`
 }
 
-/**
- * Generate JWT token — zero-knowledge: no email, only userId
- */
 export function generateToken(payload: { userId: string }): string {
   const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url")
   const now = Math.floor(Date.now() / 1000)
@@ -103,9 +77,6 @@ export function generateToken(payload: { userId: string }): string {
   return `${header}.${body}.${signature}`
 }
 
-/**
- * Verify JWT token
- */
 export function verifyToken(token: string): { userId: string } | null {
   try {
     const [header, body, signature] = token.split(".")
@@ -130,9 +101,6 @@ export function verifyToken(token: string): { userId: string } | null {
   }
 }
 
-/**
- * Set auth cookie
- */
 export async function setAuthCookie(token: string, maxAge?: number) {
   const cookieStore = await cookies()
   cookieStore.set("auth_token", token, {
@@ -144,26 +112,17 @@ export async function setAuthCookie(token: string, maxAge?: number) {
   })
 }
 
-/**
- * Clear auth cookie
- */
 export async function clearAuthCookie() {
   const cookieStore = await cookies()
   cookieStore.delete("auth_token")
 }
 
-/**
- * Get current user from request — zero-knowledge: only userId
- */
 export async function getCurrentUser(request: NextRequest): Promise<{ userId: string } | null> {
   const token = request.cookies.get("auth_token")?.value
   if (!token) return null
   return verifyToken(token)
 }
 
-/**
- * Generate a random UUID for user ID
- */
 export function generateUserId(): string {
   return crypto.randomUUID()
 }

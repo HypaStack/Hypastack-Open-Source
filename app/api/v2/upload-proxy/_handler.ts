@@ -14,20 +14,6 @@ import {
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/lib/tier-limits"
 
-/**
- * Zero-Trust Upload Proxy Route
- *
- * Security measures:
- * - Proxy token validation (proves user passed Turnstile + CSRF in /api/v2/)
- * - CSRF token validation
- * - DOMPurify sanitization
- * - Magic bytes verification (file-type)
- * - Path traversal protection
- * - EXIF/metadata stripping (sharp)
- * - AES-256-GCM encryption
- * - Hard file size limits
- */
-
 export async function handleUploadProxyPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
@@ -37,6 +23,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
         { status: 401 }
       )
     }
+
     const userTier = await getUserTier(currentUser.userId)
     const tier = getTierLimits(userTier)
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
@@ -47,9 +34,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 1. Parse and validate FormData
     const formData = await request.formData()
-
     const file = formData.get("file") as File | null
     const fileId = formData.get("fileId") as string | null
     const proxyToken = formData.get("proxyToken") as string | null
@@ -59,7 +44,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const note = formData.get("note") as string | null
     const customFilename = formData.get("customFilename") as string | null
 
-    // 2. Validate proxy token (proves user passed Turnstile + CSRF in /api/v2/)
     if (!fileId || !proxyToken || !verifyProxyToken(proxyToken, fileId)) {
       return NextResponse.json(
         { error: "Invalid or expired upload session. Please start over." },
@@ -67,7 +51,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 3. Validate CSRF token
     const csrfValid = await validateCsrfToken(csrfToken || "")
     if (!csrfValid) {
       return NextResponse.json(
@@ -76,16 +59,10 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 4. Validate file presence
     if (!file) {
-      return NextResponse.json(
-        { error: "No file provided" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    // 5. Tier-based file size check (tier pulled from DB, not client/JWT)
-    // Tier already fetched
     if (file.size > tier.maxNormalUploadSize) {
       const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
       return NextResponse.json(
@@ -94,12 +71,10 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 6. Convert file to buffer for processing
     const bytes = await file.arrayBuffer()
     // eslint-disable-next-line prefer-const
     let buffer: Buffer = Buffer.from(bytes)
 
-    // 7. Verify file type with magic bytes (zero-trust: don't trust the header)
     const typeVerification = await verifyFileType(buffer)
     if (!typeVerification.valid) {
       return NextResponse.json(
@@ -108,7 +83,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 8. Sanitize filename with path traversal protection
     const filenameSanitization = sanitizeFilename(file.name)
     if (!filenameSanitization.isValid) {
       return NextResponse.json(
@@ -117,22 +91,15 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 9. Strip EXIF/metadata from images
     buffer = await stripMetadata(buffer, typeVerification.mimeType!)
-
-    // 10. Encrypt file with AES-256-GCM
     const encryption = encryptFile(buffer)
     buffer = encryption.encrypted
 
-    // 11. Sanitize note with DOMPurify
     const sanitizedNote = sanitizeNote(note)
-
-    // 12. Sanitize custom filename
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
 
-    // 13. Validate PIN format
     if (pin && !/^\d{6}$/.test(pin)) {
       return NextResponse.json(
         { error: "PIN must be exactly 6 digits" },
@@ -140,19 +107,16 @@ export async function handleUploadProxyPost(request: NextRequest) {
       )
     }
 
-    // 14. Calculate expiration (premium gets longer retention)
     const expiresAt = getExpirationDate(buffer.length, tier.expirationMultiplier)
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
 
-    // 15. Upload encrypted file to R2
     await uploadFileBuffer(
       fileId,
       filenameSanitization.sanitized,
       buffer,
-      "application/octet-stream" // Store as binary since it's encrypted
+      "application/octet-stream"
     )
 
-    // 16. Save metadata to database (with encryption metadata)
     await createFileRecord({
       id: fileId,
       r2_key: `uploads/${fileId}/${filenameSanitization.sanitized}`,
@@ -169,9 +133,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
       encryption_auth_tag: encryption.authTag,
     })
 
-    // 17. Mark upload complete
     await markUploadComplete(fileId, undefined)
-
 
     return NextResponse.json({
       success: true,

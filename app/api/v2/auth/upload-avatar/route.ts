@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
 
     const user = await getUserById(currentUser.userId)
     if (user?.avatar_url) {
-      // Only delete if the key belongs to this user's profile directory
       const expectedPrefix = `profiles/${currentUser.userId}/`
       if (user.avatar_url.startsWith(expectedPrefix)) {
         try {

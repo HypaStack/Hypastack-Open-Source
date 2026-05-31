@@ -38,11 +38,6 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",
           },
-          // Content Security Policy
-          // - 'self': own origin for scripts, styles, images, fonts, connections
-          // - challenges.cloudflare.com: Cloudflare Turnstile widget
-          // - r2.hypastack.com: CDN for user-uploaded assets and app images
-          // - *.cloudflare.com: Cloudflare scripts and analytics
           {
             key: "Content-Security-Policy",
             value: [

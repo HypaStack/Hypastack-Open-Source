@@ -1,6 +1,3 @@
-// Client-side Web Crypto API utilities for End-to-End Encryption
-
-// --- WebCrypto Availability Guard ---
 function assertWebCrypto(): void {
   if (typeof crypto === "undefined" || !crypto.subtle) {
     throw new Error(
@@ -9,11 +6,7 @@ function assertWebCrypto(): void {
   }
 }
 
-/**
- * Derives a 256-bit AES-GCM key from the user's access key.
- * Uses the userId as a unique, per-account PBKDF2 salt to prevent
- * precomputation attacks across accounts.
- */
+// userId used as a unique per-account PBKDF2 salt to prevent cross-account precomputation
 export async function deriveMasterKey(accessKey: string, userId: string): Promise<CryptoKey> {
   assertWebCrypto()
   const encoder = new TextEncoder()
@@ -25,7 +18,6 @@ export async function deriveMasterKey(accessKey: string, userId: string): Promis
     ["deriveBits", "deriveKey"]
   )
 
-  // Use the userId as a unique per-user salt
   const salt = encoder.encode(`hypastack-e2e-v2:${userId}`)
 
   return await crypto.subtle.deriveKey(
@@ -42,10 +34,7 @@ export async function deriveMasterKey(accessKey: string, userId: string): Promis
   )
 }
 
-/**
- * Encrypts a plaintext string using the derived CryptoKey.
- * Returns a base64 encoded string format: "iv:ciphertext"
- */
+// Encrypted format: "iv:ciphertext" (both base64)
 export async function encryptE2E(plaintext: string, key: CryptoKey): Promise<string> {
   assertWebCrypto()
   const encoder = new TextEncoder()
@@ -66,11 +55,7 @@ export async function encryptE2E(plaintext: string, key: CryptoKey): Promise<str
   return `${ivBase64}:${cipherBase64}`
 }
 
-/**
- * Decrypts an E2E encrypted string.
- * Expects format "iv:ciphertext" in base64.
- * Returns a graceful fallback on any failure instead of throwing.
- */
+// Returns a graceful fallback string on any failure instead of throwing
 export async function decryptE2E(encryptedStr: string, key: CryptoKey): Promise<string> {
   try {
     assertWebCrypto()
@@ -107,12 +92,6 @@ export async function decryptE2E(encryptedStr: string, key: CryptoKey): Promise<
   }
 }
 
-// --- Session Storage Helpers ---
-
-/**
- * Stores the derived key into sessionStorage as a raw base64 string.
- * Gracefully handles QuotaExceeded errors.
- */
 export async function storeSessionKey(key: CryptoKey): Promise<void> {
   try {
     assertWebCrypto()
@@ -125,9 +104,6 @@ export async function storeSessionKey(key: CryptoKey): Promise<void> {
   }
 }
 
-/**
- * Retrieves the derived key from sessionStorage.
- */
 export async function getSessionKey(): Promise<CryptoKey | null> {
   try {
     assertWebCrypto()
@@ -148,8 +124,6 @@ export async function getSessionKey(): Promise<CryptoKey | null> {
   }
 }
 
-// --- Key Generation (for Registration) ---
-
 export function generateUserIdClient(): string {
   assertWebCrypto()
   return crypto.randomUUID()
@@ -163,10 +137,7 @@ export function generateAccessKeyClient(userId: string): string {
   return `hpsk_${cleanId}_${secretHex}`
 }
 
-/**
- * Extracts the UUID-format userId from an access key.
- * Access key format: hpsk_<32hexCharsUuidNoDashes>_<64hexSecret>
- */
+// Access key format: hpsk_<32hexCharsUuidNoDashes>_<64hexSecret>
 export function extractUserIdFromAccessKey(accessKey: string): string | null {
   const parts = accessKey.split("_")
   if (parts.length !== 3 || parts[0] !== "hpsk" || parts[1].length !== 32) {
@@ -175,8 +146,6 @@ export function extractUserIdFromAccessKey(accessKey: string): string | null {
   const raw = parts[1]
   return `${raw.slice(0, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}-${raw.slice(20)}`
 }
-
-// --- Utility Base64 converters ---
 
 function arrayBufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   let binary = ""

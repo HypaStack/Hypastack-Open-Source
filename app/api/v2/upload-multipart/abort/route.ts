@@ -5,11 +5,6 @@ import { abortMultipartUpload } from "@/lib/r2-multipart"
 
 export const dynamic = "force-dynamic"
 
-/**
- * POST /api/v2/upload-multipart/abort
- *
- * Aborts a multipart upload: cleans up partial data on R2 and deletes the staging record.
- */
 export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
@@ -31,13 +26,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
-    // Abort the multipart upload on R2 (deletes all uploaded parts)
     await abortMultipartUpload({
       r2Key: record.r2_key,
       uploadId,
     })
 
-    // Delete the staging record from DB
     await deleteStagingRecord(fileId)
 
     return NextResponse.json({ success: true })

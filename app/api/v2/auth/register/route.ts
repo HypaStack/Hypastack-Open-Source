@@ -6,18 +6,6 @@ import { checkRegisterRateLimit } from "@/lib/rate-limit"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 
-/**
- * Zero-Knowledge Registration (E2E Encrypted)
- *
- * 1. Client generates userId and cryptographically secure access key (hpsk_...)
- * 2. Client derives an AES-256-GCM master key from the access key
- * 3. Client encrypts the chosen nickname with the master key
- * 4. Client receives encrypted nickname + raw access key + Turnstile token
- * 5. Server verifies Turnstile + CSRF, then hashes the access key (PBKDF2)
- *    and stores it with the encrypted nickname
- */
-
-// Strict ciphertext format: base64(iv):base64(ciphertext)
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
 const RegisterSchema = z.object({
@@ -35,7 +23,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate input
     const validation = RegisterSchema.safeParse(body)
     if (!validation.success) {
       return NextResponse.json(
@@ -46,7 +33,6 @@ export async function POST(request: NextRequest) {
 
     const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
 
-    // Verify CSRF token
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
       return NextResponse.json(
@@ -55,7 +41,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify Turnstile token (bot protection)
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
@@ -66,8 +51,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Rate limit by the client-supplied userId (still prevents abuse from one account)
-    // A secondary global limit would require IP which we explicitly avoid
     const rateLimit = await checkRegisterRateLimit(userId)
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -76,19 +59,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Hash the access key for storage (PBKDF2 — can't reverse)
     const { hash: passwordHash } = hashPassword(accessKey)
 
-    // Create user with encrypted nickname
     await createUser({
       id: userId,
       nickname_encrypted,
       password_hash: passwordHash,
     })
 
-    return NextResponse.json({
-      success: true,
-    })
+    return NextResponse.json({ success: true })
 
   } catch (error) {
     console.error("[Auth] Registration error:", error)

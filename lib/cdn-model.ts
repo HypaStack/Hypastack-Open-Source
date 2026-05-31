@@ -44,11 +44,6 @@ export async function createCdnAsset(input: CreateCdnAssetInput): Promise<void> 
   )
 }
 
-/**
- * Insert multiple CDN asset records in a single query.
- * Builds a multi-row VALUES clause: INSERT INTO ... VALUES ($1,...),($9,...), ...
- * Falls back to single-row insert for length=1.
- */
 export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promise<void> {
   if (inputs.length === 0) return
   if (inputs.length === 1) return createCdnAsset(inputs[0])
@@ -138,10 +133,6 @@ export async function deleteCdnAsset(id: string, userId: string): Promise<boolea
   return (result.rowCount ?? 0) > 0
 }
 
-/**
- * Fetch multiple CDN asset records by IDs in a single query.
- * Returns only records that belong to the given userId.
- */
 export async function getCdnAssetsByIds(ids: string[], userId: string): Promise<CdnAsset[]> {
   if (ids.length === 0) return []
   await ensureDatabase()
@@ -165,11 +156,6 @@ export async function getCdnAssetsByIds(ids: string[], userId: string): Promise<
   }))
 }
 
-/**
- * Delete multiple CDN asset records in a single query.
- * Only deletes records that belong to userId (ownership enforced in SQL).
- * Returns the number of rows actually deleted.
- */
 export async function deleteCdnAssetsByIds(ids: string[], userId: string): Promise<number> {
   if (ids.length === 0) return 0
   await ensureDatabase()

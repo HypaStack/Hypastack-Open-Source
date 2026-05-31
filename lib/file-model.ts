@@ -145,9 +145,6 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
   }
 }
 
-/**
- * Delete a staging record without promoting it (used for abort).
- */
 export async function deleteStagingRecord(id: string): Promise<void> {
   const pool = getPool()
   await pool.query(`DELETE FROM upload_staging WHERE id = $1`, [id])
@@ -368,10 +365,6 @@ export async function getFileStats(): Promise<{
   }
 }
 
-
-
-
-
 export async function getFileHash(fileId: string): Promise<string | null> {
   await ensureDatabase()
   const pool = getPool()
@@ -464,10 +457,6 @@ export async function deleteFileById(fileId: string, userId: string): Promise<bo
   return (result.rowCount ?? 0) > 0
 }
 
-/**
- * Fetch multiple file records by IDs in a single query.
- * Returns only records that belong to the given userId.
- */
 export async function getFilesByIds(ids: string[], userId: string): Promise<FileRecord[]> {
   if (ids.length === 0) return []
   await ensureDatabase()
@@ -503,11 +492,6 @@ export async function getFilesByIds(ids: string[], userId: string): Promise<File
   }))
 }
 
-/**
- * Delete multiple file records in a single query.
- * Only deletes records that belong to userId (ownership enforced in SQL).
- * Returns the number of rows actually deleted.
- */
 export async function deleteFilesByIds(ids: string[], userId: string): Promise<number> {
   if (ids.length === 0) return 0
   await ensureDatabase()

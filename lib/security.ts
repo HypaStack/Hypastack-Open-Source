@@ -13,7 +13,7 @@ export async function setCsrfCookie(): Promise<string> {
   const token = generateCsrfToken()
   const cookieStore = await cookies()
   cookieStore.set('csrf_token', token, {
-    httpOnly: false, // Must be readable by JS for double-submit cookie pattern
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: 3600, // 1 hour

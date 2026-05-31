@@ -6,13 +6,6 @@ import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 
 export const dynamic = "force-dynamic"
 
-/**
- * POST /api/v2/upload-multipart/resume
- *
- * Checks which parts have been uploaded for an interrupted multipart upload.
- * Returns the list of already-uploaded parts and fresh presigned URLs for missing parts.
- * The client re-selects the file, encrypts only the missing chunks, and uploads them.
- */
 export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
@@ -26,7 +19,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Verify staging record exists and belongs to user
     const record = await getStagingRecord(fileId)
     if (!record) {
       return NextResponse.json({ error: "Upload session not found or expired" }, { status: 404 })
@@ -35,7 +27,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
-    // List which parts are already uploaded on R2
     const uploadedParts = await listUploadedParts({
       r2Key: record.r2_key,
       uploadId,
@@ -43,7 +34,6 @@ export async function POST(request: NextRequest) {
 
     const uploadedPartNumbers = new Set(uploadedParts.map((p) => p.partNumber))
 
-    // Determine which parts are missing
     const missingPartNumbers: number[] = []
     for (let i = 1; i <= totalParts; i++) {
       if (!uploadedPartNumbers.has(i)) {
@@ -51,14 +41,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate fresh presigned URLs only for missing parts
     const presignedUrls = await getPresignedUrlsForParts({
       r2Key: record.r2_key,
       uploadId,
       partNumbers: missingPartNumbers,
     })
 
-    // Map: partNumber -> presignedUrl
     const missingPartsWithUrls = missingPartNumbers.map((partNum, idx) => ({
       partNumber: partNum,
       presignedUrl: presignedUrls[idx],

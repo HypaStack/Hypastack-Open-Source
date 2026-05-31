@@ -3,23 +3,12 @@ import { cleanupExpiredFiles, cleanupStaging } from "@/lib/cleanup"
 
 export const dynamic = "force-dynamic"
 
-/**
- * POST /api/v2/cron/cleanup
- *
- * Runs the expired-file and orphaned-staging-record cleanup jobs.
- * Should be triggered by an external cron service (e.g. Cloudflare Workers Cron,
- * cron-job.org, or GitHub Actions) on a schedule (e.g. every hour).
- *
- * Protected by ADMIN_SECRET_KEY — callers must send:
- *   Authorization: Bearer <ADMIN_SECRET_KEY>
- */
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization")
   const expectedKey = process.env.ADMIN_SECRET_KEY
 
   if (!expectedKey) {
-    console.error("[Cron] ADMIN_SECRET_KEY not configured")
-    return NextResponse.json({ error: "Cron not configured" }, { status: 503 })
+    return NextResponse.json({ error: "Not configured" }, { status: 503 })
   }
 
   if (!authHeader || !authHeader.startsWith("Bearer ") || authHeader.slice(7) !== expectedKey) {
