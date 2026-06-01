@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import Script from "next/script"
+import Turnstile from "react-turnstile"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
@@ -17,6 +18,7 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [accessKey, setAccessKey] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState("")
   const [isDesktop, setIsDesktop] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
@@ -39,18 +41,6 @@ export default function SignInPage() {
       const csrfRes = await fetch("/api/v2/csrf", { credentials: "include" })
       const csrfData = await csrfRes.json()
       const csrfToken: string = csrfData.token
-
-      let turnstileToken = ""
-      if (typeof window !== "undefined" && (window as any).turnstile) {
-        turnstileToken = await new Promise<string>((resolve, reject) => {
-          ;(window as any).turnstile.render("#turnstile-login", {
-            sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-            callback: resolve,
-            "error-callback": () => reject(new Error("Bot check failed")),
-            execution: "execute",
-          })
-        })
-      }
 
       const response = await fetch("/api/v2/auth/login", {
         method: "POST",
@@ -155,14 +145,19 @@ export default function SignInPage() {
 
                 <button
                   type="submit"
-                  disabled={!accessKey}
+                  disabled={!accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
                   className="w-full bg-[#030303] py-3.5 text-[15px] font-semibold text-white hover:bg-[#1a1a1a] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ borderRadius: 12 }}
                 >
                   Sign in
                 </button>
-                {/* Invisible Turnstile container */}
-                <div id="turnstile-login" className="hidden" />
+                <div className="flex justify-center mt-4">
+                  <Turnstile 
+                    sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
+                    onVerify={(t) => setTurnstileToken(t)} 
+                    onExpire={() => setTurnstileToken("")}
+                  />
+                </div>
               </motion.form>
             ) : (
               <motion.div

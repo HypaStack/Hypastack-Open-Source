@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Script from "next/script"
+import Turnstile from "react-turnstile"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
@@ -18,6 +19,7 @@ export default function CreateAccountPage() {
   const [copied, setCopied] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [ageConfirmed, setAgeConfirmed] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState("")
   const [isDesktop, setIsDesktop] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
@@ -31,8 +33,8 @@ export default function CreateAccountPage() {
     }
   }, [isAuthenticated, authLoading])
 
-  const isNicknameValid = nickname.length >= 1 && nickname.length <= 100
-  const canSubmit = isNicknameValid && ageConfirmed && !isLoading
+  const isNicknameValid = nickname.length > 0 && nickname.length <= 100
+  const canSubmit = isNicknameValid && ageConfirmed && !isLoading && (turnstileToken || process.env.NODE_ENV === "development")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,18 +51,6 @@ export default function CreateAccountPage() {
       const csrfRes = await fetch("/api/v2/csrf", { credentials: "include" })
       const csrfData = await csrfRes.json()
       const csrfToken: string = csrfData.token
-
-      let turnstileToken = ""
-      if (typeof window !== "undefined" && (window as any).turnstile) {
-        turnstileToken = await new Promise<string>((resolve, reject) => {
-          ;(window as any).turnstile.render("#turnstile-register", {
-            sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-            callback: resolve,
-            "error-callback": () => reject(new Error("Bot check failed")),
-            execution: "execute",
-          })
-        })
-      }
 
       const response = await fetch("/api/v2/auth/register", {
         method: "POST",
@@ -284,8 +274,13 @@ export default function CreateAccountPage() {
             >
               {isLoading ? "Creating…" : "Create account"}
             </button>
-            {/* Invisible Turnstile container */}
-            <div id="turnstile-register" className="hidden" />
+            <div className="flex justify-center mt-4">
+              <Turnstile 
+                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
+                onVerify={(t) => setTurnstileToken(t)} 
+                onExpire={() => setTurnstileToken("")}
+              />
+            </div>
           </form>
 
           <div className={`${isDesktop ? "mt-5" : "mt-8"} pt-6 border-t border-[rgba(0,0,0,0.1)] text-center`}>
