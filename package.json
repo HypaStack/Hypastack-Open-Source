@@ -22,7 +22,6 @@
     "@tauri-apps/plugin-autostart": "^2.5.1",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.2",
     "@tauri-apps/plugin-notification": "^2.3.3",
-    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "dompurify": "^3.3.3",
     "file-type": "^21.3.4",
@@ -33,7 +32,6 @@
     "next": "^15.5.14",
     "pdf-lib": "^1.17.1",
     "pg": "^8.20.0",
-    "qrcode.react": "^4.2.0",
     "react": "19.0.2",
     "react-dom": "19.0.2",
     "react-easy-crop": "^5.5.7",
@@ -46,7 +44,6 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.1",
     "@tauri-apps/cli": "^2.11.1",
-    "@types/canvas-confetti": "^1.9.0",
     "@types/dompurify": "^3.0.5",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25",
