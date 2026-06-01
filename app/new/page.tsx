@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Script from "next/script"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
