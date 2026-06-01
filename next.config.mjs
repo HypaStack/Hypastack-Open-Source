@@ -6,9 +6,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   output: undefined,
   outputFileTracingRoot: __dirname,
   images: {
