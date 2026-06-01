@@ -187,8 +187,10 @@ export default function CreateAccountPage() {
 
   // --- REGISTRATION FORM ---
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#ffffff] text-[#171717]">
-      {/* Dotted bg */}
+    <>
+      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
+      <div className="relative flex min-h-screen flex-col bg-[#ffffff] text-[#171717]">
+        {/* Dotted bg */}
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-60"
         style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)', backgroundSize: '24px 24px', backgroundPosition: 'center' }}
@@ -309,5 +311,6 @@ export default function CreateAccountPage() {
         </footer>
       )}
     </div>
+    </>
   )
 }
