@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
@@ -432,7 +432,6 @@ export default function CdnPage() {
   return (
     <div className="w-full h-full flex flex-col overflow-hidden">
 
-      {/* Page header with actions + CTRL hint */}
       <div className="shrink-0">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
@@ -440,7 +439,7 @@ export default function CdnPage() {
             {breadcrumbs.map(crumb => (
               <span key={crumb.id} className="flex items-center gap-2 text-[#666]">
                 <MIcon name="chevron_right" size={20} className="text-[#999]" />
-                <span className="cursor-pointer hover:underline hover:text-white transition-colors" onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
+                <span className="cursor-pointer hover:underline hover:text-[#111] transition-colors" onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
               </span>
             ))}
           </h1>
@@ -463,7 +462,7 @@ export default function CdnPage() {
                   className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50 leading-none"
                 >
                   <MIcon name="delete" size={18} />
-                  {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
+                  {deleteLoading === "bulk" ? "Deletingâ€¦" : `Delete ${selectedAssets.size}`}
                 </button>
               </>
             ) : (
@@ -509,9 +508,9 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && (
-          <div className="flex items-center gap-2" style={{ borderRadius: 14, backgroundColor: '#171717', padding: '6px 12px' }}>
-            <div className="flex items-center justify-center bg-[#222] rounded-[6px] px-1.5 py-0.5 text-[#666] text-[11px] font-bold border border-[#ffffff10]">CTRL</div>
-            <span style={{ fontSize: 13, fontWeight: 400, color: '#a1a1aa' }}>
+          <div className="flex items-center gap-2" style={{ borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '6px 12px' }}>
+            <div className="flex items-center justify-center bg-white rounded-[6px] px-1.5 py-0.5 text-[#555] text-[11px] font-bold border border-[#e5e5e5]">CTRL</div>
+            <span style={{ fontSize: 13, fontWeight: 400, color: '#666' }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
           </div>
@@ -532,14 +531,12 @@ export default function CdnPage() {
         </div>
       )}
 
-      {/* Assets List */}
       <div className="flex-1 flex flex-col min-h-0 mt-4">
 
         {currentFolders.length === 0 && filteredAssets.length === 0 && !currentFolderId ? (
           <EmptyState query="" username={user.nickname} />
         ) : (
           <div className="flex-1 flex flex-col min-h-0">
-            {/* Folders section */}
             {currentFolders.length > 0 && (
               <div className="mb-4">
                 <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
@@ -548,11 +545,11 @@ export default function CdnPage() {
                     <div
                       key={folder.id}
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex items-center gap-3 bg-[#f5f5f5] hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-[#e5e5e5]"
+                      className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-[#e5e5e5]"
                       style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                     >
-                      <MIcon name="folder" size={16} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 400, color: '#e3e3e3', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
+                      <MIcon name="folder" size={16} style={{ color: '#666', flexShrink: 0 }} />
+                      <span style={{ fontSize: 14, fontWeight: 400, color: '#111', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
@@ -569,15 +566,14 @@ export default function CdnPage() {
             )}
 
 
-            {/* Back button when inside a folder with no assets */}
             {currentFolderId && filteredAssets.length === 0 && currentFolders.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <MIcon name="folder_open" size={40} style={{ color: '#555', marginBottom: 12 }} />
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
                 <button
                   onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
-                  className="inline-flex items-center gap-2 hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+                  className="inline-flex items-center gap-2 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#333', backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}
                 >
                   <MIcon name="arrow_back" size={14} />
                   Go back
@@ -585,7 +581,6 @@ export default function CdnPage() {
               </div>
             )}
 
-            {/* Assets section */}
             {paginatedAssets.length > 0 && (
               <div>
                 {currentFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Assets</h2>}
@@ -626,29 +621,28 @@ export default function CdnPage() {
         )}
       </div>
 
-      {/* Pagination — pinned to bottom */}
       {totalPages > 1 && (
-        <div className="shrink-0 flex items-center justify-between mt-auto" style={{ borderRadius: 14, backgroundColor: '#171717', padding: '8px 12px' }}>
-          <p style={{ fontSize: 13, color: '#a1a1aa' }}>
+        <div className="shrink-0 flex items-center justify-between mt-auto" style={{ borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '8px 12px' }}>
+          <p style={{ fontSize: 13, color: '#888' }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center justify-center hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8, color: '#888' }}
+              className="flex items-center justify-center hover:bg-[#e5e5e5] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 28, height: 28, borderRadius: 8, color: '#666' }}
             >
                <MIcon name="chevron_left" size={16} />
             </button>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#e3e3e3', minWidth: 40, textAlign: 'center' }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#333', minWidth: 40, textAlign: 'center' }}>
               {currentPage}/{totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8, color: '#888' }}
+              className="flex items-center justify-center hover:bg-[#e5e5e5] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 28, height: 28, borderRadius: 8, color: '#666' }}
             >
                <MIcon name="chevron_right" size={16} />
             </button>
@@ -661,7 +655,7 @@ export default function CdnPage() {
         currentStep={wtStep}
         steps={[
           { text: "Click the Upload button in the top-right to add your first CDN asset.", icon: "cloud_upload" },
-          { text: "Your files are uploading — CDN assets get a permanent, public URL.", icon: "public" },
+          { text: "Your files are uploading â€” CDN assets get a permanent, public URL.", icon: "public" },
           { text: "Once uploaded, click 'Copy link' in the upload tray to get your CDN URL.", icon: "content_copy" },
           { text: "You're all set! Your CDN assets are live and ready to use.", icon: "celebration" },
         ]}
@@ -694,7 +688,7 @@ function CdnAssetTile({
   const isImage = asset.contentType.startsWith("image/")
   const showImage = isImage && !imgFailed
 
-  // Privacy gate — images start hidden until user confirms
+  // Privacy gate â€” images start hidden until user confirms
   const [revealed, setRevealed] = useState(!isImage)
   
   const ext = asset.name.includes(".") ? asset.name.split(".").pop()?.toLowerCase() || "file" : "file"
@@ -706,8 +700,7 @@ function CdnAssetTile({
   }
 
   return (
-    <motion.div variants={gridItemVariants} className="group relative" style={{ backgroundColor: '#ffffff', borderRadius: 14, padding: 3, boxShadow: '0 0 0 1px rgba(0,0,0,0.04)' }}>
-      {/* Square tile */}
+    <motion.div variants={gridItemVariants} className="group relative">
       <div
         onClick={(e) => {
           if (!e.ctrlKey) {
@@ -733,19 +726,18 @@ function CdnAssetTile({
             onToggleSelect()
           }
         }}
-        className={`relative w-full aspect-square overflow-hidden bg-white cursor-pointer transition-all select-none ${
+        className={`relative w-full aspect-square overflow-hidden bg-[#f5f5f5] cursor-pointer transition-all select-none border border-[#e5e5e5] ${
           selected ? "" : "hover:opacity-90"
         }`}
-        style={{ borderRadius: 13 }}
+        style={{ borderRadius: 14 }}
       >
-        {/* Reveal gate for images */}
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-white">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5]">
             <div className="flex items-center justify-center mb-3">
-              <MIcon name="image" size={20} style={{ color: '#a1a1aa' }} />
+              <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
-            <p style={{ fontSize: 12, color: '#a1a1aa', marginBottom: 10 }}>
-              Preview <span style={{ color: '#e3e3e3', fontWeight: 500 }}>.{ext}</span>
+            <p style={{ fontSize: 12, color: '#888', marginBottom: 10 }}>
+              Preview <span style={{ color: '#333', fontWeight: 500 }}>.{ext}</span>
             </p>
             <button
               type="button"
@@ -753,15 +745,14 @@ function CdnAssetTile({
                 e.stopPropagation()
                 setRevealed(true)
               }}
-              className="hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+              className="hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
             >
               Reveal
             </button>
           </div>
         )}
 
-        {/* Image content — only rendered when revealed */}
         {revealed && showImage ? (
           <>
             {imgLoading && (
@@ -780,13 +771,12 @@ function CdnAssetTile({
             />
           </>
         ) : revealed && !showImage ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2">
-            <MIcon name="preview_off" size={24} style={{ color: '#a1a1aa' }} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f5f5f5]">
+            <MIcon name="preview_off" size={24} style={{ color: '#bbb' }} />
             <span className="text-[12px] font-medium text-[#999]">No preview available</span>
           </div>
         ) : null}
 
-        {/* Top-left: selection indicator */}
         <div
           className={`absolute top-3 left-3 transition-opacity z-20 ${
             selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -807,7 +797,6 @@ function CdnAssetTile({
           </span>
         </div>
 
-        {/* Hover action bar */}
         <div
           className="absolute inset-x-0 bottom-0 px-1.5 pb-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20"
           onClick={(e) => e.stopPropagation()}
@@ -840,24 +829,23 @@ function CdnAssetTile({
               style={{ height: 28, borderRadius: 8, fontSize: 11, fontWeight: 500 }}
             >
                <MIcon name="delete" size={12} className="shrink-0" />
-              <span className="truncate">{deleteLoading ? "…" : "Delete"}</span>
+              <span className="truncate">{deleteLoading ? "â€¦" : "Delete"}</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Filename + meta */}
       <div className="mt-2 px-1.5 pb-1 min-w-0">
         <p
           className="truncate"
-          style={{ fontSize: 12, fontWeight: 500, color: '#e3e3e3' }}
+          style={{ fontSize: 12, fontWeight: 500, color: '#111' }}
           title={revealed ? asset.name : undefined}
         >
           {asset.name}
         </p>
-        <p style={{ fontSize: 11, color: '#a1a1aa', fontVariantNumeric: 'tabular-nums' }}>
+        <p style={{ fontSize: 11, color: '#888', fontVariantNumeric: 'tabular-nums' }}>
           <span className="uppercase tracking-wider">{typeLabel}</span>
-          <span className="mx-1">·</span>
+          <span className="mx-1">Â·</span>
           {formatBytes(asset.size)}
         </p>
       </div>
@@ -910,8 +898,8 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex items-center justify-center mb-5" style={{ width: 64, height: 64, borderRadius: 14, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.07)' }}>
-            <MIcon name="search" size={28} className="text-[#666]" />
+          <div className="inline-flex items-center justify-center mb-5" style={{ width: 64, height: 64, borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}>
+            <MIcon name="search" size={28} className="text-[#999]" />
           </div>
         ) : null}
         {query ? (

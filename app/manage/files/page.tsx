@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { UploadZone } from "@/components/upload-zone"
 
@@ -59,7 +59,7 @@ function getFileIconForType(contentType?: string, name?: string): string {
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return "—"
+  if (bytes === 0) return "â€”"
   const k = 1024
   const sizes = ["B", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -111,7 +111,7 @@ function FilesPageInner() {
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rawFiles = e.target.files
     if (!rawFiles || rawFiles.length === 0) return
-    // Clone the FileList before clearing input — clearing sets rawFiles.length to 0
+    // Clone the FileList before clearing input â€” clearing sets rawFiles.length to 0
     const dt = new DataTransfer()
     for (let i = 0; i < rawFiles.length; i++) dt.items.add(rawFiles[i])
     const cloned = dt.files
@@ -448,14 +448,13 @@ function FilesPageInner() {
 
   return (
     <div className="flex-1 flex flex-col">
-      {/* Page header with actions */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
           <span className="cursor-pointer hover:underline hover:text-[#171717] text-[#333] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map(f => (
             <span key={f.id} className="flex items-center gap-2 text-[#666]">
               <MIcon name="chevron_right" size={20} className="text-[#999]" />
-              <span className="cursor-pointer hover:underline hover:text-white transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
+              <span className="cursor-pointer hover:underline hover:text-[#111] transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
         </h1>
@@ -469,7 +468,7 @@ function FilesPageInner() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
             >
               <MIcon name="delete" size={18} />
-              {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedFiles.size}`}
+              {deleteLoading === "bulk" ? "Deletingâ€¦" : `Delete ${selectedFiles.size}`}
             </button>
           ) : (
             <>
@@ -492,7 +491,6 @@ function FilesPageInner() {
             </>
           )}
 
-          {/* Hidden input — drives the OS file picker */}
           <input
             ref={fileInputRef}
             type="file"
@@ -503,7 +501,6 @@ function FilesPageInner() {
         </div>
       </div>
 
-      {/* Loading */}
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center min-h-[400px]">
           <MIcon name="refresh" size={24} className="text-[#666] animate-spin" />
@@ -512,7 +509,6 @@ function FilesPageInner() {
         <EmptyState query={searchQuery} username={user.nickname} />
       ) : (
         <div className="flex flex-col gap-6">
-          {/* Folders Section */}
           {filteredFolders.length > 0 && (
             <div>
               <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
@@ -521,11 +517,11 @@ function FilesPageInner() {
                   <div 
                     key={folder.id} 
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] border border-[#e5e5e5] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-white/5"
+                    className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] border border-[#e5e5e5] active:scale-[0.97] transition-all duration-75 cursor-pointer"
                     style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                   >
-                    <MIcon name="folder" size={16} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, fontWeight: 400, color: '#e3e3e3', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
+                    <MIcon name="folder" size={16} style={{ color: '#666', flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, fontWeight: 400, color: '#111', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
                       className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] hover:text-red-400"
@@ -540,7 +536,6 @@ function FilesPageInner() {
             </div>
           )}
 
-          {/* Files Section */}
           {filteredFiles.length > 0 && (
             <div>
               {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Files</h2>}
@@ -595,18 +590,17 @@ function FilesPageInner() {
         </div>
       )}
 
-      {/* Pagination */}
       {!isEmpty && totalPages > 1 && (
         <div className="flex items-center justify-between mt-7 px-2">
           <p className="text-[15px] text-[#666] font-medium">
-            Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
+            Page {currentPage} of {totalPages} Â· {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-5 py-2 rounded-[10px] bg-[#1f1f1f] text-[15px] font-medium text-[#333] hover:bg-white hover:text-[#171717] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] text-[15px] font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -614,7 +608,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-5 py-2 rounded-[10px] bg-[#1f1f1f] text-[15px] font-medium text-[#e2e2e8] hover:bg-[#1f1f1f] hover:text-[#e5e5eb] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] text-[15px] font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -624,7 +618,7 @@ function FilesPageInner() {
 
       {/* 
         When files were pre-selected via the OS picker, render the UploadZone
-        outside any modal so only the bottom-right tray appears — no drop zone.
+        outside any modal so only the bottom-right tray appears â€” no drop zone.
         The full modal is only used when opening the upload area without pre-selected files.
       */}
       {uploadOpen && pendingUploadFiles && (
@@ -637,7 +631,6 @@ function FilesPageInner() {
         />
       )}
 
-      {/* Full upload modal (only when no pre-selected files, e.g., drag-drop onto page) */}
       <AnimatePresence>
         {uploadOpen && !pendingUploadFiles && (
           <>
@@ -661,7 +654,7 @@ function FilesPageInner() {
                   <button
                     type="button"
                     onClick={closeUpload}
-                    className="p-1.5 rounded-[10px] text-[#666] hover:text-white hover:bg-[#1f1f1f] transition-colors"
+                    className="p-1.5 rounded-[10px] text-[#666] hover:text-[#111] hover:bg-[#f0f0f0] transition-colors"
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
@@ -696,7 +689,7 @@ function FilesPageInner() {
 
 export default function FilesPage() {
   return (
-    <Suspense fallback={<div className="h-full w-full bg-[#111] animate-pulse" />}>
+    <Suspense fallback={<div className="h-full w-full bg-white animate-pulse" />}>
       <FilesPageInner />
     </Suspense>
   )
@@ -747,13 +740,13 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#111111] border border-white/10 mb-5">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] mb-5">
             <MIcon name="search" size={28} className="text-[#666]" />
           </div>
         ) : null}
         {query ? (
           <>
-            <h3 className="text-[22px] font-semibold text-white mb-2 tracking-tight">
+            <h3 className="text-[22px] font-semibold text-[#111] mb-2 tracking-tight">
               No files match your search
             </h3>
             <p className="text-[15px] text-[#666] font-normal leading-relaxed">
@@ -771,7 +764,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -15, scale: 0.96 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute text-[26px] font-medium text-[#f5f5f5] tracking-tight leading-relaxed text-center w-full"
+                    className="absolute text-[26px] font-medium text-[#171717] tracking-tight leading-relaxed text-center w-full"
                   >
                     {FACTS[index]}
                   </motion.h3>
@@ -805,7 +798,7 @@ function SortLabel({
       type="button"
       onClick={() => onClick(field)}
       className={`inline-flex items-center gap-1.5 text-[14px] font-medium tracking-wide transition-colors ${
-        active ? "text-white" : "text-[#666] hover:text-[#e5e5eb]"
+        active ? "text-[#111]" : "text-[#888] hover:text-[#333]"
       }`}
     >
       {label}
@@ -864,8 +857,7 @@ function ListView({
   setContextMenuPos: (pos: { x: number; y: number } | null) => void
 }) {
   return (
-    <div style={{ borderRadius: 14, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
-      {/* Header row */}
+    <div style={{ borderRadius: 14, backgroundColor: '#ebebeb', padding: 1, boxShadow: 'none', border: '1px solid #e5e5e5' }}>
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
           type="checkbox"
@@ -883,8 +875,7 @@ function ListView({
         <span />
       </div>
 
-      {/* Rows */}
-      <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
+      <div style={{ backgroundColor: '#ffffff', borderRadius: 13, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
@@ -930,7 +921,7 @@ function ListView({
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-[14px] font-normal text-[#e3e3e3] truncate" title={file.name}>
+                    <span className="text-[14px] font-normal text-[#111] truncate" title={file.name}>
                       {file.name}
                     </span>
 
@@ -945,9 +936,9 @@ function ListView({
                       </span>
                     )}
                   </div>
-                  <div className="flex md:hidden items-center gap-2 mt-0.5 text-[12px] text-[#999]">
+                  <div className="flex md:hidden items-center gap-2 mt-0.5 text-[12px] text-[#888]">
                     <span>{formatBytes(file.size)}</span>
-                    <span className="w-1 h-1 rounded-full bg-[#333]" />
+                    <span className="w-1 h-1 rounded-full bg-[#ccc]" />
                     <span>{formatDate(file.uploadedAt).split(' at ')[0]}</span>
                   </div>
                 </div>
@@ -976,8 +967,8 @@ function ListView({
                         width: 220, 
                         padding: 6,
                         borderRadius: 14, 
-                        backgroundColor: '#171717', 
-                        boxShadow: '0 0 0 1px rgba(255,255,255,0.04)', 
+                        backgroundColor: '#ffffff', 
+                        boxShadow: '0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)', 
                         transformOrigin: contextMenuPos ? 'top left' : 'top right',
                         ...(contextMenuPos ? { left: contextMenuPos.x, top: contextMenuPos.y } : {})
                       }}
@@ -1004,7 +995,7 @@ function ListView({
                       />
                       <ActionItem
                         icon="delete"
-                        label={deleteLoading === file.id ? "Deleting…" : "Delete"}
+                        label={deleteLoading === file.id ? "Deletingâ€¦" : "Delete"}
                         onClick={() => { onDelete(file.id); setContextMenuPos(null) }}
                         disabled={deleteLoading === file.id}
                         accent="danger"
@@ -1039,14 +1030,14 @@ function ActionItem({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full flex items-center bg-transparent hover:bg-[#282828] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
+      className="w-full flex items-center bg-transparent hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
       style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
-        <span className="shrink-0" style={{ color: accent === 'danger' ? '#f87171' : accent === 'success' ? '#4ade80' : 'rgba(255,255,255,0.6)' }}>
+        <span className="shrink-0" style={{ color: accent === 'danger' ? '#ef4444' : accent === 'success' ? '#16a34a' : '#666' }}>
           <MIcon name={icon} size={15} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 400, color: accent === 'danger' ? '#f87171' : '#e3e3e3', lineHeight: 1 }}>{label}</span>
+        <span style={{ fontSize: 14, fontWeight: 400, color: accent === 'danger' ? '#ef4444' : '#111', lineHeight: 1 }}>{label}</span>
       </div>
     </button>
   )
@@ -1067,14 +1058,14 @@ function ActionLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center hover:bg-[#282828] active:scale-[0.97] transition-all duration-75 cursor-pointer"
+      className="flex items-center hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer"
       style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
-        <span className="shrink-0" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <span className="shrink-0" style={{ color: '#666' }}>
           <MIcon name={icon} size={15} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 400, color: '#e3e3e3', lineHeight: 1 }}>{label}</span>
+        <span style={{ fontSize: 14, fontWeight: 400, color: '#111', lineHeight: 1 }}>{label}</span>
       </div>
     </Link>
   )
@@ -1140,7 +1131,7 @@ function GridView({
         const iconName = getFileIconForType(file.contentType, file.name)
         const isImage = isImagePreviewable(file.contentType, file.name)
         return (
-          <div key={file.id} className="group relative bg-[#1f1f1f] rounded-[24px] p-[3px]" style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
+          <div key={file.id} className="group relative bg-[#ebebeb] rounded-[24px] p-[1px]" style={{ boxShadow: 'none', border: '1px solid #e5e5e5' }}>
           <div
             role="button"
             tabIndex={0}
@@ -1148,16 +1139,14 @@ function GridView({
             onDoubleClick={() => window.open(`/d/${file.id}`, '_blank')}
             onContextMenu={(e) => onContextMenu(e, file.id)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleSelect(file.id) } }}
-            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#111111] cursor-pointer transition-all select-none ${
+            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#f5f5f5] cursor-pointer transition-all select-none ${
               isSelected ? "opacity-80" : "hover:opacity-90"
             }`}
           >
-            {/* Always show icon — previews disabled (files are encrypted) */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <MIcon name={iconName} size={48} className="text-[#7dd3fc]" />
+              <MIcon name={iconName} size={48} className="text-[#999]" />
             </div>
 
-              {/* Top-right flags */}
               <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
 
                 {!!file.burnOnRead && (
@@ -1183,7 +1172,6 @@ function GridView({
                 </button>
               </div>
 
-              {/* Hover action bar */}
               <div
                 onClick={(e) => e.stopPropagation()}
                 className="absolute inset-x-0 bottom-0 px-2 pb-2 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -1213,22 +1201,21 @@ function GridView({
                     className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-[10px] text-xs font-medium text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50"
                   >
                      <MIcon name="delete" size={12} />
-                    {deleteLoading === file.id ? "…" : "Delete"}
+                    {deleteLoading === file.id ? "â€¦" : "Delete"}
                   </button>
                 </div>
               </div>
           </div>
 
-            {/* Filename + meta below tile */}
             <div className="mt-3 px-1 min-w-0">
-              <p className="text-[13px] font-semibold text-[#e3e3e3] truncate" title={file.name}>
+              <p className="text-[13px] font-semibold text-[#111] truncate" title={file.name}>
                 {file.name}
               </p>
               <p className="text-[11px] text-[#666] mt-1 font-medium" style={{ fontVariantNumeric: "tabular-nums" }}>
                 <span className="uppercase tracking-wider">
                   {getFileTypeLabel(file.name, file.contentType)}
                 </span>
-                <span className="mx-1.5 text-[#999]">·</span>
+                <span className="mx-1.5 text-[#999]">Â·</span>
                 {formatBytes(file.size)}
               </p>
             </div>

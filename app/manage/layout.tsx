@@ -202,14 +202,12 @@ export default function ManageLayout({
 
   return (
     <>
-    <div className="flex h-screen w-full overflow-hidden bg-[#e5e5e5] text-[#171717]">
-      {/* ── Secondary Sidebar (no card, flush left, transparent) ── */}
+    <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] text-[#171717]">
       <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
         <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
           <PageLogo size={32} borderRadius={8} disableLayoutAnimation={true} />
         </Link>
 
-        {/* Section buttons */}
         <div className="flex flex-col items-center gap-2 mt-8 flex-1">
           {SECTION_BUTTONS.map((item) => {
             const active = isSectionActive(pathname, item.href)
@@ -218,7 +216,7 @@ export default function ManageLayout({
                 key={item.href}
                 href={item.href}
                 className={`relative flex items-center justify-center h-12 w-12 rounded-lg transition-colors shrink-0 ${
-                  active ? 'bg-[#d4d4d4] text-[#171717]' : 'text-[#666] hover:bg-[#d4d4d4] hover:text-[#171717]'
+                  active ? 'bg-white text-[#171717]' : 'text-[#666] hover:bg-white hover:text-[#171717]'
                 }`}
                 aria-label={item.label}
               >
@@ -228,12 +226,11 @@ export default function ManageLayout({
           })}
         </div>
 
-        {/* Avatar at bottom of secondary sidebar */}
         <div ref={menuRef} className="relative mb-2">
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`relative flex items-center justify-center h-12 w-12 rounded-lg hover:bg-[#d4d4d4] transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-[#d4d4d4]' : ''}`}
+            className={`relative flex items-center justify-center h-12 w-12 rounded-lg hover:bg-white transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white' : ''}`}
             aria-label="Account menu"
           >
             <div className="h-7 w-7">
@@ -269,16 +266,13 @@ export default function ManageLayout({
                   boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
                 }}
               >
-                {/* Header */}
                 <div className="px-3 pb-2">
                   <p className="text-sm font-semibold text-[#171717]">{user.nickname}</p>
                   <p className="text-xs text-[#666] mt-0.5">{user.id}</p>
                 </div>
                 
-                {/* Divider */}
                 <div className="mx-3 border-b border-[#f0f0f0] mb-1" />
                 
-                {/* Menu items */}
                 <div className="px-1.5 space-y-0.5">
                   <button
                     type="button"
@@ -322,19 +316,16 @@ export default function ManageLayout({
         </div>
       </aside>
 
-      {/* ── Main Sidebar (card, no border/shadow) ── */}
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[10px] bg-[#f5f5f5] overflow-hidden relative"
-        style={{ width: SIDEBAR_WIDTH }}
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[10px] bg-white overflow-hidden relative"
+        style={{ width: SIDEBAR_WIDTH, borderRight: 'none', boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}
       >
-        {/* Brand row */}
         <div className="flex items-center pt-5 pb-3" style={{ paddingLeft: 24 }}>
           <span className="text-[13px] font-bold tracking-widest uppercase text-black">
             {sectionTitle(pathname)}
           </span>
         </div>
 
-        {/* Nav */}
         <nav
           className="flex-1 min-h-0 pt-1 pb-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           style={{ padding: '0.25rem 0.75rem' }}
@@ -348,7 +339,6 @@ export default function ManageLayout({
               />
             ))}
 
-            {/* Insider Program */}
             {user?.is_insider === 1 && (
               <NavRow
                 item={{ label: "Insider Program", href: "/manage/canary", icon: "science" }}
@@ -359,14 +349,12 @@ export default function ManageLayout({
           </div>
         </nav>
 
-        {/* Usage widget */}
-        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#e5e5e5]">
+        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb]">
           <div className="text-xs text-[#666] font-medium mb-3">
             Usage
           </div>
           
           <div className="space-y-3">
-            {/* Credits */}
             <div>
               <div className="flex items-center justify-between text-sm mb-1.5">
                 <div className="flex items-center gap-2 text-[#333]">
@@ -375,15 +363,13 @@ export default function ManageLayout({
                 </div>
                 <span className="text-[#666]">{user.creditsBalance ?? 0}</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#e5e5e5] overflow-hidden">
+              <div className="h-[3px] rounded-full bg-[#ebebeb] overflow-hidden">
                 <div 
                   className="h-full rounded-full bg-[#007AFF]" 
                   style={{ width: `${Math.min(((user.creditsBalance ?? 0) / 1000) * 100, 100)}%` }} 
                 />
               </div>
             </div>
-            
-            {/* Storage */}
             <div>
               <div className="flex items-center justify-between text-sm mb-1.5">
                 <div className="flex items-center gap-2 text-[#333]">
@@ -392,7 +378,7 @@ export default function ManageLayout({
                 </div>
                 <span className="text-[#666]">{usedPct}%</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#e5e5e5] overflow-hidden">
+              <div className="h-[3px] rounded-full bg-[#ebebeb] overflow-hidden">
                 <div 
                   className="h-full rounded-full bg-[#007AFF]" 
                   style={{ width: `${usedPct}%` }} 
@@ -410,7 +396,6 @@ export default function ManageLayout({
         </div>
       </aside>
 
-      {/* ── Mobile bottom sheet ── */}
       <AnimatePresence>
         {drawerOpen && (
           <motion.div
@@ -440,12 +425,10 @@ export default function ManageLayout({
               willChange: 'transform',
             }}
           >
-              {/* Handle */}
               <div className="flex justify-center pt-3 pb-2">
                 <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: '#d4d4d8' }} />
               </div>
 
-              {/* Nav */}
               <div className="flex flex-col gap-1.5 flex-1" style={{ padding: '8px 12px 16px' }}>
                 {getSubNav(pathname).map((item) => {
                   const active = pathname === item.href
@@ -485,7 +468,6 @@ export default function ManageLayout({
                 )}
               </div>
 
-              {/* Divider + user row */}
               <div style={{ height: 1, margin: '4px 12px', backgroundColor: 'rgba(0,0,0,0.06)' }} />
               <div className="flex items-center gap-3" style={{ padding: '16px 16px 60px' }}>
                 <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#e5e5e5' }}>
@@ -523,9 +505,7 @@ export default function ManageLayout({
         )}
       </AnimatePresence>
 
-      {/* ── Main column (card, no border/shadow) ── */}
       <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[10px] bg-white overflow-hidden relative">
-        {/* Mobile-only top bar */}
         <header
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: '1px solid #f0f0f0' }}
@@ -544,7 +524,6 @@ export default function ManageLayout({
           </button>
         </header>
 
-        {/* Page content */}
         <div className="flex-1 relative overflow-hidden">
           <div className="absolute inset-0 overflow-y-auto">
             <motion.main
@@ -560,7 +539,6 @@ export default function ManageLayout({
         </div>
       </div>
 
-      {/* Preferences modal */}
       <PreferencesModal
         open={preferencesOpen}
         initialTab={preferencesTab}
@@ -569,7 +547,6 @@ export default function ManageLayout({
         storage={stats}
       />
 
-      {/* Fires once whenever the DB tier outpaces last_acknowledged_tier */}
       <TierAnnouncementModal />
       <HypaNotifProvider />
 
@@ -579,7 +556,6 @@ export default function ManageLayout({
       <div className="fixed inset-0 z-[99]" onClick={() => setMenuOpen(false)} />
     )}
 
-    {/* Persistent Donation Notification */}
     <AnimatePresence>
       {showDonationNotice && (
         <motion.div

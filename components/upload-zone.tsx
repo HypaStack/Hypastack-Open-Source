@@ -108,7 +108,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (state === "uploading" || state === "encrypting") {
         e.preventDefault()
-        e.returnValue = "" // Required by most browsers to show the prompt
+        e.returnValue = ""
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
@@ -294,7 +294,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
   }, [])
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    // Only deactivate if leaving the element, not entering a child
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setDragActive(false)
     }
@@ -313,7 +312,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
       e.preventDefault()
     }
     const handleWindowDragLeave = (e: DragEvent) => {
-      // Deactivate only when leaving the window
       if (e.relatedTarget === null) {
         setGlobalDragActive(false)
       }
@@ -416,7 +414,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     if (noteValue) formData.append("note", noteValue)
     if (filenameValue) formData.append("customFilename", filenameValue)
 
-    // Upload progress goes 0-90%, then we hold at 90% while server processes
     const xhr = await uploadWithXHR("/api/v2/upload-proxy", "POST", formData, (pct) => {
       onProgress(Math.min(90, pct))
     })
@@ -435,7 +432,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     let finalFilename: string | null = customFilename.trim() || null
     let finalNote: string | null = note.trim() || null
     
-    // Always fetch a fresh CSRF token to avoid stale/expired tokens
     let currentCsrfToken = csrfToken
     try {
       const csrfRes = await fetch('/api/v2/csrf')
@@ -456,7 +452,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested && zipMultipleFiles
 
     if (shouldZip) {
-      // Ensure the filename stored in the DB always carries the .zip extension
       if (finalFilename) {
         finalFilename = finalFilename.replace(/\.zip$/i, "") + ".zip"
       }
@@ -476,7 +471,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     uploadedBytesRef.current = 0
     
     try {
-      // Branch based on upload type
       if (uploadType === "cdn") {
         await handleCdnUpload(currentCsrfToken)
       } else {
@@ -489,7 +483,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
           }
           setShareUrl(url)
         } else {
-          // Loop over files and upload individually
           let urls: string[] = []
           for (let i = 0; i < files.length; i++) {
             if (i > 0 && uploadDelayMs > 0) {
@@ -536,14 +529,12 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     const totalBytes = files.reduce((acc, f) => acc + f.file.size, 0)
     let uploadedBytes = 0
 
-    // Prepare file metadata for all files upfront
     const filesMeta = files.map(f => ({
       file: f.file,
       fileName: f.file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_"),
       contentType: f.file.type || "application/octet-stream",
     }))
 
-    // ── Step 1: Single batch init call → get all presigned URLs at once ──
     const initResponse = await fetch("/api/v2/cdn/upload-init", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -565,8 +556,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
 
     const { files: initResults } = await initResponse.json()
 
-    // ── Step 2: PUT each file directly to R2 (must be sequential for progress) ──
-    // R2 PUTs go browser→R2 directly; we keep them sequential so progress is meaningful.
     const completedUploads: { cdnId: string; sanitizedName: string; contentType: string }[] = []
 
     for (let i = 0; i < files.length; i++) {
@@ -606,7 +595,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
       completedUploads.push({ cdnId, sanitizedName, contentType })
     }
 
-    // ── Step 3: Single batch complete call → parallel HEAD checks + one DB insert ──
     const completeRes = await fetch("/api/v2/cdn/upload-complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -627,7 +615,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
 
     const { files: completedAssets } = await completeRes.json()
 
-    // Fire onUploadComplete for each asset and build share URLs
     const urls: string[] = []
     for (const asset of completedAssets) {
       urls.push(`${asset.fileName}: ${asset.cdnUrl}`)
@@ -655,10 +642,8 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     finalNote: string | null,
     filePath?: string
   ): Promise<string> => {
-    // Generate encryption key in browser
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
-    // Encrypt the entire file as a single chunk
     const plaintext = await fileToUpload.arrayBuffer()
     const { encryptChunk } = await import("@/lib/multipart")
     const encrypted = await encryptChunk(encKey, plaintext)
@@ -692,7 +677,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     const { fileId, uploadUrl, shareUrl: url, proxyToken } = await initResponse.json()
 
     try {
-      // Direct R2 upload with real progress tracking
       await uploadWithXHR(uploadUrl, "PUT", encryptedBlob, (pct) => setProgress(pct))
       setProgress(100)
 
@@ -707,7 +691,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
         throw new Error(error.error || "Upload validation failed")
       }
 
-      // Append encryption key as URL hash fragment (never sent to server)
       return `${url}#key=${keyBase64}`
     } catch (fetchError: any) {
       const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
@@ -730,10 +713,8 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     finalNote: string | null,
     filePath?: string
   ): Promise<string> => {
-    // Step 1: Generate encryption key in browser RAM
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
-    // Step 2: Request batch presigned URLs from backend
     const initResponse = await fetch("/api/v2/upload-multipart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -760,7 +741,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     const { fileId, uploadId, presignedUrls, shareUrl: url } = await initResponse.json()
     const totalParts = presignedUrls.length
 
-    // Save session info for potential resume
     const sessionInfo = {
       fileId,
       uploadId,
@@ -773,22 +753,18 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
       shareUrl: `${url}#key=${keyBase64}`,
     }
     setInterruptedSession(sessionInfo)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionInfo)) // Synchronous save to survive immediate tab close
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionInfo))
 
-    // Step 3: Encrypt + upload chunks
     try {
       let etags: any[]
 
-      // ─── Tauri native path: Rust-side AES-NI + parallel reqwest ───
       const tauriInternals = (window as any).__TAURI_INTERNALS__
-      // File inputs in Tauri WebView expose the real filesystem path
       const filePath = (fileToUpload as any).path as string | undefined
 
       if (tauriInternals && filePath) {
         const { invoke } = await import("@tauri-apps/api/core")
         const { listen } = await import("@tauri-apps/api/event")
 
-        // Listen for Rust-side progress events
         const unlisten = await listen<{
           percent: number
           bytes_uploaded: number
@@ -822,7 +798,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
         etags = result.etags
       }
 
-      // Step 4: Tell server to finalize the multipart upload on R2
       const completeResponse = await fetch("/api/v2/upload-complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -839,12 +814,9 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
       }
 
       setProgress(100)
-      // Clear interrupted session on success
       setInterruptedSession(null)
-      // Append encryption key as URL hash fragment (never sent to server)
       return `${url}#key=${keyBase64}`
     } catch (uploadError: any) {
-      // Keep interruptedSession set so resume popup can appear
       console.error("[Upload] Multipart upload interrupted:", uploadError.message)
       throw uploadError
     }
@@ -856,8 +828,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
       const customEvent = e as CustomEvent<{ filePath: string; name: string; size: number }>
       const { filePath, name, size } = customEvent.detail
       
-      // Create a dummy File object. The native engine only cares about the path,
-      // but the UI needs name and size.
       const dummyFile = new File([""], name, { type: "application/octet-stream" })
       Object.defineProperty(dummyFile, "size", { value: size })
       Object.defineProperty(dummyFile, "path", { value: filePath })
@@ -871,9 +841,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     return () => window.removeEventListener("hypadrive:upload", handleNativeUpload)
   }, [])
 
-  // Autostart trigger: when the parent seeded us via initialFiles, kick off
-  // the upload as soon as CSRF + (in prod) Turnstile are ready, so the user
-  // never has to click a second "Upload" button.
   useEffect(() => {
     if (!autoStartArmed) return
     if (state !== "selected" || isUploading) return
@@ -884,7 +851,6 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStartArmed, state, isUploading, csrfToken, turnstileToken])
 
-  // Native Desktop Integration: Send OS notification and auto-copy link when upload finishes
   useEffect(() => {
     if (state === "done" && shareUrl && (window as any).__TAURI_INTERNALS__) {
       (async () => {
@@ -1199,14 +1165,14 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
           inputRef.current?.click()
         }
       }}
-      className={`group relative rounded-[20px] transition-all min-h-[520px] sm:min-h-[580px] md:min-h-[660px] w-full flex flex-col justify-end items-start px-5 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12 ${ state === "idle" ? "cursor-pointer bg-transparent hover:bg-[#1f1f1f]/20" : "cursor-default bg-transparent" }`}
+      className={`group relative rounded-[20px] transition-all min-h-[520px] sm:min-h-[580px] md:min-h-[660px] w-full flex flex-col justify-end items-start px-5 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12 ${ state === "idle" ? "cursor-pointer bg-transparent hover:bg-[#eaeaea]/60" : "cursor-default bg-transparent" }`}
     >
       {/* Centered visual */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="relative h-44 w-44 opacity-[0.5]">
-          <div className="absolute left-1/2 top-1/2 -translate-x-[60%] -translate-y-1/2 -rotate-12 h-36 w-28 rounded-[20px] bg-[#1f1f1f]" />
-          <div className="absolute left-1/2 top-1/2 -translate-x-[40%] -translate-y-[55%] rotate-6 h-36 w-28 rounded-[20px] bg-[#2c2c30] flex items-center justify-center">
-            <MIcon name="file_copy" size={50} className="text-muted-foreground" />
+          <div className="absolute left-1/2 top-1/2 -translate-x-[60%] -translate-y-1/2 -rotate-12 h-36 w-28 rounded-[20px] bg-[#e5e5e5]" />
+          <div className="absolute left-1/2 top-1/2 -translate-x-[40%] -translate-y-[55%] rotate-6 h-36 w-28 rounded-[20px] bg-[#d4d4d4] flex items-center justify-center">
+            <MIcon name="file_copy" size={50} className="text-[#aaa]" />
           </div>
         </div>
       </div>
@@ -1235,7 +1201,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
               inputRef.current?.click()
             }}
             disabled={state !== "idle" && state !== "selected"}
-            className="inline-flex items-center gap-2 rounded-[16px] bg-[#2c2c30] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#3a3a3b] transition-colors disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-[16px] bg-[#f0f0f0] border border-[#e5e5e5] px-4 py-2.5 text-sm font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors disabled:cursor-not-allowed"
           >
             <MIcon name="cloud_upload" size={18} />
             Choose a file
@@ -1243,7 +1209,7 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
           <a
             href="/manage/files"
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-2 rounded-[16px] bg-[#2c2c30] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#3a3a3b] transition-colors"
+            className="inline-flex items-center gap-2 rounded-[16px] bg-[#f0f0f0] border border-[#e5e5e5] px-4 py-2.5 text-sm font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors"
           >
             <MIcon name="create_new_folder" size={18} />
             Browse files
@@ -1276,26 +1242,26 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 500 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[20px] sm:rounded-[20px] bg-[#1f1f1f] font-sans mb-8 sm:mb-0"
-            style={{ padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
+            className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[20px] sm:rounded-[20px] bg-white font-sans mb-8 sm:mb-0"
+            style={{ padding: 1, boxShadow: '0 0 0 1px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10)' }}
           >
-            <div className="w-full h-full bg-[#111111] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
+            <div className="w-full h-full bg-white overflow-hidden flex flex-col sm:rounded-[20px] rounded-t-[20px]">
           <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-[17px] font-semibold text-white tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Uploads</h3>
+              <h3 className="text-[17px] font-semibold text-[#111] tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Uploads</h3>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}
+                  className="hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75"
+                  style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#666' }}
                 >
                   Clear
                 </button>
                 <button
                   type="button"
                   onClick={() => setTrayCollapsed((v) => !v)}
-                  className="p-1 rounded-md text-[#666] hover:text-[#999] hover:bg-[#1e1e22] transition-colors"
+                  className="p-1 rounded-md text-[#999] hover:text-[#555] hover:bg-[#f0f0f0] transition-colors"
                   aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
                 >
                   {trayCollapsed ? <MIcon name="expand_less" size={18} /> : <MIcon name="expand_more" size={18} />}
@@ -1303,12 +1269,12 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
               </div>
             </div>
 
-            <p className="text-[13px] text-[#666] font-normal">
-              Uploading to <span className="text-[#a1a1aa] font-medium">{uploadType === "cdn" ? "CDN" : "Files"}</span>
+            <p className="text-[13px] text-[#888] font-normal">
+              Uploading to <span className="text-[#333] font-medium">{uploadType === "cdn" ? "CDN" : "Files"}</span>
             </p>
             {normalizeTier(user?.tier) !== "ultimate" && (
-              <p className="text-[12px] text-[#888] font-normal">
-                For higher upload and deletion speeds, <a href="/pricing" className="text-[#a1a1aa] underline hover:text-white transition-colors">upgrade your plan</a>.
+              <p className="text-[12px] text-[#999] font-normal">
+                For higher upload and deletion speeds, <a href="/pricing" className="text-[#555] underline hover:text-[#111] transition-colors">upgrade your plan</a>.
               </p>
             )}
             {uploadType !== "cdn" && state === "done" && shareUrl && shareUrl.includes("\n") && (
@@ -1345,12 +1311,12 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                     {zippedFile ? (
                       <div className="relative flex items-center gap-3 group" style={{ padding: '10px 16px' }}>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[15px] font-medium text-white truncate leading-tight">
+                          <p className="text-[15px] font-medium text-[#111] truncate leading-tight">
                             {zippedFile.name}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: '#b4b4b8', backgroundColor: '#1f1f1f', padding: '2px 6px', borderRadius: 5 }}>ZIP</span>
-                            <span style={{ fontSize: 13, color: '#a1a1aa' }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: '#666', backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '2px 6px', borderRadius: 5 }}>ZIP</span>
+                            <span style={{ fontSize: 13, color: '#888' }}>
                               {state === "done" ? `Uploaded · ${files.length} file${files.length !== 1 ? 's' : ''} archived` : state === "error" ? "Failed" : state === "uploading" ? `${formatFileSize(zippedFile.size * (progress / 100))} / ${formatFileSize(zippedFile.size)}` : "Pending"}
                             </span>
                           </div>
@@ -1368,8 +1334,8 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                           </div>
                         )}
                         {state === "uploading" && (
-                          <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#1a1a1a' }}>
-                            <div style={{ height: '100%', width: `${progress}%`, borderRadius: 1, backgroundColor: '#888', transition: 'width 0.3s ease' }} />
+                          <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#e5e5e5' }}>
+                            <div style={{ height: '100%', width: `${progress}%`, borderRadius: 1, backgroundColor: '#555', transition: 'width 0.3s ease' }} />
                           </div>
                         )}
                       </div>
@@ -1378,14 +1344,14 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                       files.map((f, index) => (
                         <div key={f.id} className="relative flex items-center gap-3 group" style={{ padding: '10px 16px' }}>
                           <div className="min-w-0 flex-1">
-                            <p className="text-[15px] font-medium text-white truncate leading-tight">
+                            <p className="text-[15px] font-medium text-[#111] truncate leading-tight">
                               {f.path || f.file.name}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: '#b4b4b8', backgroundColor: '#1f1f1f', padding: '2px 6px', borderRadius: 5 }}>
+                              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: '#666', backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '2px 6px', borderRadius: 5 }}>
                                 {f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
                               </span>
-                              <span style={{ fontSize: 13, color: '#a1a1aa' }}>
+                              <span style={{ fontSize: 13, color: '#888' }}>
                                 {state === "done" ? "Uploaded" : state === "error" ? (index < uploadingIndex ? "Uploaded" : index === uploadingIndex ? "Failed" : "Skipped") : state === "uploading" ? (index < uploadingIndex ? "Uploaded" : index === uploadingIndex ? `${formatFileSize(f.file.size * (progress / 100))} / ${formatFileSize(f.file.size)}` : "Pending") : "Pending"}
                               </span>
                             </div>
@@ -1403,13 +1369,13 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                             </div>
                           )}
                           {(state === "uploading" && index === uploadingIndex) && (
-                            <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#1a1a1a' }}>
-                              <div style={{ height: '100%', width: `${progress}%`, borderRadius: 1, backgroundColor: '#888', transition: 'width 0.3s ease' }} />
+                            <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#e5e5e5' }}>
+                              <div style={{ height: '100%', width: `${progress}%`, borderRadius: 1, backgroundColor: '#555', transition: 'width 0.3s ease' }} />
                             </div>
                           )}
                           {(state === "uploading" && index < uploadingIndex) && (
-                            <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#1a1a1a' }}>
-                              <div style={{ height: '100%', width: '100%', borderRadius: 1, backgroundColor: '#888', transition: 'width 0.3s ease' }} />
+                            <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: '#e5e5e5' }}>
+                              <div style={{ height: '100%', width: '100%', borderRadius: 1, backgroundColor: '#555', transition: 'width 0.3s ease' }} />
                             </div>
                           )}
                         </div>
@@ -1419,21 +1385,21 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                 )}
 
                 {state === "selected" && uploadType !== "cdn" && (
-                  <div style={{ margin: '0 12px 8px', backgroundColor: '#171717', borderRadius: 16 }}>
+                  <div style={{ margin: '0 12px 8px', backgroundColor: '#f5f5f5', borderRadius: 16, border: '1px solid #ebebeb' }}>
 
                     {/* Burn toggle */}
                     <div
-                      className="flex items-center justify-between cursor-pointer hover:bg-[#1a1a1a] transition-all duration-75"
+                      className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] transition-all duration-75"
                       style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
                       onClick={() => setBurnOnRead(!burnOnRead)}
                     >
                       <div className="flex items-center gap-2.5">
-                        <MIcon name="local_fire_department" size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
-                        <span style={{ fontSize: 13, color: '#ccc' }}>Burn after download</span>
+                        <MIcon name="local_fire_department" size={16} style={{ color: '#888' }} />
+                        <span style={{ fontSize: 13, color: '#333' }}>Burn after download</span>
                       </div>
                       <div
                         className="relative shrink-0 transition-colors"
-                        style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: burnOnRead ? '#9b9b9b' : '#2a2a2a', border: burnOnRead ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
+                        style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: burnOnRead ? '#555' : '#ddd', border: burnOnRead ? 'none' : '1px solid #ccc' }}
                       >
                         <div
                           className="absolute top-[3px] transition-transform bg-white"
@@ -1443,23 +1409,23 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                     </div>
 
                     {/* Divider */}
-                    <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                    <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(0,0,0,0.07)' }} />
 
                     {/* Rename / Archive name */}
                     {isMultiFile ? (
                       <>
                         <div
-                          className="flex items-center justify-between cursor-pointer hover:bg-[#1a1a1a] transition-all duration-75"
+                          className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] transition-all duration-75"
                           style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
                           onClick={() => setZipMultipleFiles(!zipMultipleFiles)}
                         >
                           <div className="flex items-center gap-2.5">
-                            <MIcon name="folder_zip" size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
-                            <span style={{ fontSize: 13, color: '#ccc' }}>Zip the files</span>
+                            <MIcon name="folder_zip" size={16} style={{ color: '#888' }} />
+                            <span style={{ fontSize: 13, color: '#333' }}>Zip the files</span>
                           </div>
                           <div
                             className="relative shrink-0 transition-colors"
-                            style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: zipMultipleFiles ? '#9b9b9b' : '#2a2a2a', border: zipMultipleFiles ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
+                            style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: zipMultipleFiles ? '#555' : '#ddd', border: zipMultipleFiles ? 'none' : '1px solid #ccc' }}
                           >
                             <div
                               className="absolute top-[3px] transition-transform bg-white"
@@ -1468,28 +1434,28 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                           </div>
                         </div>
                         <div style={{ padding: '0 12px 6px' }}>
-                          <p style={{ fontSize: 11, color: '#666', lineHeight: 1.4 }}>
+                          <p style={{ fontSize: 11, color: '#888', lineHeight: 1.4 }}>
                             Uploading multiple files in a ZIP counts as 1 file, uploading multiple files without ZIP'ing, will count normally.
                           </p>
                         </div>
-                        <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                        <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(0,0,0,0.07)' }} />
                         {zipMultipleFiles && (
                           <>
                             <div style={{ padding: '6px 8px 4px' }}>
                               <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                                <MIcon name="folder_zip" size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                                <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Archive name</span>
+                                <MIcon name="folder_zip" size={15} style={{ color: '#999' }} />
+                                <span style={{ fontSize: 12, fontWeight: 500, color: '#666' }}>Archive name</span>
                               </div>
                               <input
                                 type="text"
                                 value={customFilename}
                                 onChange={(e) => setCustomFilename(e.target.value)}
                                 placeholder="hypastack-archive"
-                                className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
-                                style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+                                className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc]"
+                                style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', fontSize: 13, color: '#111' }}
                               />
                             </div>
-                            <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                            <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(0,0,0,0.07)' }} />
                           </>
                         )}
                       </>
@@ -1497,27 +1463,27 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                       <>
                         <div style={{ padding: '6px 8px 4px' }}>
                           <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                            <MIcon name="edit" size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                            <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Rename file</span>
+                            <MIcon name="edit" size={15} style={{ color: '#999' }} />
+                            <span style={{ fontSize: 12, fontWeight: 500, color: '#666' }}>Rename file</span>
                           </div>
                           <input
                             type="text"
                             value={customFilename}
                             onChange={(e) => setCustomFilename(e.target.value)}
                             placeholder={files[0]?.file.name || "example.pdf"}
-                            className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
-                            style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+                            className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc]"
+                            style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', fontSize: 13, color: '#111' }}
                           />
                         </div>
-                        <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
+                        <div style={{ height: 1, margin: '4px 8px', backgroundColor: 'rgba(0,0,0,0.07)' }} />
                       </>
                     )}
 
                     {/* Note */}
                     <div style={{ padding: '6px 8px 6px' }}>
                       <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                        <MIcon name="article" size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Note</span>
+                        <MIcon name="article" size={15} style={{ color: '#999' }} />
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#666' }}>Note</span>
                       </div>
                       <textarea
                         value={note}
@@ -1525,8 +1491,8 @@ export function UploadZone({ initialFiles, autoStart = true, uploadType = "files
                         placeholder="Optional message…"
                         maxLength={100}
                         rows={2}
-                        className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)] resize-none"
-                        style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+                        className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] resize-none"
+                        style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 10, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', fontSize: 13, color: '#111' }}
                       />
                     </div>
                   </div>

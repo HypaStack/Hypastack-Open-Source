@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
@@ -97,7 +97,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-md"
             onClick={onClose}
           />
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-0 sm:p-4 pointer-events-none">
@@ -108,15 +108,14 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               transition={{ duration: 0.18, ease: "easeOut" }}
               className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto"
               style={{
-                backgroundColor: '#1f1f1f',
+                backgroundColor: '#ebebeb',
                 borderRadius: 20,
-                boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
+                boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 24px 48px rgba(0,0,0,0.12)',
                 padding: 3,
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              {/* Mobile tab bar */}
-              <div className="sm:hidden shrink-0 bg-[#111111] pt-3 pb-1 rounded-[17px]">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] pt-3 pb-1 rounded-[17px]">
                 <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="mobile" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="mobile" />
@@ -127,8 +126,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              {/* Desktop left nav */}
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#111111] rounded-[17px] px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] rounded-[17px] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -139,8 +137,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              {/* Right content */}
-              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#111111] rounded-[17px] overflow-hidden">
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#ffffff] rounded-[17px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
                   {active === "general" && <GeneralTab />}
                   {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}
@@ -183,8 +180,8 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       onClick={onClick}
       className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 ${
         active
-          ? "text-[#ffffff] font-medium"
-          : "text-[#a1a1aa] hover:bg-[#313131] hover:text-[#e5e5eb] active:scale-[0.97] font-medium"
+          ? "text-[#111111] font-medium"
+          : "text-[#888] hover:bg-[#ebebeb] hover:text-[#333] active:scale-[0.97] font-medium"
       }`}
       style={{
         height: 34,
@@ -197,7 +194,8 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       {active && (
         <motion.div
           layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-[#1f1f1f] rounded-[16px]"
+          className="absolute inset-0 bg-white rounded-[16px]"
+          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
       )}
@@ -209,7 +207,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-7">
-      <h4 className="text-[16px] font-medium text-white mb-3">{title}</h4>
+      <h4 className="text-[16px] font-medium text-[#111] mb-3">{title}</h4>
       {children}
     </section>
   )
@@ -222,9 +220,8 @@ function GeneralTab() {
 
   return (
     <div className="space-y-4">
-      {/* Appearance */}
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}>
-        <p className="text-[12px] font-medium text-[#555] mb-3">Appearance</p>
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
+        <p className="text-[12px] font-medium text-[#888] mb-3">Appearance</p>
         <div className="grid grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
           <ThemeTile variant="light" label="Light" active={theme === "light"} onClick={() => setTheme("light")} />
@@ -232,19 +229,18 @@ function GeneralTab() {
         </div>
       </div>
 
-      {/* Language */}
       <div
-        className="flex items-center justify-between cursor-pointer hover:bg-[#1a1a1a] transition-all duration-75"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 14, backgroundColor: '#171717' }}
+        className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] transition-all duration-75"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}
         onClick={() => setLangOpen((o) => !o)}
       >
         <span className="text-[13px] text-[#888]">Language</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#e3e3e3]">
-          {language.label} <span className="text-[#555]">({language.native})</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111]">
+          {language.label} <span className="text-[#999]">({language.native})</span>
           <MIcon
             name="expand_more"
             size={15}
-            className={`text-[#555] transition-transform ${langOpen ? "rotate-180" : ""}`}
+            className={`text-[#aaa] transition-transform ${langOpen ? "rotate-180" : ""}`}
           />
         </span>
       </div>
@@ -253,7 +249,7 @@ function GeneralTab() {
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
             className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto"
-            style={{ padding: 4, borderRadius: 14, backgroundColor: '#1f1f1f' }}
+            style={{ padding: 4, borderRadius: 14, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
           >
             {languages.map((l) => {
               const selected = l.code === language.code
@@ -267,15 +263,15 @@ function GeneralTab() {
                   }}
                   className={`flex w-full items-center justify-between text-left transition-all duration-75 ${
                     selected
-                      ? "text-white font-medium bg-[#9b9b9b]/10"
-                      : "text-[#e3e3e3] hover:bg-[#1a1a1a] active:scale-[0.97]"
+                      ? "text-[#111] font-medium bg-[#f0f0f0]"
+                      : "text-[#333] hover:bg-[#f5f5f5] active:scale-[0.97]"
                   }`}
                   style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 13, border: 'none', cursor: 'pointer' }}
                 >
                   <span>
-                    {l.label} <span className="text-[#555]">({l.native})</span>
+                    {l.label} <span className="text-[#aaa]">({l.native})</span>
                   </span>
-                  {selected && <MIcon name="check" size={15} className="text-[#9b9b9b]" />}
+                  {selected && <MIcon name="check" size={15} className="text-[#555]" />}
                 </button>
               )
             })}
@@ -283,14 +279,13 @@ function GeneralTab() {
         </>
       )}
 
-      {/* Support */}
       <a
         href="/help"
-        className="flex items-center justify-between hover:bg-[#1a1a1a] transition-all duration-75"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14, backgroundColor: '#171717' }}
+        className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}
       >
         <span className="text-[13px] text-[#888]">Support</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#e3e3e3]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
   )
@@ -314,8 +309,8 @@ function ThemeTile({
         onClick={onClick}
         className={`relative w-full aspect-[5/3] rounded-[10px] overflow-hidden transition-all ${
           active
-            ? "ring-2 ring-[#9b9b9b] ring-offset-0"
-            : "ring-1 ring-[#3a3a3b] hover:ring-[#444446]"
+            ? "ring-2 ring-[#111] ring-offset-0"
+            : "ring-1 ring-[#e5e5e5] hover:ring-[#ccc]"
         }`}
       >
         {variant === "system" && (
@@ -327,7 +322,7 @@ function ThemeTile({
         {variant === "light" && <ThemeMock dark={false} />}
         {variant === "dark" && <ThemeMock dark />}
       </button>
-      <span className={`text-[13px] ${active ? "font-medium text-white" : "font-normal text-[#a1a1aa]"}`}>
+      <span className={`text-[13px] ${active ? "font-medium text-[#111]" : "font-normal text-[#888]"}`}>
         {label}
       </span>
     </div>
@@ -377,7 +372,6 @@ function AvatarCropperModal({
     if (!croppedAreaPixels) return
 
     try {
-      // Crop the image while modal is still mounted (blob URL is still valid)
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       if (!ctx) throw new Error("No 2d context")
@@ -423,10 +417,8 @@ function AvatarCropperModal({
       const fd = new FormData()
       fd.append("avatar", cleanFile)
 
-      // Close modal now - image is already cropped, blob URL no longer needed
       onClose()
 
-      // Fire-and-forget upload
       fetch("/api/v2/auth/upload-avatar", {
         method: "POST",
         body: fd,
@@ -441,10 +433,9 @@ function AvatarCropperModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-        className="absolute inset-0 bg-black/60 backdrop-blur-md" 
+        className="absolute inset-0 bg-black/40 backdrop-blur-md" 
         onClick={onClose} 
       />
 
@@ -455,14 +446,13 @@ function AvatarCropperModal({
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-full max-w-[420px] flex flex-col"
         style={{
-          backgroundColor: '#1f1f1f',
+          backgroundColor: '#ebebeb',
           borderRadius: 20,
-          boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
+          boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.12)',
           padding: 3,
         }}
       >
-        <div className="relative w-full flex flex-col" style={{ backgroundColor: '#111111', borderRadius: 17 }}>
-        {/* Cropper */}
+        <div className="relative w-full flex flex-col" style={{ backgroundColor: '#ffffff', borderRadius: 17 }}>
         <div className="relative w-full overflow-hidden" style={{ height: 400, borderRadius: 17 }}>
           <Cropper
             image={imageSrc}
@@ -478,19 +468,18 @@ function AvatarCropperModal({
           />
         </div>
 
-        {/* Controls */}
         <div className="flex gap-1" style={{ marginTop: 4 }}>
           <button 
             onClick={onClose} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#e3e3e3' }}
+            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#666' }}
           >
             Cancel
           </button>
           <button 
             onClick={handleUpload} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#ffffff' }}
+            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#111' }}
           >
             Save
           </button>
@@ -583,7 +572,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     )}
     <div>
 
-      <div className="flex items-center gap-5 mb-4" style={{ borderRadius: 16, backgroundColor: '#171717', padding: '16px 20px' }}>
+      <div className="flex items-center gap-5 mb-4" style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '16px 20px', border: '1px solid #ebebeb' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {avatarSrc ? (
@@ -597,18 +586,18 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
                 unoptimized
               />
             ) : (
-              <div className="h-full w-full flex items-center justify-center bg-[#9b9b9b] text-white text-[24px] font-semibold rounded-full">
+              <div className="h-full w-full flex items-center justify-center bg-[#333] text-white text-[24px] font-semibold rounded-full">
                 {initials}
               </div>
             )}
             {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               </div>
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-[#1f1f1f]/80 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-white hover:bg-[#313131]/90 hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-lg"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white border border-[#e5e5e5] flex items-center justify-center text-[#555] hover:text-[#111] hover:bg-[#f0f0f0] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -634,7 +623,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-[17px] font-medium text-white truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
+            <p className="text-[17px] font-medium text-[#111] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
             {user.is_insider === 1 && (
               <MIcon name="verified" size={17} style={{ color: '#eab308' }} className="shrink-0" />
             )}
@@ -646,8 +635,8 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               setCopiedId(true)
               setTimeout(() => setCopiedId(false), 2000)
             }}
-            className="flex items-center gap-1.5 hover:text-white transition-colors active:scale-[0.97] mb-2 mt-0.5"
-            style={{ fontSize: 12, fontWeight: 500, color: copiedId ? '#4ade80' : '#555' }}
+            className="flex items-center gap-1.5 hover:text-[#111] transition-colors active:scale-[0.97] mb-2 mt-0.5"
+            style={{ fontSize: 12, fontWeight: 500, color: copiedId ? '#16a34a' : '#aaa' }}
           >
             <MIcon name={copiedId ? "check" : "content_copy"} size={13} /> 
             {copiedId ? "Copied!" : "Copy user ID"}
@@ -655,8 +644,8 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
           >
             <MIcon name="edit" size={13} />
             Edit
@@ -664,56 +653,56 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       </div>
 
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', marginBottom: 16 }}>
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', marginBottom: 16, border: '1px solid #ebebeb' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.totalStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#555] font-normal">Space used ({Math.round(usedPct)}%)</p>
+            <p className="text-[12px] text-[#888] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#2c2c30] pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.maxStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#555] font-normal">Total space</p>
+            <p className="text-[12px] text-[#888] font-normal">Total space</p>
           </div>
         </div>
-        <div className="mt-4 h-1.5 w-full rounded-full bg-[#2c2c30] overflow-hidden">
+        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[#9b9b9b] transition-all duration-500"
+            className="h-full rounded-full bg-[#111] transition-all duration-500"
             style={{ width: `${Math.min(100, usedPct)}%` }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#555] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] font-normal">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#9b9b9b]" /> Drive
+            <span className="h-2 w-2 rounded-full bg-[#111]" /> Drive
           </span>
         </div>
       </div>
 
       {!user.premium && (
-        <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
+        <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16, border: '1px solid #ebebeb' }}>
           <div>
-            <p className="text-[15px] font-medium text-white mb-1.5">Upgrade</p>
-            <p className="text-[13px] text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
+            <p className="text-[15px] font-medium text-[#111] mb-1.5">Upgrade</p>
+            <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
-              className="inline-flex items-center hover:bg-[#7d7d7d] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#fefeff', backgroundColor: '#9b9b9b' }}
+              className="inline-flex items-center hover:bg-[#333] active:scale-[0.97] transition-all duration-75"
+              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#fff', backgroundColor: '#111' }}
             >
               Upgrade now
             </button>
           </div>
-          <div className="border-l border-[#2c2c30] pl-4">
-            <p className="text-[15px] font-medium text-white mb-1.5">Empty trash</p>
-            <p className="text-[13px] text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
+          <div className="border-l border-[#e5e5e5] pl-4">
+            <p className="text-[15px] font-medium text-[#111] mb-1.5">Empty trash</p>
+            <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
             <button
               type="button"
               onClick={handleEmptyTrash}
               disabled={trashLoading || files.length === 0}
-              className="inline-flex items-center hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#e5e5eb', backgroundColor: '#1f1f1f' }}
+              className="inline-flex items-center hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
             >
               {trashLoading ? "Deleting..." : "Empty trash"}
             </button>
@@ -721,7 +710,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
-      <div style={{ borderRadius: 14, backgroundColor: '#171717' }}>
+      <div style={{ borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
         <div
           className="flex items-center justify-between"
           style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 14 }}
@@ -733,13 +722,13 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="hover:bg-[#311] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
-            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: '#f87171', backgroundColor: 'rgba(248,113,113,0.08)', marginTop: 5, marginBottom: 5 }}
+            className="hover:bg-red-50 active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
+            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)', marginTop: 5, marginBottom: 5 }}
           >
             {deleteAccountLoading ? "Deleting..." : "Delete"}
           </button>
         </div>
-        <p className="text-[11px] text-[#999] px-3 pb-2.5">
+        <p className="text-[11px] text-[#aaa] px-3 pb-2.5">
           All data will be permanently erased. This cannot be undone.
         </p>
       </div>
@@ -821,7 +810,7 @@ function EditProfileDialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            className="absolute inset-0 bg-black/40 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -832,16 +821,16 @@ function EditProfileDialog({
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full max-w-[420px] flex flex-col"
             style={{
-              backgroundColor: '#1f1f1f',
+              backgroundColor: '#ebebeb',
               borderRadius: 20,
-              boxShadow: '0 0 0 1px rgba(255,255,255,0.04)',
+              boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.10)',
               padding: 3,
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !saving) handleSave()
             }}
           >
-            <div className="relative w-full flex flex-col" style={{ backgroundColor: '#111111', borderRadius: 17 }}>
+            <div className="relative w-full flex flex-col" style={{ backgroundColor: '#ffffff', borderRadius: 17 }}>
               <div className="p-5 space-y-3">
                 <div>
                   <p className="text-[12px] font-medium text-[#888] mb-1.5">Username</p>
@@ -851,24 +840,23 @@ function EditProfileDialog({
                     onChange={(e) => setNickname(e.target.value)}
                     autoFocus
                     className="w-full focus:outline-none"
-                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, fontWeight: 500, color: '#e3e3e3' }}
+                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#111' }}
                   />
                 </div>
 
                 {error && (
-                  <p className="text-[11px] text-red-400">{error}</p>
+                  <p className="text-[11px] text-red-500">{error}</p>
                 )}
               </div>
             </div>
 
-            {/* Controls */}
             <div className="flex gap-1" style={{ marginTop: 4 }}>
               <button
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 disabled:opacity-50"
-                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#e3e3e3' }}
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75 disabled:opacity-50"
+                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#666' }}
               >
                 Cancel
               </button>
@@ -876,8 +864,8 @@ function EditProfileDialog({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !nickname.trim()}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#ffffff' }}
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#111' }}
               >
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -903,12 +891,12 @@ const PLAN_INFO: PlanInfo[] = [
     key: "essential",
     label: "Essential",
     size: "300GB",
-    monthly: "13.99 € / month",
-    annual: "167.99 € / year",
+    monthly: "13.99 â‚¬ / month",
+    annual: "167.99 â‚¬ / year",
     details: [
       "300 GB of storage",
       "550 MB max upload, 200 MB CDN",
-      "30 CDN links · 25 file links",
+      "30 CDN links Â· 25 file links",
       "2x expiration windows",
     ],
   },
@@ -916,12 +904,12 @@ const PLAN_INFO: PlanInfo[] = [
     key: "premium",
     label: "Premium",
     size: "750GB",
-    monthly: "24.99 € / month",
-    annual: "299.99 € / year",
+    monthly: "24.99 â‚¬ / month",
+    annual: "299.99 â‚¬ / year",
     details: [
       "750 GB of storage",
       "1 GB max upload, 500 MB CDN",
-      "100 CDN links · 75 file links",
+      "100 CDN links Â· 75 file links",
       "3x expiration windows",
     ],
   },
@@ -929,13 +917,13 @@ const PLAN_INFO: PlanInfo[] = [
     key: "ultimate",
     label: "Ultimate",
     size: "1.1TB",
-    monthly: "39.99 € / month",
-    annual: "479.99 € / year",
+    monthly: "39.99 â‚¬ / month",
+    annual: "479.99 â‚¬ / year",
     details: [
       "1.1 TB of storage",
       "2.5 GB max upload, 1 GB CDN",
-      "500 CDN links · 500 file links",
-      "4x expiration · priority support",
+      "500 CDN links Â· 500 file links",
+      "4x expiration Â· priority support",
     ],
   },
   {
@@ -947,7 +935,7 @@ const PLAN_INFO: PlanInfo[] = [
     details: [
       "1 GB of storage",
       "100 MB max upload, 20 MB CDN",
-      "10 CDN links · 10 file links",
+      "10 CDN links Â· 10 file links",
       "Standard expiration",
     ],
   },
@@ -958,7 +946,6 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
   const currentTier = resolveTier(user)
   const [selectedTier, setSelectedTier] = useState<PreferencesTier>(currentTier)
 
-  // If the user's actual tier changes (e.g., after upgrade), re-anchor selection
   useEffect(() => {
     setSelectedTier(currentTier)
   }, [currentTier])
@@ -969,12 +956,12 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
   return (
     <div>
       <div className="flex items-center justify-center mb-5">
-        <div className="inline-flex rounded-[16px] bg-[#171717] p-1">
+        <div className="inline-flex rounded-[16px] p-1" style={{ backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}>
           <button
             type="button"
             onClick={() => setBilling("monthly")}
             className={`px-4 py-1.5 rounded-[14px] text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-[#1f1f1f] text-white font-medium" : "text-[#a1a1aa] font-normal"
+              billing === "monthly" ? "bg-white text-[#111] font-medium shadow-sm" : "text-[#888] font-normal"
             }`}
           >
             Monthly
@@ -983,7 +970,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("annual")}
             className={`px-4 py-1.5 rounded-[14px] text-[14px] transition-colors ${
-              billing === "annual" ? "bg-[#1f1f1f] text-white font-medium" : "text-[#a1a1aa] font-normal"
+              billing === "annual" ? "bg-white text-[#111] font-medium shadow-sm" : "text-[#888] font-normal"
             }`}
           >
             Annual
@@ -1006,27 +993,27 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           ))}
         </div>
 
-        <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: 16 }}>
+        <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: 16, border: '1px solid #ebebeb' }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[22px] font-medium text-white tracking-tight">{selectedPlan.label}</p>
+            <p className="text-[22px] font-medium text-[#111] tracking-tight">{selectedPlan.label}</p>
             {isSelectedCurrent && (
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#9b9b9b]/15 text-[#9b9b9b]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333]">
                 Current
               </span>
             )}
           </div>
-          <p className="text-[13px] text-[#a1a1aa] mb-4 font-normal">
+          <p className="text-[13px] text-[#888] mb-4 font-normal">
             {selectedPlan.key === "free"
               ? "Free forever"
               : isSelectedCurrent
                 ? "Thanks for supporting Hypastack."
                 : `Billed ${billing === "annual" ? "annually" : "once"}.`}
           </p>
-          <p className="text-[14px] font-medium text-white mb-2">Plan details</p>
-          <ul className="space-y-1.5 text-[14px] text-[#e2e2e8] font-normal mb-5">
+          <p className="text-[14px] font-medium text-[#111] mb-2">Plan details</p>
+          <ul className="space-y-1.5 text-[14px] text-[#444] font-normal mb-5">
             {selectedPlan.details.map((d) => (
               <li key={d} className="flex items-start gap-2">
-                <MIcon name="check" size={16} className="text-[#9b9b9b] shrink-0 mt-0.5" />
+                <MIcon name="check" size={16} className="text-[#555] shrink-0 mt-0.5" />
                 <span>{d}</span>
               </li>
             ))}
@@ -1035,7 +1022,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key !== "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-[16px] bg-[#9b9b9b] text-[#fefeff] text-[14px] font-medium hover:bg-[#7d7d7d] transition-colors cursor-pointer"
+              className="block w-full text-center px-4 py-2.5 rounded-[16px] bg-[#111] text-white text-[14px] font-medium hover:bg-[#333] transition-colors cursor-pointer"
             >
               Switch to {selectedPlan.label}
             </button>
@@ -1043,7 +1030,8 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key === "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-[16px] bg-[#3a3a3b] text-[#e5e5eb] text-[14px] font-medium hover:bg-[#444446] transition-colors cursor-pointer"
+              className="block w-full text-center px-4 py-2.5 rounded-[16px] text-[14px] font-medium transition-colors cursor-pointer"
+              style={{ backgroundColor: '#ebebeb', color: '#555', border: '1px solid #e5e5e5' }}
             >
               Downgrade to Free
             </button>
@@ -1073,32 +1061,27 @@ function PlanCard({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left rounded-[17px] p-4 transition-colors ${
+      className={`w-full text-left rounded-[17px] p-4 transition-all ${
         selected
-          ? "bg-[#1f1f1f] ring-2 ring-[#9b9b9b]"
-          : "bg-[#171717] hover:bg-[#1a1a1a]"
+          ? "bg-white ring-2 ring-[#111]"
+          : "bg-[#f5f5f5] hover:bg-[#f0f0f0] border border-[#ebebeb]"
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#9b9b9b]/15 text-[#9b9b9b] text-[10px] font-semibold tracking-wide">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] text-[10px] font-semibold tracking-wide">
           {tier}
         </span>
         {current && (
-          <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#9b9b9b]/15 text-[#9b9b9b]">
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#555]">
             Current
           </span>
         )}
       </div>
-      <p className="text-[22px] font-medium text-white tracking-tight">{size}</p>
-      <p className="text-[13px] text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
+      <p className="text-[22px] font-medium text-[#111] tracking-tight">{size}</p>
+      <p className="text-[13px] text-[#888] mt-0.5 font-normal">{price}</p>
     </button>
   )
 }
-
-
-
-
-
 
 function BillingTab({ user }: { user: PreferencesUser }) {
   const currentTier = resolveTier(user)
@@ -1144,7 +1127,7 @@ function BillingTab({ user }: { user: PreferencesUser }) {
 
   const handleCustomPurchase = () => {
     const amt = parseInt(customAmount, 10)
-    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is €10"); return }
+    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is â‚¬10"); return }
     purchaseCredits(amt)
   }
 
@@ -1152,93 +1135,91 @@ function BillingTab({ user }: { user: PreferencesUser }) {
 
   return (
     <div>
-      {/* Balance card */}
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', marginBottom: 16 }}>
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', marginBottom: 16, border: '1px solid #ebebeb' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "—" : creditsBalance.toLocaleString()}
+            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {creditsLoading ? "â€”" : creditsBalance.toLocaleString()}
             </p>
-            <p className="text-[12px] text-[#a1a1aa] font-normal">Credits available</p>
+            <p className="text-[12px] text-[#888] font-normal">Credits available</p>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#2c2c30] pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "—" : `€${creditsBalanceEur.toFixed(2)}`}
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {creditsLoading ? "â€”" : `â‚¬${creditsBalanceEur.toFixed(2)}`}
             </p>
-            <p className="text-[12px] text-[#a1a1aa] font-normal">Balance value</p>
+            <p className="text-[12px] text-[#888] font-normal">Balance value</p>
           </div>
         </div>
-        <div className="mt-4 h-1.5 w-full rounded-full bg-[#2c2c30] overflow-hidden">
+        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${freeUsedPct}%`,
-              backgroundColor: freeUsedPct >= 90 ? '#f87171' : freeUsedPct >= 70 ? '#fbbf24' : '#4ade80',
+              backgroundColor: freeUsedPct >= 90 ? '#ef4444' : freeUsedPct >= 70 ? '#f59e0b' : '#16a34a',
             }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#a1a1aa] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] font-normal">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#4ade80]" /> Free: {creditsLoading ? "—" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
+            <span className="h-2 w-2 rounded-full bg-[#16a34a]" /> Free: {creditsLoading ? "â€”" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "—" : mUsage.creditUnitsUsed.toLocaleString()}
+            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "â€”" : mUsage.creditUnitsUsed.toLocaleString()}
           </span>
         </div>
         {!creditsLoading && freeUnitsRemaining <= 0 && (
-          <p className="text-[11px] text-[#f87171] mt-2">Free tier exhausted — CDN operations consume credits.</p>
+          <p className="text-[11px] text-red-500 mt-2">Free tier exhausted â€” CDN operations consume credits.</p>
         )}
       </div>
 
-      {/* Buy credits */}
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16, border: '1px solid #ebebeb' }}>
         <div>
-          <p className="text-[15px] font-medium text-white mb-1.5">Buy Credits</p>
-          <p className="text-[13px] text-[#a1a1aa] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
+          <p className="text-[15px] font-medium text-[#111] mb-1.5">Buy Credits</p>
+          <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
           <div className="grid grid-cols-3 gap-2">
             {[{ eur: 10, credits: 20 }, { eur: 20, credits: 40 }, { eur: 50, credits: 100 }].map(pkg => (
               <button
                 key={pkg.eur}
                 onClick={() => purchaseCredits(pkg.eur)}
                 disabled={purchaseLoading !== null}
-                className="flex items-center justify-center gap-1.5 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
-                style={{ height: 38, borderRadius: 10, backgroundColor: '#1f1f1f' }}
+                className="flex flex-col items-center justify-center gap-0.5 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
+                style={{ height: 52, borderRadius: 10, backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
               >
                 {purchaseLoading === pkg.eur ? (
-                  <MIcon name="progress_activity" size={16} className="animate-spin text-white" />
+                  <MIcon name="progress_activity" size={16} className="animate-spin text-[#333]" />
                 ) : (
                   <>
-                    <span className="text-[14px] font-medium text-white">€{pkg.eur}</span>
-                    <span className="text-[12px] text-[#4ade80] font-medium">({pkg.credits} credits)</span>
+                    <span className="text-[14px] font-medium text-[#111]">â‚¬{pkg.eur}</span>
+                    <span className="text-[11px] text-[#16a34a] font-medium">{pkg.credits} credits</span>
                   </>
                 )}
               </button>
             ))}
           </div>
         </div>
-        <div className="border-l border-[#2c2c30] pl-4 flex flex-col justify-between">
+        <div className="border-l border-[#e5e5e5] pl-4 flex flex-col justify-between">
           <div>
-            <p className="text-[15px] font-medium text-white mb-1.5">Custom Amount</p>
-            <p className="text-[13px] text-[#a1a1aa] font-normal leading-snug">Enter any amount starting from €10</p>
+            <p className="text-[15px] font-medium text-[#111] mb-1.5">Custom Amount</p>
+            <p className="text-[13px] text-[#888] font-normal leading-snug">Enter any amount starting from â‚¬10</p>
           </div>
           <div className="flex items-center gap-2 mt-3">
-            <div className="flex-1 flex items-center gap-1.5" style={{ backgroundColor: '#1f1f1f', borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42 }}>
-              <span className="text-[14px] text-[#a1a1aa] font-medium">€</span>
+            <div className="flex-1 flex items-center gap-1.5" style={{ backgroundColor: '#ffffff', borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42, border: '1px solid #e5e5e5' }}>
+              <span className="text-[14px] text-[#888] font-medium">â‚¬</span>
               <input
                 type="number"
                 min="10"
                 placeholder="10"
                 value={customAmount}
                 onChange={e => setCustomAmount(e.target.value)}
-                className="w-full bg-transparent text-[14px] text-white outline-none placeholder-[#a1a1aa] font-medium"
+                className="w-full bg-transparent text-[14px] text-[#111] outline-none placeholder-[#ccc] font-medium"
                 style={{ fontVariantNumeric: 'tabular-nums' }}
               />
             </div>
             <button
               onClick={handleCustomPurchase}
               disabled={purchaseLoading !== null || !customAmount}
-              className="inline-flex items-center justify-center hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 64, height: 42, borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#e5e5eb', backgroundColor: '#1f1f1f' }}
+              className="inline-flex items-center justify-center hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 64, height: 42, borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
             >
               {purchaseLoading !== null && customAmount ? <MIcon name="progress_activity" size={16} className="animate-spin" /> : "Buy"}
             </button>
@@ -1247,36 +1228,36 @@ function BillingTab({ user }: { user: PreferencesUser }) {
       </div>
 
       {creditsError && (
-        <div style={{ borderRadius: 14, backgroundColor: 'rgba(248,113,113,0.08)', padding: '8px 12px', marginBottom: 16 }}>
-          <p className="text-[12px] text-[#f87171]">{creditsError}</p>
+        <div style={{ borderRadius: 14, backgroundColor: 'rgba(239,68,68,0.06)', padding: '8px 12px', marginBottom: 16, border: '1px solid rgba(239,68,68,0.15)' }}>
+          <p className="text-[12px] text-red-500">{creditsError}</p>
         </div>
       )}
 
-      {/* Info rows */}
-      <div style={{ borderRadius: 14, backgroundColor: '#171717' }}>
+      <div style={{ borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
         <div className="flex items-center justify-between" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14 }}>
           <span className="text-[13px] text-[#888]">Current plan</span>
-          <span className="text-[13px] font-medium text-[#e3e3e3]">{TIER_LABELS[currentTier]}</span>
+          <span className="text-[13px] font-medium text-[#111]">{TIER_LABELS[currentTier]}</span>
         </div>
-        <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.04)]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+        <div className="flex items-center justify-between border-t border-[#ebebeb]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
           <span className="text-[13px] text-[#888]">Credit rate</span>
-          <span className="text-[13px] text-[#e3e3e3]">1 credit = 1,000 op-units</span>
+          <span className="text-[13px] text-[#333]">1 credit = 1,000 op-units</span>
         </div>
-        <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.04)]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+        <div className="flex items-center justify-between border-t border-[#ebebeb]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
           <span className="text-[13px] text-[#888]">Operations</span>
-          <span className="text-[13px] text-[#e3e3e3]">Upload/delete = 4 units, Download = 1 unit</span>
+          <span className="text-[13px] text-[#333]">Upload/delete = 4 units, Download = 1 unit</span>
         </div>
-        <p className="text-[11px] text-[#888] px-3 pb-2.5">Credits expire 6 months after purchase.</p>
+        <p className="text-[11px] text-[#aaa] px-3 pb-2.5">Credits expire 6 months after purchase.</p>
       </div>
     </div>
   )
 }
+
 function IntegrationsTab() {
   return (
     <div className="space-y-4">
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}>
-        <p className="text-[13px] text-[#e3e3e3] font-medium mb-1">Coming soon</p>
-        <p className="text-[13px] text-[#555] leading-relaxed">
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
+        <p className="text-[13px] text-[#333] font-medium mb-1">Coming soon</p>
+        <p className="text-[13px] text-[#888] leading-relaxed">
           Discord bots, integrations, and third-party connectors are on the way.
         </p>
       </div>
@@ -1294,7 +1275,6 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
   const [purgeSaved, setPurgeSaved] = useState(false)
   const [purgeError, setPurgeError] = useState<string | null>(null)
 
-  // Use the inactivityPurgeDays from the user prop (already fetched by useAuth)
   useEffect(() => {
     if (user.inactivityPurgeDays) {
       setPurgeDays(user.inactivityPurgeDays)
@@ -1330,19 +1310,17 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
   return (
     <div className="space-y-4">
-      {/* Zero-knowledge info */}
-      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}>
-        <p className="text-[13px] text-[#a1a1aa] leading-relaxed">
-          Hypastack stores <span className="text-white font-medium">encrypted usernames</span>,{" "}
-          <span className="text-white font-medium">hashed access keys</span>,{" "}
-          <span className="text-white font-medium">encrypted filenames</span>, and{" "}
-          <span className="text-white font-medium">metadata-stripped assets</span>.{" "}
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
+        <p className="text-[13px] text-[#666] leading-relaxed">
+          Hypastack stores <span className="text-[#111] font-medium">encrypted usernames</span>,{" "}
+          <span className="text-[#111] font-medium">hashed access keys</span>,{" "}
+          <span className="text-[#111] font-medium">encrypted filenames</span>, and{" "}
+          <span className="text-[#111] font-medium">metadata-stripped assets</span>.{" "}
           No emails, no IPs, no passwords, no plaintext PII - ever.
         </p>
       </div>
 
-      {/* Inactivity purge */}
-      <div style={{ borderRadius: 16, backgroundColor: '#171717' }}>
+      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
         <div
           className="flex items-center justify-between"
           style={{ height: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 10 }}
@@ -1362,28 +1340,28 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                 }}
                 disabled={!isPaid}
                 className={`w-[70px] text-center focus:outline-none ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ height: 28, borderRadius: 8, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, fontWeight: 500, color: '#e3e3e3' }}
+                style={{ height: 28, borderRadius: 8, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#111' }}
                 placeholder="7"
               />
             </div>
-            <span className="text-[12px] text-[#555]">days</span>
+            <span className="text-[12px] text-[#aaa]">days</span>
             <button
               onClick={handlePurgeSave}
               disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-              className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: purgeSaved ? '#4ade80' : '#e3e3e3', backgroundColor: purgeSaved ? 'rgba(74,222,128,0.1)' : '#1f1f1f' }}
+              className="hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: purgeSaved ? '#16a34a' : '#333', backgroundColor: purgeSaved ? 'rgba(22,163,74,0.08)' : '#ffffff', border: '1px solid #e5e5e5' }}
             >
               {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
             </button>
           </div>
         </div>
         {purgeError && (
-          <p className="text-[11px] text-red-400 px-3 pb-2">{purgeError}</p>
+          <p className="text-[11px] text-red-500 px-3 pb-2">{purgeError}</p>
         )}
       </div>
 
       {!isPaid && (
-        <p className="text-[11px] text-[#555] px-1">
+        <p className="text-[11px] text-[#aaa] px-1">
           Fixed at <span className="text-[#888] font-medium">7 days</span> for free accounts. Upgrade to customize.
         </p>
       )}
@@ -1405,16 +1383,16 @@ function SecurityRow({
   return (
     <a
       href={href}
-      className="flex items-center gap-4 px-4 py-3.5 hover:bg-[#1f1f23] transition-colors"
+      className="flex items-center gap-4 px-4 py-3.5 hover:bg-[#f0f0f0] transition-colors"
     >
-      <div className="h-10 w-10 rounded-[10px] bg-[#9b9b9b]/15 flex items-center justify-center text-[#9b9b9b] shrink-0">
+      <div className="h-10 w-10 rounded-[10px] bg-[#111]/8 flex items-center justify-center text-[#555] shrink-0">
         <MIcon name={icon} size={20} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-medium text-white">{title}</p>
-        <p className="text-[13px] text-[#a1a1aa] truncate font-normal">{description}</p>
+        <p className="text-[15px] font-medium text-[#111]">{title}</p>
+        <p className="text-[13px] text-[#888] truncate font-normal">{description}</p>
       </div>
-      <MIcon name="chevron_right" size={20} className="text-[#a1a1aa] shrink-0" />
+      <MIcon name="chevron_right" size={20} className="text-[#aaa] shrink-0" />
     </a>
   )
 }

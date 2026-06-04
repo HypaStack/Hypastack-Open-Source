@@ -18,7 +18,7 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [accessKey, setAccessKey] = useState("")
-  const [turnstileToken, setTurnstileToken] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
@@ -74,9 +74,10 @@ export default function SignInPage() {
 
   return (
     <>
-      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
+      {process.env.NODE_ENV !== "development" && (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
+      )}
       <div className="relative flex min-h-screen flex-col bg-[#ffffff] text-[#171717]">
-        {/* Dotted bg */}
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-60"
         style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)', backgroundSize: '24px 24px', backgroundPosition: 'center' }}
@@ -114,7 +115,6 @@ export default function SignInPage() {
                 onSubmit={handleSubmit}
                 className="space-y-4"
               >
-                {/* Access key input */}
                 <div className="relative border border-[rgba(0,0,0,0.15)] bg-white overflow-hidden transition-colors focus-within:border-[#171717]" style={{ borderRadius: 12 }}>
                   <div className="absolute left-3.5 inset-y-0 flex items-center justify-center text-[#888]">
                     <MIcon name="key" size={16} />
@@ -151,13 +151,15 @@ export default function SignInPage() {
                 >
                   Sign in
                 </button>
-                <div className="flex justify-center mt-4">
-                  <Turnstile 
-                    sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
-                    onVerify={(t) => setTurnstileToken(t)} 
-                    onExpire={() => setTurnstileToken("")}
-                  />
-                </div>
+                {process.env.NODE_ENV !== "development" && (
+                  <div className="flex justify-center mt-4">
+                    <Turnstile 
+                      sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
+                      onVerify={(t) => setTurnstileToken(t)} 
+                      onExpire={() => setTurnstileToken("")}
+                    />
+                  </div>
+                )}
               </motion.form>
             ) : (
               <motion.div
@@ -169,7 +171,6 @@ export default function SignInPage() {
             )}
           </AnimatePresence>
 
-          {/* Lost key info */}
           {!isDesktop && (
             <div className="mt-6 border border-[rgba(0,0,0,0.1)] bg-[#fafafa] p-4" style={{ borderRadius: 12 }}>
               <div className="text-[13px] text-[#525252] leading-relaxed">

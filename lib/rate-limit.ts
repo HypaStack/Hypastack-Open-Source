@@ -1,14 +1,5 @@
 import { getPool } from './db'
 
-/**
- * Account-based rate limiting.
- *
- * All rate limits are keyed by the user's account ID (UUID), never by IP.
- * This ensures zero IP logging while still providing effective abuse prevention.
- *
- * The `rate_limits` table uses `account_id` as the primary key alongside `action`.
- */
-
 const UPLOAD_WINDOW_MS = 10 * 60 * 1000
 const UPLOAD_MAX_ATTEMPTS = 5
 
@@ -34,9 +25,6 @@ async function checkRateLimit(
       [action, windowMinutes]
     )
 
-    // Upsert: use account_id + action
-    // Note: the DB unique constraint may be on account_id alone or (account_id, action).
-    // We handle both by catching conflicts gracefully.
       await pool.query(
         `INSERT INTO rate_limits (account_id, action, attempt_count, first_attempt, last_attempt)
          VALUES ($1, $2, 1, NOW(), NOW())
@@ -83,13 +71,9 @@ async function checkRateLimit(
     }
   } catch (error) {
     console.error(`[RateLimit] Error checking ${action} rate limit:`, error)
-    // Fail CLOSED — if we can't confirm the limit state, block the request.
-    // Returning allowed:true on DB errors would silently disable all rate limiting.
     return { allowed: false, remaining: 0, resetInSeconds: 60 }
   }
 }
-
-// NOTE: All functions now accept accountId (userId) instead of IP
 
 export async function checkUploadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
   let maxAttempts = 30

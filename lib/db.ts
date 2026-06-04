@@ -7,55 +7,22 @@ declare global {
   var __basedropDbInitialized: boolean | undefined
 }
 
-/**
- * Build and return the global PostgreSQL connection pool.
- *
- * Connection strategy (in priority order):
- *  1. DATABASE_URL  — a single connection string, used when routing through
- *     Cloudflare Hyperdrive (or any PgBouncer-style pooler). Hyperdrive
- *     assembles this string from the credentials you provided in its dashboard
- *     and exposes a regional proxy endpoint that keeps warm connections to your
- *     DigitalOcean Managed DB. Your Next.js app just talks to that proxy.
- *
- *  2. Individual vars (DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME /
- *     DB_SSL) — legacy fallback for local development or environments where
- *     Hyperdrive is not configured.
- *
- * Pool sizing note:
- *   Because Hyperdrive (or any external pooler) manages the actual connections
- *   to Postgres, your app-side pool should be small. A large app-side pool
- *   doesn't improve throughput and wastes slots on the managed DB.
- *   We use max: 10, min: 2 which is comfortable for a Next.js server process.
- */
 export function getPool(): Pool {
   if (!globalThis.__basedropDbPool) {
     const databaseUrl = process.env.DATABASE_URL
 
     if (databaseUrl) {
-      // --- Hyperdrive / connection-string path ---
-      // ssl: { rejectUnauthorized: false } is the Node.js pg equivalent of
-      // PostgreSQL's sslmode=require — it encrypts the connection but does not
-      // re-verify the server certificate. This is correct here because:
-      //   1. Hyperdrive terminates TLS at its edge; the cert it presents for its
-      //      local endpoint won't match the DigitalOcean hostname in the URL.
-      //   2. Hyperdrive itself enforces a fully verified TLS connection onward
-      //      to DigitalOcean, so the chain of trust is maintained end-to-end.
-      //   3. We strip ?sslmode=... from the URL so the explicit ssl object is
-      //      the sole SSL config. When both are present, pg can mismerge them
-      //      and throw SELF_SIGNED_CERT_IN_CHAIN against DigitalOcean managed DBs.
-      // Using rejectUnauthorized: true would throw a certificate hostname error.
       const cleanUrl = databaseUrl.replace(/([?&])sslmode=[^&]*/i, '$1').replace(/([?&])uselibpqcompat=[^&]*/i, '$1').replace(/[?&]$/, '')
       console.log('[DB] Creating PostgreSQL pool via DATABASE_URL (SSL required)')
       globalThis.__basedropDbPool = new Pool({
         connectionString: cleanUrl,
-        ssl: { rejectUnauthorized: false }, // = sslmode=require
+        ssl: { rejectUnauthorized: false },
         max: 10,
         min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
       })
     } else {
-      // --- Legacy individual-vars path (local dev / no Hyperdrive) ---
       console.log('[DB] Creating PostgreSQL pool via individual env vars')
       console.log('[DB] Host:', process.env.DB_HOST || 'localhost')
       console.log('[DB] User:', process.env.DB_USER)
@@ -71,8 +38,6 @@ export function getPool(): Pool {
         min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
-        // DB_SSL=true  → sslmode=require (encrypted, cert not re-verified)
-        // DB_SSL=false → no SSL (local dev / non-TLS environments only)
         ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
       })
     }
@@ -103,10 +68,6 @@ export async function initDatabase(): Promise<void> {
   try {
     console.log('[DB] Got connection, creating tables...')
 
-    // Create users table — zero-knowledge schema
-    //   nickname_encrypted  → AES-256-GCM encrypted nickname (client-side E2EE)
-    //   password_hash       → PBKDF2 hash of access key (hpsk_...)
-    //   No email, no IP, no OAuth, no PII
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(36) PRIMARY KEY,
@@ -125,7 +86,6 @@ export async function initDatabase(): Promise<void> {
       )
     `)
 
-    // Create folders table (zero-knowledge folder names)
     await client.query(`
       CREATE TABLE IF NOT EXISTS basedrop_folders (
         id VARCHAR(36) PRIMARY KEY,
@@ -171,8 +131,6 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_user_upload_date ON basedrop_files(user_id, upload_date DESC)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_files_upload_incomplete ON basedrop_files(upload_completed) WHERE upload_completed = FALSE`)
 
-    // Rate limiting table — account_id stores the user's ID or identifier
-    // Migration: drop legacy table if it doesn't have account_id
     await client.query(`
       DO $$
       BEGIN
@@ -238,7 +196,6 @@ export async function initDatabase(): Promise<void> {
 
 
 
-    // User sessions — zero-knowledge: no user_agent, no IP
     await client.query(`
       CREATE TABLE IF NOT EXISTS user_sessions (
         id VARCHAR(36) PRIMARY KEY,
@@ -268,7 +225,6 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_cdn_assets_user_id ON cdn_assets(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_cdn_assets_created_at ON cdn_assets(created_at)`)
 
-    // CDN folders (plaintext names — CDN assets are public, no encryption needed)
     await client.query(`
       CREATE TABLE IF NOT EXISTS cdn_folders (
         id VARCHAR(36) PRIMARY KEY,

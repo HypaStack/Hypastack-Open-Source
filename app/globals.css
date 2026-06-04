@@ -129,7 +129,7 @@
 }
 
 html.is-dashboard, html.is-dashboard body {
-  background-color: #e5e5e5 !important;
+  background-color: #f0f0f0 !important;
 }
 
 input:-webkit-autofill,
@@ -503,18 +503,9 @@ input:-webkit-autofill:focus {
 }
 
 
-/* White CTA buttons → dark in light mode for contrast */
-.theme-dashboard.theme-light .bg-white {
-  background-color: #0a0a0a !important;
-}
-
-.theme-dashboard.theme-light .bg-white .text-black,
-.theme-dashboard.theme-light .bg-white.text-black {
-  color: #ffffff !important;
-}
-
+/* White surfaces stay white in light mode — no inversion needed */
 .theme-dashboard.theme-light .hover\:bg-\[\#e2e2e8\]:hover {
-  background-color: #1a1a1c !important;
+  background-color: #f0f0f0 !important;
 }
 
 /* Muted gray text → keep readable in light */

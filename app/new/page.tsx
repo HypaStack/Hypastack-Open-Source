@@ -19,7 +19,7 @@ export default function CreateAccountPage() {
   const [copied, setCopied] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [ageConfirmed, setAgeConfirmed] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
@@ -87,11 +87,9 @@ export default function CreateAccountPage() {
     window.location.href = "/signin"
   }
 
-  // --- KEY DISPLAY SCREEN ---
   if (generatedKey) {
     return (
       <div className="relative flex min-h-screen flex-col bg-[#ffffff] text-[#171717]">
-        {/* Dotted bg */}
         <div
           className="absolute inset-0 pointer-events-none z-0 opacity-60"
           style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)', backgroundSize: '24px 24px', backgroundPosition: 'center' }}
@@ -112,7 +110,6 @@ export default function CreateAccountPage() {
               Your access key has been generated. Save it somewhere safe.
             </p>
 
-            {/* ACCESS KEY DISPLAY */}
             <div className="mb-6 w-full border border-[rgba(0,0,0,0.15)] bg-white overflow-hidden" style={{ borderRadius: 12 }}>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
@@ -176,12 +173,12 @@ export default function CreateAccountPage() {
     )
   }
 
-  // --- REGISTRATION FORM ---
   return (
     <>
-      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
+      {process.env.NODE_ENV !== "development" && (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
+      )}
       <div className="relative flex min-h-screen flex-col bg-[#ffffff] text-[#171717]">
-        {/* Dotted bg */}
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-60"
         style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1px)', backgroundSize: '24px 24px', backgroundPosition: 'center' }}
@@ -213,7 +210,6 @@ export default function CreateAccountPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Username input */}
             <div className="border border-[rgba(0,0,0,0.15)] bg-white overflow-hidden transition-colors focus-within:border-[#171717]" style={{ borderRadius: 12 }}>
               <input
                 type="text"
@@ -235,7 +231,6 @@ export default function CreateAccountPage() {
               <p className="text-[12px] text-[#d93036] px-1 font-medium">Username too long</p>
             )}
 
-            {/* Zero-knowledge info */}
             {!isDesktop && (
               <div className="bg-[#fafafa] border border-[rgba(0,0,0,0.1)] p-4 flex items-start gap-3" style={{ borderRadius: 12 }}>
                 <MIcon name="key" className="mt-0.5 shrink-0 text-[#888]" size={16} />
@@ -274,13 +269,15 @@ export default function CreateAccountPage() {
             >
               {isLoading ? "Creating…" : "Create account"}
             </button>
-            <div className="flex justify-center mt-4">
-              <Turnstile 
-                sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
-                onVerify={(t) => setTurnstileToken(t)} 
-                onExpire={() => setTurnstileToken("")}
-              />
-            </div>
+            {process.env.NODE_ENV !== "development" && (
+              <div className="flex justify-center mt-4">
+                <Turnstile 
+                  sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""} 
+                  onVerify={(t) => setTurnstileToken(t)} 
+                  onExpire={() => setTurnstileToken("")}
+                />
+              </div>
+            )}
           </form>
 
           <div className={`${isDesktop ? "mt-5" : "mt-8"} pt-6 border-t border-[rgba(0,0,0,0.1)] text-center`}>
