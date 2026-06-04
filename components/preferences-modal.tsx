@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
@@ -891,8 +891,8 @@ const PLAN_INFO: PlanInfo[] = [
     key: "essential",
     label: "Essential",
     size: "300GB",
-    monthly: "13.99 â‚¬ / month",
-    annual: "167.99 â‚¬ / year",
+    monthly: "13.99 € / month",
+    annual: "167.99 € / year",
     details: [
       "300 GB of storage",
       "550 MB max upload, 200 MB CDN",
@@ -904,8 +904,8 @@ const PLAN_INFO: PlanInfo[] = [
     key: "premium",
     label: "Premium",
     size: "750GB",
-    monthly: "24.99 â‚¬ / month",
-    annual: "299.99 â‚¬ / year",
+    monthly: "24.99 € / month",
+    annual: "299.99 € / year",
     details: [
       "750 GB of storage",
       "1 GB max upload, 500 MB CDN",
@@ -917,8 +917,8 @@ const PLAN_INFO: PlanInfo[] = [
     key: "ultimate",
     label: "Ultimate",
     size: "1.1TB",
-    monthly: "39.99 â‚¬ / month",
-    annual: "479.99 â‚¬ / year",
+    monthly: "39.99 € / month",
+    annual: "479.99 € / year",
     details: [
       "1.1 TB of storage",
       "2.5 GB max upload, 1 GB CDN",
@@ -1127,7 +1127,7 @@ function BillingTab({ user }: { user: PreferencesUser }) {
 
   const handleCustomPurchase = () => {
     const amt = parseInt(customAmount, 10)
-    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is â‚¬10"); return }
+    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is €10"); return }
     purchaseCredits(amt)
   }
 
@@ -1139,13 +1139,13 @@ function BillingTab({ user }: { user: PreferencesUser }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "â€”" : creditsBalance.toLocaleString()}
+              {creditsLoading ? "—" : creditsBalance.toLocaleString()}
             </p>
             <p className="text-[12px] text-[#888] font-normal">Credits available</p>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] pt-4 sm:pt-0 sm:pl-6">
             <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "â€”" : `â‚¬${creditsBalanceEur.toFixed(2)}`}
+              {creditsLoading ? "—" : `€${creditsBalanceEur.toFixed(2)}`}
             </p>
             <p className="text-[12px] text-[#888] font-normal">Balance value</p>
           </div>
@@ -1189,7 +1189,7 @@ function BillingTab({ user }: { user: PreferencesUser }) {
                   <MIcon name="progress_activity" size={16} className="animate-spin text-[#333]" />
                 ) : (
                   <>
-                    <span className="text-[14px] font-medium text-[#111]">â‚¬{pkg.eur}</span>
+                    <span className="text-[14px] font-medium text-[#111]">€{pkg.eur}</span>
                     <span className="text-[11px] text-[#16a34a] font-medium">{pkg.credits} credits</span>
                   </>
                 )}
@@ -1200,11 +1200,11 @@ function BillingTab({ user }: { user: PreferencesUser }) {
         <div className="border-l border-[#e5e5e5] pl-4 flex flex-col justify-between">
           <div>
             <p className="text-[15px] font-medium text-[#111] mb-1.5">Custom Amount</p>
-            <p className="text-[13px] text-[#888] font-normal leading-snug">Enter any amount starting from â‚¬10</p>
+            <p className="text-[13px] text-[#888] font-normal leading-snug">Enter any amount starting from €10</p>
           </div>
           <div className="flex items-center gap-2 mt-3">
             <div className="flex-1 flex items-center gap-1.5" style={{ backgroundColor: '#ffffff', borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42, border: '1px solid #e5e5e5' }}>
-              <span className="text-[14px] text-[#888] font-medium">â‚¬</span>
+              <span className="text-[14px] text-[#888] font-medium">€</span>
               <input
                 type="number"
                 min="10"
