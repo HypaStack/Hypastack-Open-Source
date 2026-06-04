@@ -15,6 +15,7 @@ interface User {
   lastAcknowledgedTier: Tier
   inactivityPurgeDays: number
   is_insider: number
+  creditsBalance: number
 }
 
 export interface StorageStats {

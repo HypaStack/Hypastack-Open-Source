@@ -129,7 +129,7 @@
 }
 
 html.is-dashboard, html.is-dashboard body {
-  background-color: #111111 !important;
+  background-color: #e5e5e5 !important;
 }
 
 input:-webkit-autofill,
@@ -235,25 +235,28 @@ input:-webkit-autofill:focus {
   border-color: #1f1f1f;
 }
 
-/* Dashboard override — Internxt-inspired drive aesthetic */
+/* Dashboard override — Light mode requested by user */
 .theme-dashboard {
-  --background: #0f0f0f;
-  --foreground: #ffffff;
-  --card: #18181b;
-  --card-foreground: #ffffff;
-  --popover: #18181b;
-  --popover-foreground: #ffffff;
-  --primary: #9b9b9b;
+  --background: #ffffff;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #111111;
   --primary-foreground: #ffffff;
-  --secondary: #2c2c30;
-  --secondary-foreground: #e5e5eb;
-  --muted: #141414;
-  --muted-foreground: #a1a1aa;
-  --accent: #9b9b9b;
-  --accent-foreground: #ffffff;
-  --border: #3a3a3b;
-  --input: #111111;
-  --ring: #9b9b9b;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #6b7280;
+  --accent: #e5e5e5;
+  --accent-foreground: #111111;
+  --border: #e4e4e7;
+  --input: #ffffff;
+  --ring: #111111;
+
+  --sidebar-main: #f5f5f5;
+  --sidebar-sec: #e5e5e5;
 }
 
 /* ── Glassy border ────────────────────────────────────────────────────────

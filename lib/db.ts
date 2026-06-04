@@ -7,25 +7,75 @@ declare global {
   var __basedropDbInitialized: boolean | undefined
 }
 
+/**
+ * Build and return the global PostgreSQL connection pool.
+ *
+ * Connection strategy (in priority order):
+ *  1. DATABASE_URL  — a single connection string, used when routing through
+ *     Cloudflare Hyperdrive (or any PgBouncer-style pooler). Hyperdrive
+ *     assembles this string from the credentials you provided in its dashboard
+ *     and exposes a regional proxy endpoint that keeps warm connections to your
+ *     DigitalOcean Managed DB. Your Next.js app just talks to that proxy.
+ *
+ *  2. Individual vars (DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME /
+ *     DB_SSL) — legacy fallback for local development or environments where
+ *     Hyperdrive is not configured.
+ *
+ * Pool sizing note:
+ *   Because Hyperdrive (or any external pooler) manages the actual connections
+ *   to Postgres, your app-side pool should be small. A large app-side pool
+ *   doesn't improve throughput and wastes slots on the managed DB.
+ *   We use max: 10, min: 2 which is comfortable for a Next.js server process.
+ */
 export function getPool(): Pool {
   if (!globalThis.__basedropDbPool) {
-    console.log('[DB] Creating new PostgreSQL connection pool')
-    console.log('[DB] Host:', process.env.DB_HOST || 'localhost')
-    console.log('[DB] User:', process.env.DB_USER)
-    console.log('[DB] Database:', process.env.DB_NAME)
+    const databaseUrl = process.env.DATABASE_URL
 
-    globalThis.__basedropDbPool = new Pool({
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      max: 40,
-      min: 20,
-      idleTimeoutMillis: 60000,
-      connectionTimeoutMillis: 5000,
-      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
-    })
+    if (databaseUrl) {
+      // --- Hyperdrive / connection-string path ---
+      // ssl: { rejectUnauthorized: false } is the Node.js pg equivalent of
+      // PostgreSQL's sslmode=require — it encrypts the connection but does not
+      // re-verify the server certificate. This is correct here because:
+      //   1. Hyperdrive terminates TLS at its edge; the cert it presents for its
+      //      local endpoint won't match the DigitalOcean hostname in the URL.
+      //   2. Hyperdrive itself enforces a fully verified TLS connection onward
+      //      to DigitalOcean, so the chain of trust is maintained end-to-end.
+      //   3. We strip ?sslmode=... from the URL so the explicit ssl object is
+      //      the sole SSL config. When both are present, pg can mismerge them
+      //      and throw SELF_SIGNED_CERT_IN_CHAIN against DigitalOcean managed DBs.
+      // Using rejectUnauthorized: true would throw a certificate hostname error.
+      const cleanUrl = databaseUrl.replace(/([?&])sslmode=[^&]*/i, '$1').replace(/([?&])uselibpqcompat=[^&]*/i, '$1').replace(/[?&]$/, '')
+      console.log('[DB] Creating PostgreSQL pool via DATABASE_URL (SSL required)')
+      globalThis.__basedropDbPool = new Pool({
+        connectionString: cleanUrl,
+        ssl: { rejectUnauthorized: false }, // = sslmode=require
+        max: 10,
+        min: 2,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+      })
+    } else {
+      // --- Legacy individual-vars path (local dev / no Hyperdrive) ---
+      console.log('[DB] Creating PostgreSQL pool via individual env vars')
+      console.log('[DB] Host:', process.env.DB_HOST || 'localhost')
+      console.log('[DB] User:', process.env.DB_USER)
+      console.log('[DB] Database:', process.env.DB_NAME)
+
+      globalThis.__basedropDbPool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        max: 10,
+        min: 2,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+        // DB_SSL=true  → sslmode=require (encrypted, cert not re-verified)
+        // DB_SSL=false → no SSL (local dev / non-TLS environments only)
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+      })
+    }
 
     globalThis.__basedropDbPool
       .connect()
@@ -327,6 +377,55 @@ export async function initDatabase(): Promise<void> {
       await client.query(`ALTER TABLE user_sessions DROP COLUMN IF EXISTS user_agent`)
     } catch {
       // Ignore
+    }
+
+    // Credits system tables
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS credit_purchases (
+        id VARCHAR(36) PRIMARY KEY,
+        user_id VARCHAR(36) NOT NULL,
+        credits INTEGER NOT NULL,
+        remaining INTEGER NOT NULL,
+        amount_eur NUMERIC(10,2) NOT NULL,
+        stripe_session_id VARCHAR(255),
+        stripe_payment_intent VARCHAR(255),
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        expires_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_credit_purchases_user ON credit_purchases(user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_credit_purchases_active ON credit_purchases(user_id, status) WHERE status = 'completed'`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS operation_logs (
+        id BIGSERIAL PRIMARY KEY,
+        user_id VARCHAR(36) NOT NULL,
+        op_class CHAR(1) NOT NULL,
+        action VARCHAR(30) NOT NULL,
+        op_units INTEGER NOT NULL DEFAULT 1,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_operation_logs_user_month ON operation_logs(user_id, created_at)`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS monthly_usage (
+        user_id VARCHAR(36) NOT NULL,
+        month CHAR(7) NOT NULL,
+        op_units_used INTEGER DEFAULT 0,
+        free_units_used INTEGER DEFAULT 0,
+        credit_units_used INTEGER DEFAULT 0,
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (user_id, month)
+      )
+    `)
+
+    // Migration: add credits_balance to users
+    try {
+      await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS credits_balance INTEGER DEFAULT 0`)
+    } catch {
+      // Column may already exist
     }
 
     globalThis.__basedropDbInitialized = true

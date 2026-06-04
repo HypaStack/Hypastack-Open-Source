@@ -290,7 +290,7 @@ function GeneralTab() {
         style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14, backgroundColor: '#171717' }}
       >
         <span className="text-[13px] text-[#888]">Support</span>
-        <span className="text-[13px] font-medium text-[#e3e3e3]">Open Support Centre →</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#e3e3e3]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
   )
@@ -423,7 +423,7 @@ function AvatarCropperModal({
       const fd = new FormData()
       fd.append("avatar", cleanFile)
 
-      // Close modal now — image is already cropped, blob URL no longer needed
+      // Close modal now - image is already cropped, blob URL no longer needed
       onClose()
 
       // Fire-and-forget upload
@@ -668,13 +668,13 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.totalStorage) : "—"}
+              {storage ? formatBytes(storage.totalStorage) : "-"}
             </p>
             <p className="text-[12px] text-[#555] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#2c2c30] pt-4 sm:pt-0 sm:pl-6">
             <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.maxStorage) : "—"}
+              {storage ? formatBytes(storage.maxStorage) : "-"}
             </p>
             <p className="text-[12px] text-[#555] font-normal">Total space</p>
           </div>
@@ -715,7 +715,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               className="inline-flex items-center hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#e5e5eb', backgroundColor: '#1f1f1f' }}
             >
-              {trashLoading ? "Deleting…" : "Empty trash"}
+              {trashLoading ? "Deleting..." : "Empty trash"}
             </button>
           </div>
         </div>
@@ -736,10 +736,10 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             className="hover:bg-[#311] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
             style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: '#f87171', backgroundColor: 'rgba(248,113,113,0.08)', marginTop: 5, marginBottom: 5 }}
           >
-            {deleteAccountLoading ? "Deleting…" : "Delete"}
+            {deleteAccountLoading ? "Deleting..." : "Delete"}
           </button>
         </div>
-        <p className="text-[11px] text-[#555] px-3 pb-2.5">
+        <p className="text-[11px] text-[#999] px-3 pb-2.5">
           All data will be permanently erased. This cannot be undone.
         </p>
       </div>
@@ -879,7 +879,7 @@ function EditProfileDialog({
                 className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#ffffff' }}
               >
-                {saving ? "Saving…" : "Save"}
+                {saving ? "Saving..." : "Save"}
               </button>
             </div>
           </motion.div>
@@ -909,7 +909,7 @@ const PLAN_INFO: PlanInfo[] = [
       "300 GB of storage",
       "550 MB max upload, 200 MB CDN",
       "30 CDN links · 25 file links",
-      "2× expiration windows",
+      "2x expiration windows",
     ],
   },
   {
@@ -922,7 +922,7 @@ const PLAN_INFO: PlanInfo[] = [
       "750 GB of storage",
       "1 GB max upload, 500 MB CDN",
       "100 CDN links · 75 file links",
-      "3× expiration windows",
+      "3x expiration windows",
     ],
   },
   {
@@ -935,7 +935,7 @@ const PLAN_INFO: PlanInfo[] = [
       "1.1 TB of storage",
       "2.5 GB max upload, 1 GB CDN",
       "500 CDN links · 500 file links",
-      "4× expiration · priority support",
+      "4x expiration · priority support",
     ],
   },
   {
@@ -1095,189 +1095,182 @@ function PlanCard({
   )
 }
 
-const XMR_PRICES: Record<PreferencesTier, string> = { free: "Free", essential: "0.03 XMR/mo", premium: "0.06 XMR/mo", ultimate: "0.12 XMR/mo" }
-const XMR_AMOUNTS: Record<string, number> = { essential: 0.03, premium: 0.06, ultimate: 0.12 }
 
-interface PaymentInvoice { paymentId: string; address: string; amount: number; tier: string; expiresAt: string }
-interface PaymentStatus { status: string; confirmations: number; requiredConfirmations: number; txid?: string; tier: string; amount: number }
-interface HistoryItem { id: string; tier: string; amount: number; status: string; txid: string | null; createdAt: string; receiptBase64?: string }
 
-function truncateTxid(t: string) { return t.length <= 18 ? t : t.slice(0, 8) + "…" + t.slice(-6) }
-function fmtDate(d: string) { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }) }
+
+
 
 function BillingTab({ user }: { user: PreferencesUser }) {
-  const { refreshUser } = useAuth()
   const currentTier = resolveTier(user)
-  const [invoice, setInvoice] = useState<PaymentInvoice | null>(null)
-  const [pStatus, setPStatus] = useState<PaymentStatus | null>(null)
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [creating, setCreating] = useState<string | null>(null)
-  const [copied, setCopied] = useState<"addr" | "amt" | null>(null)
-  const [error, setError] = useState("")
-  const poller = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => { fetchHist() }, [])
-  useEffect(() => {
-    if (!invoice) return
-    poll()
-    poller.current = setInterval(poll, 15_000)
-    return () => { if (poller.current) clearInterval(poller.current) }
-  }, [invoice?.paymentId])
+  const [creditsBalance, setCreditsBalance] = useState(0)
+  const [creditsBalanceEur, setCreditsBalanceEur] = useState(0)
+  const [freeUnitsRemaining, setFreeUnitsRemaining] = useState(5000)
+  const [mUsage, setMUsage] = useState({ opUnitsUsed: 0, freeUnitsUsed: 0, creditUnitsUsed: 0 })
+  const [creditsLoading, setCreditsLoading] = useState(true)
+  const [purchaseLoading, setPurchaseLoading] = useState<number | null>(null)
+  const [customAmount, setCustomAmount] = useState("")
+  const [creditsError, setCreditsError] = useState("")
+  const FREE_UNITS_TOTAL = 5000
 
-  const fetchHist = async () => { try { const r = await fetch("/api/v2/payments/history"); if (r.ok) { const d = await r.json(); setHistory(d.payments || []) } } catch {} }
-  const poll = useCallback(async () => {
-    if (!invoice) return
+  useEffect(() => { fetchCredits() }, [])
+
+  const fetchCredits = async () => {
     try {
-      const r = await fetch(`/api/v2/payments/status?id=${invoice.paymentId}`)
-      if (!r.ok) return
-      const d: PaymentStatus = await r.json()
-      setPStatus(d)
-      if (d.status === "confirmed") { if (poller.current) clearInterval(poller.current); refreshUser(); fetchHist() }
-      if (d.status === "expired" || d.status === "cancelled" || d.status === "underpaid") { if (poller.current) clearInterval(poller.current); fetchHist() }
-    } catch {}
-  }, [invoice])
-
-  const pay = async (tier: PreferencesTier) => {
-    setError(""); setCreating(tier)
-    try {
-      const r = await fetch("/api/v2/payments/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tier }) })
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error || "Failed")
-      setInvoice(d); setPStatus(null)
-    } catch (e: any) { setError(e.message) } finally { setCreating(null) }
+      const r = await fetch("/api/v2/credits/balance")
+      if (r.ok) {
+        const d = await r.json()
+        setCreditsBalance(d.balance ?? 0)
+        setCreditsBalanceEur(d.balanceEur ?? 0)
+        setFreeUnitsRemaining(d.freeUnitsRemaining ?? 0)
+        if (d.monthlyUsage) setMUsage(d.monthlyUsage)
+      }
+    } catch {} finally { setCreditsLoading(false) }
   }
 
-  const copy = async (t: string, k: "addr" | "amt") => { await navigator.clipboard.writeText(t); setCopied(k); setTimeout(() => setCopied(null), 2000) }
-  const closeInv = () => { if (poller.current) clearInterval(poller.current); setInvoice(null); setPStatus(null) }
+  const purchaseCredits = async (amountEur: number) => {
+    setCreditsError(""); setPurchaseLoading(amountEur)
+    try {
+      const r = await fetch("/api/v2/credits/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amountEur }),
+      })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error || "Failed to create checkout")
+      if (d.checkoutUrl) window.location.href = d.checkoutUrl
+    } catch (e: any) { setCreditsError(e.message) } finally { setPurchaseLoading(null) }
+  }
 
-  const TIERS: PreferencesTier[] = ["essential", "premium", "ultimate"]
+  const handleCustomPurchase = () => {
+    const amt = parseInt(customAmount, 10)
+    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is €10"); return }
+    purchaseCredits(amt)
+  }
+
+  const freeUsedPct = creditsLoading ? 0 : Math.min(100, Math.round(((FREE_UNITS_TOTAL - freeUnitsRemaining) / FREE_UNITS_TOTAL) * 100))
 
   return (
-    <div className="space-y-6">
-      {/* Current plan */}
-      <div className="flex items-center justify-between" style={{ backgroundColor: '#171717', borderRadius: 16, padding: '14px 16px' }}>
-        <div>
-          <p className="text-[22px] font-medium text-white tracking-tight">{TIER_LABELS[currentTier]}</p>
-          <p className="text-[13px] text-[#a1a1aa] font-normal mt-0.5">{currentTier === "free" ? "Upgrade for higher limits." : "Thanks for supporting Hypastack."}</p>
+    <div>
+      {/* Balance card */}
+      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', marginBottom: 16 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div>
+            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {creditsLoading ? "—" : creditsBalance.toLocaleString()}
+            </p>
+            <p className="text-[12px] text-[#a1a1aa] font-normal">Credits available</p>
+          </div>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#2c2c30] pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-white tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+              {creditsLoading ? "—" : `€${creditsBalanceEur.toFixed(2)}`}
+            </p>
+            <p className="text-[12px] text-[#a1a1aa] font-normal">Balance value</p>
+          </div>
         </div>
-        <span className={`text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${currentTier !== "free" ? "bg-[#9b9b9b]/15 text-[#9b9b9b]" : "bg-[#1f1f1f] text-[#7a7a80]"}`}>
-          {currentTier !== "free" ? "Active" : "Free"}
-        </span>
+        <div className="mt-4 h-1.5 w-full rounded-full bg-[#2c2c30] overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${freeUsedPct}%`,
+              backgroundColor: freeUsedPct >= 90 ? '#f87171' : freeUsedPct >= 70 ? '#fbbf24' : '#4ade80',
+            }}
+          />
+        </div>
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#a1a1aa] font-normal">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#4ade80]" /> Free: {creditsLoading ? "—" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "—" : mUsage.creditUnitsUsed.toLocaleString()}
+          </span>
+        </div>
+        {!creditsLoading && freeUnitsRemaining <= 0 && (
+          <p className="text-[11px] text-[#f87171] mt-2">Free tier exhausted — CDN operations consume credits.</p>
+        )}
       </div>
 
-      {/* Tier cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {TIERS.map(t => {
-          const isCurrent = t === currentTier
-          return (
-            <div key={t} style={{ backgroundColor: isCurrent ? 'rgba(155,155,155,0.05)' : '#171717', borderRadius: 16, padding: 16 }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[15px] font-semibold text-white">{TIER_LABELS[t]}</span>
-                {isCurrent && <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#9b9b9b]/15 text-[#9b9b9b]">Current</span>}
-              </div>
-              <p className="text-[13px] text-[#7a7a80] font-normal mb-3">{XMR_PRICES[t]}</p>
-              {!isCurrent && (
-                <button onClick={() => pay(t)} disabled={creating === t}
-                  className="w-full rounded-[16px] bg-[#1f1f1f] text-[13px] font-medium text-[#e5e5eb] py-2 hover:bg-[#1a1a1a] transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
-                  {creating === t ? <><MIcon name="progress_activity" size={16} className="animate-spin" /> Creating…</> : <>Pay with XMR <MIcon name="open_in_new" size={16} /></>}
-                </button>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {error && <p className="text-[13px] text-red-400">{error}</p>}
-
-      {/* Payment modal overlay inside the tab */}
-      <AnimatePresence>
-        {invoice && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={e => { if (e.target === e.currentTarget && pStatus?.status !== "confirming") closeInv() }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-md rounded-[20px] bg-[#1f1f1f] shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                <h3 className="text-[16px] font-semibold text-white">
-                  {pStatus?.status === "confirmed" ? "Payment confirmed!" : pStatus?.status === "expired" ? "Invoice expired" : pStatus?.status === "underpaid" ? "Underpaid" : `Upgrade to ${TIER_LABELS[(invoice.tier as PreferencesTier) || "essential"]}`}
-                </h3>
-                <button onClick={closeInv} className="p-1.5 rounded-[16px] text-[#7a7a80] hover:text-white hover:bg-[#1f1f1f] transition-colors"><MIcon name="close" size={18} /></button>
-              </div>
-              <div className="px-5 pb-5 space-y-3">
-                {pStatus?.status === "confirmed" ? (
-                  <div className="p-5 text-center">
-                    <MIcon name="check_circle" size={42} className="text-emerald-500 mx-auto mb-2" />
-                    <p className="text-[14px] font-semibold text-emerald-400">Payment received</p>
-                    <p className="text-[12px] text-emerald-500/80 mt-1">{pStatus.confirmations} confirmations · {truncateTxid(pStatus.txid || "")}</p>
-                  </div>
-                ) : pStatus?.status === "expired" ? (
-                  <div className="p-5 text-center">
-                    <MIcon name="error" size={42} className="text-red-500 mx-auto mb-2" />
-                    <p className="text-[14px] font-semibold text-red-400">Invoice expired</p>
-                  </div>
-                ) : pStatus?.status === "underpaid" ? (
-                  <div className="p-5 text-center">
-                    <MIcon name="error" size={42} className="text-amber-500 mx-auto mb-2" />
-                    <p className="text-[14px] font-semibold text-amber-400">Payment underpaid</p>
-                    <p className="text-[12px] text-amber-500/80 mt-1">You did not send the full amount. Please contact support.</p>
-                  </div>
+      {/* Buy credits */}
+      <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
+        <div>
+          <p className="text-[15px] font-medium text-white mb-1.5">Buy Credits</p>
+          <p className="text-[13px] text-[#a1a1aa] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
+          <div className="grid grid-cols-3 gap-2">
+            {[{ eur: 10, credits: 20 }, { eur: 20, credits: 40 }, { eur: 50, credits: 100 }].map(pkg => (
+              <button
+                key={pkg.eur}
+                onClick={() => purchaseCredits(pkg.eur)}
+                disabled={purchaseLoading !== null}
+                className="flex items-center justify-center gap-1.5 hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
+                style={{ height: 38, borderRadius: 10, backgroundColor: '#1f1f1f' }}
+              >
+                {purchaseLoading === pkg.eur ? (
+                  <MIcon name="progress_activity" size={16} className="animate-spin text-white" />
                 ) : (
                   <>
-                    <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '12px 14px' }}>
-                      <div className="flex items-center justify-between mb-1"><span className="text-[11px] text-[#7a7a80] uppercase tracking-wider font-medium">Amount</span><button onClick={() => copy(String(invoice.amount), "amt")} className="text-[#7a7a80] hover:text-white p-0.5">{copied === "amt" ? <MIcon name="check_circle" size={16} className="text-emerald-500" /> : <MIcon name="content_copy" size={16} />}</button></div>
-                      <p className="text-[20px] font-bold text-white font-mono">{invoice.amount} <span className="text-[#7a7a80] text-[14px]">XMR</span></p>
-                    </div>
-                    <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '12px 14px' }}>
-                      <div className="flex items-center justify-between mb-1"><span className="text-[11px] text-[#7a7a80] uppercase tracking-wider font-medium">Send to</span><button onClick={() => copy(invoice.address, "addr")} className="text-[#7a7a80] hover:text-white p-0.5">{copied === "addr" ? <MIcon name="check_circle" size={16} className="text-emerald-500" /> : <MIcon name="content_copy" size={16} />}</button></div>
-                      <p className="text-[12px] font-mono text-white break-all leading-relaxed select-all">{invoice.address}</p>
-                    </div>
-                    <div style={{ borderRadius: 16, backgroundColor: '#171717', padding: '12px 14px' }}>
-                      {pStatus?.status === "confirming" ? (
-                        <div className="flex items-center gap-2.5"><MIcon name="progress_activity" size={18} className="text-amber-400 animate-spin" /><div><p className="text-[13px] font-medium text-amber-400">Payment detected — confirming</p><p className="text-[12px] text-[#7a7a80]">{pStatus.confirmations}/{pStatus.requiredConfirmations} confirmations</p></div></div>
-                      ) : (
-                        <div className="flex items-center gap-2.5"><div className="relative flex h-4 w-4"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9b9b9b] opacity-75" /><span className="relative inline-flex rounded-full h-4 w-4 bg-[#9b9b9b] items-center justify-center"><MIcon name="schedule" size={12} className="text-white" /></span></div><div><p className="text-[13px] font-medium text-white">Waiting for payment…</p><p className="text-[12px] text-[#7a7a80]">Polling every 15s · Expires {new Date(invoice.expiresAt).toLocaleTimeString()}</p></div></div>
-                      )}
-                      {pStatus?.status === "confirming" && <div className="mt-2.5 h-1 w-full rounded-full bg-[#2c2c30] overflow-hidden"><motion.div className="h-full rounded-full bg-amber-400" initial={{ width: 0 }} animate={{ width: `${Math.min(100, (pStatus.confirmations / pStatus.requiredConfirmations) * 100)}%` }} /></div>}
-                    </div>
+                    <span className="text-[14px] font-medium text-white">€{pkg.eur}</span>
+                    <span className="text-[12px] text-[#4ade80] font-medium">({pkg.credits} credits)</span>
                   </>
                 )}
-                {(pStatus?.status === "confirmed" || pStatus?.status === "expired" || pStatus?.status === "underpaid") && <button onClick={closeInv} className={`w-full rounded-[16px] px-4 py-2.5 text-[14px] font-semibold ${pStatus.status === "confirmed" ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-[#1f1f1f] text-[#e5e5eb] hover:bg-[#313131]"} transition-colors`}>{pStatus.status === "confirmed" ? "Done" : "Close"}</button>}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Payment history */}
-      <div>
-        <p className="text-[12px] font-medium text-[#555] mb-2 px-1">Payment history</p>
-        <div style={{ borderRadius: 16, backgroundColor: '#171717', overflow: 'hidden' }}>
-          {history.length > 0 ? history.map(p => (
-            <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 gap-3 sm:gap-0 border-b border-[rgba(255,255,255,0.05)] last:border-0 text-[13px]">
-              <div className="flex items-center gap-3">
-                <span className="text-[#555]">{fmtDate(p.createdAt)}</span>
-                <span className="font-medium text-[#e3e3e3]">{TIER_LABELS[(p.tier as PreferencesTier) || "free"]}</span>
-                <span className="font-mono text-[#555]">{p.amount} XMR</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${pStatus?.status === "confirmed" || p.status === "confirmed" ? "bg-emerald-500/10 text-emerald-400" : p.status === "pending" || p.status === "confirming" ? "bg-amber-500/10 text-amber-400" : p.status === "underpaid" ? "bg-orange-500/10 text-orange-400" : "bg-red-500/10 text-red-400"}`}>{p.status}</span>
-                {p.receiptBase64 && (
-                  <a
-                    href={`data:application/pdf;base64,${p.receiptBase64}`}
-                    download={`Hypastack_Receipt_${p.id}.pdf`}
-                    className="flex items-center gap-1.5 text-[11px] font-medium text-[#555] hover:text-white transition-colors bg-[#1f1f1f] hover:bg-[#1a1a1a] px-2 py-0.5 rounded-[8px]"
-                  >
-                    <MIcon name="download" size={14} /> PDF
-                  </a>
-                )}
-              </div>
-            </div>
-          )) : (
-            <div className="px-4 py-8 text-center"><p className="text-[13px] text-[#555]">No payments yet. Your history will appear here.</p></div>
-          )}
+              </button>
+            ))}
+          </div>
         </div>
+        <div className="border-l border-[#2c2c30] pl-4 flex flex-col justify-between">
+          <div>
+            <p className="text-[15px] font-medium text-white mb-1.5">Custom Amount</p>
+            <p className="text-[13px] text-[#a1a1aa] font-normal leading-snug">Enter any amount starting from €10</p>
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <div className="flex-1 flex items-center gap-1.5" style={{ backgroundColor: '#1f1f1f', borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42 }}>
+              <span className="text-[14px] text-[#a1a1aa] font-medium">€</span>
+              <input
+                type="number"
+                min="10"
+                placeholder="10"
+                value={customAmount}
+                onChange={e => setCustomAmount(e.target.value)}
+                className="w-full bg-transparent text-[14px] text-white outline-none placeholder-[#a1a1aa] font-medium"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+              />
+            </div>
+            <button
+              onClick={handleCustomPurchase}
+              disabled={purchaseLoading !== null || !customAmount}
+              className="inline-flex items-center justify-center hover:bg-[#313131] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 64, height: 42, borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#e5e5eb', backgroundColor: '#1f1f1f' }}
+            >
+              {purchaseLoading !== null && customAmount ? <MIcon name="progress_activity" size={16} className="animate-spin" /> : "Buy"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {creditsError && (
+        <div style={{ borderRadius: 14, backgroundColor: 'rgba(248,113,113,0.08)', padding: '8px 12px', marginBottom: 16 }}>
+          <p className="text-[12px] text-[#f87171]">{creditsError}</p>
+        </div>
+      )}
+
+      {/* Info rows */}
+      <div style={{ borderRadius: 14, backgroundColor: '#171717' }}>
+        <div className="flex items-center justify-between" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14 }}>
+          <span className="text-[13px] text-[#888]">Current plan</span>
+          <span className="text-[13px] font-medium text-[#e3e3e3]">{TIER_LABELS[currentTier]}</span>
+        </div>
+        <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.04)]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+          <span className="text-[13px] text-[#888]">Credit rate</span>
+          <span className="text-[13px] text-[#e3e3e3]">1 credit = 1,000 op-units</span>
+        </div>
+        <div className="flex items-center justify-between border-t border-[rgba(255,255,255,0.04)]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+          <span className="text-[13px] text-[#888]">Operations</span>
+          <span className="text-[13px] text-[#e3e3e3]">Upload/delete = 4 units, Download = 1 unit</span>
+        </div>
+        <p className="text-[11px] text-[#888] px-3 pb-2.5">Credits expire 6 months after purchase.</p>
       </div>
     </div>
   )
 }
-
 function IntegrationsTab() {
   return (
     <div className="space-y-4">
@@ -1344,7 +1337,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
           <span className="text-white font-medium">hashed access keys</span>,{" "}
           <span className="text-white font-medium">encrypted filenames</span>, and{" "}
           <span className="text-white font-medium">metadata-stripped assets</span>.{" "}
-          No emails, no IPs, no passwords, no plaintext PII — ever.
+          No emails, no IPs, no passwords, no plaintext PII - ever.
         </p>
       </div>
 
@@ -1380,7 +1373,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
               className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: purgeSaved ? '#4ade80' : '#e3e3e3', backgroundColor: purgeSaved ? 'rgba(74,222,128,0.1)' : '#1f1f1f' }}
             >
-              {purgeSaved ? "Saved" : purgeSaving ? "…" : "Save"}
+              {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
             </button>
           </div>
         </div>

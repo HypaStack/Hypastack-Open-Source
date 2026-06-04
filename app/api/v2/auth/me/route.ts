@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
         lastAcknowledgedTier,
         inactivityPurgeDays: user.inactivity_purge_days ?? 7,
         is_insider: user.is_insider ?? 0,
+        creditsBalance: user.credits_balance ?? 0,
       },
       stats: {
         totalUploads: rawFiles.length,

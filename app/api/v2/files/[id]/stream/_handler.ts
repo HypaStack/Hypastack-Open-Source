@@ -5,6 +5,7 @@ import { verifyDownloadRateLimit } from "@/lib/rate-limit"
 import { createDecryptStream } from "@/lib/security/zero-trust"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { Readable } from "stream"
+import { logOperation } from "@/lib/credits"
 
 export async function handleStreamGet(
   request: NextRequest,
@@ -62,6 +63,11 @@ export async function handleStreamGet(
     })
 
     const webStream = Readable.toWeb(s3Stream.pipe(decipher)) as unknown as ReadableStream<Uint8Array>
+
+    // Track Class B operation against file owner (fire-and-forget)
+    if (record.user_id) {
+      logOperation(record.user_id, 'B', 'stream', false).catch(() => {})
+    }
 
     return new NextResponse(webStream, {
       headers: {

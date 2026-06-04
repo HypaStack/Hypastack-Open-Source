@@ -56,7 +56,7 @@ export default function CanaryPage() {
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="flex items-center gap-3"
       >
-        <h1 className="text-[28px] font-medium tracking-tight text-white">Insider Program</h1>
+        <h1 className="text-[28px] font-medium tracking-tight text-[#171717]">Insider Program</h1>
         <span style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
           backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308',
@@ -76,11 +76,11 @@ export default function CanaryPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <MIcon name="science" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-              <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Welcome, {user.nickname}</span>
+              <MIcon name="science" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
+              <span style={{ fontSize: 15, fontWeight: 500, color: '#333' }}>Welcome, {user.nickname}</span>
               <span style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
                 color: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.06)',
@@ -89,7 +89,7 @@ export default function CanaryPage() {
                 v2.7.3-insider
               </span>
             </div>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6 }}>
               You have early access to experimental features and builds before they ship to the public.
               Expect occasional instability — please report any bugs you find.
             </p>
@@ -101,30 +101,30 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col overflow-hidden"
-            style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-1">
-              <MIcon name="labs" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-              <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Experimental Features</span>
+              <MIcon name="labs" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
+              <span style={{ fontSize: 15, fontWeight: 500, color: '#333' }}>Experimental Features</span>
             </div>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 12, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'rgba(0,0,0,0.35)', marginBottom: 12, lineHeight: 1.5 }}>
               These features are in active development and may change or break at any time.
             </p>
             <div className="flex flex-col">
               {EXPERIMENTAL_FEATURES.map((f) => (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3 hover:bg-[#1a1a1a] transition-all duration-75"
+                  className="flex items-center gap-3 hover:bg-[#f5f5f5] transition-all duration-75"
                   style={{ height: 48, paddingLeft: 12, paddingRight: 12, borderRadius: 12, margin: '2px 0' }}
                 >
-                  <MIcon name={f.icon} size={15} style={{ color: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
+                  <MIcon name={f.icon} size={15} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0 }} />
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#e3e3e3' }}>{f.label}</span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{f.desc}</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#333' }}>{f.label}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.35)' }}>{f.desc}</span>
                   </div>
                   <span style={{
                     fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
-                    color: 'rgba(255,255,255,0.3)', backgroundColor: 'rgba(255,255,255,0.06)',
+                    color: 'rgba(0,0,0,0.35)', backgroundColor: 'rgba(0,0,0,0.06)',
                     padding: '2px 6px', borderRadius: 5, flexShrink: 0,
                   }}>
                     {f.status}
@@ -145,11 +145,11 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col overflow-hidden"
-            style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <MIcon name="star" size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
-              <span style={{ fontSize: 15, fontWeight: 500, color: '#e3e3e3' }}>Your Perks</span>
+              <MIcon name="star" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
+              <span style={{ fontSize: 15, fontWeight: 500, color: '#333' }}>Your Perks</span>
             </div>
             <div className="flex flex-col">
               {PERKS.map((p) => (
@@ -158,8 +158,8 @@ export default function CanaryPage() {
                   className="flex items-start gap-3"
                   style={{ paddingTop: 8, paddingBottom: 8, paddingLeft: 4 }}
                 >
-                  <MIcon name={p.icon} size={14} style={{ color: 'rgba(255,255,255,0.4)', flexShrink: 0, marginTop: 1 }} />
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{p.text}</span>
+                  <MIcon name={p.icon} size={14} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0, marginTop: 1 }} />
+                  <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', lineHeight: 1.5 }}>{p.text}</span>
                 </div>
               ))}
             </div>
@@ -171,11 +171,11 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-start gap-3"
-            style={{ borderRadius: 16, backgroundColor: '#171717', padding: '14px 16px' }}
+            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
-            <MIcon name="info" size={15} style={{ color: 'rgba(255,255,255,0.4)', flexShrink: 0, marginTop: 2 }} />
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
-              You're on <span style={{ color: '#e3e3e3', fontWeight: 500 }}>v2.7.3-insider</span>. Bugs and
+            <MIcon name="info" size={15} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0, marginTop: 2 }} />
+            <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.4)', lineHeight: 1.6 }}>
+              You're on <span style={{ color: '#333', fontWeight: 500 }}>v2.7.3-insider</span>. Bugs and
               unexpected behaviour should be reported directly to the developer.
             </p>
           </motion.div>

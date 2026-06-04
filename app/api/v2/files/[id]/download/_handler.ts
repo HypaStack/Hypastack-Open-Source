@@ -8,6 +8,7 @@ import { checkDownloadRateLimit } from "@/lib/rate-limit"
 import { getPresignedDownloadUrl, deleteByKey } from "@/lib/r2"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { getHashedIp } from "@/lib/ip"
+import { logOperation } from "@/lib/credits"
 
 const PRESIGNED_TTL_SECONDS = 300
 const BURN_PRESIGNED_TTL_SECONDS = 60
@@ -109,6 +110,11 @@ export async function handleDownloadPost(
 
     if (burned) {
       executeBurnDeletion(id, record.r2_key);
+    }
+
+    // Track Class B operation against file owner (fire-and-forget)
+    if (record.user_id) {
+      logOperation(record.user_id, 'B', 'download', false).catch(() => {})
     }
 
     return NextResponse.json({

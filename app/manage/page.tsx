@@ -96,7 +96,7 @@ export default function ManageLandingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="text-[32px] md:text-[38px] font-semibold text-white tracking-tight leading-tight">
+        <h1 className="text-[32px] md:text-[38px] font-semibold text-[#171717] tracking-tight leading-tight">
           {greeting(name)}
         </h1>
       </motion.div>
@@ -114,50 +114,46 @@ export default function ManageLandingPage() {
           className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
           {/* Storage card */}
-          <div className="flex flex-col h-full" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
-            <div className="flex flex-col h-full bg-[#111111] rounded-[17px] p-5">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2 text-[#e3e3e3]">
-                  <MIcon name="database" size={18} className="text-white/60" />
-                  <span className="text-[15px] font-medium">Storage</span>
-                </div>
-                <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-white/10 text-white">
-                  {tier}
-                </span>
+          <div className="flex flex-col h-full" style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '20px', border: '1px solid #e5e5e5' }}>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2 text-[#333]">
+                <MIcon name="database" size={18} className="text-[#999]" />
+                <span className="text-[15px] font-medium">Storage</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/5 mb-3 overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${Math.min(usedPct, 100)}%`, backgroundColor: barColor }} />
-              </div>
-              <div className="text-[13px] text-[#e3e3e3]">
-                <span className="font-medium">{formatStorage(usedBytes)}</span>
-                <span className="text-white/30 mx-1.5">of</span>
-                {formatStorage(maxBytes)}
-              </div>
+              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#f5f5f5] text-[#171717]">
+                {tier}
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full bg-[#f5f5f5] mb-3 overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${Math.min(usedPct, 100)}%`, backgroundColor: barColor }} />
+            </div>
+            <div className="text-[13px] text-[#333]">
+              <span className="font-medium">{formatStorage(usedBytes)}</span>
+              <span className="text-[#999] mx-1.5">of</span>
+              {formatStorage(maxBytes)}
             </div>
           </div>
 
           {/* Stats card */}
-          <div className="flex flex-col h-full" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
-            <div className="flex flex-col h-full bg-[#111111] rounded-[17px] p-5">
-              <div className="flex items-center gap-2 mb-5 text-[#e3e3e3]">
-                <MIcon name="bar_chart" size={18} className="text-white/60" />
-                <span className="text-[15px] font-medium">Overview</span>
-              </div>
-              <div className="flex flex-col gap-3.5">
-                {[
-                  { label: "Files", value: fileCount, icon: "description" },
-                  { label: "Starred", value: starredCount, icon: "star" },
-                  { label: "CDN Assets", value: cdnAssets.length, icon: "cloud" },
-                ].map(s => (
-                  <div key={s.label} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 text-[#e3e3e3]">
-                      <MIcon name={s.icon} size={15} className="text-white/40" />
-                      <span className="text-[13px]">{s.label}</span>
-                    </div>
-                    <span className="text-[14px] font-semibold text-white">{s.value}</span>
+          <div className="flex flex-col h-full" style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '20px', border: '1px solid #e5e5e5' }}>
+            <div className="flex items-center gap-2 mb-5 text-[#333]">
+              <MIcon name="bar_chart" size={18} className="text-[#999]" />
+              <span className="text-[15px] font-medium">Overview</span>
+            </div>
+            <div className="flex flex-col gap-3.5">
+              {[
+                { label: "Files", value: fileCount, icon: "description" },
+                { label: "Starred", value: starredCount, icon: "star" },
+                { label: "CDN Assets", value: cdnAssets.length, icon: "cloud" },
+              ].map(s => (
+                <div key={s.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-[#333]">
+                    <MIcon name={s.icon} size={15} className="text-[#999]" />
+                    <span className="text-[13px]">{s.label}</span>
                   </div>
-                ))}
-              </div>
+                  <span className="text-[14px] font-semibold text-white">{s.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -167,27 +163,25 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col" 
-          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+          className="flex flex-col gap-0.5" 
+          style={{ borderRadius: 16, backgroundColor: '#171717', padding: '6px' }}
         >
-          <div className="flex flex-col bg-[#111111] rounded-[17px] p-1.5 gap-0.5">
-            {[
-              { icon: "hard_drive", label: "Drive", desc: "Manage your encrypted files", href: "/manage/files" },
-              { icon: "cloud", label: "CDN Assets", desc: "Public asset hosting", href: "/manage/cdn" },
-              { icon: "widgets", label: "Canvas", desc: "Infrastructure planner", href: "/manage/canvas" },
-            ].map((action) => (
-              <Link
-                key={action.label}
-                href={action.href}
-                className="flex items-center gap-3.5 hover:bg-[#1a1a1a] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[12px]"
-              >
-                <MIcon name={action.icon} size={18} className="text-white/60 shrink-0" />
-                <span className="text-[14px] text-[#e3e3e3] flex-1 font-medium">{action.label}</span>
-                <span className="text-[13px] text-white/30 hidden sm:block">{action.desc}</span>
-                <MIcon name="chevron_right" size={16} className="text-white/30 shrink-0" />
-              </Link>
-            ))}
-          </div>
+          {[
+            { icon: "hard_drive", label: "Drive", desc: "Manage your encrypted files", href: "/manage/files" },
+            { icon: "cloud", label: "CDN Assets", desc: "Public asset hosting", href: "/manage/cdn" },
+            { icon: "widgets", label: "Canvas", desc: "Infrastructure planner", href: "/manage/canvas" },
+          ].map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              className="flex items-center gap-3.5 hover:bg-[#f5f5f5] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[10px]"
+            >
+              <MIcon name={action.icon} size={18} className="text-[#999] shrink-0" />
+              <span className="text-[14px] text-[#333] flex-1 font-medium">{action.label}</span>
+              <span className="text-[13px] text-[#999] hidden sm:block">{action.desc}</span>
+              <MIcon name="chevron_right" size={16} className="text-[#999] shrink-0" />
+            </Link>
+          ))}
         </motion.div>
 
         {/* Recent files */}
@@ -198,34 +192,32 @@ export default function ManageLandingPage() {
             transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="flex items-center justify-between mb-3 px-1">
-              <span className="text-[13px] font-medium text-white/40">Recent files</span>
-              <Link href="/manage/files" className="flex items-center gap-1 text-[13px] text-white/40 hover:text-white transition-colors">
+              <span className="text-[13px] font-medium text-[#888]">Recent files</span>
+              <Link href="/manage/files" className="flex items-center gap-1 text-[13px] text-[#888] hover:text-white transition-colors">
                 View all <MIcon name="arrow_forward" size={12} />
               </Link>
             </div>
-            <div className="flex flex-col" style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
-              <div className="flex flex-col bg-[#111111] rounded-[17px] p-1.5 gap-0.5">
-                {recentFiles.map((file) => (
-                  <Link
-                     key={file.id}
-                     href={`/d/${file.id}`}
-                     className="flex items-center gap-3.5 hover:bg-[#1a1a1a] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[12px]"
-                  >
-                    <span className="text-[10px] font-bold tracking-wider text-white/50 bg-white/5 px-2 py-0.5 rounded-md shrink-0">
-                      {getFileExt(file.name)}
+            <div className="flex flex-col gap-0.5" style={{ borderRadius: 16, backgroundColor: '#171717', padding: '6px' }}>
+              {recentFiles.map((file) => (
+                <Link
+                   key={file.id}
+                   href={`/d/${file.id}`}
+                   className="flex items-center gap-3.5 hover:bg-[#f5f5f5] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-[10px]"
+                >
+                  <span className="text-[10px] font-bold tracking-wider text-white/50 bg-[#f5f5f5] px-2 py-0.5 rounded-md shrink-0">
+                    {getFileExt(file.name)}
+                  </span>
+                  <span className="text-[14px] text-[#333] flex-1 min-w-0 truncate font-medium">
+                    {file.name}
+                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {file.starred && <MIcon name="star" size={14} className="text-yellow-500" />}
+                    <span className="text-[13px] text-[#999] hidden sm:block">
+                      {new Date(file.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
-                    <span className="text-[14px] text-[#e3e3e3] flex-1 min-w-0 truncate font-medium">
-                      {file.name}
-                    </span>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {file.starred && <MIcon name="star" size={14} className="text-yellow-500" />}
-                      <span className="text-[13px] text-white/30 hidden sm:block">
-                        {new Date(file.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </motion.div>
         )}
@@ -239,13 +231,11 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-start h-auto"
-          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+          className="flex items-start gap-3 w-full"
+          style={{ borderRadius: 16, padding: '20px', backgroundColor: '#171717' }}
         >
-          <div className="flex items-start gap-3 w-full bg-[#111111] rounded-[17px] p-5">
-            <MIcon name={tip.icon} size={18} className="text-white/60 shrink-0 mt-0.5" />
-            <p className="text-[14px] text-[#e3e3e3] leading-relaxed font-medium">{tip.text}</p>
-          </div>
+          <MIcon name={tip.icon} size={18} className="text-[#888] shrink-0 mt-0.5" />
+          <p className="text-[14px] text-[#333] leading-relaxed font-medium">{tip.text}</p>
         </motion.div>
 
 
@@ -255,42 +245,40 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="flex-1 flex flex-col min-h-[240px]"
-          style={{ borderRadius: 20, padding: 3, backgroundColor: '#1f1f1f', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+          className="flex-1 flex flex-col"
+          style={{ borderRadius: 16, padding: '20px', backgroundColor: '#171717', minHeight: '240px' }}
         >
-          <div className="flex-1 flex flex-col bg-[#111111] rounded-[17px] p-5">
-            <div className="flex items-center gap-2 mb-2 text-[#e3e3e3]">
-              <MIcon name="mail" size={18} className="text-white/60" />
-              <span className="text-[15px] font-medium">Send Feedback</span>
-            </div>
-            <p className="text-[13px] text-white/40 mb-4 leading-relaxed">
-              Anonymous. We read every message.
-            </p>
-            <textarea
-              value={feedback}
-              onChange={e => setFeedback(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendFeedback() }}
-              placeholder="What's on your mind?"
-              maxLength={1000}
-              disabled={feedbackState === "sending" || feedbackState === "sent"}
-              className="flex-1 w-full resize-none outline-none placeholder:text-white/20 transition-colors focus:bg-[#1f1f1f] bg-[#171717] rounded-[14px] p-3 text-[14px] text-[#e3e3e3] mb-4 min-h-[80px]"
-            />
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] text-white/20 font-medium">{feedback.length}/1000</span>
-              <button
-                onClick={sendFeedback}
-                disabled={!feedback.trim() || feedbackState === "sending" || feedbackState === "sent"}
-                className={`flex items-center gap-2 px-4 py-2 rounded-[12px] text-[13px] font-medium transition-all duration-75 bg-[#171717] active:scale-[0.97]
-                  ${feedbackState === "sent" ? "text-emerald-400" : feedbackState === "error" ? "text-red-400" : !feedback.trim() ? "text-white/20 cursor-not-allowed" : "text-[#e3e3e3] hover:bg-[#222]"}
-                `}
-              >
-                <MIcon
-                  name={feedbackState === "sent" ? "check" : feedbackState === "error" ? "error" : feedbackState === "sending" ? "hourglass_empty" : "send"}
-                  size={16}
-                />
-                {feedbackState === "sent" ? "Sent!" : feedbackState === "error" ? "Failed" : feedbackState === "sending" ? "Sending…" : "Send"}
-              </button>
-            </div>
+          <div className="flex items-center gap-2 mb-2 text-[#333]">
+            <MIcon name="mail" size={18} className="text-[#888]" />
+            <span className="text-[15px] font-medium">Send Feedback</span>
+          </div>
+          <p className="text-[13px] text-[#666] mb-4 leading-relaxed">
+            Anonymous. We read every message.
+          </p>
+          <textarea
+            value={feedback}
+            onChange={e => setFeedback(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendFeedback() }}
+            placeholder="What's on your mind?"
+            maxLength={1000}
+            disabled={feedbackState === "sending" || feedbackState === "sent"}
+            className="flex-1 w-full resize-none outline-none placeholder:text-[#555] transition-colors focus:bg-[#222] bg-[#1c1c1c] rounded-[10px] p-3 text-[14px] text-[#333] mb-4 min-h-[80px]"
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-[#999] font-medium">{feedback.length}/1000</span>
+            <button
+              onClick={sendFeedback}
+              disabled={!feedback.trim() || feedbackState === "sending" || feedbackState === "sent"}
+              className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all duration-75 bg-[#f5f5f5] active:scale-[0.97] border border-[#e5e5e5]
+                ${feedbackState === "sent" ? "text-emerald-400" : feedbackState === "error" ? "text-red-400" : !feedback.trim() ? "text-[#999] cursor-not-allowed" : "text-[#333] hover:bg-[#222]"}
+              `}
+            >
+              <MIcon
+                name={feedbackState === "sent" ? "check" : feedbackState === "error" ? "error" : feedbackState === "sending" ? "hourglass_empty" : "send"}
+                size={16}
+              />
+              {feedbackState === "sent" ? "Sent!" : feedbackState === "error" ? "Failed" : feedbackState === "sending" ? "Sending..." : "Send"}
+            </button>
           </div>
         </motion.div>
 

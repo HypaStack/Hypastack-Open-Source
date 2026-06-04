@@ -587,8 +587,8 @@ export default function CanvasPage() {
       {/* Mobile unsupported message */}
       <div className="flex flex-col items-center justify-center h-full text-center px-6 sm:hidden mt-20">
         <MIcon name="layers" size={48} className="text-[#444] mb-4" />
-        <h2 className="text-[16px] font-medium text-[#e3e3e3] mb-2">Canvas Not Supported</h2>
-        <p className="text-[14px] text-[#888] max-w-[280px]">
+        <h2 className="text-[16px] font-medium text-[#333] mb-2">Canvas Not Supported</h2>
+        <p className="text-[14px] text-[#666] max-w-[280px]">
           Canvas is only supported for PC, switch devices for it to work
         </p>
       </div>
@@ -599,7 +599,7 @@ export default function CanvasPage() {
           ref={containerRef}
         onPointerDown={startPan}
         onContextMenu={onCtx}
-        className="flex-1 relative w-full h-full bg-[#111111] overflow-hidden select-none"
+        className="flex-1 relative w-full h-full bg-[#f5f5f5] overflow-hidden select-none"
         style={{ cursor }}
       >
         {/* Plane - NO framer motion drag, fully custom pan */}
@@ -608,7 +608,7 @@ export default function CanvasPage() {
           style={{ x: panX, y: panY, scale: scaleVal, width: PLANE, height: PLANE, marginLeft: -HALF, marginTop: -HALF }}
         >
           <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px)",
             backgroundSize: "24px 24px",
           }} />
 
@@ -671,10 +671,10 @@ export default function CanvasPage() {
                 {/* Card body — kind-specific layout wrapped in card-in-card */}
                 <div 
                   onContextMenu={(e) => onNodeCtx(e, node.id)}
-                  style={{ width: nw, height: nh, borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+                  style={{ width: nw, height: nh, borderRadius: 14, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
                   className="flex flex-col cursor-context-menu"
                 >
-                  <div className="w-full h-full bg-[#111111] flex flex-col overflow-hidden" style={{ borderRadius: 17 }}>
+                  <div className="w-full h-full bg-[#111111] flex flex-col overflow-hidden" style={{ borderRadius: 13 }}>
                     {(() => {
                       const k = node.kind ?? "service"
                       const updTitle = (e: React.FocusEvent<HTMLDivElement>) => { const t = e.currentTarget?.textContent || "Untitled"; setNodes(ns => ns.map(n => n.id === node.id ? { ...n, title: t } : n)); setWtStep(s => s === 2 ? 3 : s) }
@@ -877,7 +877,7 @@ export default function CanvasPage() {
                   exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
                   className="overflow-hidden min-w-[210px] pointer-events-auto p-[3px]"
-                  style={{ transformOrigin: "top left", borderRadius: 20, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+                  style={{ transformOrigin: "top left", borderRadius: 14, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}
                 >
               {ctxMenu.action.t === "canvas" && (() => {
                 const iconMap: Record<string, React.ReactNode> = {
@@ -892,7 +892,7 @@ export default function CanvasPage() {
                   FileText: <MIcon name="article" size={14} />,
                 }
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
                     <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold text-[#555] uppercase tracking-wider">Add Component</p>
                     {NODE_PRESETS.map(p => (
                       <button key={p.key} onClick={() => addComponent(p.key)}
@@ -911,7 +911,7 @@ export default function CanvasPage() {
                 const node = nodes.find(n => n.id === nid)
                 const totalPorts = node ? (node.leftPorts.length + node.rightPorts.length + (node.topPorts?.length||0) + (node.bottomPorts?.length||0)) : 0
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden', padding: 2 }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden', padding: 2 }}>
                     <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold text-[#555] uppercase tracking-wider">Ports</p>
                     {totalPorts < maxPorts ? (
                       <div className="grid grid-cols-2 gap-1 px-1 mb-1">
@@ -937,7 +937,7 @@ export default function CanvasPage() {
                 const edgeColor = edge?.color ?? "#ffffff"
                 const swatches = ["#ffffff","#60a5fa","#34d399","#f87171","#fbbf24","#a78bfa","#f472b6","#fb923c"]
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
                     {/* Color row */}
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5">
                       <span style={{ fontSize: 12, fontWeight: 500, color: '#a1a1aa' }}>Color</span>
@@ -988,7 +988,7 @@ export default function CanvasPage() {
               {ctxMenu.action.t === "port" && (() => {
                 const a = ctxMenu.action as { t: "port"; nid: string; pid: string }
                 return (
-                  <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
+                  <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
                     <button onClick={() => deletePort(a.nid, a.pid)}
                       className="flex items-center gap-2 w-full text-left hover:bg-[#2a1414] active:scale-[0.97] transition-all duration-75"
                       style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}

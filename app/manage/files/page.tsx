@@ -450,11 +450,11 @@ function FilesPageInner() {
     <div className="flex-1 flex flex-col">
       {/* Page header with actions */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[28px] font-medium tracking-tight text-white flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-          <span className="cursor-pointer hover:underline hover:text-white text-[#e3e3e3] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
+        <h1 className="text-[28px] font-medium tracking-tight text-[#171717] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+          <span className="cursor-pointer hover:underline hover:text-[#171717] text-[#333] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map(f => (
-            <span key={f.id} className="flex items-center gap-2 text-[#a1a1aa]">
-              <MIcon name="chevron_right" size={20} className="text-[#555]" />
+            <span key={f.id} className="flex items-center gap-2 text-[#666]">
+              <MIcon name="chevron_right" size={20} className="text-[#999]" />
               <span className="cursor-pointer hover:underline hover:text-white transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
@@ -466,7 +466,7 @@ function FilesPageInner() {
               type="button"
               onClick={handleBulkDelete}
               disabled={deleteLoading === "bulk"}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[16px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
             >
               <MIcon name="delete" size={18} />
               {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedFiles.size}`}
@@ -476,7 +476,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={handleCreateFolder}
-                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[16px] bg-[#1f1f1f] text-white font-medium text-[15px] hover:bg-[#313131] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#171717] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
               >
                 <MIcon name="create_new_folder" size={17} className="shrink-0" />
                 <span className="hidden sm:inline">New Folder</span>
@@ -484,7 +484,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={triggerFilePicker}
-                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[16px] bg-white text-black font-medium text-[15px] hover:bg-[#e2e2e8] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] text-white font-medium text-[15px] hover:bg-[#333] transition-colors leading-none"
               >
                 <MIcon name="cloud_upload" size={15} className="shrink-0" />
                 <span>Upload files</span>
@@ -506,7 +506,7 @@ function FilesPageInner() {
       {/* Loading */}
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center min-h-[400px]">
-          <MIcon name="refresh" size={24} className="text-[#a1a1aa] animate-spin" />
+          <MIcon name="refresh" size={24} className="text-[#666] animate-spin" />
         </div>
       ) : isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />
@@ -515,20 +515,20 @@ function FilesPageInner() {
           {/* Folders Section */}
           {filteredFolders.length > 0 && (
             <div>
-              <h2 className="text-[13px] font-medium text-[#7a7a80] mb-3 px-2">Folders</h2>
+              <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {filteredFolders.map(folder => (
                   <div 
                     key={folder.id} 
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="group flex items-center gap-3 bg-[#111111] hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-white/5"
+                    className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] border border-[#e5e5e5] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-transparent hover:border-white/5"
                     style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                   >
                     <MIcon name="folder" size={16} style={{ color: 'rgba(255,255,255,0.6)', flexShrink: 0 }} />
                     <span style={{ fontSize: 14, fontWeight: 400, color: '#e3e3e3', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
-                      className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#555] hover:text-red-400"
+                      className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] hover:text-red-400"
                       style={{ height: 28, width: 28, borderRadius: 8 }}
                       aria-label="Delete folder"
                     >
@@ -543,7 +543,7 @@ function FilesPageInner() {
           {/* Files Section */}
           {filteredFiles.length > 0 && (
             <div>
-              {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#7a7a80] mb-3 px-2">Files</h2>}
+              {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Files</h2>}
               {viewMode === "list" ? (
                 <ListView
                   files={paginatedFiles}
@@ -598,7 +598,7 @@ function FilesPageInner() {
       {/* Pagination */}
       {!isEmpty && totalPages > 1 && (
         <div className="flex items-center justify-between mt-7 px-2">
-          <p className="text-[15px] text-[#a1a1aa] font-medium">
+          <p className="text-[15px] text-[#666] font-medium">
             Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
@@ -606,7 +606,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-5 py-2 rounded-[16px] bg-[#1f1f1f] text-[15px] font-medium text-[#e2e2e8] hover:bg-[#1f1f1f] hover:text-[#e5e5eb] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#1f1f1f] text-[15px] font-medium text-[#333] hover:bg-white hover:text-[#171717] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -614,7 +614,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-5 py-2 rounded-[16px] bg-[#1f1f1f] text-[15px] font-medium text-[#e2e2e8] hover:bg-[#1f1f1f] hover:text-[#e5e5eb] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#1f1f1f] text-[15px] font-medium text-[#e2e2e8] hover:bg-[#1f1f1f] hover:text-[#e5e5eb] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -646,7 +646,7 @@ function FilesPageInner() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-[60] bg-black/60"
+              className="fixed inset-0 z-[60] bg-black/30"
               onClick={closeUpload}
             />
             <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
@@ -654,14 +654,14 @@ function FilesPageInner() {
                 initial={{ opacity: 0, scale: 0.97, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 6 }}
-                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[32px] bg-[#111111] border border-white/5 overflow-hidden pointer-events-auto"
+                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[20px] bg-white border border-[#e5e5e5] overflow-hidden pointer-events-auto"
               >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-[#222] shrink-0">
-                  <h2 className="text-[18px] font-semibold text-white">Upload files</h2>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] shrink-0">
+                  <h2 className="text-[18px] font-semibold text-[#171717]">Upload files</h2>
                   <button
                     type="button"
                     onClick={closeUpload}
-                    className="p-1.5 rounded-[16px] text-[#a1a1aa] hover:text-white hover:bg-[#1f1f1f] transition-colors"
+                    className="p-1.5 rounded-[10px] text-[#666] hover:text-white hover:bg-[#1f1f1f] transition-colors"
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
@@ -747,8 +747,8 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[16px] bg-[#111111] border border-white/10 mb-5">
-            <MIcon name="search" size={28} className="text-[#a1a1aa]" />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#111111] border border-white/10 mb-5">
+            <MIcon name="search" size={28} className="text-[#666]" />
           </div>
         ) : null}
         {query ? (
@@ -756,7 +756,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
             <h3 className="text-[22px] font-semibold text-white mb-2 tracking-tight">
               No files match your search
             </h3>
-            <p className="text-[15px] text-[#7a7a80] font-normal leading-relaxed">
+            <p className="text-[15px] text-[#666] font-normal leading-relaxed">
               Try a different search term.
             </p>
           </>
@@ -805,7 +805,7 @@ function SortLabel({
       type="button"
       onClick={() => onClick(field)}
       className={`inline-flex items-center gap-1.5 text-[14px] font-medium tracking-wide transition-colors ${
-        active ? "text-white" : "text-[#a1a1aa] hover:text-[#e5e5eb]"
+        active ? "text-white" : "text-[#666] hover:text-[#e5e5eb]"
       }`}
     >
       {label}
@@ -864,7 +864,7 @@ function ListView({
   setContextMenuPos: (pos: { x: number; y: number } | null) => void
 }) {
   return (
-    <div style={{ borderRadius: 20, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
+    <div style={{ borderRadius: 14, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}>
       {/* Header row */}
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
@@ -884,7 +884,7 @@ function ListView({
       </div>
 
       {/* Rows */}
-      <div style={{ backgroundColor: '#111111', borderRadius: 17, overflow: 'hidden' }}>
+      <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
@@ -945,7 +945,7 @@ function ListView({
                       </span>
                     )}
                   </div>
-                  <div className="flex md:hidden items-center gap-2 mt-0.5 text-[12px] text-[#555]">
+                  <div className="flex md:hidden items-center gap-2 mt-0.5 text-[12px] text-[#999]">
                     <span>{formatBytes(file.size)}</span>
                     <span className="w-1 h-1 rounded-full bg-[#333]" />
                     <span>{formatDate(file.uploadedAt).split(' at ')[0]}</span>
@@ -953,11 +953,11 @@ function ListView({
                 </div>
               </div>
 
-              <span className="hidden md:block text-[13px] text-[#555] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatDate(file.uploadedAt)}
               </span>
 
-              <span className="hidden md:block text-[13px] text-[#555] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatBytes(file.size)}
               </span>
 
@@ -975,7 +975,7 @@ function ListView({
                       style={{ 
                         width: 220, 
                         padding: 6,
-                        borderRadius: 20, 
+                        borderRadius: 14, 
                         backgroundColor: '#171717', 
                         boxShadow: '0 0 0 1px rgba(255,255,255,0.04)', 
                         transformOrigin: contextMenuPos ? 'top left' : 'top right',
@@ -1161,7 +1161,7 @@ function GridView({
               <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
 
                 {!!file.burnOnRead && (
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-[16px] bg-black/40 backdrop-blur-sm text-orange-400">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-[10px] bg-black/40 backdrop-blur-sm text-orange-400">
                     <MIcon name="local_fire_department" size={12} />
                   </span>
                 )}
@@ -1172,7 +1172,7 @@ function GridView({
                     onToggleStar(file.id, file.starred)
                   }}
                   disabled={starLoading === file.id}
-                  className={`inline-flex h-6 w-6 items-center justify-center rounded-[16px] backdrop-blur-sm transition-all ${
+                  className={`inline-flex h-6 w-6 items-center justify-center rounded-[10px] backdrop-blur-sm transition-all ${
                     file.starred
                       ? "bg-black/40 text-yellow-500"
                       : "bg-black/40 text-zinc-300 opacity-0 group-hover:opacity-100"
@@ -1188,7 +1188,7 @@ function GridView({
                 onClick={(e) => e.stopPropagation()}
                 className="absolute inset-x-0 bottom-0 px-2 pb-2 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <div className="flex items-center gap-1 rounded-[16px] bg-black/40 backdrop-blur-md p-1">
+                <div className="flex items-center gap-1 rounded-[10px] bg-black/40 backdrop-blur-md p-1">
                   <button
                     type="button"
                     onClick={() => onCopyLink(file.shareUrl, file.id)}
@@ -1224,11 +1224,11 @@ function GridView({
               <p className="text-[13px] font-semibold text-[#e3e3e3] truncate" title={file.name}>
                 {file.name}
               </p>
-              <p className="text-[11px] text-[#a1a1aa] mt-1 font-medium" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <p className="text-[11px] text-[#666] mt-1 font-medium" style={{ fontVariantNumeric: "tabular-nums" }}>
                 <span className="uppercase tracking-wider">
                   {getFileTypeLabel(file.name, file.contentType)}
                 </span>
-                <span className="mx-1.5 text-[#555]">·</span>
+                <span className="mx-1.5 text-[#999]">·</span>
                 {formatBytes(file.size)}
               </p>
             </div>

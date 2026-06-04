@@ -10,6 +10,7 @@ import { getUserFileStats } from "@/lib/file-model"
 import { getPresignedCdnUploadUrl } from "@/lib/r2"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/lib/tier-limits"
+import { logOperation } from "@/lib/credits"
 
 interface FileInitInput {
   fileName: string
@@ -77,6 +78,15 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       return NextResponse.json(
         { error: "Rate limit reached, try again later" },
         { status: 429 },
+      )
+    }
+
+    // Credits gate — CDN operations require credits after free tier
+    const opsResult = await logOperation(currentUser.userId, 'A', 'cdn_upload', true)
+    if (!opsResult.allowed) {
+      return NextResponse.json(
+        { error: opsResult.reason || "Insufficient credits for CDN operations. Please purchase credits." },
+        { status: 402 },
       )
     }
 
