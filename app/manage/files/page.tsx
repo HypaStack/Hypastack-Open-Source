@@ -1,6 +1,6 @@
-﻿"use client"
+"use client"
 
-import { UploadZone } from "@/components/upload-zone"
+import { UploadZone } from "@/components/upload"
 
 import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"

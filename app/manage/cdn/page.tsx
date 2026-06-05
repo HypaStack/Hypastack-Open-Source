@@ -7,7 +7,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
 import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
-import { UploadZone } from "@/components/upload-zone"
+import { UploadZone } from "@/components/upload"
 
 interface CdnAsset {
   id: string
