@@ -62,7 +62,8 @@ export default function SignInPage() {
 
       const params = new URLSearchParams(window.location.search)
       const redirect = params.get("redirect")
-      const target = redirect && redirect.startsWith("/") && !redirect.startsWith("//") && !redirect.includes("://")
+      const allowedRedirects = new Set(["/manage/files"])
+      const target = redirect && allowedRedirects.has(redirect)
         ? redirect
         : "/manage/files"
       window.location.href = target
