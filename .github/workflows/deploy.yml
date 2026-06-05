@@ -20,8 +20,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/Hypastack-Open-Source
-            git reset --hard HEAD
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v24.16.0/bin
             rm -rf .next node_modules
             npm install
