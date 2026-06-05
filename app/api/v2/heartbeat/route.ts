@@ -3,9 +3,10 @@ import { getPool, ensureDatabase } from "@/lib/db"
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 
-const HEARTBEAT_URL = "https://uptime.betterstack.com/api/v1/heartbeat/3ZU6EMK9UQJGYKxWb7WR1amr"
+const HEARTBEAT_URL = process.env.BETTERSTACK_HEARTBEAT_URL
 
 async function pingBetterStack(fail = false) {
+  if (!HEARTBEAT_URL) return
   const url = fail ? `${HEARTBEAT_URL}/fail` : HEARTBEAT_URL
   await fetch(url, { method: "GET", cache: "no-store", signal: AbortSignal.timeout(5000) })
 }
