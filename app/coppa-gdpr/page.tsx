@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "COPPA & GDPR - Hypastack",
-  description: "Hypastack's compliance with COPPA and GDPR.",
+  title: "COPPA & GDPR Compliance",
+  description: "How Hypastack complies with COPPA and GDPR regulations. No personal data is collected or stored.",
 }
 
 export default function CoppaGdpr() {

@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Hypastack",
-  description: "Our zero-knowledge privacy policy.",
+  title: "Privacy Policy",
+  description: "Hypastack's zero-knowledge privacy policy. No emails, no passwords, no IP logging, no tracking cookies. Your data never leaves your browser unencrypted.",
 }
 
 export default function PrivacyPolicy() {

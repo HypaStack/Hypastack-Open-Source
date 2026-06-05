@@ -4,8 +4,8 @@ import { Navbar } from "@/components/navbar";
 import { MIcon } from "@/components/ui/material-icon";
 
 export const metadata: Metadata = {
-  title: "Desktop",
-  description: "Experience the full power of Hypastack with our native desktop application for Windows.",
+  title: "Desktop App",
+  description: "Native Hypastack desktop application for Windows. Fast, encrypted file sharing with system tray integration and drag-and-drop uploads.",
 };
 
 export default function DesktopAppPage() {

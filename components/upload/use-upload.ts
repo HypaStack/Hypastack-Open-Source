@@ -516,7 +516,7 @@ export function useUpload({
 
     const urls: string[] = []
     for (const asset of completedAssets) {
-      urls.push(`${asset.fileName}: ${asset.cdnUrl}`)
+      urls.push(files.length === 1 ? asset.cdnUrl : `${asset.fileName}: ${asset.cdnUrl}`)
       if (onUploadComplete) {
         onUploadComplete({
           id: asset.id,
@@ -603,7 +603,7 @@ export function useUpload({
               } else {
                 url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
               }
-              urls.push(`${f.file.name}: ${url}`)
+              urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
             } catch (err: any) {
               if (urls.length > 0) {
                 setShareUrl(urls.join("\n"))

@@ -17,6 +17,7 @@ export function getHashedIp(request: NextRequest): string {
     rawIp = "unknown"
   }
 
-  const secret = process.env.JWT_SECRET || "fallback-ip-hash-secret"
+  const secret = process.env.JWT_SECRET
+  if (!secret) throw new Error("[ip] JWT_SECRET env var is not set")
   return crypto.createHmac("sha256", secret).update(rawIp).digest("hex").slice(0, 32)
 }

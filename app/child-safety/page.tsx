@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Child Safety Policy - Hypastack",
-  description: "How Hypastack handles child safety and CSAM prevention.",
+  title: "Child Safety Policy",
+  description: "Hypastack's commitment to child safety, including proactive CSAM detection and prevention measures.",
 }
 
 export default function ChildSafety() {

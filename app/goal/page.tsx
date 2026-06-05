@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Our Goal - Hypastack",
-  description: "Our goal is absolute mathematical privacy.",
+  title: "Our Mission",
+  description: "Hypastack exists to provide mathematically provable privacy through zero-knowledge encryption. Built by Kiko at usekiko.com.",
 }
 
 export default function Goal() {

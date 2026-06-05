@@ -1,0 +1,27 @@
+{
+  "name": "Hypastack.link - File Sharing",
+  "short_name": "Hypastack",
+  "description": "Simple, fast file sharing with auto-expiring links. No sign-up required.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}

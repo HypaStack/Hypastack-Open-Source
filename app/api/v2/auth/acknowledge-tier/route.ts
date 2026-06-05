@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { acknowledgeUserTier } from "@/lib/user-model"
+import { NextRequest, NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 

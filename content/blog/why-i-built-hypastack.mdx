@@ -1,0 +1,47 @@
+# Why I built Hypastack
+
+I didn't set out to build a file sharing platform. Honestly, it started because I needed to send someone a file and every tool I tried felt wrong.
+
+Either it needed an account. Or it showed ads. Or it said "your file is encrypted" in big bold letters on the homepage while quietly logging everything in the background. I'd read the privacy policies and they were always full of the same paragraph about "trusted third-party partners." That's just a fancy way of saying *we sell this*.
+
+So I closed the tabs and started building.
+
+---
+
+## It's always a personal problem first
+
+I'm a solo developer based in Europe. I work on things that scratch my own itch, and this was one of them. I wanted to send files the same way I'd hand someone a sealed envelope. They get it, nobody else sees it, done.
+
+The web is the most accessible platform ever built. Anything you put on it, anyone with a browser can use. That's always been what pulled me in. Not the money, not the audience, just the idea that you write some code and it becomes something *real* that people actually use.
+
+Hypastack was that for me.
+
+---
+
+## What I actually built
+
+The core idea is simple: your file gets encrypted in your browser before it leaves your device. The key that unlocks it is embedded in the URL, in the fragment part after the `#`. Browsers never send that part to the server. So I genuinely cannot read your files. Not because I pinky-promise I won't, but because the keys never reach me.
+
+No emails. No passwords. No IP address logging. If an account sits inactive for 7 days, everything gets wiped. Files, access keys, the profile. No backups. No recovery. That's not a bug, it's the point.
+
+I also don't use Google Analytics, tracking cookies or any of that. Filenames are stored as AES-256-GCM encrypted blobs. Nicknames are hashed with SHA-256. It's all designed from the start assuming that your data is not mine to keep.
+
+---
+
+## The solo part
+
+Building something alone is weird. There's nobody to rubber-duck your decisions with at 2am. There's no PR process or code review. It's just you and the problem.
+
+But it's also freeing. I can make decisions fast, change direction when something doesn't feel right and ship without a committee. The product reflects what I actually think is good, not what got approved in a meeting.
+
+My portfolio is at [usekiko.com](https://usekiko.com) if you want to see the other things I've worked on. Most of what I build follows the same ideas. Fast, private, simple. Hypastack is just the one I've put the most time into.
+
+---
+
+## Where it is now
+
+Hypastack has two sides now: regular file sharing (zero-knowledge, encrypted) and CDN hosting for public assets. The CDN side strips all metadata from your images before serving them. No GPS coordinates, no device fingerprints, nothing that could trace a file back to you.
+
+I'm still the only person working on it. That probably won't change anytime soon, and I'm fine with that.
+
+If you're reading this and you use Hypastack, thank you. That still doesn't get old.

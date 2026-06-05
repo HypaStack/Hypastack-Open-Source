@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "DMCA Policy - Hypastack",
-  description: "How Hypastack handles copyright takedown requests.",
+  title: "DMCA Policy",
+  description: "Hypastack's process for handling copyright takedown requests under the Digital Millennium Copyright Act.",
 }
 
 export default function DmcaPolicy() {

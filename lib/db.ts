@@ -241,37 +241,6 @@ export async function initDatabase(): Promise<void> {
     await client.query(`ALTER TABLE cdn_assets ADD COLUMN IF NOT EXISTS folder_id VARCHAR(36) DEFAULT NULL`)
 
 
-    // Monero payment invoices
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS xmr_payments (
-        id VARCHAR(36) PRIMARY KEY,
-        user_id VARCHAR(36) NOT NULL,
-        tier TEXT NOT NULL,
-        amount_atomic BIGINT NOT NULL,
-        amount_xmr NUMERIC(20,12) NOT NULL,
-        subaddress TEXT NOT NULL,
-        subaddress_index INTEGER NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        txid TEXT,
-        confirmations INTEGER DEFAULT 0,
-        paid_at TIMESTAMPTZ,
-        expires_at TIMESTAMPTZ NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        updated_at TIMESTAMPTZ DEFAULT NOW()
-      )
-    `)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_xmr_payments_user_id ON xmr_payments(user_id)`)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_xmr_payments_status ON xmr_payments(status)`)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_xmr_payments_subaddress_index ON xmr_payments(subaddress_index)`)
-
-    // Add paid_until column to users table (for subscription expiry tracking)
-    try {
-      await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS paid_until TIMESTAMPTZ`)
-      await client.query(`ALTER TABLE xmr_payments ADD COLUMN IF NOT EXISTS receipt_base64 TEXT`)
-    } catch {
-      // Column may already exist
-    }
-
     // Migration: add inactivity_purge_days to existing users tables
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS inactivity_purge_days INTEGER NOT NULL DEFAULT 7`)

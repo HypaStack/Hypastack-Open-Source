@@ -4,8 +4,8 @@ import { Navbar } from "@/components/navbar";
 import { MIcon } from "@/components/ui/material-icon";
 
 export const metadata: Metadata = {
-  title: "Waitlist",
-  description: "Join the Hypastack beta anonymously.",
+  title: "Join the Waitlist",
+  description: "Get early access to Hypastack. Anonymous sign-up, no email required.",
 };
 
 export default function WaitlistPage() {

@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Terms of Service - Hypastack",
-  description: "Hypastack's comprehensive Terms of Service.",
+  title: "Terms of Service",
+  description: "Terms of Service for Hypastack's encrypted file sharing platform and CDN hosting services.",
 }
 
 export default function TermsOfService() {

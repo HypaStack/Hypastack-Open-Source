@@ -18,27 +18,32 @@ export function Toaster() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="pointer-events-auto min-w-[280px] max-w-[380px] rounded-xl bg-card border border-border shadow-lg overflow-hidden"
+            className="pointer-events-auto min-w-[280px] max-w-[380px] rounded-[18px] overflow-hidden"
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e5e5',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+            }}
           >
             <div className="flex items-start gap-3 p-4">
               {toast.variant === "success" && (
-                <MIcon name="check_circle" className="text-primary shrink-0 mt-0.5" size={20} />
+                <MIcon name="check_circle" className="text-emerald-500 shrink-0 mt-0.5" size={20} />
               )}
               {toast.variant === "error" && (
-                <MIcon name="cancel" className="text-red-600 shrink-0 mt-0.5" size={20} />
+                <MIcon name="cancel" className="text-red-500 shrink-0 mt-0.5" size={20} />
               )}
               {(!toast.variant || toast.variant === "default") && (
-                <div className="h-5 w-5 rounded-full bg-secondary shrink-0 mt-0.5" />
+                <div className="h-5 w-5 rounded-full bg-[#e5e5e5] shrink-0 mt-0.5" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">{toast.title}</p>
+                <p className="text-[14px] font-semibold text-[#111]">{toast.title}</p>
                 {toast.description && (
-                  <p className="text-xs text-muted-foreground mt-0.5">{toast.description}</p>
+                  <p className="text-[13px] text-[#888] mt-0.5 leading-snug">{toast.description}</p>
                 )}
               </div>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="shrink-0 p-1 rounded-lg hover:bg-white text-muted-foreground hover:text-foreground transition-colors"
+                className="shrink-0 p-1 rounded-lg hover:bg-[#f0f0f0] text-[#999] hover:text-[#333] transition-colors"
               >
                 <MIcon name="close" size={16} />
               </button>
@@ -49,7 +54,7 @@ export function Toaster() {
               animate={{ scaleX: 0 }}
               transition={{ duration: (toast.duration ?? 4000) / 1000, ease: "linear" }}
               style={{ originX: 0 }}
-              className={`h-0.5 ${ toast.variant === "error" ? "bg-red-600" : "bg-primary" }`}
+              className={`h-0.5 ${toast.variant === "error" ? "bg-red-400" : "bg-[#171717]"}`}
             />
           </motion.div>
         ))}

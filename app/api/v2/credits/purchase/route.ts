@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       [purchaseId, currentUser.userId, amount, credits]
     )
 
-    const origin = request.headers.get("origin") || request.headers.get("referer")?.replace(/\/[^/]*$/, "") || "https://hypastack.com"
+    const origin = request.headers.get("origin") || request.headers.get("referer")?.replace(/\/[^/]*$/, "") || process.env.NEXT_PUBLIC_APP_URL || ""
 
     const session = await createCheckoutSession({
       amountEur: amount,

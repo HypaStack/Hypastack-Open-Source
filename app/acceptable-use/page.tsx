@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { Navbar } from "@/components/navbar"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Acceptable Use Policy - Hypastack",
-  description: "What you can and cannot do on Hypastack.",
+  title: "Acceptable Use Policy",
+  description: "Guidelines for responsible use of Hypastack's encrypted file sharing and CDN services.",
 }
 
 export default function AcceptableUse() {

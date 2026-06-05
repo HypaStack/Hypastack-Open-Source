@@ -37,10 +37,12 @@ const dmSans = DM_Sans({
 })
 
 const siteUrl = "https://hypastack.com"
-const siteName = "hypastack.com"
-const tagline = "Simple, Fast & Secure File Sharing"
-const description = "Upload and share files up to 500MB with temporary links that last 1-7 days. Encrypted in transit. Free secure file sharing service."
-const keywords = "file sharing, upload files, share files, temporary file hosting, free file upload, secure file transfer, cloud storage, file drop, Hypastack, temporary file sharing, burn after reading, secure file hosting"
+const siteName = "Hypastack"
+const tagline = "Zero-Knowledge Encrypted File Sharing & CDN"
+const description = "Privacy-first file sharing with AES-256 browser-side encryption and a permanent CDN for public assets. No emails, no passwords, no tracking. Open source. Built in Europe by Kiko."
+const keywords = "encrypted file sharing, zero knowledge file hosting, private file transfer, secure file upload, temporary file sharing, burn after reading, CDN hosting, privacy file sharing, AES-256 encryption, anonymous file sharing, open source file sharing, Hypastack, no tracking file sharing, EXIF metadata stripping, European file hosting"
+const iconUrl = "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp"
+const previewUrl = "https://r2.hypastack.com/cdn/wpoxysqdixzy/preview-main.png"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -50,9 +52,12 @@ export const metadata: Metadata = {
   },
   description,
   keywords,
-  authors: [{ name: "hypastack.com", url: siteUrl }],
-  creator: "expertkiko",
-  publisher: "usekiko.com",
+  authors: [
+    { name: "Kiko", url: "https://usekiko.com" },
+    { name: "Hypastack", url: siteUrl },
+  ],
+  creator: "Kiko",
+  publisher: "Hypastack",
   robots: {
     index: true,
     follow: true,
@@ -75,22 +80,15 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/images/PREVIEW.png",
+        url: previewUrl,
         width: 1200,
         height: 630,
-        alt: "hypastack.com - Simple File Sharing",
+        alt: "Hypastack - Zero-Knowledge Encrypted File Sharing & CDN",
         type: "image/png",
       },
     ],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: `${siteName} - ${tagline}`,
-    description,
-    images: ["/images/PREVIEW.png"],
-    creator: "@expertkiko",
-    site: "@expertkiko",
-  },
+
   alternates: {
     canonical: siteUrl,
     languages: {
@@ -100,20 +98,20 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp", type: "image/webp", sizes: "32x32" },
-      { url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp", type: "image/webp", sizes: "16x16" },
+      { url: iconUrl, type: "image/webp", sizes: "32x32" },
+      { url: iconUrl, type: "image/webp", sizes: "16x16" },
     ],
     apple: [
-      { url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp", sizes: "180x180", type: "image/webp" },
-      { url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp", sizes: "152x152", type: "image/webp" },
-      { url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp", sizes: "120x120", type: "image/webp" },
+      { url: iconUrl, sizes: "180x180", type: "image/webp" },
+      { url: iconUrl, sizes: "152x152", type: "image/webp" },
+      { url: iconUrl, sizes: "120x120", type: "image/webp" },
     ],
-    shortcut: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp",
+    shortcut: iconUrl,
     other: [
       {
         rel: "mask-icon",
-        url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp",
-        color: "#121212",
+        url: iconUrl,
+        color: "#ffffff",
       },
     ],
   },
@@ -122,19 +120,19 @@ export const metadata: Metadata = {
   category: "file sharing",
   classification: "Internet Services",
   other: {
-    "msapplication-TileColor": "#121212",
+    "msapplication-TileColor": "#ffffff",
     "msapplication-config": "/browserconfig.xml",
-    "theme-color": "#121212",
+    "theme-color": "#ffffff",
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0f0f0f",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  colorScheme: "dark",
+  colorScheme: "light",
   viewportFit: "cover",
 }
 
@@ -160,7 +158,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Hypastack" />
         <meta name="application-name" content="Hypastack" />
-        <meta name="msapplication-TileColor" content="#121212" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="format-detection" content="telephone=no" />
         
@@ -206,14 +204,15 @@ export default function RootLayout({
                     worstRating: "1",
                   },
                   featureList: [
-                    "Secure file uploads",
-                    "Secure file sharing",
-                    "Auto-expiring links",
-                    "PIN protection",
+                    "AES-256 browser-side encryption",
+                    "Zero-knowledge architecture",
+                    "Auto-expiring share links",
                     "Burn after reading",
-                    "Up to 500MB files",
-                    "Encrypted in transit",
-                    "EU-based servers",
+                    "Permanent CDN asset hosting",
+                    "EXIF and GPS metadata stripping",
+                    "No email or password required",
+                    "Open source",
+                    "No tracking or analytics",
                   ],
                 },
                 {
@@ -223,14 +222,16 @@ export default function RootLayout({
                   url: siteUrl,
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp",
+                    url: iconUrl,
                     width: 512,
                     height: 512,
                     caption: "hypastack.com Logo",
                   },
                   image: `${siteUrl}/images/hypastack-logo-and-text.webp`,
                   sameAs: [
-                    "https://twitter.com/Hypastack",
+                    "https://usekiko.com",
+                    "https://noinfo.bio",
+                    "https://github.com/hypastack",
                   ],
                   contactPoint: {
                     "@type": "ContactPoint",

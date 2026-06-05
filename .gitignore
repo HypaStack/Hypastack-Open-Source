@@ -13,5 +13,3 @@ node_modules/
 replace.ps1
 src-tauri/tauri.conf.json
 
-# Directories not tracked in repo
-public/

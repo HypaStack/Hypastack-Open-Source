@@ -1,13 +1,12 @@
 "use client"
 
-import { useEffect, useState, useCallback, useRef } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { useAuth } from "@/hooks/useAuth"
+import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
-import { HintTip } from "@/components/ui/hint-tip"
-import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
 import { UploadZone } from "@/components/upload"
+import { useAuth } from "@/hooks/useAuth"
+import { AnimatePresence, motion } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 interface CdnAsset {
   id: string
@@ -430,7 +429,7 @@ export default function CdnPage() {
   if (!user) return null
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full flex-1 min-h-0 flex flex-col">
 
       <div className="shrink-0">
         <div className="flex items-center justify-between mb-2">
@@ -531,12 +530,12 @@ export default function CdnPage() {
         </div>
       )}
 
-      <div className="flex-1 min-h-0 overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
-
-        {currentFolders.length === 0 && filteredAssets.length === 0 && !currentFolderId ? (
+      {currentFolders.length === 0 && filteredAssets.length === 0 && !currentFolderId ? (
+        <div className="flex-1 flex items-center justify-center">
           <EmptyState query="" username={user.nickname} />
-        ) : (
-          <div>
+        </div>
+      ) : (
+        <div className="flex-1 min-h-0 overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
             {currentFolders.length > 0 && (
               <div className="mb-4">
                 <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
@@ -617,9 +616,8 @@ export default function CdnPage() {
               </div>
             )}
 
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="shrink-0 flex items-center justify-between" style={{ borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '8px 12px', marginTop: 8 }}>
@@ -913,7 +911,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
           </>
         ) : (
           <>
-            <div className="flex flex-col items-center w-full -translate-y-12">
+            <div className="flex flex-col items-center w-full">
               <div className="relative h-[80px] w-full flex justify-center items-center">
                 <AnimatePresence mode="wait">
                   <motion.h3

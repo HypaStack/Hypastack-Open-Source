@@ -24,8 +24,6 @@ type PromiseResolvers = {
 
 type NotifState = HypaNotifOptions & PromiseResolvers & { id: string }
 
-// Use globalThis so the listener survives Next.js module re-evaluations
-// when navigating between pages (avoids the singleton being wiped).
 declare global {
   interface Window {
     __hypaNotifListener: ((notif: NotifState) => void) | null
@@ -36,11 +34,7 @@ export const hypaConfirm = (options: HypaNotifOptions): Promise<boolean> => {
   return new Promise((resolve) => {
     if (typeof window !== "undefined") {
       const event = new CustomEvent("hypa-confirm", {
-        detail: {
-          ...options,
-          id: Math.random().toString(36).slice(2, 9),
-          resolve,
-        }
+        detail: { ...options, id: Math.random().toString(36).slice(2, 9), resolve }
       })
       window.dispatchEvent(event)
     } else {
@@ -53,12 +47,7 @@ export const hypaPrompt = (options: HypaNotifOptions): Promise<string | null> =>
   return new Promise((resolve) => {
     if (typeof window !== "undefined") {
       const event = new CustomEvent("hypa-confirm", {
-        detail: {
-          ...options,
-          isInput: true,
-          id: Math.random().toString(36).slice(2, 9),
-          resolve,
-        }
+        detail: { ...options, isInput: true, id: Math.random().toString(36).slice(2, 9), resolve }
       })
       window.dispatchEvent(event)
     } else {
@@ -77,20 +66,14 @@ export const hypaProgress = (options: HypaNotifOptions) => {
   const id = Math.random().toString(36).slice(2, 9)
   if (typeof window !== "undefined") {
     const event = new CustomEvent("hypa-confirm", {
-      detail: {
-        ...options,
-        isProgress: true,
-        id,
-        resolve: () => {}, // empty
-      }
+      detail: { ...options, isProgress: true, id, resolve: () => {} }
     })
     window.dispatchEvent(event)
   }
-  
   return {
     id,
     update: (opts: Partial<HypaNotifOptions>) => hypaUpdate(id, opts),
-    close: () => hypaUpdate(id, { _close: true })
+    close: () => hypaUpdate(id, { _close: true }),
   }
 }
 
@@ -112,9 +95,10 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
 
   return (
     <>
-      {/* Input inside the inner card */}
-      <div style={{ backgroundColor: '#1f1f1f', borderRadius: 16, padding: 8, marginBottom: 4 }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 6 }}>{notif.title}</p>
+      <div style={{ backgroundColor: '#f5f5f5', borderRadius: 14, padding: 10, marginBottom: 4, border: '1px solid #ebebeb' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: '#111', letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>
+          {notif.title}
+        </p>
         <input
           ref={inputRef}
           type="text"
@@ -123,23 +107,22 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
           onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel() }}
           placeholder={notif.inputPlaceholder ?? ""}
           className="w-full focus:outline-none"
-          style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', backgroundColor: '#111', fontSize: 13, color: '#e3e3e3' }}
+          style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, border: '1px solid #e5e5e5', backgroundColor: '#ffffff', fontSize: 13, color: '#111' }}
         />
       </div>
-      {/* Buttons outside the inner card */}
       <div className="flex gap-1">
         <button
           onClick={handleCancel}
-          className="flex-1 flex items-center justify-center hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-          style={{ height: 34, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#a1a1aa' }}
+          className="flex-1 flex items-center justify-center hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
+          style={{ height: 36, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#888' }}
         >
           {notif.cancelText ?? "Cancel"}
         </button>
         <button
           onClick={handleConfirm}
           disabled={!value.trim()}
-          className="flex-1 flex items-center justify-center hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ height: 34, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#ffffff' }}
+          className="flex-1 flex items-center justify-center hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ height: 36, borderRadius: 12, fontSize: 13, fontWeight: 600, color: '#111' }}
         >
           {notif.confirmText ?? "Create"}
         </button>
@@ -164,7 +147,7 @@ export function HypaNotifProvider() {
         setNotifs((prev) => prev.map(n => n.id === event.detail.id ? { ...n, ...event.detail } : n))
       }
     }
-    
+
     if (typeof window !== "undefined") {
       window.addEventListener("hypa-confirm", handleConfirm)
       window.addEventListener("hypa-update", handleUpdate)
@@ -193,22 +176,22 @@ export function HypaNotifProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="w-[400px] pointer-events-auto overflow-hidden"
+            className="w-[380px] pointer-events-auto overflow-hidden"
             style={{
-              backgroundColor: '#171717',
+              backgroundColor: '#ffffff',
               borderRadius: 20,
-              boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)',
+              boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.10)',
               padding: 4,
             }}
           >
-            {/* Title + description — hidden for input prompts */}
+            {/* Title + description */}
             {!notif.isInput && (
-              <div style={{ padding: '14px 14px 10px 14px' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.01em', marginBottom: notif.description ? 4 : 0 }}>
+              <div style={{ padding: '12px 12px 8px 12px' }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#111', letterSpacing: '-0.01em', marginBottom: notif.description ? 3 : 0 }}>
                   {notif.title}
                 </p>
                 {notif.description && (
-                  <p style={{ fontSize: 13, fontWeight: 400, color: '#a1a1aa', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 400, color: '#888', lineHeight: 1.4 }}>
                     {notif.description}
                   </p>
                 )}
@@ -218,13 +201,13 @@ export function HypaNotifProvider() {
             {/* File list */}
             {notif.items && notif.items.length > 0 && (
               <div
-                style={{ backgroundColor: '#1f1f1f', borderRadius: 16, margin: '0 0 4px 0', padding: 4, maxHeight: 140, overflowY: 'auto' }}
+                style={{ backgroundColor: '#f5f5f5', borderRadius: 14, margin: '0 0 4px 0', padding: 4, maxHeight: 140, overflowY: 'auto', border: '1px solid #ebebeb' }}
                 className="[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               >
                 {notif.items.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 12 }}>
-                    <MIcon name="description" size={14} style={{ color: 'rgba(255,255,255,0.35)', flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, fontWeight: 400, color: '#e3e3e3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
+                  <div key={i} className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 10 }}>
+                    <MIcon name="description" size={14} style={{ color: '#999', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 400, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -232,38 +215,38 @@ export function HypaNotifProvider() {
 
             {/* Actions or Progress */}
             {notif.isProgress ? (
-              <div style={{ backgroundColor: '#1f1f1f', borderRadius: 16, padding: '12px 14px' }}>
+              <div style={{ backgroundColor: '#f5f5f5', borderRadius: 14, padding: '12px 14px', border: '1px solid #ebebeb' }}>
                 <div className="flex justify-between items-center mb-2">
-                  <span style={{ fontSize: 13, color: '#a1a1aa' }}>{notif.progressText || "Processing..."}</span>
-                  <span style={{ fontSize: 13, color: '#fff', fontWeight: 500 }}>{Math.round(notif.progressPercent || 0)}%</span>
+                  <span style={{ fontSize: 13, color: '#888' }}>{notif.progressText || "Processing..."}</span>
+                  <span style={{ fontSize: 13, color: '#111', fontWeight: 500 }}>{Math.round(notif.progressPercent || 0)}%</span>
                 </div>
-                <div style={{ height: 6, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-                  <motion.div 
+                <div style={{ height: 5, backgroundColor: '#e5e5e5', borderRadius: 3, overflow: 'hidden' }}>
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${notif.progressPercent || 0}%` }}
                     transition={{ ease: "linear", duration: 0.2 }}
-                    style={{ height: '100%', backgroundColor: '#fff', borderRadius: 3 }}
+                    style={{ height: '100%', backgroundColor: '#171717', borderRadius: 3 }}
                   />
                 </div>
               </div>
             ) : notif.isInput ? (
               <InputNotif notif={notif} onResolve={handleResolve} />
             ) : (
-              <div style={{ backgroundColor: '#1f1f1f', borderRadius: 16, padding: 4 }}>
+              <div style={{ backgroundColor: '#f5f5f5', borderRadius: 14, padding: 4, border: '1px solid #ebebeb' }}>
                 <button
                   onClick={() => handleResolve(notif.id, true)}
-                  className="w-full flex items-center gap-3 hover:bg-[#282828] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 12, fontSize: 14, fontWeight: 400, color: '#e15252' }}
+                  className="w-full flex items-center gap-3 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: '#ef4444' }}
                 >
-                  <MIcon name="delete_forever" size={15} style={{ color: '#e15252' }} />
+                  <MIcon name="delete_forever" size={15} style={{ color: '#ef4444' }} />
                   {notif.confirmText || "Confirm"}
                 </button>
                 <button
                   onClick={() => handleResolve(notif.id, false)}
-                  className="w-full flex items-center gap-3 hover:bg-[#282828] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 12, fontSize: 14, fontWeight: 400, color: '#e3e3e3' }}
+                  className="w-full flex items-center gap-3 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: '#333' }}
                 >
-                  <MIcon name="close" size={15} style={{ color: '#a1a1aa' }} />
+                  <MIcon name="close" size={15} style={{ color: '#999' }} />
                   {notif.cancelText || "Cancel"}
                 </button>
               </div>

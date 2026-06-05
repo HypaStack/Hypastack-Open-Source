@@ -1,0 +1,55 @@
+# Adding a CDN, and why it's different from everything else I built
+
+The CDN wasn't in the original plan.
+
+Hypastack started as a file sharing tool. You upload something, get a link, the other person downloads it. Encrypted, private, gone after a while. That was the whole idea.
+
+Then people started asking if they could host images for their websites on it.
+
+---
+
+## The use case I didn't expect
+
+Forum avatars. Game screenshots. Readme images. People wanted a place to throw an image and get a permanent, fast link they could drop into their site or their GitHub.
+
+That's a totally different thing from private file sharing. Those images need to be *public*. They can't be encrypted, because the browser needs to display them directly. They need to be fast, globally. And they need to stick around, not disappear after a week.
+
+For a while I just said "that's not what this is for." But the requests kept coming, and eventually I started thinking about it properly.
+
+---
+
+## The problem with public files
+
+If I'm storing public files, I'm storing files that I *can* read. That's the honest truth. No zero-knowledge magic here, a CDN image has to be readable by definition.
+
+So I thought about what I *could* do. The answer was metadata.
+
+When you upload an image to Hypastack CDN, it goes through a processing step before anything hits our servers. EXIF data gets stripped. That means GPS coordinates, camera model, the timestamp baked into the file by your phone, all of it. The file gets re-encoded clean.
+
+It's not the same level of privacy as encrypted file sharing, and I don't pretend it is. But it means a photo you upload doesn't quietly carry your location around the internet with it. That felt like the minimum I was willing to do.
+
+---
+
+## Keeping the two things separate
+
+The CDN and the file sharing tool sit side by side in Hypastack, but they're genuinely separate. Different upload pipeline, different storage, different purpose.
+
+I was careful not to blur them. The file sharing side is zero-knowledge. I cannot read your files. The CDN side is not, but your metadata is stripped and your files are stored under random identifiers that aren't connected to your identity.
+
+When I build something, I start from the assumption that user data isn't mine. Even when technical constraints mean I can't do full encryption, I can still make choices that minimise what I know and what I keep.
+
+---
+
+## Performance above everything
+
+A CDN that's slow defeats the point. I wanted the assets to load fast everywhere. Europe, the US, wherever. That meant edge caching, proper `Cache-Control` headers and immutable URLs for versioned files. The boring infrastructure stuff that nobody talks about but everyone notices when it's wrong.
+
+Slow software is broken software. This applies to images loading on someone's website just as much as it applies to upload speeds.
+
+---
+
+## It turned out to be worth it
+
+I'm glad I added it. The CDN rounds out Hypastack into something that covers more use cases without losing its identity. You can share a private file. You can host a public image. Both things, done the right way.
+
+If you're curious about the other things I work on, check out [usekiko.com](https://usekiko.com). And if you're using the CDN, I'd love to hear what you're using it for.

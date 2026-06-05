@@ -58,10 +58,10 @@ export function UploadTray({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 500 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[20px] sm:rounded-[20px] bg-white font-sans mb-8 sm:mb-0"
+          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-[16px] bg-white font-sans mb-8 sm:mb-0"
           style={{ padding: 1, boxShadow: "0 0 0 1px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10)" }}
         >
-          <div className="w-full h-full bg-white overflow-hidden flex flex-col sm:rounded-[20px] rounded-t-[20px]">
+          <div className="w-full h-full bg-white overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
             <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
               <div className="flex items-center justify-between">
                 <h3
@@ -353,10 +353,10 @@ export function UploadTray({
                       <MIcon
                         name="cloud_upload"
                         size={22}
-                        className={`shrink-0 ${state === "uploading" ? "text-white" : "text-[#888]"}`}
+                        className="shrink-0 text-[#888]"
                       />
                       <div className="flex flex-col">
-                        <span className="text-[15px] font-semibold text-white">
+                        <span className="text-[15px] font-semibold text-[#111]">
                           {state === "done"
                             ? "Upload complete"
                             : state === "uploading"
@@ -365,7 +365,7 @@ export function UploadTray({
                             ? "Upload failed"
                             : `Ready to upload ${files.length} item${files.length !== 1 ? "s" : ""}`}
                         </span>
-                        <span className={`text-[13px] ${state === "uploading" ? "text-white/60" : "text-[#666]"}`}>
+                        <span className="text-[13px] text-[#666]">
                           {state === "done"
                             ? "All files uploaded"
                             : state === "uploading"
@@ -382,8 +382,8 @@ export function UploadTray({
                         <button
                           type="button"
                           onClick={handleReset}
-                          className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                          style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: "#888" }}
+                          className="hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75"
+                          style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 12, fontSize: 13, fontWeight: 500, color: "#888" }}
                         >
                           Cancel
                         </button>
@@ -410,8 +410,8 @@ export function UploadTray({
                       <button
                         type="button"
                         onClick={() => inputRef.current?.click()}
-                        className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 13, fontWeight: 500, color: "#e3e3e3" }}
+                        className="hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75"
+                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500, color: "#555" }}
                       >
                         Add more
                       </button>

@@ -1,7 +1,30 @@
 import { getPool } from './db'
 
-const UPLOAD_WINDOW_MS = 10 * 60 * 1000
-const UPLOAD_MAX_ATTEMPTS = 5
+const WINDOW_MINUTES = {
+  upload: 1,
+  cdnUpload: 1,
+  download: 1,
+  login: 5,
+  register: 5,
+  api: 1,
+  passwordChange: 5,
+} as const
+
+const MAX_ATTEMPTS = {
+  upload:         { free: 30,  essential: 200, premium: 500,  ultimate: 1500 },
+  cdnUpload:      { free: 10,  essential: 100, premium: 300,  ultimate: 1000 },
+  download:       { free: 5,   essential: 50,  premium: 150,  ultimate: 500  },
+  login:          { free: 5 },
+  register:       { free: 5 },
+  api:            { free: 120 },
+  passwordChange: { free: 3 },
+} as const
+
+type TierKey = 'free' | 'essential' | 'premium' | 'ultimate'
+
+function getTierAttempts(limits: Record<string, number>, tier: string): number {
+  return limits[tier as TierKey] ?? limits['free']
+}
 
 interface RateLimitResult {
   allowed: boolean
@@ -19,7 +42,6 @@ async function checkRateLimit(
   const windowSeconds = windowMinutes * 60
 
   try {
-    // Cleanup expired entries for this action
     await pool.query(
       `DELETE FROM rate_limits WHERE action = $1 AND first_attempt < NOW() - INTERVAL '1 minute' * $2::int`,
       [action, windowMinutes]
@@ -71,40 +93,26 @@ async function checkRateLimit(
     }
   } catch (error) {
     console.error(`[RateLimit] Error checking ${action} rate limit:`, error)
-    return { allowed: false, remaining: 0, resetInSeconds: 60 }
+    return { allowed: false, remaining: 0, resetInSeconds: windowSeconds }
   }
 }
 
 export async function checkUploadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
-  let maxAttempts = 30
-  if (tier === 'essential') maxAttempts = 200
-  if (tier === 'premium') maxAttempts = 500
-  if (tier === 'ultimate') maxAttempts = 1500
-  return checkRateLimit(accountId, 'upload', 1, maxAttempts)
+  return checkRateLimit(accountId, 'upload', WINDOW_MINUTES.upload, getTierAttempts(MAX_ATTEMPTS.upload, tier))
 }
 
 export async function checkCdnUploadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
-  let maxAttempts = 10
-  if (tier === 'essential') maxAttempts = 100
-  if (tier === 'premium') maxAttempts = 300
-  if (tier === 'ultimate') maxAttempts = 1000
-  return checkRateLimit(accountId, 'cdn_upload', 1, maxAttempts)
+  return checkRateLimit(accountId, 'cdn_upload', WINDOW_MINUTES.cdnUpload, getTierAttempts(MAX_ATTEMPTS.cdnUpload, tier))
 }
 
 export async function checkDownloadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
-  let maxAttempts = 5
-  if (tier === 'essential') maxAttempts = 50
-  if (tier === 'premium') maxAttempts = 150
-  if (tier === 'ultimate') maxAttempts = 500
-  return checkRateLimit(accountId, 'download', 1, maxAttempts)
+  return checkRateLimit(accountId, 'download', WINDOW_MINUTES.download, getTierAttempts(MAX_ATTEMPTS.download, tier))
 }
 
 export async function verifyDownloadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
   const pool = getPool()
-  let maxAttempts = 5
-  if (tier === 'essential') maxAttempts = 50
-  if (tier === 'premium') maxAttempts = 150
-  if (tier === 'ultimate') maxAttempts = 500
+  const maxAttempts = getTierAttempts(MAX_ATTEMPTS.download, tier)
+  const windowSeconds = WINDOW_MINUTES.download * 60
 
   try {
     await pool.query(
@@ -119,15 +127,15 @@ export async function verifyDownloadRateLimit(accountId: string, tier: string = 
     )
 
     if (result.rows.length === 0) {
-      return { allowed: true, remaining: maxAttempts, resetInSeconds: 60 }
+      return { allowed: true, remaining: maxAttempts, resetInSeconds: windowSeconds }
     }
 
     const record = result.rows[0]
     const secondsElapsed = Number(record.seconds_elapsed)
-    const resetInSeconds = Math.max(0, 60 - secondsElapsed)
+    const resetInSeconds = Math.max(0, windowSeconds - secondsElapsed)
 
-    if (secondsElapsed >= 60) {
-      return { allowed: true, remaining: maxAttempts, resetInSeconds: 60 }
+    if (secondsElapsed >= windowSeconds) {
+      return { allowed: true, remaining: maxAttempts, resetInSeconds: windowSeconds }
     }
 
     if (record.attempt_count >= maxAttempts) {
@@ -137,23 +145,23 @@ export async function verifyDownloadRateLimit(accountId: string, tier: string = 
     return { allowed: true, remaining: maxAttempts - record.attempt_count, resetInSeconds }
   } catch (error) {
     console.error('[RateLimit] Error verifying download rate limit:', error)
-    return { allowed: false, remaining: 0, resetInSeconds: 60 }
+    return { allowed: false, remaining: 0, resetInSeconds: windowSeconds }
   }
 }
 
 export async function checkLoginRateLimit(accountId: string): Promise<RateLimitResult> {
-  return checkRateLimit(accountId, 'login', 5, 5)
+  return checkRateLimit(accountId, 'login', WINDOW_MINUTES.login, MAX_ATTEMPTS.login.free)
 }
 
 export async function checkRegisterRateLimit(accountId: string): Promise<RateLimitResult> {
-  return checkRateLimit(accountId, 'register', 5, 5)
+  return checkRateLimit(accountId, 'register', WINDOW_MINUTES.register, MAX_ATTEMPTS.register.free)
 }
 
 export async function checkApiRateLimit(accountId: string): Promise<RateLimitResult> {
-  return checkRateLimit(accountId, 'api', 1, 120)
+  return checkRateLimit(accountId, 'api', WINDOW_MINUTES.api, MAX_ATTEMPTS.api.free)
 }
 
 export async function checkPasswordChangeRateLimit(accountId: string): Promise<RateLimitResult> {
-  return checkRateLimit(accountId, 'password_change', 5, 3)
+  return checkRateLimit(accountId, 'password_change', WINDOW_MINUTES.passwordChange, MAX_ATTEMPTS.passwordChange.free)
 }
 

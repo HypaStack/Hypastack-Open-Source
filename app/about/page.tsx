@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { Navbar } from "@/components/navbar"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "What is Hypastack? - Hypastack",
-  description: "Learn about how Hypastack uses encryption.",
+  title: "About Hypastack",
+  description: "Hypastack is a zero-knowledge encrypted file sharing platform and CDN built in Europe. Open source, no tracking, no accounts required.",
 }
 
 export default function About() {
