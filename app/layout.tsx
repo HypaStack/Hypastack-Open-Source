@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { JetBrains_Mono, Syne, DM_Sans } from "next/font/google"
+import Script from "next/script"
 import { DemoBanner } from "@/components/demo-banner"
 import { ConsoleGreeting } from "@/components/console-greeting"
 import { DesktopGate } from "@/components/desktop-gate"
@@ -338,15 +339,11 @@ export default function RootLayout({
         />
         {/* Atlas Grotesk fonts loaded via @font-face in globals.css */}
         {/* Tauri detection for pure black background */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');
-              if (window.location.pathname.startsWith('/manage')) document.documentElement.classList.add('is-dashboard');
-              else document.documentElement.classList.add('is-public');
-            `
-          }}
-        />
+        <Script id="tauri-detect" strategy="beforeInteractive">{`
+          if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');
+          if (window.location.pathname.startsWith('/manage')) document.documentElement.classList.add('is-dashboard');
+          else document.documentElement.classList.add('is-public');
+        `}</Script>
       </head>
       <body className={`${jetbrains.variable} ${syne.variable} ${dmSans.variable} font-sans antialiased`}>
         <TauriTitleBar />
