@@ -13,3 +13,5 @@ node_modules/
 replace.ps1
 src-tauri/tauri.conf.json
 
+package-lock.json
+tsconfig.tsbuildinfo
