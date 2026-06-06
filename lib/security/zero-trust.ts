@@ -222,12 +222,9 @@ export function sanitizeFilename(filename: string): {
   // Remove control characters (U+0000–U+001F, U+007F, U+0080–U+009F)
   sanitized = sanitized.replace(/[\x00-\x1F\x7F-\x9F]/g, "")
 
-  // Remove ALL path traversal sequences (even encoded or mixed)
-  while (sanitized.includes("..")) {
-    sanitized = sanitized.replace(/\.\.[/\\]/g, "")
-    sanitized = sanitized.replace(/[/\\]\.\./g, "")
-    sanitized = sanitized.replace(/\.\./g, "")
-  }
+  // After path.basename() above, no path separators remain.
+  // Remove any residual double-dots (cannot traverse without a separator, but strip anyway).
+  sanitized = sanitized.split("..").join("")
 
   // Remove leading dots (hidden files)
   sanitized = sanitized.replace(/^\.+/, "")
@@ -344,9 +341,9 @@ export function sanitizeCdnFilename(filename: string): {
   sanitized = sanitized.replace(/\\/g, "/")
   sanitized = path.basename(sanitized)
   sanitized = sanitized.replace(/[\x00-\x1F\x7F-\x9F]/g, "")
-  while (sanitized.includes("..")) {
-    sanitized = sanitized.replace(/\.\.[/\\]/g, "").replace(/[/\\]\.\./g, "").replace(/\.\./g, "")
-  }
+  // After path.basename() above, no path separators remain.
+  // Remove any residual double-dots (cannot traverse without a separator, but strip anyway).
+  sanitized = sanitized.split("..").join("")
   sanitized = sanitized.replace(/^\.+/, "")
   sanitized = sanitized.replace(/[<>:"|?*]/g, "")
   sanitized = stripInjectionPatterns(sanitized)
