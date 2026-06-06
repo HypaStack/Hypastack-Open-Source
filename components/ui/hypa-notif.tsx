@@ -16,6 +16,8 @@ export interface HypaNotifOptions {
   isInput?: boolean
   inputPlaceholder?: string
   inputDefaultValue?: string
+  /** When true, only the confirm button is shown (no cancel). Use for info/success notifications. */
+  confirmOnly?: boolean
 }
 
 type PromiseResolvers = {
@@ -236,19 +238,21 @@ export function HypaNotifProvider() {
                 <button
                   onClick={() => handleResolve(notif.id, true)}
                   className="w-full flex items-center gap-3 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: '#ef4444' }}
+                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: notif.destructive ? '#ef4444' : '#111' }}
                 >
-                  <MIcon name="delete_forever" size={15} style={{ color: '#ef4444' }} />
+                  {notif.destructive && <MIcon name="delete_forever" size={15} style={{ color: '#ef4444' }} />}
                   {notif.confirmText || "Confirm"}
                 </button>
-                <button
-                  onClick={() => handleResolve(notif.id, false)}
-                  className="w-full flex items-center gap-3 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: '#333' }}
-                >
-                  <MIcon name="close" size={15} style={{ color: '#999' }} />
-                  {notif.cancelText || "Cancel"}
-                </button>
+                {!notif.confirmOnly && (
+                  <button
+                    onClick={() => handleResolve(notif.id, false)}
+                    className="w-full flex items-center gap-3 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
+                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 14, fontWeight: 400, color: '#333' }}
+                  >
+                    <MIcon name="close" size={15} style={{ color: '#999' }} />
+                    {notif.cancelText || "Cancel"}
+                  </button>
+                )}
               </div>
             )}
           </motion.div>
