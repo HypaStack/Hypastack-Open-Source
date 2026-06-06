@@ -115,7 +115,7 @@ export function HowItWorks() {
             playsInline
             className="w-full h-full object-cover object-center"
           >
-            <source src="https://r2.hypastack.com/cdn/yi6pzcoo7evo/dub-conversions.mp4" type="video/mp4" />
+            <source src="https://r2.hypastack.com/cdn/r55e3ypdrahl/vid.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
