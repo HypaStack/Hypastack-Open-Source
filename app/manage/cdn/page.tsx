@@ -404,13 +404,15 @@ export default function CdnPage() {
       )
       refreshUser()
 
-      // Success notification — fire and forget (no await needed)
-      hypaConfirm({
-        title: "File hot swapped ✓",
-        description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL — e.g. ${target.cdnUrl}?v=1`,
-        confirmText: "Close",
-        confirmOnly: true,
-      })
+      // Success notification — deferred so it fires after React's current render batch
+      setTimeout(() => {
+        hypaConfirm({
+          title: "File hot swapped ✓",
+          description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL — e.g. ${target.cdnUrl}?v=1`,
+          confirmText: "Close",
+          confirmOnly: true,
+        })
+      }, 0)
     } catch (err) {
       console.error("Hot swap error:", err)
       alert("Hot swap failed")
