@@ -33,7 +33,7 @@ const TIER_LABELS: Record<PreferencesTier, string> = {
 }
 
 const TIER_STORAGE: Record<PreferencesTier, string> = {
-  free: "1 GB",
+  free: "5 GB",
   essential: "300 GB",
   premium: "750 GB",
   ultimate: "1100 GB",

@@ -10,7 +10,7 @@ const faqs = [
   },
   {
     q: "What are the file size limits?",
-    a: "Free accounts can share files up to 100MB and upload 20MB to the CDN with 1GB total CDN storage. Paid plans go higher — up to 2.5GB shares and 1.1TB CDN storage on Ultimate.",
+    a: "Free accounts can share files up to 100MB and upload 20MB to the CDN with 5GB total CDN storage. Paid plans go higher — up to 2.5GB shares and 1.1TB CDN storage on Ultimate.",
   },
   {
     q: "How long do shared files stay up?",
