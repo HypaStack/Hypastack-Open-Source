@@ -74,7 +74,7 @@ export function CtaSection() {
                   className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#000] pb-1 whitespace-nowrap font-medium"
                   style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                 >
-                  Secure sharing. Zero tracking.
+                  Wanna check it out?
                 </h2>
                 <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#525252]">
                   Set up an account in seconds. Share files securely and host CDNs indefinitely.

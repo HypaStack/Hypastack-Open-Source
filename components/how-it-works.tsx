@@ -240,14 +240,14 @@ export function HowItWorks() {
                       backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)',
                     }}
                   >
-                    Jack Sharkey
+                    Maybe you
                   </span>
-                  <span className="text-[#000000] text-[15px] font-medium">CTO at Whop</span>
+                  <span className="text-[#000000] text-[15px] font-medium">User</span>
                 </div>
 
                 {/* PFP Avatar */}
                 <div className="w-[48px] h-[48px] rounded-full overflow-hidden border border-[rgba(0,0,0,0.08)] shadow-sm bg-white">
-                  <img src="/user/no-profile.png" alt="Jack Sharkey" className="w-full h-full object-cover" />
+                  <img src="/user/no-profile.png" alt="Maybe you" className="w-full h-full object-cover" />
                 </div>
               </motion.div>
             </div>
