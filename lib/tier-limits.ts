@@ -39,7 +39,7 @@ export const FREE_LIMITS: TierLimits = {
   label: "Free",
   maxNormalUploadSize: 100 * MB,
   maxCdnFileSize: 20 * MB,
-  maxCdnStorage: 1000 * MB,
+  maxCdnStorage: 5 * GB,
   maxCdnLinks: 10,
   maxFileLinks: 10,
   maxFilesPerUpload: 10,
