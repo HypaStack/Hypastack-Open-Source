@@ -223,9 +223,11 @@ export function sanitizeFilename(filename: string): {
   sanitized = sanitized.replace(/[\x00-\x1F\x7F-\x9F]/g, "")
 
   // Remove ALL path traversal sequences (even encoded or mixed)
-  sanitized = sanitized.replace(/\.\.[/\\]/g, "")
-  sanitized = sanitized.replace(/[/\\]\.\./g, "")
-  sanitized = sanitized.replace(/\.\./g, "")
+  while (sanitized.includes("..")) {
+    sanitized = sanitized.replace(/\.\.[/\\]/g, "")
+    sanitized = sanitized.replace(/[/\\]\.\./g, "")
+    sanitized = sanitized.replace(/\.\./g, "")
+  }
 
   // Remove leading dots (hidden files)
   sanitized = sanitized.replace(/^\.+/, "")
@@ -342,7 +344,9 @@ export function sanitizeCdnFilename(filename: string): {
   sanitized = sanitized.replace(/\\/g, "/")
   sanitized = path.basename(sanitized)
   sanitized = sanitized.replace(/[\x00-\x1F\x7F-\x9F]/g, "")
-  sanitized = sanitized.replace(/\.\.[/\\]/g, "").replace(/[/\\]\.\./g, "").replace(/\.\./g, "")
+  while (sanitized.includes("..")) {
+    sanitized = sanitized.replace(/\.\.[/\\]/g, "").replace(/[/\\]\.\./g, "").replace(/\.\./g, "")
+  }
   sanitized = sanitized.replace(/^\.+/, "")
   sanitized = sanitized.replace(/[<>:"|?*]/g, "")
   sanitized = stripInjectionPatterns(sanitized)

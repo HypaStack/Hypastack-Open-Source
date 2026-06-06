@@ -67,8 +67,8 @@ export function validateNote(note: string): ValidationResult {
     return { valid: false, error: "Note too long (max 100 characters)" }
   }
   
-  // Remove HTML/script tags
-  let sanitized = note.replace(/<[^>]*>/g, "")
+  // Remove HTML angle brackets to prevent tag injection completely
+  let sanitized = note.replace(/[<>]/g, "")
   
   // Trim whitespace
   sanitized = sanitized.trim()
