@@ -128,9 +128,8 @@ export function getBucketName(): string {
 export function generateFileId(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
   let result = ""
-  const randomBytes = crypto.randomBytes(8)
   for (let i = 0; i < 8; i++) {
-    result += chars.charAt(randomBytes[i] % chars.length)
+    result += chars.charAt(crypto.randomInt(0, chars.length))
   }
   return result
 }
