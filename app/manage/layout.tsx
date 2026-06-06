@@ -104,6 +104,64 @@ function NavRow({
   )
 }
 
+function SidebarNavContent({ section, pathname, isInsider }: { section: string, pathname: string, isInsider: boolean }) {
+  // Use a fallback path if the section doesn't match the pathname to ensure we get the right nav items
+  const items = section === "CDN" ? CDN_SUBNAV : section === "Canary" ? [] : DRIVE_SUBNAV
+
+  return (
+    <>
+      <div className="flex items-center pt-5 pb-3 shrink-0" style={{ paddingLeft: 24 }}>
+        <span className="text-[18px] font-medium tracking-tight text-black">
+          {section}
+        </span>
+      </div>
+
+      <nav
+        className="flex-1 min-h-0 pt-1 pb-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ padding: '0.25rem 0.75rem' }}
+      >
+        <div className="space-y-0.5">
+          {items.map((item) => (
+            <NavRow
+              key={item.href}
+              item={item}
+              active={pathname === item.href}
+            />
+          ))}
+
+          {isInsider && section === "Drive" && (
+            <NavRow
+              item={{ label: "Insider Program", href: "/manage/canary", icon: "science" }}
+              active={pathname === "/manage/canary"}
+              badge={<span style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '2px 5px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>v2.7.3</span>}
+            />
+          )}
+        </div>
+      </nav>
+    </>
+  )
+}
+
+const SECTION_ORDER: Record<string, number> = {
+  "Drive": 0,
+  "CDN": 1,
+  "Canary": 2
+}
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? "100%" : "-100%"
+  }),
+  center: {
+    x: 0
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? "100%" : "-100%",
+    position: 'absolute' as const,
+    top: 0, left: 0, right: 0, bottom: 0
+  })
+}
+
 export default function ManageLayout({
   children,
 }: {
@@ -113,6 +171,17 @@ export default function ManageLayout({
   const pathname = usePathname()
   const { user, stats, isAuthenticated, isLoading, logout } = useAuth()
   const { resolvedTheme } = useTheme()
+
+  const currentSection = sectionTitle(pathname)
+  const [tuple, setTuple] = useState<[number, string]>([1, currentSection])
+  
+  if (tuple[1] !== currentSection) {
+    const prevIndex = SECTION_ORDER[tuple[1]] ?? 0
+    const newIndex = SECTION_ORDER[currentSection] ?? 0
+    setTuple([newIndex > prevIndex ? 1 : -1, currentSection])
+  }
+  
+  const direction = tuple[0]
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -320,34 +389,27 @@ export default function ManageLayout({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[10px] bg-white overflow-hidden relative"
         style={{ width: SIDEBAR_WIDTH, borderRight: 'none', boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}
       >
-        <div className="flex items-center pt-5 pb-3" style={{ paddingLeft: 24 }}>
-          <span className="text-[13px] font-bold tracking-widest uppercase text-black">
-            {sectionTitle(pathname)}
-          </span>
+        <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden w-full">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={currentSection}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
+              style={{ willChange: 'transform', width: '100%', height: '100%' }}
+              className="flex flex-col bg-white"
+            >
+              <SidebarNavContent 
+                section={currentSection} 
+                pathname={pathname} 
+                isInsider={user?.is_insider === 1} 
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
-
-        <nav
-          className="flex-1 min-h-0 pt-1 pb-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-          style={{ padding: '0.25rem 0.75rem' }}
-        >
-          <div className="space-y-0.5">
-            {getSubNav(pathname).map((item) => (
-              <NavRow
-                key={item.href}
-                item={item}
-                active={pathname === item.href}
-              />
-            ))}
-
-            {user?.is_insider === 1 && (
-              <NavRow
-                item={{ label: "Insider Program", href: "/manage/canary", icon: "science" }}
-                active={pathname === "/manage/canary"}
-                badge={<span style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '2px 5px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>v2.7.3</span>}
-              />
-            )}
-          </div>
-        </nav>
 
         <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb]">
           <div className="text-xs text-[#666] font-medium mb-3">

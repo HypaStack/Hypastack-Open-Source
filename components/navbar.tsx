@@ -46,11 +46,7 @@ export function Navbar() {
 
   const content = (
     <header
-      className={`fixed z-[9999] transition-all duration-300 left-0 right-0 mx-auto ${
-        scrolled
-          ? "top-4 sm:top-6 w-[calc(100%-32px)] max-w-[800px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl border border-[rgba(0,0,0,0.15)] shadow-[0_16px_48px_rgba(0,0,0,0.12)] rounded-[24px] py-2 px-3"
-          : "top-0 w-full max-w-[1200px] bg-transparent border border-transparent shadow-none rounded-none py-5 px-6"
-      }`}
+      className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1200px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl rounded-b-2xl py-3 px-6"
     >
       <div className="w-full flex items-center justify-between">
         
