@@ -202,3 +202,20 @@ export async function getTotalStorageUsed(userId: string): Promise<number> {
 
   return Number(result.rows[0]?.total_storage || 0)
 }
+
+/** Update an existing CDN asset's file_size and content_type after a hot swap */
+export async function updateCdnAssetAfterSwap(
+  id: string,
+  userId: string,
+  updates: { file_size: number; content_type: string }
+): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `UPDATE cdn_assets SET file_size = $1, content_type = $2 WHERE id = $3 AND user_id = $4`,
+    [updates.file_size, updates.content_type, id, userId]
+  )
+
+  return (result.rowCount ?? 0) > 0
+}

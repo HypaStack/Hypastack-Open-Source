@@ -192,7 +192,7 @@ export async function getPresignedCdnUploadUrl(
     Bucket: getBucketName(),
     Key: r2Key,
     ContentType: contentType,
-    CacheControl: "public, max-age=31536000, immutable",
+    CacheControl: "public, max-age=3600, s-maxage=3600",
   })
 
   const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
