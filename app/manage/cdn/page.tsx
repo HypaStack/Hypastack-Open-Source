@@ -68,6 +68,7 @@ function getFileIcon(contentType: string) {
 export default function CdnPage() {
   const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useAuth()
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [copiedSelection, setCopiedSelection] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
@@ -77,8 +78,11 @@ export default function CdnPage() {
   const [uploadOpen, setUploadOpen] = useState(false)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
   const [wtStep, setWtStep] = useState(0)
+  const [swapLoading, setSwapLoading] = useState<string | null>(null)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const swapInputRef = useRef<HTMLInputElement>(null)
+  const swapTargetRef = useRef<CdnAsset | null>(null)
   const dragModeRef = useRef<'select' | 'deselect' | null>(null)
 
   useEffect(() => {
@@ -306,6 +310,128 @@ export default function CdnPage() {
     }
   }
 
+  // ── Hot Swap ──
+  const handleHotSwapClick = () => {
+    const ids = Array.from(selectedAssets)
+    if (ids.length !== 1) return
+    const asset = assets.find(a => a.id === ids[0])
+    if (!asset) return
+    swapTargetRef.current = asset
+    swapInputRef.current?.click()
+  }
+
+  const handleHotSwapFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    const target = swapTargetRef.current
+    if (!file || !target) return
+
+    // Confirm via hypaConfirm notif (bottom-right)
+    const confirmed = await hypaConfirm({
+      title: "Hot swap",
+      description: `Replace the file behind this CDN link. Your file will be automatically renamed to "${target.name}" — the URL stays the same.`,
+      confirmText: "Just swap it",
+      cancelText: "Cancel",
+    })
+    if (!confirmed) {
+      swapTargetRef.current = null
+      return
+    }
+
+    setSwapLoading(target.id)
+
+    try {
+      // 1. Get CSRF token
+      const csrfRes = await fetch("/api/v2/csrf")
+      const csrfData = await csrfRes.json()
+      const csrfToken = csrfData.token
+      if (!csrfToken) throw new Error("Failed to get CSRF token")
+
+      // 2. Init hot swap — server returns presigned PUT for the existing R2 key
+      const initRes = await fetch("/api/v2/cdn/hot-swap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assetId: target.id,
+          fileSize: file.size,
+          contentType: file.type || "application/octet-stream",
+          csrfToken,
+        }),
+      })
+
+      if (!initRes.ok) {
+        const data = await initRes.json().catch(() => ({}))
+        alert(data.error || "Failed to initialize hot swap")
+        return
+      }
+
+      const { uploadUrl } = await initRes.json()
+
+      // 3. Upload directly to R2 (overwrites existing object in-place)
+      const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+      })
+
+      if (!putRes.ok) {
+        alert("Upload to storage failed")
+        return
+      }
+
+      // 4. Complete hot swap — server verifies and updates DB
+      const completeRes = await fetch("/api/v2/cdn/hot-swap", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assetId: target.id }),
+      })
+
+      if (!completeRes.ok) {
+        const data = await completeRes.json().catch(() => ({}))
+        alert(data.error || "Failed to complete hot swap")
+        return
+      }
+
+      const result = await completeRes.json()
+
+      // 5. Update local state with new size/contentType
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.id === target.id
+            ? { ...a, size: result.fileSize, contentType: result.contentType }
+            : a
+        )
+      )
+      refreshUser()
+    } catch (err) {
+      console.error("Hot swap error:", err)
+      alert("Hot swap failed")
+    } finally {
+      setSwapLoading(null)
+      swapTargetRef.current = null
+    }
+  }
+
+  // ── Copy / View (selection-based) ──
+  const handleCopySelected = async () => {
+    const urls = Array.from(selectedAssets)
+      .map(id => assets.find(a => a.id === id)?.cdnUrl)
+      .filter(Boolean)
+      .join("\n")
+    const ok = await copyToClipboard(urls)
+    if (ok) {
+      setCopiedSelection(true)
+      setTimeout(() => setCopiedSelection(false), 2000)
+    }
+  }
+
+  const handleViewSelected = () => {
+    const ids = Array.from(selectedAssets)
+    if (ids.length !== 1) return
+    const asset = assets.find(a => a.id === ids[0])
+    if (asset) window.open(asset.cdnUrl, "_blank", "noopener,noreferrer")
+  }
+
   const handleBulkDelete = async () => {
     if (selectedAssets.size === 0) return
 
@@ -454,6 +580,43 @@ export default function CdnPage() {
                   <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
                   <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
                 </button>
+                {/* Copy — all selected */}
+                <button
+                  type="button"
+                  onClick={handleCopySelected}
+                  className={`inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] border font-medium text-[15px] transition-colors leading-none ${
+                    copiedSelection
+                      ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                      : "bg-white text-[#333] border-[#e5e5e5] hover:bg-[#eaeaea]"
+                  }`}
+                >
+                  <MIcon name={copiedSelection ? "check" : "content_copy"} size={16} className="shrink-0" />
+                  <span className="hidden sm:inline">{copiedSelection ? "Copied!" : `Copy${selectedAssets.size > 1 ? ` (${selectedAssets.size})` : ""}`}</span>
+                </button>
+                {/* View — single selection only */}
+                {selectedAssets.size === 1 && (
+                  <button
+                    type="button"
+                    onClick={handleViewSelected}
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#333] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                  >
+                    <MIcon name="open_in_new" size={16} className="shrink-0" />
+                    <span className="hidden sm:inline">View</span>
+                  </button>
+                )}
+                {/* Hot Swap — single selection only */}
+                {selectedAssets.size === 1 && (
+                  <button
+                    type="button"
+                    onClick={handleHotSwapClick}
+                    disabled={swapLoading !== null}
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#d97706] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#fef3c7] transition-colors disabled:opacity-50 leading-none"
+                  >
+                    <MIcon name="swap_horiz" size={17} className="shrink-0" />
+                    <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
+                  </button>
+                )}
+                {/* Delete */}
                 <button
                   type="button"
                   onClick={handleBulkDelete}
@@ -461,7 +624,7 @@ export default function CdnPage() {
                   className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50 leading-none"
                 >
                   <MIcon name="delete" size={18} />
-                  {deleteLoading === "bulk" ? "Deletingâ€¦" : `Delete ${selectedAssets.size}`}
+                  {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
                 </button>
               </>
             ) : (
@@ -502,6 +665,13 @@ export default function CdnPage() {
               onChange={handleFileInputChange}
               className="hidden"
               accept="image/*,.pdf,.txt,.md,.zip,.mp3,.wav,.mp4,.webm"
+            />
+            {/* Hidden file input for hot swap */}
+            <input
+              ref={swapInputRef}
+              type="file"
+              onChange={handleHotSwapFileChange}
+              className="hidden"
             />
           </div>
         </div>
@@ -606,10 +776,6 @@ export default function CdnPage() {
                           }
                         }
                       }}
-                      onCopyLink={() => handleCopy(asset.cdnUrl, asset.id)}
-                      copiedId={copiedId}
-                      onDelete={() => handleDelete(asset.id)}
-                      deleteLoading={deleteLoading === asset.id}
                     />
                   ))}
                 </motion.div>
@@ -667,19 +833,11 @@ function CdnAssetTile({
   selected,
   onToggleSelect,
   onDragAction,
-  onCopyLink,
-  copiedId,
-  onDelete,
-  deleteLoading,
 }: {
   asset: CdnAsset
   selected: boolean
   onToggleSelect: () => void
   onDragAction: (action: 'start' | 'enter') => void
-  onCopyLink: () => void
-  copiedId: string | null
-  onDelete: () => void
-  deleteLoading: boolean
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const [imgLoading, setImgLoading] = useState(true)
@@ -795,42 +953,7 @@ function CdnAssetTile({
           </span>
         </div>
 
-        <div
-          className="absolute inset-x-0 bottom-0 px-1.5 pb-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center gap-0.5 backdrop-blur-[30px] p-0.5" style={{ borderRadius: 10, backgroundColor: 'rgba(0,0,0,0.45)' }}>
-            <button
-              type="button"
-              onClick={onCopyLink}
-              className={`flex-1 inline-flex items-center justify-center gap-1 transition-colors truncate ${copiedId === asset.id ? "text-emerald-400" : "text-white/90 hover:bg-white/10"}`}
-              style={{ height: 28, borderRadius: 8, fontSize: 11, fontWeight: 500 }}
-            >
-               {copiedId === asset.id ? <MIcon name="check" size={12} className="shrink-0" /> : <MIcon name="content_copy" size={12} className="shrink-0" />}
-              <span className="truncate">{copiedId === asset.id ? "Copied" : "Copy"}</span>
-            </button>
-            <a
-              href={asset.cdnUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-1 text-white/90 hover:bg-white/10 transition-colors truncate"
-              style={{ height: 28, borderRadius: 8, fontSize: 11, fontWeight: 500 }}
-            >
-               <MIcon name="open_in_new" size={12} className="shrink-0" />
-              <span className="truncate">View</span>
-            </a>
-            <button
-              type="button"
-              onClick={onDelete}
-              disabled={deleteLoading}
-              className="flex-1 inline-flex items-center justify-center gap-1 text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50 truncate"
-              style={{ height: 28, borderRadius: 8, fontSize: 11, fontWeight: 500 }}
-            >
-               <MIcon name="delete" size={12} className="shrink-0" />
-              <span className="truncate">{deleteLoading ? "â€¦" : "Delete"}</span>
-            </button>
-          </div>
-        </div>
+
       </div>
 
       <div className="mt-2 px-1.5 pb-1 min-w-0">
