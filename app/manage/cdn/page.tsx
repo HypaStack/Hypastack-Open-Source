@@ -829,7 +829,7 @@ export default function CdnPage() {
         currentStep={wtStep}
         steps={[
           { text: "Click the Upload button in the top-right to add your first CDN asset.", icon: "cloud_upload" },
-          { text: "Your files are uploading €” CDN assets get a permanent, public URL.", icon: "public" },
+          { text: "Your files are uploading, CDN assets get a permanent, public URL.", icon: "public" },
           { text: "Once uploaded, click 'Copy link' in the upload tray to get your CDN URL.", icon: "content_copy" },
           { text: "You're all set! Your CDN assets are live and ready to use.", icon: "celebration" },
         ]}
@@ -854,7 +854,7 @@ function CdnAssetTile({
   const isImage = asset.contentType.startsWith("image/")
   const showImage = isImage && !imgFailed
 
-  // Privacy gate "€” images start hidden until user confirms
+  // Privacy gate. images start hidden until user confirms
   const [revealed, setRevealed] = useState(!isImage)
   
   const ext = asset.name.includes(".") ? asset.name.split(".").pop()?.toLowerCase() || "file" : "file"

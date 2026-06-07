@@ -59,7 +59,7 @@ function getFileIconForType(contentType?: string, name?: string): string {
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return "€”"
+  if (bytes === 0) return "0"
   const k = 1024
   const sizes = ["B", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -111,7 +111,7 @@ function FilesPageInner() {
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rawFiles = e.target.files
     if (!rawFiles || rawFiles.length === 0) return
-    // Clone the FileList before clearing input "€” clearing sets rawFiles.length to 0
+    // Clone the FileList before clearing input, clearing sets rawFiles.length to 0
     const dt = new DataTransfer()
     for (let i = 0; i < rawFiles.length; i++) dt.items.add(rawFiles[i])
     const cloned = dt.files
@@ -618,7 +618,7 @@ function FilesPageInner() {
 
       {/* 
         When files were pre-selected via the OS picker, render the UploadZone
-        outside any modal so only the bottom-right tray appears "€” no drop zone.
+        outside any modal so only the bottom-right tray appears, no drop zone.
         The full modal is only used when opening the upload area without pre-selected files.
       */}
       {uploadOpen && pendingUploadFiles && (
