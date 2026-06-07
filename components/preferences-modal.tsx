@@ -778,7 +778,10 @@ function EditProfileDialog({
     setError(null)
     try {
       const sessionKey = await getSessionKey()
-      if (!sessionKey) throw new Error("E2E session key not found")
+      if (!sessionKey) {
+        setError("Session key not found. Please log out and log back in, then try again.")
+        return
+      }
       
       const nickname_encrypted = await encryptE2E(nickname.trim(), sessionKey)
 
@@ -794,8 +797,8 @@ function EditProfileDialog({
       }
       await refreshUser()
       onClose()
-    } catch (err) {
-      setError("Network error. Please try again.")
+    } catch (err: any) {
+      setError(err?.message || "Network error. Please try again.")
     } finally {
       setSaving(false)
     }
