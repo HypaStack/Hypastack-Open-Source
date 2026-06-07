@@ -84,13 +84,14 @@ export default function DownloadPage() {
         setDownloading(false);
         return;
       }
-      if (!r.ok) { setError(data.error || "Download failed"); setDownloading(false); return }      wasBurned = !!data.burned;
+      wasBurned = !!data.burned;
+      if (!r.ok) { setError(data.error || "Download failed"); setDownloading(false); return }
       downloadUrl = data.downloadUrl;
     } catch {
       setError("Failed to start download");
       setDownloading(false);
       return;
-    }    try {
+    } try {
       if (encryptionKeyBase64) {
         const encKey = await importKeyFromBase64(encryptionKeyBase64);
         setDownloadPhase('downloading');
@@ -144,7 +145,8 @@ export default function DownloadPage() {
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
       }
 
-      setDownloaded(true);      if (wasBurned) {
+    if (wasBurned) {
+      setDownloaded(true);
         setBurned(true);
         setForceLocked(true);
         setTimeout(() => window.location.reload(), 2500);
