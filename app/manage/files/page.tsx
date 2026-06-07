@@ -59,7 +59,7 @@ function getFileIconForType(contentType?: string, name?: string): string {
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return "â€”"
+  if (bytes === 0) return "€”"
   const k = 1024
   const sizes = ["B", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -111,7 +111,7 @@ function FilesPageInner() {
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rawFiles = e.target.files
     if (!rawFiles || rawFiles.length === 0) return
-    // Clone the FileList before clearing input â€” clearing sets rawFiles.length to 0
+    // Clone the FileList before clearing input "€” clearing sets rawFiles.length to 0
     const dt = new DataTransfer()
     for (let i = 0; i < rawFiles.length; i++) dt.items.add(rawFiles[i])
     const cloned = dt.files
@@ -468,7 +468,7 @@ function FilesPageInner() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
             >
               <MIcon name="delete" size={18} />
-              {deleteLoading === "bulk" ? "Deletingâ€¦" : `Delete ${selectedFiles.size}`}
+              {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
             </button>
           ) : (
             <>
@@ -593,7 +593,7 @@ function FilesPageInner() {
       {!isEmpty && totalPages > 1 && (
         <div className="flex items-center justify-between mt-7 px-2">
           <p className="text-[15px] text-[#666] font-medium">
-            Page {currentPage} of {totalPages} Â· {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
+            Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
             <button
@@ -618,7 +618,7 @@ function FilesPageInner() {
 
       {/* 
         When files were pre-selected via the OS picker, render the UploadZone
-        outside any modal so only the bottom-right tray appears â€” no drop zone.
+        outside any modal so only the bottom-right tray appears "€” no drop zone.
         The full modal is only used when opening the upload area without pre-selected files.
       */}
       {uploadOpen && pendingUploadFiles && (
@@ -995,7 +995,7 @@ function ListView({
                       />
                       <ActionItem
                         icon="delete"
-                        label={deleteLoading === file.id ? "Deletingâ€¦" : "Delete"}
+                        label={deleteLoading === file.id ? "Deleting" : "Delete"}
                         onClick={() => { onDelete(file.id); setContextMenuPos(null) }}
                         disabled={deleteLoading === file.id}
                         accent="danger"
@@ -1201,7 +1201,7 @@ function GridView({
                     className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-[10px] text-xs font-medium text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50"
                   >
                      <MIcon name="delete" size={12} />
-                    {deleteLoading === file.id ? "â€¦" : "Delete"}
+                    {deleteLoading === file.id ? "€" : "Delete"}
                   </button>
                 </div>
               </div>
@@ -1215,7 +1215,7 @@ function GridView({
                 <span className="uppercase tracking-wider">
                   {getFileTypeLabel(file.name, file.contentType)}
                 </span>
-                <span className="mx-1.5 text-[#999]">Â·</span>
+                <span className="mx-1.5 text-[#999]">·</span>
                 {formatBytes(file.size)}
               </p>
             </div>
