@@ -896,7 +896,7 @@ const PLAN_INFO: PlanInfo[] = [
     details: [
       "300 GB of storage",
       "550 MB max upload, 200 MB CDN",
-      "30 CDN links Â· 25 file links",
+      "30 CDN links - 25 file links",
       "2x expiration windows",
     ],
   },
@@ -909,7 +909,7 @@ const PLAN_INFO: PlanInfo[] = [
     details: [
       "750 GB of storage",
       "1 GB max upload, 500 MB CDN",
-      "100 CDN links Â· 75 file links",
+      "100 CDN links - 75 file links",
       "3x expiration windows",
     ],
   },
@@ -922,8 +922,8 @@ const PLAN_INFO: PlanInfo[] = [
     details: [
       "1.1 TB of storage",
       "2.5 GB max upload, 1 GB CDN",
-      "500 CDN links Â· 500 file links",
-      "4x expiration Â· priority support",
+      "500 CDN links - 500 file links",
+      "4x expiration - priority support",
     ],
   },
   {
@@ -935,7 +935,7 @@ const PLAN_INFO: PlanInfo[] = [
     details: [
       "1 GB of storage",
       "100 MB max upload, 20 MB CDN",
-      "10 CDN links Â· 10 file links",
+      "10 CDN links - 10 file links",
       "Standard expiration",
     ],
   },
@@ -1161,14 +1161,14 @@ function BillingTab({ user }: { user: PreferencesUser }) {
         </div>
         <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] font-normal">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#16a34a]" /> Free: {creditsLoading ? "â€”" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
+            <span className="h-2 w-2 rounded-full bg-[#16a34a]" /> Free: {creditsLoading ? "€" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "â€”" : mUsage.creditUnitsUsed.toLocaleString()}
+            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "€" : mUsage.creditUnitsUsed.toLocaleString()}
           </span>
         </div>
         {!creditsLoading && freeUnitsRemaining <= 0 && (
-          <p className="text-[11px] text-red-500 mt-2">Free tier exhausted â€” CDN operations consume credits.</p>
+          <p className="text-[11px] text-red-500 mt-2">Free tier exhausted € CDN operations consume credits.</p>
         )}
       </div>
 
