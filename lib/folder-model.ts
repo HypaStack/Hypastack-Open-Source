@@ -60,8 +60,6 @@ export async function createFolder(userId: string, plaintextName: string, parent
   }
 }
 
-// Folder names are encrypted with a random IV so we can't compare in SQL —
-// must fetch all folders, decrypt, and traverse the path in memory.
 export async function ensureFolderPath(userId: string, path: string, baseFolderId: string | null = null): Promise<string | null> {
   if (!path || path === '.' || path === '/') return baseFolderId
 
@@ -79,7 +77,7 @@ export async function ensureFolderPath(userId: string, path: string, baseFolderI
       currentParentId = existing.id
     } else {
       const newFolder = await createFolder(userId, part, currentParentId)
-      existingFolders.push(newFolder) // keep in-memory list consistent for subsequent path segments
+      existingFolders.push(newFolder)
       currentParentId = newFolder.id
     }
   }

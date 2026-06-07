@@ -32,11 +32,7 @@ export default async function Image({ params }: Props) {
       }
     }
   } catch {
-    // fallback to defaults
-  }
-
-  // Truncate long filenames
-  const displayName = fileName.length > 40 ? fileName.slice(0, 37) + "..." : fileName
+  }  const displayName = fileName.length > 40 ? fileName.slice(0, 37) + "..." : fileName
 
   return new ImageResponse(
     (

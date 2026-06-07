@@ -1,12 +1,3 @@
-/**
- * R2 operations using AWS SDK for JavaScript
- * 
- * SSL ALERT 40 FIXES FOR OPENSSL 3.x (Linux & Windows):
- * 1. Explicit SNI (servername) in https.Agent
- * 2. Modern cipher suites only (OpenSSL 3.x compatible)
- * 3. Force IPv4 to avoid IPv6 certificate mismatch
- * 4. ECDH curve auto-negotiation
- */
 
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, HeadObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
@@ -14,9 +5,6 @@ import { NodeHttpHandler } from "@smithy/node-http-handler"
 import https from 'https'
 import crypto from "crypto"
 
-// ============================================================================
-// Configuration & Client Setup
-// ============================================================================
 
 function getEnvVar(name: string): string {
   const value = process.env[name]
@@ -37,21 +25,9 @@ export function getEndpoint(): string {
   return `${accountId}.r2.cloudflarestorage.com`
 }
 
-/**
- * Create HTTPS agent with OpenSSL 3.x compatibility
- * 
- * CRITICAL FIXES:
- * - servername: REQUIRED for SNI with Cloudflare
- * - ciphers: Only modern ciphers (OpenSSL 3.x compatible, no legacy)
- * - family: 4: Force IPv4 (avoids IPv6 cert mismatch)
- * - minVersion: TLS 1.2 (OpenSSL 3.x default is fine, but explicit is safer)
- */
 function createHttpsAgent(): https.Agent {
   const host = getEndpoint()
   
-  // OpenSSL 3.x compatible cipher suites
-  // Using ONLY modern ciphers that are in OpenSSL 3.x default provider
-  // (NO legacy ciphers that require --openssl-legacy-provider)
   const modernCiphers = [
     'TLS_AES_128_GCM_SHA256',
     'TLS_AES_256_GCM_SHA384',
@@ -67,13 +43,9 @@ function createHttpsAgent(): https.Agent {
   return new https.Agent({
     keepAlive: true,
     minVersion: 'TLSv1.2',
-    // CRITICAL: Explicit SNI for Cloudflare
     servername: host,
-    // CRITICAL: Only modern ciphers (OpenSSL 3.x compatible)
     ciphers: modernCiphers,
-    // CRITICAL: Force IPv4 to avoid IPv6 cert mismatch
     family: 4,
-    // ECDH auto for curve negotiation
     ecdhCurve: 'auto',
   })
 }
@@ -121,9 +93,6 @@ export function getBucketName(): string {
   return getEnvVar("R2_BUCKET_NAME")
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
 
 export function generateFileId(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -174,12 +143,6 @@ export async function getPresignedUploadUrl(fileId: string, fileName: string, co
   return url
 }
 
-/**
- * Presigned PUT URL for direct browser-to-R2 CDN uploads. Key uses the
- * `cdn/<cdnId>/<filename>` layout that's already publicly served by
- * the R2 custom domain, so once the PUT succeeds the file is immediately
- * reachable via the CDN without any origin server involvement.
- */
 export async function getPresignedCdnUploadUrl(
   cdnId: string,
   fileName: string,
@@ -198,11 +161,6 @@ export async function getPresignedCdnUploadUrl(
   return { uploadUrl, r2Key }
 }
 
-/**
- * HEAD a CDN object to confirm it actually exists in R2 (with what size).
- * Used by the upload-complete handler to prevent clients from registering
- * fake DB rows for objects they never actually PUT.
- */
 export async function headCdnObject(r2Key: string): Promise<{ size: number; contentType: string } | null> {
   try {
     const response = await getR2Client().send(
@@ -220,11 +178,6 @@ export async function headCdnObject(r2Key: string): Promise<{ size: number; cont
   }
 }
 
-/**
- * RFC 6266 / 5987 Content-Disposition with ASCII fallback + UTF-8 encoded filename*.
- * Strips control chars and quote-breakers from the ASCII fallback so the header
- * stays well-formed even for filenames containing non-ASCII or special chars.
- */
 export function buildContentDisposition(originalName: string): string {
   const ascii = originalName
     .replace(/[^\x20-\x7E]/g, '_')
@@ -233,12 +186,6 @@ export function buildContentDisposition(originalName: string): string {
   return `attachment; filename="${ascii}"; filename*=UTF-8''${encoded}`
 }
 
-/**
- * Issue a presigned R2 GET URL that the browser can hit directly.
- * R2 will echo back ResponseContentDisposition / ResponseContentType so the
- * download saves with the original filename and correct MIME without the
- * origin server ever touching the bytes.
- */
 export async function getPresignedDownloadUrl(opts: {
   r2Key: string
   originalName: string
@@ -264,9 +211,6 @@ export async function getPresignedDownloadUrl(opts: {
   return getSignedUrl(getR2Client(), command, { expiresIn: opts.expiresIn ?? 300 })
 }
 
-// ============================================================================
-// Server-Side Operations
-// ============================================================================
 
 export async function uploadFileBuffer(
   fileId: string,
@@ -290,7 +234,6 @@ export async function uploadFileBuffer(
   console.log("[R2] Upload successful:", key)
 }
 
-/** Upload a buffer to an exact R2 key (no path prefix added) */
 export async function putObjectByKey(
   key: string,
   body: Buffer,
@@ -340,7 +283,6 @@ export async function fileExists(fileId: string, fileName: string): Promise<bool
   }
 }
 
-// Download first N bytes for magic bytes validation
 export async function downloadFileHead(fileId: string, fileName: string, bytes: number = 65536): Promise<Buffer> {
   const bucketName = getBucketName()
   const key = `uploads/${fileId}/${fileName}`
@@ -357,7 +299,6 @@ export async function downloadFileHead(fileId: string, fileName: string, bytes: 
     throw new Error('Empty response body')
   }
   
-  // Convert stream to buffer
   const chunks: Buffer[] = []
   for await (const chunk of response.Body as any) {
     chunks.push(Buffer.from(chunk))
@@ -366,11 +307,7 @@ export async function downloadFileHead(fileId: string, fileName: string, bytes: 
   return Buffer.concat(chunks)
 }
 
-// ============================================================================
-// r2Key-based operations (for UUID-named files)
-// ============================================================================
 
-/** Check if an object exists by its full r2Key */
 export async function fileExistsByKey(r2Key: string): Promise<boolean> {
   try {
     const command = new HeadObjectCommand({ Bucket: getBucketName(), Key: r2Key })
@@ -382,19 +319,12 @@ export async function fileExistsByKey(r2Key: string): Promise<boolean> {
   }
 }
 
-/** Delete an object by its full r2Key */
 export async function deleteByKey(r2Key: string): Promise<void> {
   console.log("[R2] Deleting by key:", r2Key)
   const command = new DeleteObjectCommand({ Bucket: getBucketName(), Key: r2Key })
   await getR2Client().send(command)
 }
 
-/**
- * Batch-delete up to 1000 R2 objects in a single HTTP call.
- * Cloudflare R2 supports the S3 DeleteObjects API (max 1000 keys per request).
- * Automatically chunks larger arrays into sequential batches of 1000.
- * Returns the list of keys that failed to delete (empty array = full success).
- */
 export async function deleteObjectsBatch(r2Keys: string[]): Promise<string[]> {
   if (r2Keys.length === 0) return []
 
@@ -430,7 +360,6 @@ export async function deleteObjectsBatch(r2Keys: string[]): Promise<string[]> {
   return failedKeys
 }
 
-/** Download first N bytes by full r2Key */
 export async function downloadHeadByKey(r2Key: string, bytes: number = 65536): Promise<Buffer> {
   const command = new GetObjectCommand({
     Bucket: getBucketName(),
@@ -446,7 +375,6 @@ export async function downloadHeadByKey(r2Key: string, bytes: number = 65536): P
   return Buffer.concat(chunks)
 }
 
-/** Generate a presigned PUT URL for a specific r2Key */
 export async function getPresignedUploadUrlByKey(r2Key: string, contentType?: string): Promise<string> {
   const command = new PutObjectCommand({
     Bucket: getBucketName(),

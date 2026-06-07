@@ -1,7 +1,6 @@
 import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from './file-model'
 import { deleteByKey } from './r2'
 
-// Cleanup expired files
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number
   errors: string[]
@@ -35,20 +34,16 @@ export async function cleanupExpiredFiles(): Promise<{
   return { cleaned, errors }
 }
 
-// Start scheduled cleanup (runs every hour)
 export function startCleanupScheduler(): NodeJS.Timeout {
-  // Run immediately on startup
   cleanupExpiredFiles().catch(console.error)
   cleanupStaging().catch(console.error)
 
-  // Then every hour
   return setInterval(() => {
     cleanupExpiredFiles().catch(console.error)
     cleanupStaging().catch(console.error)
   }, 60 * 60 * 1000)
 }
 
-// Cleanup orphaned staging records (uploads that never completed)
 export async function cleanupStaging(): Promise<{
   cleaned: number
   errors: string[]
@@ -60,7 +55,6 @@ export async function cleanupStaging(): Promise<{
   return result
 }
 
-// Stop scheduler
 export function stopCleanupScheduler(timer: NodeJS.Timeout): void {
   clearInterval(timer)
 }

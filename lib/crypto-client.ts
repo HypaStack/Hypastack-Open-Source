@@ -6,7 +6,6 @@ function assertWebCrypto(): void {
   }
 }
 
-// userId used as a unique per-account PBKDF2 salt to prevent cross-account precomputation
 export async function deriveMasterKey(accessKey: string, userId: string): Promise<CryptoKey> {
   assertWebCrypto()
   const encoder = new TextEncoder()
@@ -29,12 +28,11 @@ export async function deriveMasterKey(accessKey: string, userId: string): Promis
     },
     keyMaterial,
     { name: "AES-GCM", length: 256 },
-    true, // extractable so we can export to sessionStorage
+    true,
     ["encrypt", "decrypt"]
   )
 }
 
-// Encrypted format: "iv:ciphertext" (both base64)
 export async function encryptE2E(plaintext: string, key: CryptoKey): Promise<string> {
   assertWebCrypto()
   const encoder = new TextEncoder()
@@ -55,7 +53,6 @@ export async function encryptE2E(plaintext: string, key: CryptoKey): Promise<str
   return `${ivBase64}:${cipherBase64}`
 }
 
-// Returns a graceful fallback string on any failure instead of throwing
 export async function decryptE2E(encryptedStr: string, key: CryptoKey): Promise<string> {
   try {
     assertWebCrypto()
@@ -100,7 +97,6 @@ export async function storeSessionKey(key: CryptoKey): Promise<void> {
     localStorage.setItem("hpsk_e2e_master", keyBase64)
   } catch (err) {
     console.error("Failed to store session key:", err)
-    // Graceful degradation — user will see "Encrypted User" instead of their name
   }
 }
 
@@ -137,7 +133,6 @@ export function generateAccessKeyClient(userId: string): string {
   return `hpsk_${cleanId}_${secretHex}`
 }
 
-// Access key format: hpsk_<32hexCharsUuidNoDashes>_<64hexSecret>
 export function extractUserIdFromAccessKey(accessKey: string): string | null {
   const parts = accessKey.split("_")
   if (parts.length !== 3 || parts[0] !== "hpsk" || parts[1].length !== 32) {

@@ -62,11 +62,6 @@ export interface DeletedAssetInfo {
   r2_key: string
 }
 
-/**
- * Recursively deletes a CDN folder and all its contents (subfolders and assets).
- * Uses batch R2 deletion (single HTTP call) and batch DB deletion (single query).
- * Returns the list of assets that were successfully deleted for progress streaming.
- */
 export async function deleteCdnFolderRecursively(
   userId: string,
   folderId: string
@@ -74,10 +69,8 @@ export async function deleteCdnFolderRecursively(
   await ensureDatabase()
   const pool = getPool()
 
-  // Get all folders for this user
   const allFolders = await getCdnFoldersByUserId(userId)
 
-  // Build set of all folder IDs to delete (this folder + all descendants)
   const foldersToDelete = new Set<string>([folderId])
   let added = true
   while (added) {
@@ -92,7 +85,6 @@ export async function deleteCdnFolderRecursively(
 
   const folderIds = Array.from(foldersToDelete)
 
-  // Find all CDN assets in these folders (single query)
   const placeholders = folderIds.map((_, i) => '$' + (i + 1)).join(',')
   const assetsResult = await pool.query(
     `SELECT id, r2_key, original_name FROM cdn_assets
@@ -106,7 +98,6 @@ export async function deleteCdnFolderRecursively(
     r2_key: row.r2_key,
   }))
 
-  // Batch-delete all R2 objects in one HTTP call
   const r2Keys = assets.map(a => a.r2_key)
   let failedR2Keys = new Set<string>()
   if (r2Keys.length > 0) {
@@ -118,13 +109,11 @@ export async function deleteCdnFolderRecursively(
     }
   }
 
-  // Batch-delete from DB (only assets where R2 succeeded)
   const successfulIds = assets.filter(a => !failedR2Keys.has(a.r2_key)).map(a => a.id)
   if (successfulIds.length > 0) {
     await deleteCdnAssetsByIds(successfulIds, userId)
   }
 
-  // Delete all identified folders in one query
   if (folderIds.length > 0) {
     const ph = folderIds.map((_, i) => '$' + (i + 1)).join(',')
     await pool.query(

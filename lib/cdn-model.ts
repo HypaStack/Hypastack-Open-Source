@@ -202,7 +202,6 @@ export async function getTotalStorageUsed(userId: string): Promise<number> {
   return Number(result.rows[0]?.total_storage || 0)
 }
 
-/** Update an existing CDN asset's file_size and content_type after a hot swap */
 export async function updateCdnAssetAfterSwap(
   id: string,
   userId: string,

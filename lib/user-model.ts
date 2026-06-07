@@ -2,19 +2,10 @@ import { getPool, ensureDatabase } from './db'
 import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from './tier-limits'
 
-/**
- * Zero-knowledge User model.
- *
- * DB columns:
- *   nickname_encrypted — AES-256-GCM encrypted nickname (client-side E2EE)
- *   password_hash      — PBKDF2 hash of access key (hpsk_...)
- *
- * No email, no IP, no OAuth ID, no PII stored.
- */
 
 export interface User {
   id: string
-  nickname_encrypted: string // encrypted client-side
+  nickname_encrypted: string
   password_hash: string
   avatar_url: string | null
   premium: boolean
@@ -28,7 +19,6 @@ export interface User {
   last_login: Date | null
 }
 
-// --- TIER ---
 
 export async function getUserTier(userId: string): Promise<Tier> {
   await ensureDatabase()
@@ -53,14 +43,11 @@ export async function acknowledgeUserTier(userId: string): Promise<void> {
   )
 }
 
-// --- NICKNAME ENCRYPTION LOGIC MOVED TO CLIENT-SIDE ---
-
-// --- CREATE / LOOKUP ---
 
 export interface CreateUserInput {
   id: string
-  nickname_encrypted: string // E2E encrypted nickname
-  password_hash: string      // PBKDF2 hash of the access key
+  nickname_encrypted: string
+  password_hash: string
 }
 
 export async function createUser(input: CreateUserInput): Promise<void> {
@@ -74,17 +61,10 @@ export async function createUser(input: CreateUserInput): Promise<void> {
   )
 }
 
-/**
- * Nickname uniqueness is no longer checked or enforced,
- * as usernames are end-to-end encrypted.
- */
 export async function nicknameExists(nickname: string): Promise<boolean> {
   return false
 }
 
-/**
- * Get user by ID — decrypts nickname for display.
- */
 export async function getUserById(id: string): Promise<User | null> {
   await ensureDatabase()
   const pool = getPool()
@@ -116,9 +96,6 @@ export async function getUserById(id: string): Promise<User | null> {
 
 
 
-/**
- * Get single user for auth verification (O(1) fast path).
- */
 export async function getUserForAuthById(id: string): Promise<{ id: string; password_hash: string } | null> {
   await ensureDatabase()
   const pool = getPool()
@@ -131,7 +108,6 @@ export async function getUserForAuthById(id: string): Promise<{ id: string; pass
   return result.rows.length > 0 ? result.rows[0] : null
 }
 
-// --- UPDATE ---
 
 export async function updateLastLogin(userId: string): Promise<void> {
   await ensureDatabase()
@@ -163,7 +139,6 @@ export async function updateAvatarUrl(userId: string, avatarUrl: string | null):
   )
 }
 
-// --- SESSION ---
 
 export async function createUserSession(userId: string): Promise<string> {
   await ensureDatabase()

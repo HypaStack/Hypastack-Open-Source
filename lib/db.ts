@@ -1,9 +1,7 @@
 import { Pool, PoolClient, QueryResult } from 'pg'
 
 declare global {
-  // eslint-disable-next-line no-var
   var __basedropDbPool: Pool | undefined
-  // eslint-disable-next-line no-var
   var __basedropDbInitialized: boolean | undefined
 }
 
@@ -100,7 +98,6 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_basedrop_folders_parent_id ON basedrop_folders(parent_id)`)
 
 
-    // Create files table
     await client.query(`
       CREATE TABLE IF NOT EXISTS basedrop_files (
         id VARCHAR(36) PRIMARY KEY,
@@ -170,7 +167,6 @@ export async function initDatabase(): Promise<void> {
 
 
 
-    // Upload staging table
     await client.query(`
       CREATE TABLE IF NOT EXISTS upload_staging (
         id VARCHAR(36) PRIMARY KEY,
@@ -209,7 +205,6 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_revoked ON user_sessions(revoked)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
 
-    // Create CDN assets table
     await client.query(`
       CREATE TABLE IF NOT EXISTS cdn_assets (
         id VARCHAR(12) PRIMARY KEY,
@@ -237,74 +232,48 @@ export async function initDatabase(): Promise<void> {
     `)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_cdn_folders_user_id ON cdn_folders(user_id)`)
 
-    // Add folder_id to cdn_assets if it doesn't exist yet
     await client.query(`ALTER TABLE cdn_assets ADD COLUMN IF NOT EXISTS folder_id VARCHAR(36) DEFAULT NULL`)
 
 
-    // Migration: add inactivity_purge_days to existing users tables
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS inactivity_purge_days INTEGER NOT NULL DEFAULT 7`)
-    } catch {
-      // Column may already exist
-    }
+    } catch {}
 
-    // Migration: add is_insider to existing users tables
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_insider SMALLINT DEFAULT 0`)
-    } catch {
-      // Column may already exist
-    }
+    } catch {}
 
-    // Migration: add canvas_data JSONB column for per-user canvas persistence
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS canvas_data JSONB`)
-    } catch {
-      // Column may already exist
-    }
+    } catch {}
 
-    // Migration: add encryption chunk metadata columns
     try {
       await client.query(`ALTER TABLE basedrop_files ADD COLUMN IF NOT EXISTS encryption_chunk_size INTEGER`)
       await client.query(`ALTER TABLE basedrop_files ADD COLUMN IF NOT EXISTS encryption_total_parts INTEGER`)
       await client.query(`ALTER TABLE upload_staging ADD COLUMN IF NOT EXISTS encryption_chunk_size INTEGER`)
       await client.query(`ALTER TABLE upload_staging ADD COLUMN IF NOT EXISTS encryption_total_parts INTEGER`)
-    } catch {
-      // Columns may already exist
-    }
+    } catch {}
 
-    // Migration: add folder_id to files and staging
     try {
       await client.query(`ALTER TABLE basedrop_files ADD COLUMN IF NOT EXISTS folder_id VARCHAR(36)`)
       await client.query(`ALTER TABLE upload_staging ADD COLUMN IF NOT EXISTS folder_id VARCHAR(36)`)
-    } catch {
-      // Columns may already exist
-    }
+    } catch {}
 
-    // Migration: remove nickname_hash (E2E encryption drops uniqueness constraint)
     try {
       await client.query(`ALTER TABLE users DROP COLUMN IF EXISTS nickname_hash`)
-    } catch {
-      // Ignore
-    }
+    } catch {}
 
-    // Migration: drop legacy unused zero-knowledge and activity tables
     try {
       await client.query(`DROP TABLE IF EXISTS user_activity CASCADE`)
       await client.query(`DROP TABLE IF EXISTS pin_verifications CASCADE`)
       await client.query(`DROP TABLE IF EXISTS email_verifications CASCADE`)
       await client.query(`DROP TABLE IF EXISTS password_reset_codes CASCADE`)
-    } catch {
-      // Ignore
-    }
+    } catch {}
 
-    // Migration: strip user_agent from sessions (zero-knowledge)
     try {
       await client.query(`ALTER TABLE user_sessions DROP COLUMN IF EXISTS user_agent`)
-    } catch {
-      // Ignore
-    }
+    } catch {}
 
-    // Credits system tables
     await client.query(`
       CREATE TABLE IF NOT EXISTS credit_purchases (
         id VARCHAR(36) PRIMARY KEY,
@@ -346,12 +315,9 @@ export async function initDatabase(): Promise<void> {
       )
     `)
 
-    // Migration: add credits_balance to users
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS credits_balance INTEGER DEFAULT 0`)
-    } catch {
-      // Column may already exist
-    }
+    } catch {}
 
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')

@@ -1,7 +1,5 @@
-// Cloudflare Turnstile verification
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY
 
-// Cache successfully verified tokens for 60 seconds to allow batch uploads
 const verifiedTokens = new Map<string, number>()
 
 export async function verifyTurnstileToken(token: string): Promise<{ success: boolean; error?: string }> {
@@ -15,7 +13,6 @@ export async function verifyTurnstileToken(token: string): Promise<{ success: bo
   }
 
   const now = Date.now()
-  // Check if token was verified recently
   if (verifiedTokens.has(token)) {
     const verifiedAt = verifiedTokens.get(token)!
     if (now - verifiedAt < 60000) {
@@ -42,10 +39,7 @@ export async function verifyTurnstileToken(token: string): Promise<{ success: bo
       return { success: false, error: 'Turnstile verification failed' }
     }
 
-    // Cache the successful token
     verifiedTokens.set(token, now)
-    
-    // Cleanup old tokens to prevent memory leaks
     for (const [k, v] of verifiedTokens.entries()) {
       if (now - v > 60000) {
         verifiedTokens.delete(k)

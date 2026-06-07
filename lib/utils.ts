@@ -5,9 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/**
- * Format bytes to human-readable string
- */
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return '0 B'
   
@@ -20,9 +17,6 @@ export function formatBytes(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
-/**
- * Format date to relative time string
- */
 export function formatRelativeTime(date: Date | string): string {
   const now = new Date()
   const then = new Date(date)
@@ -38,9 +32,6 @@ export function formatRelativeTime(date: Date | string): string {
   return `${Math.floor(days / 30)} months`
 }
 
-/**
- * Truncate text with ellipsis
- */
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
   return text.slice(0, maxLength - 3) + '...'

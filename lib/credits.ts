@@ -1,14 +1,12 @@
 import { getPool } from './db'
 
-// Constants
 export const FREE_UNITS_PER_MONTH = 5000
 export const UNITS_PER_CREDIT = 1000
-export const CLASS_A_COST = 4  // op-units per Class A operation
-export const CLASS_B_COST = 1  // op-units per Class B operation
+export const CLASS_A_COST = 4
+export const CLASS_B_COST = 1
 export const CREDIT_EXPIRY_MONTHS = 6
 export const CREDIT_PRICE_EUR = 0.50
 
-// Types
 export interface MonthlyUsage {
   userId: string
   month: string
@@ -67,14 +65,12 @@ export async function logOperation(
   try {
     await client.query('BEGIN')
 
-    // Log the operation
     await client.query(
       `INSERT INTO operation_logs (user_id, op_class, action, op_units, created_at)
        VALUES ($1, $2, $3, $4, NOW())`,
       [userId, opClass, action, opUnits]
     )
 
-    // Upsert monthly usage
     await client.query(
       `INSERT INTO monthly_usage (user_id, month, op_units_used, free_units_used, credit_units_used)
        VALUES ($1, $2, $3, 0, 0)
@@ -83,7 +79,6 @@ export async function logOperation(
       [userId, month, opUnits]
     )
 
-    // Get current usage to determine billing
     const { rows } = await client.query(
       `SELECT free_units_used, credit_units_used FROM monthly_usage
        WHERE user_id = $1 AND month = $2`,
@@ -93,7 +88,6 @@ export async function logOperation(
     const freeRemaining = Math.max(0, FREE_UNITS_PER_MONTH - freeUsed)
 
     if (freeRemaining >= opUnits) {
-      // Covered by free tier
       await client.query(
         `UPDATE monthly_usage SET free_units_used = free_units_used + $3
          WHERE user_id = $1 AND month = $2`,
@@ -103,7 +97,6 @@ export async function logOperation(
       return { allowed: true }
     }
 
-    // Partially or fully credit-funded
     const freePartial = freeRemaining
     const creditNeeded = opUnits - freePartial
 
@@ -122,7 +115,6 @@ export async function logOperation(
         await client.query('ROLLBACK')
         return { allowed: false, reason: 'No credits remaining. Purchase credits to continue using CDN operations.' }
       }
-      // Non-CDN ops are always allowed (overage tracking)
       await client.query(
         `UPDATE monthly_usage SET credit_units_used = credit_units_used + $3
          WHERE user_id = $1 AND month = $2`,
@@ -148,7 +140,6 @@ export async function logOperation(
   }
 }
 
-// FIFO credit consumption within an existing transaction
 async function consumeCreditsWithClient(
   client: import('pg').PoolClient,
   userId: string,
@@ -176,7 +167,6 @@ async function consumeCreditsWithClient(
 
   if (remaining > 0) return false
 
-  // Sync user balance
   const { rows } = await client.query(
     `SELECT COALESCE(SUM(remaining), 0) as total FROM credit_purchases
      WHERE user_id = $1 AND status = 'completed' AND remaining > 0 AND expires_at > NOW()`,
@@ -236,7 +226,6 @@ export async function canPerformCdnOperation(userId: string): Promise<boolean> {
   const freeUsed = rows.length > 0 ? Number(rows[0].free_units_used) : 0
   if (freeUsed < FREE_UNITS_PER_MONTH) return true
 
-  // Check credit balance
   const { rows: userRows } = await pool.query(
     `SELECT COALESCE(credits_balance, 0) as credits_balance FROM users WHERE id = $1`,
     [userId]
@@ -295,7 +284,6 @@ export async function expireOldCredits(): Promise<number> {
        RETURNING user_id, remaining`
     )
 
-    // Subtract expired remaining from each user's balance
     for (const row of expired) {
       await client.query(
         `UPDATE users SET credits_balance = GREATEST(0, COALESCE(credits_balance, 0) - $1) WHERE id = $2`,
