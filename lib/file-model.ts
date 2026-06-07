@@ -167,9 +167,7 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
         try {
           const { deleteByKey } = await import('./r2')
           await deleteByKey(record.r2_key)
-        } catch {
-          // R2 file may not exist
-        }
+        } catch {}
 
         await pool.query(
           `DELETE FROM upload_staging WHERE id = $1`,

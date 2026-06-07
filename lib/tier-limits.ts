@@ -1,34 +1,18 @@
-/**
- * Per-tier resource limits. The user's tier is a DB string toggled by the
- * site operator via SQL — never derived from JWT, client input, or any
- * user-controlled value. Every limit check must call getUserTier()
- * directly against the DB on each request.
- */
 
 export type Tier = "free" | "essential" | "premium" | "ultimate"
 
 export const TIERS: readonly Tier[] = ["free", "essential", "premium", "ultimate"] as const
 
 export interface TierLimits {
-  /** Display name shown in UI */
   label: string
-  /** Per-file cap for normal (file-share / Drive) uploads, in bytes */
   maxNormalUploadSize: number
-  /** Per-file cap for CDN uploads, in bytes */
   maxCdnFileSize: number
-  /** Total storage cap per user, in bytes */
   maxCdnStorage: number
-  /** Maximum number of CDN asset links */
   maxCdnLinks: number
-  /** Maximum number of Drive file links */
   maxFileLinks: number
-  /** Max files per single Drive upload request (batch) */
   maxFilesPerUpload: number
-  /** Max files per single CDN upload request (batch) */
   maxCdnFilesPerUpload: number
-  /** Hard cap on total files (Drive + CDN combined). 0 = unlimited (use per-type limits instead) */
   maxTotalFiles: number
-  /** Multiplier on default file expiration (1 = default, 2 = double, etc.) */
   expirationMultiplier: number
 }
 
@@ -94,20 +78,14 @@ const TIER_TO_LIMITS: Record<Tier, TierLimits> = {
   ultimate: ULTIMATE_LIMITS,
 }
 
-/** Coerce any string (including legacy values) into a valid Tier. */
 export function normalizeTier(value: string | null | undefined): Tier {
   if (!value) return "free"
   const v = value.toLowerCase()
   if (v === "essential" || v === "premium" || v === "ultimate" || v === "free") return v
-  // Legacy names that used to map to the old single paid tier.
   if (v === "advanced" || v === "local") return v === "advanced" ? "essential" : "free"
   return "free"
 }
 
-/**
- * Resolve a tier into its limits. Accepts either a tier string or a legacy
- * boolean (`true` = premium = essential, `false` = free) to ease migration.
- */
 export function getTierLimits(tier: Tier | boolean): TierLimits {
   if (typeof tier === "boolean") return tier ? ESSENTIAL_LIMITS : FREE_LIMITS
   return TIER_TO_LIMITS[tier] ?? FREE_LIMITS

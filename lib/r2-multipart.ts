@@ -1,10 +1,3 @@
-/**
- * Server-side R2 multipart helpers.
- *
- * The origin server ONLY signs URLs and manages metadata.
- * It never touches, proxies, or buffers file data.
- * Response time target: <31ms.
- */
 
 import {
   CreateMultipartUploadCommand,
@@ -16,10 +9,6 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { getR2Client, getBucketName } from "./r2"
 
-/**
- * Initiate a multipart upload and return presigned URLs for each part.
- * The client encrypts + uploads chunks directly to these URLs.
- */
 export async function initiateMultipartUpload(opts: {
   r2Key: string
   contentType: string
@@ -28,7 +17,6 @@ export async function initiateMultipartUpload(opts: {
   const client = getR2Client()
   const bucket = getBucketName()
 
-  // Step 1: Create the multipart upload
   const createCmd = new CreateMultipartUploadCommand({
     Bucket: bucket,
     Key: opts.r2Key,
@@ -37,7 +25,6 @@ export async function initiateMultipartUpload(opts: {
   const createRes = await client.send(createCmd)
   const uploadId = createRes.UploadId!
 
-  // Step 2: Generate presigned PUT URLs for each part
   const presignedUrls: string[] = []
   for (let i = 1; i <= opts.totalParts; i++) {
     const partCmd = new UploadPartCommand({
@@ -53,9 +40,6 @@ export async function initiateMultipartUpload(opts: {
   return { uploadId, presignedUrls }
 }
 
-/**
- * Generate fresh presigned URLs for specific parts (used for resume).
- */
 export async function getPresignedUrlsForParts(opts: {
   r2Key: string
   uploadId: string
@@ -78,9 +62,6 @@ export async function getPresignedUrlsForParts(opts: {
   return urls
 }
 
-/**
- * Complete a multipart upload after all parts have been uploaded by the client.
- */
 export async function completeMultipartUpload(opts: {
   r2Key: string
   uploadId: string
@@ -104,9 +85,6 @@ export async function completeMultipartUpload(opts: {
   await client.send(cmd)
 }
 
-/**
- * Abort a multipart upload (cleanup on failure).
- */
 export async function abortMultipartUpload(opts: {
   r2Key: string
   uploadId: string
@@ -125,10 +103,6 @@ export async function abortMultipartUpload(opts: {
   })
 }
 
-/**
- * List parts already uploaded for a multipart upload (for resume).
- * Returns part numbers and their ETags.
- */
 export async function listUploadedParts(opts: {
   r2Key: string
   uploadId: string
@@ -139,7 +113,6 @@ export async function listUploadedParts(opts: {
   const parts: { partNumber: number; etag: string; size: number }[] = []
   let partMarker: string | undefined
 
-  // Paginate through all parts
   while (true) {
     const cmd = new ListPartsCommand({
       Bucket: bucket,

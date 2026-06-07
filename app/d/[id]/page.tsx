@@ -84,19 +84,13 @@ export default function DownloadPage() {
         setDownloading(false);
         return;
       }
-      if (!r.ok) { setError(data.error || "Download failed"); setDownloading(false); return }
-
-      // Record burned state from API but DON'T reload yet — download must complete first
-      wasBurned = !!data.burned;
+      if (!r.ok) { setError(data.error || "Download failed"); setDownloading(false); return }      wasBurned = !!data.burned;
       downloadUrl = data.downloadUrl;
     } catch {
       setError("Failed to start download");
       setDownloading(false);
       return;
-    }
-
-    // Now do the actual download
-    try {
+    }    try {
       if (encryptionKeyBase64) {
         const encKey = await importKeyFromBase64(encryptionKeyBase64);
         setDownloadPhase('downloading');
@@ -150,10 +144,7 @@ export default function DownloadPage() {
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
       }
 
-      setDownloaded(true);
-
-      // NOW handle burn — after download has been triggered
-      if (wasBurned) {
+      setDownloaded(true);      if (wasBurned) {
         setBurned(true);
         setForceLocked(true);
         setTimeout(() => window.location.reload(), 2500);

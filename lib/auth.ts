@@ -30,7 +30,6 @@ export function generateSalt(): string {
   return crypto.randomBytes(16).toString("hex")
 }
 
-// PBKDF2 100k iterations, SHA-512, 64-byte output. Stored as salt:hash
 export function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
   const useSalt = salt || generateSalt()
   const hash = crypto
@@ -50,7 +49,6 @@ export function verifyPassword(password: string, storedHash: string): boolean {
   return hash === storedHash
 }
 
-// Format: hpsk_<userId_no_hyphens>_<64 hex chars> — enables O(1) lookup during login
 export function generateAccessKey(userId?: string): string {
   const secret = crypto.randomBytes(32).toString("hex")
   if (userId) {
@@ -66,7 +64,7 @@ export function generateToken(payload: { userId: string }): string {
   const body = Buffer.from(JSON.stringify({
     ...payload,
     iat: now,
-    exp: now + 7 * 24 * 60 * 60 // 7 days
+    exp: now + 7 * 24 * 60 * 60
   })).toString("base64url")
 
   const signature = crypto
@@ -107,7 +105,7 @@ export async function setAuthCookie(token: string, maxAge?: number) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: maxAge || 7 * 24 * 60 * 60, // 7 days default
+    maxAge: maxAge || 7 * 24 * 60 * 60,
     path: "/"
   })
 }

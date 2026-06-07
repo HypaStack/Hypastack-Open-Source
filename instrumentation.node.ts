@@ -1,18 +1,12 @@
 import crypto from 'crypto'
 
 let cleanupTimer: NodeJS.Timeout | null = null
-
-// ── BetterStack heartbeat helpers ────────────────────────────────
-
 async function ping(url: string | undefined, ok: boolean) {
   if (!url) return
   const target = ok ? url : `${url}/fail`
   fetch(target, { method: 'GET', cache: 'no-store', signal: AbortSignal.timeout(5000) })
     .catch((err: any) => console.error(`[Heartbeat] Ping failed (${target}):`, err?.message))
-}
-
-// DB Health — SELECT 1
-async function checkDb(): Promise<boolean> {
+}async function checkDb(): Promise<boolean> {
   try {
     const { getPool } = await import('./lib/db')
     await getPool().query('SELECT 1')
@@ -21,10 +15,7 @@ async function checkDb(): Promise<boolean> {
     console.error('[Heartbeat] DB check failed:', err?.message)
     return false
   }
-}
-
-// Auth — JWT sign + verify round-trip
-async function checkAuth(): Promise<boolean> {
+}async function checkAuth(): Promise<boolean> {
   try {
     const { generateToken, verifyToken } = await import('./lib/auth')
     const token = generateToken({ userId: 'heartbeat-probe' })
@@ -34,10 +25,7 @@ async function checkAuth(): Promise<boolean> {
     console.error('[Heartbeat] Auth check failed:', err?.message)
     return false
   }
-}
-
-// CSRF — generate + timingSafeEqual round-trip
-async function checkCsrf(): Promise<boolean> {
+}async function checkCsrf(): Promise<boolean> {
   try {
     const { generateCsrfToken } = await import('./lib/security')
     const token = generateCsrfToken()
@@ -48,10 +36,7 @@ async function checkCsrf(): Promise<boolean> {
     console.error('[Heartbeat] CSRF check failed:', err?.message)
     return false
   }
-}
-
-// R2 — HEAD a known asset
-async function checkR2(): Promise<boolean> {
+}async function checkR2(): Promise<boolean> {
   try {
     const res = await fetch('https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp', {
       method: 'HEAD', cache: 'no-store', signal: AbortSignal.timeout(6000),
@@ -61,10 +46,7 @@ async function checkR2(): Promise<boolean> {
     console.error('[Heartbeat] R2 check failed:', err?.message)
     return false
   }
-}
-
-// Main page — HEAD the public app URL
-async function checkMainPage(): Promise<boolean> {
+}async function checkMainPage(): Promise<boolean> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL
   if (!appUrl) return true
   try {
@@ -101,9 +83,6 @@ function startHeartbeats() {
   run()
   setInterval(run, INTERVAL)
 }
-
-// ── Entry point (called only in Node.js runtime) ─────────────────
-
 async function init() {
   try {
     const { initDatabase } = await import('./lib/db')

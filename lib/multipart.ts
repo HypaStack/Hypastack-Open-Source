@@ -1,7 +1,5 @@
-/** Minimum size to trigger multipart upload (50MB) */
 export const MULTIPART_THRESHOLD = 50 * 1024 * 1024
 
-/** Default chunk size for multipart uploads (10MB) */
 export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
 
 export async function generateEncryptionKey(): Promise<{
@@ -18,7 +16,6 @@ export async function generateEncryptionKey(): Promise<{
   return { key, keyBase64 }
 }
 
-// Output layout: [12-byte IV] [ciphertext + 16-byte authTag] — each chunk is self-contained
 export async function encryptChunk(
   key: CryptoKey,
   plaintext: ArrayBuffer
@@ -65,7 +62,6 @@ export function readFileSlice(file: File, start: number, end: number): Promise<A
   return file.slice(start, end).arrayBuffer()
 }
 
-// Returns the ETag needed for multipart completion
 export async function uploadChunkToR2(
   presignedUrl: string,
   data: ArrayBuffer,
@@ -106,7 +102,7 @@ export async function uploadFileMultipart(opts: {
   const chunks = [...chunkFile(file, chunkSize)]
   const totalBytes = file.size
 
-  const chunkProgress = new Float64Array(chunks.length) // bytes uploaded per chunk
+  const chunkProgress = new Float64Array(chunks.length)
   const etags: { partNumber: number; etag: string }[] = new Array(chunks.length)
 
   const reportProgress = () => {
