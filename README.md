@@ -33,7 +33,7 @@ Live at **[hypastack.com](https://hypastack.com)** — built by [Kiko](https://u
 - **Styling:** Tailwind CSS v4
 - **Animations:** [Motion](https://motion.dev/)
 - **Icons:** Material Symbols (Rounded)
-- **Fonts:** Syne, DM Sans, JetBrains Mono (via `next/font`)
+- **Fonts:** SF Pro Display
 
 ### Backend and Infrastructure
 
