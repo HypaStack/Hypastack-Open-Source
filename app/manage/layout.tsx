@@ -83,7 +83,7 @@ function NavRow({
       className={`group relative flex items-center gap-3 rounded-lg text-sm font-medium transition-colors duration-150 cursor-pointer ${
         active
           ? 'bg-[#007AFF]/10 text-[#007AFF]'
-          : 'text-[#666] hover:bg-[#eaeaea] hover:text-[#171717]'
+          : 'text-[#666] dark:text-[#888] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] hover:text-[#171717] dark:hover:text-[#e3e3e3]'
       }`}
       style={{
         height: 32,
@@ -94,7 +94,7 @@ function NavRow({
       <MIcon 
         name={item.icon} 
         size={18} 
-        className={`shrink-0 transition-colors ${active ? 'text-[#007AFF]' : 'text-[#666] group-hover:text-[#171717]'}`} 
+        className={`shrink-0 transition-colors ${active ? 'text-[#007AFF]' : 'text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:group-hover:text-[#e3e3e3]'}`} 
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
         <span className="truncate">{item.label}</span>
@@ -111,7 +111,7 @@ function SidebarNavContent({ section, pathname, isInsider }: { section: string, 
   return (
     <>
       <div className="flex items-center pt-5 pb-3 shrink-0" style={{ paddingLeft: 24 }}>
-        <span className="text-[18px] font-medium tracking-tight text-black">
+        <span className="text-[18px] font-medium tracking-tight text-black dark:text-[#e3e3e3]">
           {section}
         </span>
       </div>
@@ -271,10 +271,10 @@ export default function ManageLayout({
 
   return (
     <>
-    <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] text-[#171717]">
+    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#111111] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
         <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
-          <PageLogo size={32} borderRadius={8} disableLayoutAnimation={true} />
+          <PageLogo size={32} borderRadius={8} disableLayoutAnimation={true} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
         </Link>
 
         <div className="flex flex-col items-center gap-2 mt-8 flex-1">
@@ -285,7 +285,7 @@ export default function ManageLayout({
                 key={item.href}
                 href={item.href}
                 className={`relative flex items-center justify-center h-12 w-12 rounded-lg transition-colors shrink-0 ${
-                  active ? 'bg-white text-[#171717]' : 'text-[#666] hover:bg-white hover:text-[#171717]'
+                  active ? 'bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]' : 'text-[#666] dark:text-[#888] hover:bg-white dark:hover:bg-[#2a2a2a] hover:text-[#171717] dark:hover:text-[#e3e3e3]'
                 }`}
                 aria-label={item.label}
               >
@@ -299,7 +299,7 @@ export default function ManageLayout({
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`relative flex items-center justify-center h-12 w-12 rounded-lg hover:bg-white transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white' : ''}`}
+            className={`relative flex items-center justify-center h-12 w-12 rounded-lg hover:bg-white dark:hover:bg-[#2a2a2a] transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white dark:bg-[#2a2a2a]' : ''}`}
             aria-label="Account menu"
           >
             <div className="h-7 w-7">
@@ -327,7 +327,7 @@ export default function ManageLayout({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white rounded-lg border border-[#e5e5e5] py-2"
+                className="fixed z-[100] bg-white dark:bg-[#1c1c1c] rounded-lg border border-[#e5e5e5] dark:border-transparent py-2"
                 style={{ 
                   bottom: '68px', 
                   left: '8px', 
@@ -336,46 +336,46 @@ export default function ManageLayout({
                 }}
               >
                 <div className="px-3 pb-2">
-                  <p className="text-sm font-semibold text-[#171717]">{user.nickname}</p>
-                  <p className="text-xs text-[#666] mt-0.5">{user.id}</p>
+                  <p className="text-sm font-semibold text-[#171717] dark:text-[#e3e3e3]">{user.nickname}</p>
+                  <p className="text-xs text-[#666] dark:text-[#888] mt-0.5">{user.id}</p>
                 </div>
                 
-                <div className="mx-3 border-b border-[#f0f0f0] mb-1" />
+                <div className="mx-3 border-b border-[#f0f0f0] dark:border-[#2c2c2c] mb-1" />
                 
                 <div className="px-1.5 space-y-0.5">
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); openPreferences("account"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
                   >
-                    <MIcon name="person" size={18} className="text-[#666] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="person" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
                     <span>Account settings</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); openPreferences("general"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
                   >
-                    <MIcon name="settings" size={18} className="text-[#666] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="settings" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
                     <span>Workspace settings</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
                   >
-                    <MIcon name="card_giftcard" size={18} className="text-[#666] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="card_giftcard" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
                     <span>Refer and earn</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); logout(); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
                   >
-                    <MIcon name="logout" size={18} className="text-[#666] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="logout" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
                     <span>Log out</span>
                   </button>
                 </div>
@@ -386,7 +386,7 @@ export default function ManageLayout({
       </aside>
 
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[10px] bg-white overflow-hidden relative"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[10px] bg-white dark:bg-[#1a1a1a] overflow-hidden relative"
         style={{ width: SIDEBAR_WIDTH, borderRight: 'none', boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}
       >
         <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden w-full">
@@ -400,7 +400,7 @@ export default function ManageLayout({
               exit="exit"
               transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
               style={{ willChange: 'transform', width: '100%', height: '100%' }}
-              className="flex flex-col bg-white"
+              className="flex flex-col bg-white dark:bg-[#1a1a1a]"
             >
               <SidebarNavContent 
                 section={currentSection} 
@@ -411,21 +411,21 @@ export default function ManageLayout({
           </AnimatePresence>
         </div>
 
-        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb]">
-          <div className="text-xs text-[#666] font-medium mb-3">
+        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb] dark:border-[#2a2a2a]">
+          <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
             Usage
           </div>
           
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333]">
-                  <MIcon name="bolt" size={15} className="text-[#666]" />
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="bolt" size={15} className="text-[#666] dark:text-[#888]" />
                   <span>Credits</span>
                 </div>
-                <span className="text-[#666]">{user.creditsBalance ?? 0}</span>
+                <span className="text-[#666] dark:text-[#888]">{user.creditsBalance ?? 0}</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] overflow-hidden">
+              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
                 <div 
                   className="h-full rounded-full bg-[#007AFF]" 
                   style={{ width: `${Math.min(((user.creditsBalance ?? 0) / 1000) * 100, 100)}%` }} 
@@ -434,13 +434,13 @@ export default function ManageLayout({
             </div>
             <div>
               <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333]">
-                  <MIcon name="hard_drive" size={15} className="text-[#666]" />
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
                   <span>Storage</span>
                 </div>
-                <span className="text-[#666]">{usedPct}%</span>
+                <span className="text-[#666] dark:text-[#888]">{usedPct}%</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] overflow-hidden">
+              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
                 <div 
                   className="h-full rounded-full bg-[#007AFF]" 
                   style={{ width: `${usedPct}%` }} 
@@ -482,7 +482,7 @@ export default function ManageLayout({
             className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden pointer-events-auto"
             style={{
               height: '90vh',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: resolvedTheme === 'dark' ? '#1a1a1a' : '#f5f5f5',
               borderRadius: '18px 18px 0 0',
               willChange: 'transform',
             }}
@@ -501,12 +501,12 @@ export default function ManageLayout({
                       onClick={() => setDrawerOpen(false)}
                       className={`flex items-center gap-4 w-full active:scale-[0.98] transition-all duration-75 ${
                         active
-                          ? "bg-white text-[#171717]"
-                          : "text-[#666] active:bg-white"
+                          ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]"
+                          : "text-[#666] dark:text-[#888] active:bg-white dark:active:bg-[#2a2a2a]"
                       }`}
                       style={{ height: 42, paddingLeft: 16, paddingRight: 16, borderRadius: 10 }}
                     >
-                      <MIcon name={item.icon} size={20} style={{ color: active ? '#171717' : '#666' }} />
+                      <MIcon name={item.icon} size={20} style={{ color: active ? (resolvedTheme === 'dark' ? '#e3e3e3' : '#171717') : (resolvedTheme === 'dark' ? '#888' : '#666') }} />
                       <span style={{ fontSize: 15, fontWeight: 500 }}>{item.label}</span>
                     </Link>
                   )
@@ -518,12 +518,12 @@ export default function ManageLayout({
                     onClick={() => setDrawerOpen(false)}
                     className={`flex items-center gap-4 w-full active:scale-[0.98] transition-all duration-75 ${
                       pathname === "/manage/canary"
-                        ? "bg-white text-[#171717]"
-                        : "text-[#666] active:bg-white"
+                        ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]"
+                        : "text-[#666] dark:text-[#888] active:bg-white dark:active:bg-[#2a2a2a]"
                     }`}
                     style={{ height: 42, paddingLeft: 16, paddingRight: 16, borderRadius: 10 }}
                   >
-                    <MIcon name="science" size={20} style={{ color: pathname === "/manage/canary" ? '#171717' : '#666' }} />
+                    <MIcon name="science" size={20} style={{ color: pathname === "/manage/canary" ? (resolvedTheme === 'dark' ? '#e3e3e3' : '#171717') : (resolvedTheme === 'dark' ? '#888' : '#666') }} />
                     <span style={{ fontSize: 15, fontWeight: 500, flex: 1, lineHeight: 'normal' }}>Insider Program</span>
                     <span style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '2px 5px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>v2.7.3</span>
                   </Link>
@@ -541,11 +541,11 @@ export default function ManageLayout({
                     </div>
                   )}
                 </div>
-                <span className="text-[15px] font-medium text-[#171717] truncate flex-1">{user.nickname}</span>
+                <span className="text-[15px] font-medium text-[#171717] dark:text-[#e3e3e3] truncate flex-1">{user.nickname}</span>
                 <button
                   type="button"
                   onClick={() => openPreferences("general")}
-                  className="flex items-center justify-center hover:bg-white active:scale-[0.95] transition-all duration-75"
+                  className="flex items-center justify-center hover:bg-white dark:hover:bg-[#2a2a2a] active:scale-[0.95] transition-all duration-75"
                   style={{ width: 40, height: 40, borderRadius: 12 }}
                   aria-label="Settings"
                 >
@@ -567,15 +567,15 @@ export default function ManageLayout({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[10px] bg-white overflow-hidden relative">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[10px] bg-white dark:bg-[#171717] overflow-hidden relative">
         <header
-          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white lg:hidden safe-area-top relative z-10"
-          style={{ borderBottom: '1px solid #f0f0f0' }}
+          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#171717] lg:hidden safe-area-top relative z-10"
+          style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid #2a2a2a' : '1px solid #f0f0f0' }}
         >
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="flex items-center justify-center text-[#333] hover:bg-[#f5f5f5] active:scale-[0.95] transition-all duration-75"
+            className="flex items-center justify-center text-[#333] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] active:scale-[0.95] transition-all duration-75"
             style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: -4 }}
             aria-label="Open menu"
           >
@@ -624,12 +624,12 @@ export default function ManageLayout({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-6 right-6 z-[9999] max-w-sm w-full bg-white"
+          className="fixed bottom-6 right-6 z-[9999] max-w-sm w-full bg-white dark:bg-[#1c1c1c]"
           style={{ borderRadius: 14, padding: 20, boxShadow: '0 0 0 1px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.08)' }}
         >
           <div className="flex flex-col">
-            <h3 className="text-[15px] font-semibold text-[#171717] mb-2 leading-tight">A quick note</h3>
-            <p className="text-[13.5px] text-[#666] leading-relaxed mb-5">
+            <h3 className="text-[15px] font-semibold text-[#171717] dark:text-[#e3e3e3] mb-2 leading-tight">A quick note</h3>
+            <p className="text-[13.5px] text-[#666] dark:text-[#a1a1aa] leading-relaxed mb-5">
               Please don't reveal photos for no reason and spam it, this will lower costs of keeping this platform alive. If you want, you can support us by clicking Donate.
             </p>
             <div className="flex items-center gap-2.5">
@@ -647,7 +647,7 @@ export default function ManageLayout({
                   setShowDonationNotice(false)
                   localStorage.setItem("hypastack_donation_notice_hidden", "true")
                 }}
-                className="inline-flex items-center justify-center bg-[#f5f5f5] hover:bg-[#eaeaea] text-[#171717] font-medium transition-colors active:scale-[0.97]"
+                className="inline-flex items-center justify-center bg-[#f5f5f5] dark:bg-[#2a2a2a] hover:bg-[#eaeaea] dark:hover:bg-[#333] text-[#171717] dark:text-[#e3e3e3] font-medium transition-colors active:scale-[0.97]"
                 style={{ height: 34, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13 }}
               >
                 Hide notification

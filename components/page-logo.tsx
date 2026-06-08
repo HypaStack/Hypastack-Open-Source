@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
+import { useTheme } from "@/hooks/useTheme"
 
 interface PageLogoProps {
   size?: number
@@ -8,6 +9,7 @@ interface PageLogoProps {
   pulse?: boolean
   className?: string
   disableLayoutAnimation?: boolean
+  darkSrc?: string
 }
 
 /**
@@ -16,12 +18,17 @@ interface PageLogoProps {
  * this element between its positions when pages transition.
  * Render this ONCE per page — never render it multiple times on the same page.
  */
-export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className = "", disableLayoutAnimation = false }: PageLogoProps) {
+export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className = "", disableLayoutAnimation = false, darkSrc }: PageLogoProps) {
+  const { resolvedTheme } = useTheme()
+  const src = darkSrc && resolvedTheme === "dark"
+    ? darkSrc
+    : "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+
   return (
     <motion.img
       {...(!disableLayoutAnimation ? { layoutId: "hypa-logo" } : {})}
       initial={false}
-      src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+      src={src}
       alt="Hypastack"
       animate={
         pulse

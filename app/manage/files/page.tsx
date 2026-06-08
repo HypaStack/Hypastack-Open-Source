@@ -449,12 +449,12 @@ function FilesPageInner() {
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[28px] font-medium tracking-tight text-[#171717] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-          <span className="cursor-pointer hover:underline hover:text-[#171717] text-[#333] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
+        <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+          <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map(f => (
-            <span key={f.id} className="flex items-center gap-2 text-[#666]">
-              <MIcon name="chevron_right" size={20} className="text-[#999]" />
-              <span className="cursor-pointer hover:underline hover:text-[#111] transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
+            <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#888]">
+              <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#666]" />
+              <span className="cursor-pointer hover:underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
         </h1>
@@ -475,7 +475,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={handleCreateFolder}
-                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#171717] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
               >
                 <MIcon name="create_new_folder" size={17} className="shrink-0" />
                 <span className="hidden sm:inline">New Folder</span>
@@ -483,7 +483,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={triggerFilePicker}
-                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] text-white font-medium text-[15px] hover:bg-[#333] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
               >
                 <MIcon name="cloud_upload" size={15} className="shrink-0" />
                 <span>Upload files</span>
@@ -503,7 +503,7 @@ function FilesPageInner() {
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center min-h-[400px]">
-          <MIcon name="refresh" size={24} className="text-[#666] animate-spin" />
+          <MIcon name="refresh" size={24} className="text-[#666] dark:text-[#888] animate-spin" />
         </div>
       ) : isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />
@@ -511,17 +511,17 @@ function FilesPageInner() {
         <div className="flex flex-col gap-6">
           {filteredFolders.length > 0 && (
             <div>
-              <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
+              <h2 className="text-[13px] font-medium text-[#666] dark:text-[#888] mb-3 px-2">Folders</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {filteredFolders.map(folder => (
                   <div 
                     key={folder.id} 
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] border border-[#e5e5e5] active:scale-[0.97] transition-all duration-75 cursor-pointer"
+                    className="group flex items-center gap-3 bg-[#ebebeb] dark:bg-[#1a1a1a] hover:bg-[#e5e5e5] dark:hover:bg-[#222] border border-[#e5e5e5] dark:border-transparent active:scale-[0.97] transition-all duration-75 cursor-pointer"
                     style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                   >
-                    <MIcon name="folder" size={16} style={{ color: '#666', flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, fontWeight: 400, color: '#111', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
+                    <MIcon name="folder" size={16} className="text-[#666] dark:text-[#888] shrink-0" />
+                    <span className="text-[#111] dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
                       className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] hover:text-red-400"
@@ -538,7 +538,7 @@ function FilesPageInner() {
 
           {filteredFiles.length > 0 && (
             <div>
-              {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Files</h2>}
+              {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] dark:text-[#888] mb-3 px-2">Files</h2>}
               {viewMode === "list" ? (
                 <ListView
                   files={paginatedFiles}
@@ -592,7 +592,7 @@ function FilesPageInner() {
 
       {!isEmpty && totalPages > 1 && (
         <div className="flex items-center justify-between mt-7 px-2">
-          <p className="text-[15px] text-[#666] font-medium">
+          <p className="text-[15px] text-[#666] dark:text-[#888] font-medium">
             Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
@@ -600,7 +600,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] text-[15px] font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -608,7 +608,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] text-[15px] font-medium text-[#333] hover:bg-[#e5e5e5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -647,14 +647,14 @@ function FilesPageInner() {
                 initial={{ opacity: 0, scale: 0.97, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 6 }}
-                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[20px] bg-white border border-[#e5e5e5] overflow-hidden pointer-events-auto"
+                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[20px] bg-white dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent overflow-hidden pointer-events-auto"
               >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] shrink-0">
-                  <h2 className="text-[18px] font-semibold text-[#171717]">Upload files</h2>
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] dark:border-transparent shrink-0">
+                  <h2 className="text-[18px] font-semibold text-[#171717] dark:text-[#e3e3e3]">Upload files</h2>
                   <button
                     type="button"
                     onClick={closeUpload}
-                    className="p-1.5 rounded-[10px] text-[#666] hover:text-[#111] hover:bg-[#f0f0f0] transition-colors"
+                    className="p-1.5 rounded-[10px] text-[#666] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
@@ -689,7 +689,7 @@ function FilesPageInner() {
 
 export default function FilesPage() {
   return (
-    <Suspense fallback={<div className="h-full w-full bg-white animate-pulse" />}>
+    <Suspense fallback={<div className="h-full w-full bg-white dark:bg-[#171717] animate-pulse" />}>
       <FilesPageInner />
     </Suspense>
   )
@@ -740,16 +740,16 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#f0f0f0] border border-[#e5e5e5] mb-5">
-            <MIcon name="search" size={28} className="text-[#666]" />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent mb-5">
+            <MIcon name="search" size={28} className="text-[#666] dark:text-[#888]" />
           </div>
         ) : null}
         {query ? (
           <>
-            <h3 className="text-[22px] font-semibold text-[#111] mb-2 tracking-tight">
+            <h3 className="text-[22px] font-semibold text-[#111] dark:text-[#f0f0f0] mb-2 tracking-tight">
               No files match your search
             </h3>
-            <p className="text-[15px] text-[#666] font-normal leading-relaxed">
+            <p className="text-[15px] text-[#666] dark:text-[#888] font-normal leading-relaxed">
               Try a different search term.
             </p>
           </>
@@ -764,7 +764,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -15, scale: 0.96 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute text-[26px] font-medium text-[#171717] tracking-tight leading-relaxed text-center w-full"
+                    className="absolute text-[26px] font-medium text-[#171717] dark:text-[#e3e3e3] tracking-tight leading-relaxed text-center w-full"
                   >
                     {FACTS[index]}
                   </motion.h3>
@@ -798,7 +798,7 @@ function SortLabel({
       type="button"
       onClick={() => onClick(field)}
       className={`inline-flex items-center gap-1.5 text-[14px] font-medium tracking-wide transition-colors ${
-        active ? "text-[#111]" : "text-[#888] hover:text-[#333]"
+        active ? "text-[#111] dark:text-[#f0f0f0]" : "text-[#888] dark:text-[#666] hover:text-[#333] dark:hover:text-[#ccc]"
       }`}
     >
       {label}
@@ -857,7 +857,7 @@ function ListView({
   setContextMenuPos: (pos: { x: number; y: number } | null) => void
 }) {
   return (
-    <div style={{ borderRadius: 14, backgroundColor: '#ebebeb', padding: 1, boxShadow: 'none', border: '1px solid #e5e5e5' }}>
+    <div className="bg-[#ebebeb] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: 1, boxShadow: 'none' }}>
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
           type="checkbox"
@@ -875,7 +875,7 @@ function ListView({
         <span />
       </div>
 
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 13, overflow: 'hidden' }}>
+      <div className="bg-white dark:bg-[#171717]" style={{ borderRadius: 13, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
@@ -921,7 +921,7 @@ function ListView({
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-[14px] font-normal text-[#111] truncate" title={file.name}>
+                    <span className="text-[14px] font-normal text-[#111] dark:text-[#e3e3e3] truncate" title={file.name}>
                       {file.name}
                     </span>
 
@@ -938,17 +938,17 @@ function ListView({
                   </div>
                   <div className="flex md:hidden items-center gap-2 mt-0.5 text-[12px] text-[#888]">
                     <span>{formatBytes(file.size)}</span>
-                    <span className="w-1 h-1 rounded-full bg-[#ccc]" />
+                    <span className="w-1 h-1 rounded-full bg-[#ccc] dark:bg-[#555]" />
                     <span>{formatDate(file.uploadedAt).split(' at ')[0]}</span>
                   </div>
                 </div>
               </div>
 
-              <span className="hidden md:block text-[13px] text-[#999] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#666] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatDate(file.uploadedAt)}
               </span>
 
-              <span className="hidden md:block text-[13px] text-[#999] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#666] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatBytes(file.size)}
               </span>
 
@@ -962,12 +962,11 @@ function ListView({
                       animate={{ opacity: 1, scale: 1, ...(contextMenuPos ? {} : { y: 0 }) }}
                       exit={{ opacity: 0, scale: 0.98, ...(contextMenuPos ? {} : { y: 4 }) }}
                       transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-                      className={contextMenuPos ? "fixed z-[9999]" : "absolute right-0 top-full mt-1.5 z-30"}
+                      className={contextMenuPos ? "fixed z-[9999] bg-[#ffffff] dark:bg-[#1c1c1c]" : "absolute right-0 top-full mt-1.5 z-30 bg-[#ffffff] dark:bg-[#1c1c1c]"}
                       style={{ 
                         width: 220, 
                         padding: 6,
                         borderRadius: 14, 
-                        backgroundColor: '#ffffff', 
                         boxShadow: '0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)', 
                         transformOrigin: contextMenuPos ? 'top left' : 'top right',
                         ...(contextMenuPos ? { left: contextMenuPos.x, top: contextMenuPos.y } : {})
@@ -1030,14 +1029,14 @@ function ActionItem({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full flex items-center bg-transparent hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
+      className="w-full flex items-center bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
       style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: accent === 'danger' ? '#ef4444' : accent === 'success' ? '#16a34a' : '#666' }}>
           <MIcon name={icon} size={15} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 400, color: accent === 'danger' ? '#ef4444' : '#111', lineHeight: 1 }}>{label}</span>
+        <span className={accent === 'danger' ? 'text-[#ef4444]' : 'text-[#111] dark:text-[#f0f0f0]'} style={{ fontSize: 14, fontWeight: 400, lineHeight: 1 }}>{label}</span>
       </div>
     </button>
   )
@@ -1058,14 +1057,14 @@ function ActionLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer"
+      className="flex items-center hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer"
       style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: '#666' }}>
           <MIcon name={icon} size={15} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 400, color: '#111', lineHeight: 1 }}>{label}</span>
+        <span className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 400, lineHeight: 1 }}>{label}</span>
       </div>
     </Link>
   )
@@ -1131,7 +1130,7 @@ function GridView({
         const iconName = getFileIconForType(file.contentType, file.name)
         const isImage = isImagePreviewable(file.contentType, file.name)
         return (
-          <div key={file.id} className="group relative bg-[#ebebeb] rounded-[24px] p-[1px]" style={{ boxShadow: 'none', border: '1px solid #e5e5e5' }}>
+          <div key={file.id} className="group relative bg-[#ebebeb] dark:bg-[#222] rounded-[24px] p-[1px] border border-[#e5e5e5] dark:border-transparent" style={{ boxShadow: 'none' }}>
           <div
             role="button"
             tabIndex={0}
@@ -1139,12 +1138,12 @@ function GridView({
             onDoubleClick={() => window.open(`/d/${file.id}`, '_blank')}
             onContextMenu={(e) => onContextMenu(e, file.id)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleSelect(file.id) } }}
-            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#f5f5f5] cursor-pointer transition-all select-none ${
+            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none ${
               isSelected ? "opacity-80" : "hover:opacity-90"
             }`}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <MIcon name={iconName} size={48} className="text-[#999]" />
+              <MIcon name={iconName} size={48} className="text-[#999] dark:text-[#555]" />
             </div>
 
               <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
@@ -1208,14 +1207,14 @@ function GridView({
           </div>
 
             <div className="mt-3 px-1 min-w-0">
-              <p className="text-[13px] font-semibold text-[#111] truncate" title={file.name}>
+              <p className="text-[13px] font-semibold text-[#111] dark:text-[#e3e3e3] truncate" title={file.name}>
                 {file.name}
               </p>
-              <p className="text-[11px] text-[#666] mt-1 font-medium" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <p className="text-[11px] text-[#666] dark:text-[#888] mt-1 font-medium" style={{ fontVariantNumeric: "tabular-nums" }}>
                 <span className="uppercase tracking-wider">
                   {getFileTypeLabel(file.name, file.contentType)}
                 </span>
-                <span className="mx-1.5 text-[#999]">·</span>
+                <span className="mx-1.5 text-[#999] dark:text-[#666]">·</span>
                 {formatBytes(file.size)}
               </p>
             </div>

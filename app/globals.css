@@ -1,12 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Override react-easy-crop's default blue crop area border */
 .reactEasyCrop_CropArea {
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
-
-@custom-variant dark (&:is(.dark *));
 
 /* SF Pro Display Fonts */
 @font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/653dqtjzdkpj/SFPRODISPLAYTHINITALIC.OTF") format("opentype"); font-weight: 100; font-style: italic; font-display: swap; size-adjust: 115%; }
@@ -129,7 +129,7 @@ a:hover .material-symbols-rounded,
   padding-top: env(safe-area-inset-top);
 }
 
-/* Light theme global overrides (now default via :root) */
+
 ::selection {
   background-color: #4a4a4a;
   color: #ffffff;
@@ -138,6 +138,7 @@ a:hover .material-symbols-rounded,
 html.is-dashboard, html.is-dashboard body {
   background-color: #f0f0f0 !important;
 }
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

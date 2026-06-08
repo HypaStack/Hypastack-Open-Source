@@ -56,7 +56,7 @@ export default function CanaryPage() {
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="flex items-center gap-3"
       >
-        <h1 className="text-[28px] font-medium tracking-tight text-[#171717]">Insider Program</h1>
+        <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Insider Program</h1>
         <span style={{
           fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
           backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308',
@@ -114,7 +114,7 @@ export default function CanaryPage() {
               {EXPERIMENTAL_FEATURES.map((f) => (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3 hover:bg-[#f5f5f5] transition-all duration-75"
+                  className="flex items-center gap-3 hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] transition-all duration-75"
                   style={{ height: 48, paddingLeft: 12, paddingRight: 12, borderRadius: 12, margin: '2px 0' }}
                 >
                   <MIcon name={f.icon} size={15} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0 }} />
