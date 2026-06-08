@@ -569,12 +569,12 @@ export default function CdnPage() {
 
       <div className="shrink-0">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-            <span className="cursor-pointer hover:underline hover:text-[#171717] text-[#333] transition-colors" onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
+          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+            <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
             {breadcrumbs.map(crumb => (
-              <span key={crumb.id} className="flex items-center gap-2 text-[#666]">
-                <MIcon name="chevron_right" size={20} className="text-[#999]" />
-                <span className="cursor-pointer hover:underline hover:text-[#111] transition-colors" onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
+              <span key={crumb.id} className="flex items-center gap-2 text-[#666] dark:text-[#888]">
+                <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#666]" />
+                <span className="cursor-pointer hover:underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors" onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
               </span>
             ))}
           </h1>
@@ -585,7 +585,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleSelectAll}
-                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#171717] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                 >
                   <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
                   <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
@@ -597,7 +597,7 @@ export default function CdnPage() {
                   className={`inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] border font-medium text-[15px] transition-colors leading-none ${
                     copiedSelection
                       ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                      : "bg-white text-[#333] border-[#e5e5e5] hover:bg-[#eaeaea]"
+                      : "bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border-[#e5e5e5] dark:border-transparent hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a]"
                   }`}
                 >
                   <MIcon name={copiedSelection ? "check" : "content_copy"} size={16} className="shrink-0" />
@@ -608,7 +608,7 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleViewSelected}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#333] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                   >
                     <MIcon name="open_in_new" size={16} className="shrink-0" />
                     <span className="hidden sm:inline">View</span>
@@ -620,7 +620,7 @@ export default function CdnPage() {
                     type="button"
                     onClick={handleHotSwapClick}
                     disabled={swapLoading !== null}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#d97706] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#fef3c7] transition-colors disabled:opacity-50 leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#d97706] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#fef3c7] dark:hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 leading-none"
                   >
                     <MIcon name="swap_horiz" size={17} className="shrink-0" />
                     <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
@@ -643,7 +643,7 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleSelectAll}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#333] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                   >
                     <MIcon name="select_all" size={17} className="shrink-0" />
                     <span className="hidden sm:inline">Select all</span>
@@ -652,7 +652,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleCreateFolder}
-                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white text-[#171717] border border-[#e5e5e5] font-medium text-[15px] hover:bg-[#eaeaea] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                 >
                   <MIcon name="create_new_folder" size={17} className="shrink-0" />
                   <span className="hidden sm:inline">New Folder</span>
@@ -660,7 +660,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] text-white font-medium text-[15px] hover:bg-[#333] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
                 >
                   <MIcon name="cloud_upload" size={15} className="shrink-0" />
                   <span>Upload files</span>
@@ -687,9 +687,9 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && (
-          <div className="flex items-center gap-2" style={{ borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '6px 12px' }}>
-            <div className="flex items-center justify-center bg-white rounded-[6px] px-1.5 py-0.5 text-[#555] text-[11px] font-bold border border-[#e5e5e5]">CTRL</div>
-            <span style={{ fontSize: 13, fontWeight: 400, color: '#666' }}>
+          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: '6px 12px' }}>
+            <div className="flex items-center justify-center bg-white dark:bg-[#171717] rounded-[6px] px-1.5 py-0.5 text-[#555] dark:text-[#aaa] text-[11px] font-bold border border-[#e5e5e5] dark:border-transparent">CTRL</div>
+            <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
           </div>
@@ -718,21 +718,21 @@ export default function CdnPage() {
         <div className="flex-1 min-h-0 overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
             {currentFolders.length > 0 && (
               <div className="mb-4">
-                <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Folders</h2>
+                <h2 className="text-[13px] font-medium text-[#666] dark:text-[#888] mb-3 px-2">Folders</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {currentFolders.map((folder) => (
                     <div
                       key={folder.id}
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex items-center gap-3 bg-white hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-[#e5e5e5]"
+                      className="group flex items-center gap-3 bg-[#f5f5f5] dark:bg-[#1a1a1a] hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-[#e5e5e5] dark:border-transparent"
                       style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
                     >
-                      <MIcon name="folder" size={16} style={{ color: '#666', flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 400, color: '#111', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{folder.name}</span>
+                      <MIcon name="folder" size={16} className="text-[#666] dark:text-[#888] shrink-0" />
+                      <span className="text-[#111] dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
-                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] hover:text-red-400"
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#666] hover:text-red-400"
                         style={{ height: 28, width: 28, borderRadius: 8 }}
                         aria-label="Delete folder"
                       >
@@ -751,8 +751,8 @@ export default function CdnPage() {
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
                 <button
                   onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
-                  className="inline-flex items-center gap-2 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#333', backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}
+                  className="inline-flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75"
+                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500 }}
                 >
                   <MIcon name="arrow_back" size={14} />
                   Go back
@@ -762,7 +762,7 @@ export default function CdnPage() {
 
             {paginatedAssets.length > 0 && (
               <div>
-                {currentFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] mb-3 px-2">Assets</h2>}
+                {currentFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] dark:text-[#888] mb-3 px-2">Assets</h2>}
                 <motion.div
                   className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
                   initial="hidden"
@@ -796,27 +796,27 @@ export default function CdnPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="shrink-0 flex items-center justify-between" style={{ borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '8px 12px', marginTop: 8 }}>
-          <p style={{ fontSize: 13, color: '#888' }}>
+        <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: '8px 12px', marginTop: 8 }}>
+          <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 13 }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center justify-center hover:bg-[#e5e5e5] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8, color: '#666' }}
+              className="flex items-center justify-center text-[#666] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 28, height: 28, borderRadius: 8 }}
             >
                <MIcon name="chevron_left" size={16} />
             </button>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#333', minWidth: 40, textAlign: 'center' }}>
+            <span className="text-[#171717] dark:text-[#e3e3e3]" style={{ fontSize: 13, fontWeight: 500, minWidth: 40, textAlign: 'center' }}>
               {currentPage}/{totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center hover:bg-[#e5e5e5] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8, color: '#666' }}
+              className="flex items-center justify-center text-[#666] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ width: 28, height: 28, borderRadius: 8 }}
             >
                <MIcon name="chevron_right" size={16} />
             </button>
@@ -892,18 +892,18 @@ function CdnAssetTile({
             onToggleSelect()
           }
         }}
-        className={`relative w-full aspect-square overflow-hidden bg-[#f5f5f5] cursor-pointer transition-all select-none border border-[#e5e5e5] ${
+        className={`relative w-full aspect-square overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-transparent ${
           selected ? "" : "hover:opacity-90"
         }`}
         style={{ borderRadius: 14 }}
       >
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5] dark:bg-[#1a1a1a]">
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
-            <p style={{ fontSize: 12, color: '#888', marginBottom: 10 }}>
-              Preview <span style={{ color: '#333', fontWeight: 500 }}>.{ext}</span>
+            <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 12, marginBottom: 10 }}>
+              Preview <span className="text-[#333] dark:text-[#ccc]" style={{ fontWeight: 500 }}>.{ext}</span>
             </p>
             <button
               type="button"
@@ -911,8 +911,8 @@ function CdnAssetTile({
                 e.stopPropagation()
                 setRevealed(true)
               }}
-              className="hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+              className="hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500 }}
             >
               Reveal
             </button>
@@ -922,8 +922,8 @@ function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white">
-                <svg className="animate-spin h-6 w-6 text-[#999]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#171717]">
+                <svg className="animate-spin h-6 w-6 text-[#999] dark:text-[#666]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -937,9 +937,9 @@ function CdnAssetTile({
             />
           </>
         ) : revealed && !showImage ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f5f5f5]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f5f5f5] dark:bg-[#1a1a1a]">
             <MIcon name="preview_off" size={24} style={{ color: '#bbb' }} />
-            <span className="text-[12px] font-medium text-[#999]">No preview available</span>
+            <span className="text-[12px] font-medium text-[#999] dark:text-[#666]">No preview available</span>
           </div>
         ) : null}
 
@@ -968,8 +968,8 @@ function CdnAssetTile({
 
       <div className="mt-2 px-1.5 pb-1 min-w-0">
         <p
-          className="truncate"
-          style={{ fontSize: 12, fontWeight: 500, color: '#111' }}
+          className="truncate text-[#111] dark:text-[#e3e3e3]"
+          style={{ fontSize: 12, fontWeight: 500 }}
           title={revealed ? asset.name : undefined}
         >
           {asset.name}
@@ -1029,16 +1029,16 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex items-center justify-center mb-5" style={{ width: 64, height: 64, borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}>
-            <MIcon name="search" size={28} className="text-[#999]" />
+          <div className="inline-flex items-center justify-center mb-5 bg-[#f0f0f0] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ width: 64, height: 64, borderRadius: 14 }}>
+            <MIcon name="search" size={28} className="text-[#999] dark:text-[#666]" />
           </div>
         ) : null}
         {query ? (
           <>
-            <h3 className="text-[22px] font-semibold text-[#171717] mb-2 tracking-tight">
+            <h3 className="text-[22px] font-semibold text-[#171717] dark:text-[#e3e3e3] mb-2 tracking-tight">
               No assets match your search
             </h3>
-            <p className="text-[15px] text-[#666] font-normal leading-relaxed">
+            <p className="text-[15px] text-[#666] dark:text-[#888] font-normal leading-relaxed">
               Try a different search term.
             </p>
           </>
@@ -1053,7 +1053,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -15, scale: 0.96 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute text-[26px] font-medium text-[#171717] tracking-tight leading-relaxed text-center w-full"
+                    className="absolute text-[26px] font-medium text-[#171717] dark:text-[#e3e3e3] tracking-tight leading-relaxed text-center w-full"
                   >
                     {FACTS[index]}
                   </motion.h3>

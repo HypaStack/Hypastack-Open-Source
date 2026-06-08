@@ -106,16 +106,15 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto"
+              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#ebebeb] dark:bg-[#333]"
               style={{
-                backgroundColor: '#ebebeb',
                 borderRadius: 20,
                 boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 24px 48px rgba(0,0,0,0.12)',
                 padding: 3,
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              <div className="sm:hidden shrink-0 bg-[#f5f5f5] pt-3 pb-1 rounded-[17px]">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[#222] pt-3 pb-1 rounded-[17px]">
                 <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="mobile" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="mobile" />
@@ -126,7 +125,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] rounded-[17px] px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] dark:bg-[#222] rounded-[17px] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -137,7 +136,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#ffffff] rounded-[17px] overflow-hidden">
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c] rounded-[17px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
                   {active === "general" && <GeneralTab />}
                   {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}
@@ -180,8 +179,8 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       onClick={onClick}
       className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 ${
         active
-          ? "text-[#111111] font-medium"
-          : "text-[#888] hover:bg-[#ebebeb] hover:text-[#333] active:scale-[0.97] font-medium"
+          ? "text-[#111111] dark:text-[#f0f0f0] font-medium"
+          : "text-[#888] dark:text-[#777] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
       }`}
       style={{
         height: 34,
@@ -194,7 +193,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       {active && (
         <motion.div
           layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-white rounded-[16px]"
+          className="absolute inset-0 bg-white dark:bg-[#1c1c1c] rounded-[16px]"
           style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
@@ -207,7 +206,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-7">
-      <h4 className="text-[16px] font-medium text-[#111] mb-3">{title}</h4>
+      <h4 className="text-[16px] font-medium text-[#111] dark:text-[#f0f0f0] mb-3">{title}</h4>
       {children}
     </section>
   )
@@ -220,8 +219,8 @@ function GeneralTab() {
 
   return (
     <div className="space-y-4">
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
-        <p className="text-[12px] font-medium text-[#888] mb-3">Appearance</p>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px' }}>
+        <p className="text-[12px] font-medium text-[#888] dark:text-[#777] mb-3">Appearance</p>
         <div className="grid grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
           <ThemeTile variant="light" label="Light" active={theme === "light"} onClick={() => setTheme("light")} />
@@ -230,13 +229,13 @@ function GeneralTab() {
       </div>
 
       <div
-        className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] transition-all duration-75"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}
+        className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 14 }}
         onClick={() => setLangOpen((o) => !o)}
       >
-        <span className="text-[13px] text-[#888]">Language</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111]">
-          {language.label} <span className="text-[#999]">({language.native})</span>
+        <span className="text-[13px] text-[#888] dark:text-[#777]">Language</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111] dark:text-[#f0f0f0]">
+          {language.label} <span className="text-[#999] dark:text-[#666]">({language.native})</span>
           <MIcon
             name="expand_more"
             size={15}
@@ -248,8 +247,8 @@ function GeneralTab() {
         <>
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
-            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto"
-            style={{ padding: 4, borderRadius: 14, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+            style={{ padding: 4, borderRadius: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
           >
             {languages.map((l) => {
               const selected = l.code === language.code
@@ -263,8 +262,8 @@ function GeneralTab() {
                   }}
                   className={`flex w-full items-center justify-between text-left transition-all duration-75 ${
                     selected
-                      ? "text-[#111] font-medium bg-[#f0f0f0]"
-                      : "text-[#333] hover:bg-[#f5f5f5] active:scale-[0.97]"
+                      ? "text-[#111] dark:text-[#f0f0f0] font-medium bg-[#f0f0f0] dark:bg-[#2a2a2a]"
+                      : "text-[#333] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97]"
                   }`}
                   style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 13, border: 'none', cursor: 'pointer' }}
                 >
@@ -281,11 +280,11 @@ function GeneralTab() {
 
       <a
         href="/help"
-        className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}
+        className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14 }}
       >
-        <span className="text-[13px] text-[#888]">Support</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
+        <span className="text-[13px] text-[#888] dark:text-[#777]">Support</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#ccc]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
   )
@@ -309,8 +308,8 @@ function ThemeTile({
         onClick={onClick}
         className={`relative w-full aspect-[5/3] rounded-[10px] overflow-hidden transition-all ${
           active
-            ? "ring-2 ring-[#111] ring-offset-0"
-            : "ring-1 ring-[#e5e5e5] hover:ring-[#ccc]"
+            ? "ring-2 ring-[#111] dark:ring-[#e3e3e3] ring-offset-0"
+            : "ring-1 ring-[#e5e5e5] dark:ring-transparent hover:ring-[#ccc] dark:hover:ring-[#555]"
         }`}
       >
         {variant === "system" && (
@@ -322,7 +321,7 @@ function ThemeTile({
         {variant === "light" && <ThemeMock dark={false} />}
         {variant === "dark" && <ThemeMock dark />}
       </button>
-      <span className={`text-[13px] ${active ? "font-medium text-[#111]" : "font-normal text-[#888]"}`}>
+      <span className={`text-[13px] ${active ? "font-medium text-[#111] dark:text-[#f0f0f0]" : "font-normal text-[#888] dark:text-[#777]"}`}>
         {label}
       </span>
     </div>
@@ -444,15 +443,14 @@ function AvatarCropperModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[420px] flex flex-col"
+        className="relative w-full max-w-[420px] flex flex-col bg-[#ebebeb] dark:bg-[#333]"
         style={{
-          backgroundColor: '#ebebeb',
           borderRadius: 20,
           boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.12)',
           padding: 3,
         }}
       >
-        <div className="relative w-full flex flex-col" style={{ backgroundColor: '#ffffff', borderRadius: 17 }}>
+        <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 17 }}>
         <div className="relative w-full overflow-hidden" style={{ height: 400, borderRadius: 17 }}>
           <Cropper
             image={imageSrc}
@@ -471,14 +469,14 @@ function AvatarCropperModal({
         <div className="flex gap-1" style={{ marginTop: 4 }}>
           <button 
             onClick={onClose} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
+            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
             style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#666' }}
           >
             Cancel
           </button>
           <button 
             onClick={handleUpload} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
+            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
             style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#111' }}
           >
             Save
@@ -572,7 +570,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     )}
     <div>
 
-      <div className="flex items-center gap-5 mb-4" style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '16px 20px', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center gap-5 mb-4 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '16px 20px' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {avatarSrc ? (
@@ -597,7 +595,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white border border-[#e5e5e5] flex items-center justify-center text-[#555] hover:text-[#111] hover:bg-[#f0f0f0] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent flex items-center justify-center text-[#555] hover:text-[#111] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -623,7 +621,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-[17px] font-medium text-[#111] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
+            <p className="text-[17px] font-medium text-[#111] dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
             {user.is_insider === 1 && (
               <MIcon name="verified" size={17} style={{ color: '#eab308' }} className="shrink-0" />
             )}
@@ -635,7 +633,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               setCopiedId(true)
               setTimeout(() => setCopiedId(false), 2000)
             }}
-            className="flex items-center gap-1.5 hover:text-[#111] transition-colors active:scale-[0.97] mb-2 mt-0.5"
+            className="flex items-center gap-1.5 hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors active:scale-[0.97] mb-2 mt-0.5"
             style={{ fontSize: 12, fontWeight: 500, color: copiedId ? '#16a34a' : '#aaa' }}
           >
             <MIcon name={copiedId ? "check" : "content_copy"} size={13} /> 
@@ -644,8 +642,8 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+            style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 8, fontSize: 12, fontWeight: 500 }}
           >
             <MIcon name="edit" size={13} />
             Edit
@@ -653,28 +651,28 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       </div>
 
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', marginBottom: 16, border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.totalStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#888] font-normal">Space used ({Math.round(usedPct)}%)</p>
+            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.maxStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#888] font-normal">Total space</p>
+            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Total space</p>
           </div>
         </div>
-        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] overflow-hidden">
+        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] dark:bg-[#333] overflow-hidden">
           <div
             className="h-full rounded-full bg-[#111] transition-all duration-500"
             style={{ width: `${Math.min(100, usedPct)}%` }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#777] font-normal">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#111]" /> Drive
           </span>
@@ -682,27 +680,27 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       </div>
 
       {!user.premium && (
-        <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16, border: '1px solid #ebebeb' }}>
+        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
           <div>
-            <p className="text-[15px] font-medium text-[#111] mb-1.5">Upgrade</p>
-            <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
+            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
+            <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
-              className="inline-flex items-center hover:bg-[#333] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#fff', backgroundColor: '#111' }}
+              className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] bg-[#111] dark:bg-[#fff]"
+              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500 }}
             >
               Upgrade now
             </button>
           </div>
-          <div className="border-l border-[#e5e5e5] pl-4">
-            <p className="text-[15px] font-medium text-[#111] mb-1.5">Empty trash</p>
-            <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
+          <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4">
+            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
+            <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
             <button
               type="button"
               onClick={handleEmptyTrash}
               disabled={trashLoading || files.length === 0}
-              className="inline-flex items-center hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+              className="inline-flex items-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 500 }}
             >
               {trashLoading ? "Deleting..." : "Empty trash"}
             </button>
@@ -710,20 +708,20 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
-      <div style={{ borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 14 }}>
         <div
           className="flex items-center justify-between"
           style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 14 }}
         >
           <div>
-            <span className="text-[13px] text-[#888]">Delete account</span>
+            <span className="text-[13px] text-[#888] dark:text-[#777]">Delete account</span>
           </div>
           <button
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="hover:bg-red-50 active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
-            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)', marginTop: 5, marginBottom: 5 }}
+            className="hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-[0.97] transition-all duration-75 disabled:opacity-40 text-[#ef4444] bg-[rgba(239,68,68,0.08)]"
+            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, marginTop: 5, marginBottom: 5 }}
           >
             {deleteAccountLoading ? "Deleting..." : "Delete"}
           </button>
@@ -822,9 +820,8 @@ function EditProfileDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[420px] flex flex-col"
+            className="relative w-full max-w-[420px] flex flex-col bg-[#ebebeb] dark:bg-[#333]"
             style={{
-              backgroundColor: '#ebebeb',
               borderRadius: 20,
               boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.10)',
               padding: 3,
@@ -833,17 +830,17 @@ function EditProfileDialog({
               if (e.key === "Enter" && !saving) handleSave()
             }}
           >
-            <div className="relative w-full flex flex-col" style={{ backgroundColor: '#ffffff', borderRadius: 17 }}>
+            <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 17 }}>
               <div className="p-5 space-y-3">
                 <div>
-                  <p className="text-[12px] font-medium text-[#888] mb-1.5">Username</p>
+                  <p className="text-[12px] font-medium text-[#888] dark:text-[#777] mb-1.5">Username</p>
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     autoFocus
-                    className="w-full focus:outline-none"
-                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#111' }}
+                    className="w-full focus:outline-none bg-[#f5f5f5] dark:bg-[#111] border border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
+                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 10, fontSize: 13, fontWeight: 500 }}
                   />
                 </div>
 
@@ -858,8 +855,8 @@ function EditProfileDialog({
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75 disabled:opacity-50"
-                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#666' }}
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#666] dark:text-[#888]"
+                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 400 }}
               >
                 Cancel
               </button>
@@ -867,8 +864,8 @@ function EditProfileDialog({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !nickname.trim()}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#111' }}
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#111] dark:text-[#f0f0f0]"
+                style={{ height: 34, borderRadius: 16, fontSize: 14, fontWeight: 500 }}
               >
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -959,12 +956,12 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
   return (
     <div>
       <div className="flex items-center justify-center mb-5">
-        <div className="inline-flex rounded-[16px] p-1" style={{ backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5' }}>
+        <div className="inline-flex rounded-[16px] p-1 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent">
           <button
             type="button"
             onClick={() => setBilling("monthly")}
             className={`px-4 py-1.5 rounded-[14px] text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-white text-[#111] font-medium shadow-sm" : "text-[#888] font-normal"
+              billing === "monthly" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#777] font-normal"
             }`}
           >
             Monthly
@@ -973,7 +970,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("annual")}
             className={`px-4 py-1.5 rounded-[14px] text-[14px] transition-colors ${
-              billing === "annual" ? "bg-white text-[#111] font-medium shadow-sm" : "text-[#888] font-normal"
+              billing === "annual" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#777] font-normal"
             }`}
           >
             Annual
@@ -996,23 +993,23 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           ))}
         </div>
 
-        <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: 16, border: '1px solid #ebebeb' }}>
+        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: 16 }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[22px] font-medium text-[#111] tracking-tight">{selectedPlan.label}</p>
+            <p className="text-[22px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
             {isSelectedCurrent && (
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333] dark:text-[#ccc]">
                 Current
               </span>
             )}
           </div>
-          <p className="text-[13px] text-[#888] mb-4 font-normal">
+          <p className="text-[13px] text-[#888] dark:text-[#777] mb-4 font-normal">
             {selectedPlan.key === "free"
               ? "Free forever"
               : isSelectedCurrent
                 ? "Thanks for supporting Hypastack."
                 : `Billed ${billing === "annual" ? "annually" : "once"}.`}
           </p>
-          <p className="text-[14px] font-medium text-[#111] mb-2">Plan details</p>
+          <p className="text-[14px] font-medium text-[#111] dark:text-[#f0f0f0] mb-2">Plan details</p>
           <ul className="space-y-1.5 text-[14px] text-[#444] font-normal mb-5">
             {selectedPlan.details.map((d) => (
               <li key={d} className="flex items-start gap-2">
@@ -1025,7 +1022,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key !== "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-[16px] bg-[#111] text-white text-[14px] font-medium hover:bg-[#333] transition-colors cursor-pointer"
+              className="block w-full text-center px-4 py-2.5 rounded-[16px] bg-[#111] text-white dark:text-white text-[14px] font-medium hover:bg-[#333] transition-colors cursor-pointer"
             >
               Switch to {selectedPlan.label}
             </button>
@@ -1033,8 +1030,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key === "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-[16px] text-[14px] font-medium transition-colors cursor-pointer"
-              style={{ backgroundColor: '#ebebeb', color: '#555', border: '1px solid #e5e5e5' }}
+              className="block w-full text-center px-4 py-2.5 rounded-[16px] text-[14px] font-medium transition-colors cursor-pointer bg-[#ebebeb] dark:bg-[#222] text-[#555] dark:text-[#888] border border-[#e5e5e5] dark:border-transparent"
             >
               Downgrade to Free
             </button>
@@ -1066,12 +1062,12 @@ function PlanCard({
       onClick={onClick}
       className={`w-full text-left rounded-[17px] p-4 transition-all ${
         selected
-          ? "bg-white ring-2 ring-[#111]"
-          : "bg-[#f5f5f5] hover:bg-[#f0f0f0] border border-[#ebebeb]"
+          ? "bg-white dark:bg-[#1c1c1c] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
+          : "bg-[#f5f5f5] dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] border border-[#ebebeb] dark:border-transparent"
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] text-[10px] font-semibold tracking-wide">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] dark:text-[#ccc] text-[10px] font-semibold tracking-wide">
           {tier}
         </span>
         {current && (
@@ -1080,8 +1076,8 @@ function PlanCard({
           </span>
         )}
       </div>
-      <p className="text-[22px] font-medium text-[#111] tracking-tight">{size}</p>
-      <p className="text-[13px] text-[#888] mt-0.5 font-normal">{price}</p>
+      <p className="text-[22px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight">{size}</p>
+      <p className="text-[13px] text-[#888] dark:text-[#777] mt-0.5 font-normal">{price}</p>
     </button>
   )
 }
@@ -1138,22 +1134,22 @@ function BillingTab({ user }: { user: PreferencesUser }) {
 
   return (
     <div>
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', marginBottom: 16, border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {creditsLoading ? "—" : creditsBalance.toLocaleString()}
             </p>
-            <p className="text-[12px] text-[#888] font-normal">Credits available</p>
+            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Credits available</p>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-[#111] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {creditsLoading ? "—" : `€${creditsBalanceEur.toFixed(2)}`}
             </p>
-            <p className="text-[12px] text-[#888] font-normal">Balance value</p>
+            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Balance value</p>
           </div>
         </div>
-        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] overflow-hidden">
+        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] dark:bg-[#333] overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -1162,7 +1158,7 @@ function BillingTab({ user }: { user: PreferencesUser }) {
             }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#777] font-normal">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#16a34a]" /> Free: {creditsLoading ? "€" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
           </span>
@@ -1175,24 +1171,24 @@ function BillingTab({ user }: { user: PreferencesUser }) {
         )}
       </div>
 
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16, border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
         <div>
-          <p className="text-[15px] font-medium text-[#111] mb-1.5">Buy Credits</p>
-          <p className="text-[13px] text-[#888] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
+          <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Buy Credits</p>
+          <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
           <div className="grid grid-cols-3 gap-2">
             {[{ eur: 10, credits: 20 }, { eur: 20, credits: 40 }, { eur: 50, credits: 100 }].map(pkg => (
               <button
                 key={pkg.eur}
                 onClick={() => purchaseCredits(pkg.eur)}
                 disabled={purchaseLoading !== null}
-                className="flex flex-col items-center justify-center gap-0.5 hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40"
-                style={{ height: 52, borderRadius: 10, backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+                className="flex flex-col items-center justify-center gap-0.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+                style={{ height: 52, borderRadius: 10 }}
               >
                 {purchaseLoading === pkg.eur ? (
-                  <MIcon name="progress_activity" size={16} className="animate-spin text-[#333]" />
+                  <MIcon name="progress_activity" size={16} className="animate-spin text-[#333] dark:text-[#ccc]" />
                 ) : (
                   <>
-                    <span className="text-[14px] font-medium text-[#111]">€{pkg.eur}</span>
+                    <span className="text-[14px] font-medium text-[#111] dark:text-[#f0f0f0]">€{pkg.eur}</span>
                     <span className="text-[11px] text-[#16a34a] font-medium">{pkg.credits} credits</span>
                   </>
                 )}
@@ -1200,29 +1196,29 @@ function BillingTab({ user }: { user: PreferencesUser }) {
             ))}
           </div>
         </div>
-        <div className="border-l border-[#e5e5e5] pl-4 flex flex-col justify-between">
+        <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4 flex flex-col justify-between">
           <div>
-            <p className="text-[15px] font-medium text-[#111] mb-1.5">Custom Amount</p>
-            <p className="text-[13px] text-[#888] font-normal leading-snug">Enter any amount starting from €10</p>
+            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Custom Amount</p>
+            <p className="text-[13px] text-[#888] dark:text-[#777] font-normal leading-snug">Enter any amount starting from €10</p>
           </div>
           <div className="flex items-center gap-2 mt-3">
-            <div className="flex-1 flex items-center gap-1.5" style={{ backgroundColor: '#ffffff', borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42, border: '1px solid #e5e5e5' }}>
-              <span className="text-[14px] text-[#888] font-medium">€</span>
+            <div className="flex-1 flex items-center gap-1.5 bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 12, paddingLeft: 12, paddingRight: 12, height: 42 }}>
+              <span className="text-[14px] text-[#888] dark:text-[#777] font-medium">€</span>
               <input
                 type="number"
                 min="10"
                 placeholder="10"
                 value={customAmount}
                 onChange={e => setCustomAmount(e.target.value)}
-                className="w-full bg-transparent text-[14px] text-[#111] outline-none placeholder-[#ccc] font-medium"
+                className="w-full bg-transparent text-[14px] text-[#111] dark:text-[#f0f0f0] outline-none placeholder-[#ccc] font-medium"
                 style={{ fontVariantNumeric: 'tabular-nums' }}
               />
             </div>
             <button
               onClick={handleCustomPurchase}
               disabled={purchaseLoading !== null || !customAmount}
-              className="inline-flex items-center justify-center hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 64, height: 42, borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#333', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+              className="inline-flex items-center justify-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+              style={{ width: 64, height: 42, borderRadius: 12, fontSize: 14, fontWeight: 500 }}
             >
               {purchaseLoading !== null && customAmount ? <MIcon name="progress_activity" size={16} className="animate-spin" /> : "Buy"}
             </button>
@@ -1231,23 +1227,23 @@ function BillingTab({ user }: { user: PreferencesUser }) {
       </div>
 
       {creditsError && (
-        <div style={{ borderRadius: 14, backgroundColor: 'rgba(239,68,68,0.06)', padding: '8px 12px', marginBottom: 16, border: '1px solid rgba(239,68,68,0.15)' }}>
+        <div className="bg-[rgba(239,68,68,0.06)] dark:bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.15)] dark:border-[rgba(239,68,68,0.2)]" style={{ borderRadius: 14, padding: '8px 12px', marginBottom: 16 }}>
           <p className="text-[12px] text-red-500">{creditsError}</p>
         </div>
       )}
 
-      <div style={{ borderRadius: 14, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 14 }}>
         <div className="flex items-center justify-between" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 14 }}>
-          <span className="text-[13px] text-[#888]">Current plan</span>
-          <span className="text-[13px] font-medium text-[#111]">{TIER_LABELS[currentTier]}</span>
+          <span className="text-[13px] text-[#888] dark:text-[#777]">Current plan</span>
+          <span className="text-[13px] font-medium text-[#111] dark:text-[#f0f0f0]">{TIER_LABELS[currentTier]}</span>
         </div>
-        <div className="flex items-center justify-between border-t border-[#ebebeb]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
-          <span className="text-[13px] text-[#888]">Credit rate</span>
-          <span className="text-[13px] text-[#333]">1 credit = 1,000 op-units</span>
+        <div className="flex items-center justify-between border-t border-[#ebebeb] dark:border-transparent" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+          <span className="text-[13px] text-[#888] dark:text-[#777]">Credit rate</span>
+          <span className="text-[13px] text-[#333] dark:text-[#ccc]">1 credit = 1,000 op-units</span>
         </div>
-        <div className="flex items-center justify-between border-t border-[#ebebeb]" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
-          <span className="text-[13px] text-[#888]">Operations</span>
-          <span className="text-[13px] text-[#333]">Upload/delete = 4 units, Download = 1 unit</span>
+        <div className="flex items-center justify-between border-t border-[#ebebeb] dark:border-transparent" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
+          <span className="text-[13px] text-[#888] dark:text-[#777]">Operations</span>
+          <span className="text-[13px] text-[#333] dark:text-[#ccc]">Upload/delete = 4 units, Download = 1 unit</span>
         </div>
         <p className="text-[11px] text-[#aaa] px-3 pb-2.5">Credits expire 6 months after purchase.</p>
       </div>
@@ -1258,9 +1254,9 @@ function BillingTab({ user }: { user: PreferencesUser }) {
 function IntegrationsTab() {
   return (
     <div className="space-y-4">
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
-        <p className="text-[13px] text-[#333] font-medium mb-1">Coming soon</p>
-        <p className="text-[13px] text-[#888] leading-relaxed">
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px' }}>
+        <p className="text-[13px] text-[#333] dark:text-[#ccc] font-medium mb-1">Coming soon</p>
+        <p className="text-[13px] text-[#888] dark:text-[#777] leading-relaxed">
           Discord bots, integrations, and third-party connectors are on the way.
         </p>
       </div>
@@ -1313,22 +1309,22 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
   return (
     <div className="space-y-4">
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', padding: '14px 16px', border: '1px solid #ebebeb' }}>
-        <p className="text-[13px] text-[#666] leading-relaxed">
-          Hypastack stores <span className="text-[#111] font-medium">encrypted usernames</span>,{" "}
-          <span className="text-[#111] font-medium">hashed access keys</span>,{" "}
-          <span className="text-[#111] font-medium">encrypted filenames</span>, and{" "}
-          <span className="text-[#111] font-medium">metadata-stripped assets</span>.{" "}
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16, padding: '14px 16px' }}>
+        <p className="text-[13px] text-[#666] dark:text-[#888] leading-relaxed">
+          Hypastack stores <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted usernames</span>,{" "}
+          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">hashed access keys</span>,{" "}
+          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted filenames</span>, and{" "}
+          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">metadata-stripped assets</span>.{" "}
           No emails, no IPs, no passwords, no plaintext PII - ever.
         </p>
       </div>
 
-      <div style={{ borderRadius: 16, backgroundColor: '#f5f5f5', border: '1px solid #ebebeb' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 16 }}>
         <div
           className="flex items-center justify-between"
           style={{ height: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 10 }}
         >
-          <span className="text-[13px] text-[#888]">Inactivity purge</span>
+          <span className="text-[13px] text-[#888] dark:text-[#777]">Inactivity purge</span>
           <div className="flex items-center gap-2">
             <div className="relative">
               <input
@@ -1342,8 +1338,8 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                   setPurgeSaved(false)
                 }}
                 disabled={!isPaid}
-                className={`w-[70px] text-center focus:outline-none ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ height: 28, borderRadius: 8, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#111' }}
+                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ height: 28, borderRadius: 8, fontSize: 13, fontWeight: 500 }}
                 placeholder="7"
               />
             </div>
@@ -1351,8 +1347,8 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
             <button
               onClick={handlePurgeSave}
               disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-              className="hover:bg-[#ebebeb] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500, color: purgeSaved ? '#16a34a' : '#333', backgroundColor: purgeSaved ? 'rgba(22,163,74,0.08)' : '#ffffff', border: '1px solid #e5e5e5' }}
+              className={`hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed border ${purgeSaved ? "text-[#16a34a] bg-[rgba(22,163,74,0.08)] border-transparent" : "text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border-[#e5e5e5] dark:border-transparent"}`}
+              style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 13, fontWeight: 500 }}
             >
               {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
             </button>
@@ -1365,7 +1361,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
       {!isPaid && (
         <p className="text-[11px] text-[#aaa] px-1">
-          Fixed at <span className="text-[#888] font-medium">7 days</span> for free accounts. Upgrade to customize.
+          Fixed at <span className="text-[#888] dark:text-[#777] font-medium">7 days</span> for free accounts. Upgrade to customize.
         </p>
       )}
     </div>
@@ -1386,14 +1382,14 @@ function SecurityRow({
   return (
     <a
       href={href}
-      className="flex items-center gap-4 px-4 py-3.5 hover:bg-[#f0f0f0] transition-colors"
+      className="flex items-center gap-4 px-4 py-3.5 hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
     >
       <div className="h-10 w-10 rounded-[10px] bg-[#111]/8 flex items-center justify-center text-[#555] shrink-0">
         <MIcon name={icon} size={20} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-medium text-[#111]">{title}</p>
-        <p className="text-[13px] text-[#888] truncate font-normal">{description}</p>
+        <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0]">{title}</p>
+        <p className="text-[13px] text-[#888] dark:text-[#777] truncate font-normal">{description}</p>
       </div>
       <MIcon name="chevron_right" size={20} className="text-[#aaa] shrink-0" />
     </a>

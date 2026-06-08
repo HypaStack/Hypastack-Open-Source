@@ -14,29 +14,33 @@ function readStored(): ThemePreference {
   return "dark"
 }
 
+function resolveTheme(pref: ThemePreference): ResolvedTheme {
+  if (pref === "system") {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    }
+    return "dark"
+  }
+  return pref
+}
+
 /**
  * Persistent theme preference scoped to the dashboard. "system" follows OS
  * via prefers-color-scheme. Choice survives reloads via localStorage. The
  * dashboard layout reads `resolvedTheme` and applies it as a class on its
- * wrapper — we deliberately don't touch <html> so the marketing site and
- * auth pages keep their own design language untouched.
+ * wrapper. We also sync .dark to <html> so Tailwind dark: variants work
+ * globally.
  */
 export function useTheme() {
-  const [theme, setThemeState] = useState<ThemePreference>("dark")
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("dark")
-
-  // Hydrate from storage exactly once
-  useEffect(() => {
-    setThemeState(readStored())
-  }, [])
+  const [theme, setThemeState] = useState<ThemePreference>(() => readStored())
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => resolveTheme(readStored()))
 
   // Resolve "system" against OS, react to changes
   useEffect(() => {
     if (typeof window === "undefined") return
     const mq = window.matchMedia("(prefers-color-scheme: dark)")
     const compute = () => {
-      const r: ResolvedTheme = theme === "system" ? (mq.matches ? "dark" : "light") : theme
-      setResolvedTheme(r)
+      setResolvedTheme(resolveTheme(theme))
     }
     compute()
     if (theme === "system") {
@@ -44,6 +48,17 @@ export function useTheme() {
       return () => mq.removeEventListener("change", compute)
     }
   }, [theme])
+
+  // Sync .dark class to <html> so Tailwind dark: variants work globally
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    const root = document.documentElement
+    if (resolvedTheme === "dark") {
+      root.classList.add("dark")
+    } else {
+      root.classList.remove("dark")
+    }
+  }, [resolvedTheme])
 
   const setTheme = useCallback((next: ThemePreference) => {
     if (typeof window !== "undefined") {
