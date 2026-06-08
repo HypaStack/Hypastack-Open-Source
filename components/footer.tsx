@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { MIcon } from "@/components/ui/material-icon";
 
 const columns = [
   {
@@ -9,7 +12,7 @@ const columns = [
       { label: "Upload a file", href: "/new" },
       { label: "CDN Hosting", href: "/manage/cdn" },
       { label: "Dashboard", href: "/manage" },
-      { label: "System status", href: "/status" },
+      { label: "System status", href: "https://status.hypastack.com" },
       { label: "Desktop app", href: "https://hypastack.com/d/987vw0zy#key=9OU2rAIyA3j3Eye90DrxYoimxWbNCcycuyT6LNn7_BA" },
     ],
   },
@@ -36,104 +39,133 @@ const columns = [
   },
 ];
 
+function FooterPopover({ category }: { category: typeof columns[0] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  return (
+    <div className="relative flex justify-end" ref={ref}>
+      <motion.button
+        type="button"
+        onClick={() => setOpen(!open)}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.96 }}
+        className="group flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[rgba(255,255,255,0.08)] transition-colors text-white text-[15px] font-medium"
+      >
+        {category.title}
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="flex items-center justify-center text-[#a3a3a3] group-hover:text-white transition-colors"
+        >
+          <MIcon name="expand_more" size={18} />
+        </motion.div>
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
+            className="absolute bottom-[calc(100%+8px)] right-0 w-[240px] z-[100] bg-white rounded-lg border border-[#e5e5e5] py-2"
+            style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+          >
+            <div className="px-1.5 space-y-0.5">
+              {category.links.map((link) => (
+                link.href.startsWith("http") ? (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Footer() {
   return (
-    <div className="w-full mt-40 flex flex-col">
-      {/* 
-        Inverted black SVG notch: 
-        This draws a black rectangle with a transparent "bite" taken out of the top center.
-        It sits directly above the main black footer, allowing the dotted page background to show through the notch organically.
-      */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1440 48"
-        preserveAspectRatio="none"
-        className="w-full h-[48px] block"
-        aria-hidden="true"
-      >
-        <path
-          d="M 0 0 L 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0 L 1440 0 L 1440 48 L 0 48 Z"
-          fill="#000000"
-        />
-      </svg>
+    <>
+      <div className="w-full max-w-[1200px] mx-auto mt-48 md:mt-64 flex flex-col relative z-[60]">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 48"
+          preserveAspectRatio="none"
+          className="w-full h-[48px] block relative z-10 rounded-t-[24px]"
+          aria-hidden="true"
+        >
+          <path
+            d="M 0 0 L 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0 L 1440 0 L 1440 48 L 0 48 Z"
+            fill="#000000"
+          />
+        </svg>
 
-      <footer className="w-full bg-[#000000] text-[#a3a3a3] pt-12 pb-16 px-6 md:px-12 lg:px-24 font-sans relative">
-        <div className="max-w-[1400px] mx-auto relative z-20">
-        
-        {/* Links Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16 mb-24">
-          {columns.map((col) => (
-            <div key={col.title} className="flex flex-col gap-6">
-              <h3 className="text-white text-[15px] font-semibold tracking-wide">
-                {col.title}
-              </h3>
-              <ul className="flex flex-col gap-3.5">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    {link.href.startsWith("http") ? (
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[14px] hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </a>
-                    ) : (
-                      <Link
-                        href={link.href}
-                        className="text-[14px] hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </Link>
-                    )}
-                  </li>
+        <footer className="w-full bg-[#000000] text-[#a3a3a3] pt-6 pb-8 px-8 md:px-16 lg:px-20 font-sans relative">
+          <div className="w-full mx-auto relative z-20">
+            <div className="flex items-start justify-between mb-4 mt-2">
+              {/* Left Column: Image and Text */}
+              <div className="flex flex-col gap-6">
+                <img src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[52px] h-auto object-contain" />
+                
+                <div className="flex items-center gap-3">
+                  <span className="text-[13px] font-normal text-[#888888]">Wanna reach out to us?</span>
+                  <a href="https://t.me/hypastack" target="_blank" rel="noopener noreferrer" className="text-[#a3a3a3] hover:text-white active:scale-95 transition-all" aria-label="Telegram">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[20px] h-[20px]">
+                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.888-.662 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Right Column: Popover Buttons */}
+              <div className="flex flex-col items-end gap-2">
+                {columns.map((col) => (
+                  <FooterPopover key={col.title} category={col} />
                 ))}
-              </ul>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Bottom Section */}
-        <div className="flex flex-col items-start gap-10 border-t border-white/10 pt-10">
-          
-          {/* Socials */}
-          <div className="flex items-center gap-5 text-white">
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="X (Twitter)">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="Facebook">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-              </svg>
-            </a>
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="YouTube">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-[22px] h-[22px]">
-                <path d="M21.582 6.186a2.6 2.6 0 0 0-1.838-1.85C18.125 3.9 12 3.9 12 3.9s-6.125 0-7.744.436a2.6 2.6 0 0 0-1.838 1.85C2 7.822 2 12 2 12s0 4.178.418 5.814a2.6 2.6 0 0 0 1.838 1.85C5.875 20.1 12 20.1 12 20.1s6.125 0 7.744-.436a2.6 2.6 0 0 0 1.838-1.85C22 16.178 22 12 22 12s0-4.178-.418-5.814zM9.8 15.5v-7l6.3 3.5-6.3 3.5z" />
-              </svg>
-            </a>
+            {/* Bottom Section */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[12px] text-[#666666] pt-4 mt-6 border-t border-[rgba(255,255,255,0.05)]">
+              <div>
+                Licensed under AGPL-3.0 | Hypastack &copy; 2025-2026
+              </div>
+              <div className="text-right md:text-left">
+                This is the primary Hypastack project. This project is entirely my own work. Code available on GitHub, <a href="https://usekiko.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#a3a3a3] transition-colors">learn more</a>.
+              </div>
+            </div>
           </div>
-
-          <div className="w-8 h-[1px] bg-white/20" />
-
-          {/* Language Selector */}
-          <button className="flex items-center gap-2 text-[14px] text-white hover:underline">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="2" y1="12" x2="22" y2="12" />
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            English (United States)
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 ml-1">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-
-        </div>
+        </footer>
       </div>
-    </footer>
-    </div>
+    </>
   );
 }

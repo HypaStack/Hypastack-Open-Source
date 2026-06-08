@@ -69,10 +69,10 @@ const plans: Plan[] = [
 function BlockLines() {
   return (
     <>
-      <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
+      <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
     </>
   );
 }
@@ -87,7 +87,7 @@ export function Pricing() {
     <section id="features" className="mt-24 sm:mt-32 relative flex flex-col items-center overflow-visible">
 
       {/* The Block — same template as reference */}
-      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-10 border-y border-[rgba(0,0,0,0.15)]">
+      <div className="relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-10 border-y border-[rgba(0,0,0,0.08)]">
         <BlockLines />
 
         {/* Plus signs grid on sides */}
@@ -120,7 +120,7 @@ export function Pricing() {
               className="text-[clamp(28px,4vw,40px)] leading-[1.05] tracking-[-0.03em] text-[#171717]"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 700 }}
             >
-              Unlock <u className="underline decoration-[rgba(0,0,0,0.2)] underline-offset-[0.1em]">higher</u> <i className="italic">limits</i>.
+              Unlock <u className="underline decoration-[rgba(0,0,0,0.08)] underline-offset-[0.1em]">higher</u> <i className="italic">limits</i>.
             </h2>
             <p className="mt-3 text-[16px] sm:text-[17px] leading-relaxed text-[#525252]">
               Pick a tier you can grow into. Cancel anytime.
@@ -128,7 +128,7 @@ export function Pricing() {
           </motion.div>
 
           {/* Billing toggle — sharp, no border-radius */}
-          <div className="flex items-center shrink-0 border border-[rgba(0,0,0,0.15)]">
+          <div className="flex items-center shrink-0 border border-[rgba(0,0,0,0.08)]">
             <button
               onClick={() => setCycle("monthly")}
               className="px-5 py-2.5 text-[13px] font-medium transition-colors duration-150"
@@ -139,7 +139,7 @@ export function Pricing() {
             >
               Monthly
             </button>
-            <div className="w-px h-full self-stretch bg-[rgba(0,0,0,0.15)]" />
+            <div className="w-px h-full self-stretch bg-[rgba(0,0,0,0.08)]" />
             <button
               onClick={() => setCycle("annual")}
               className="px-5 py-2.5 text-[13px] font-medium transition-colors duration-150"
@@ -154,10 +154,10 @@ export function Pricing() {
         </div>
 
         {/* Pricing table — separated from header by border-t, same as video/image pattern */}
-        <div className="border-t border-[rgba(0,0,0,0.15)] overflow-x-auto">
+        <div className="border-t border-[rgba(0,0,0,0.08)] overflow-x-auto">
 
           {/* Plan name + price row */}
-          <div className="grid grid-cols-3 border-b border-[rgba(0,0,0,0.15)]">
+          <div className="grid grid-cols-3 border-b border-[rgba(0,0,0,0.08)]">
             {plans.map((plan, i) => (
               <motion.div
                 key={plan.tier}
@@ -165,7 +165,7 @@ export function Pricing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className={`px-6 py-8 ${i < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.15)]' : ''} ${plan.recommended ? 'bg-[#171717]' : ''}`}
+                className={`px-6 py-8 ${i < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.08)]' : ''} ${plan.recommended ? 'bg-[#171717]' : ''}`}
               >
                 <div className="flex items-center justify-between mb-4">
                   <span
@@ -201,7 +201,7 @@ export function Pricing() {
 
           {/* Feature rows — each row spans all 3 columns, perfectly aligned */}
           {featureNames.map((name, fi) => (
-            <div key={name} className="grid grid-cols-3 border-b border-[rgba(0,0,0,0.15)]">
+            <div key={name} className="grid grid-cols-3 border-b border-[rgba(0,0,0,0.08)]">
               {plans.map((plan, pi) => {
                 const f = plan.features[fi];
                 let iconName = "check";
@@ -211,7 +211,7 @@ export function Pricing() {
                 return (
                   <div
                     key={plan.tier}
-                    className={`flex items-center gap-3 px-6 py-4 ${pi < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.15)]' : ''}`}
+                    className={`flex items-center gap-3 px-6 py-4 ${pi < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.08)]' : ''}`}
                   >
                     <MIcon name={iconName} size={15} className="shrink-0" style={{ color: iconColor }} />
                     <span className="text-[13px] text-[#171717]">{f.name}</span>
@@ -227,7 +227,7 @@ export function Pricing() {
               <Link
                 key={plan.tier}
                 href="/new"
-                className={`flex items-center justify-center gap-2 px-6 py-5 text-[14px] font-semibold transition-colors duration-150 ${i < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.15)]' : ''} ${plan.recommended ? 'bg-[#171717] text-white hover:bg-[#222]' : 'text-[#171717] hover:bg-[#fafafa]'}`}
+                className={`flex items-center justify-center gap-2 px-6 py-5 text-[14px] font-semibold transition-colors duration-150 ${i < plans.length - 1 ? 'border-r border-[rgba(0,0,0,0.08)]' : ''} ${plan.recommended ? 'bg-[#171717] text-white hover:bg-[#222]' : 'text-[#171717] hover:bg-[#fafafa]'}`}
               >
                 <MIcon name="contactless" size={15} />
                 Get started

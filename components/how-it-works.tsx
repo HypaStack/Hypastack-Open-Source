@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
+import { RippleDots } from "@/components/ui/ripple-dots";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -8,10 +10,10 @@ import { motion } from "motion/react";
 function BlockLinesTop() {
   return (
     <div className="hidden md:block">
-      <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
+      <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
     </div>
   );
 }
@@ -20,15 +22,15 @@ function BlockLinesTop() {
 function BlockLinesBottom() {
   return (
     <div className="hidden md:block">
-      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+      <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
     </div>
   );
 }
 
 // Corner dots — all 4 corners (first block or standalone)
 function CornerDots() {
-  const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
+  const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
   const base = "hidden md:block pointer-events-none";
   return (
     <>
@@ -42,7 +44,7 @@ function CornerDots() {
 
 // Corner dots — bottom only (for connected middle/last blocks — no top dots to avoid doubling)
 function CornerDotsBottom() {
-  const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
+  const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
   const base = "hidden md:block pointer-events-none";
   return (
     <>
@@ -71,7 +73,7 @@ export function HowItWorks() {
       </div>
 
       {/* ── BLOCK 1: Drop a file ── */}
-      <div className="mt-0 relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.15)]">
+      <div className="mt-0 relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
         <BlockLinesTop />
         <CornerDots />
 
@@ -96,18 +98,14 @@ export function HowItWorks() {
             <p className="mt-4 text-[16px] sm:text-[17px] leading-relaxed text-[#525252]">
               Upload anything and instantly get an encrypted, shareable link. No accounts required on the receiving end — just a link and the key.
             </p>
-            <a
-              href="/new"
-              className="inline-flex items-center justify-center mt-8 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 44, paddingLeft: 24, paddingRight: 24, borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-            >
+            <Button href="/new" variant="primary" size="lg" className="mt-8">
               Try it now
-            </a>
+            </Button>
           </motion.div>
         </div>
 
         {/* Video Preview */}
-        <div className="w-full h-[320px] sm:h-[400px] md:h-[480px] border-t border-[rgba(0,0,0,0.15)] overflow-hidden bg-[#fafafa]">
+        <div className="w-full h-[320px] sm:h-[400px] md:h-[480px] border-t border-[rgba(0,0,0,0.08)] overflow-hidden bg-[#fafafa]">
           <video
             autoPlay
             loop
@@ -121,8 +119,9 @@ export function HowItWorks() {
       </div>
 
       {/* ── BLOCK 2: Open Source ── wrapper has no z-index so dots can escape stacking context */}
-      <div className="relative w-full max-w-[1200px]">
-        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-b border-r border-[rgba(0,0,0,0.15)]">
+      <div className="relative w-full max-w-[1200px] mt-16 sm:mt-24">
+        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
+          <BlockLinesTop />
           <BlockLinesBottom />
 
 
@@ -146,20 +145,14 @@ export function HowItWorks() {
               <p className="mt-4 text-[16px] sm:text-[17px] leading-relaxed text-[#525252]">
                 Every line of our code is public. Inspect our architecture, audit our security, or host it yourself. We believe trust is earned through complete transparency.
               </p>
-              <a
-                href="https://github.com/hypastack"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center mt-8 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                style={{ height: 44, paddingLeft: 24, paddingRight: 24, borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-              >
+              <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="primary" size="lg" className="mt-8">
                 View on GitHub
-              </a>
+              </Button>
             </motion.div>
           </div>
 
           {/* Image Preview */}
-          <div className="w-full h-[140px] sm:h-[200px] md:h-[240px] border-t border-[rgba(0,0,0,0.15)] overflow-hidden bg-[#f4f1f2]">
+          <div className="w-full h-[140px] sm:h-[200px] md:h-[240px] border-t border-[rgba(0,0,0,0.08)] overflow-hidden bg-[#f4f1f2]">
             <img
               src="https://r2.hypastack.com/cdn/5ar5ltt7hsf4/github_logo.png"
               alt="GitHub Logo"
@@ -169,21 +162,19 @@ export function HowItWorks() {
           </div>
         </div>
         {/* Dots AFTER block — siblings in same stacking context, z-300 > z-60 */}
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
 
       {/* ── BLOCK 3: Quote — wrapper has no z-index so dots can escape stacking context */}
-      <div className="relative w-full max-w-[1200px]">
-        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-b border-r border-[rgba(0,0,0,0.15)]">
-          <BlockLinesBottom />
+      <div className="relative w-full max-w-[1200px] mt-16 sm:mt-24">
+        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
 
 
           {/* Dotted bg visible */}
-          <div
-            className="absolute inset-0 pointer-events-none z-0"
-            style={{ backgroundImage: 'radial-gradient(rgba(0,0,0,0.15) 1.5px, transparent 1.5px)', backgroundSize: '16px 16px', backgroundPosition: 'center' }}
-          />
+          <RippleDots />
 
 
 
@@ -253,9 +244,6 @@ export function HowItWorks() {
             </div>
           </div>
         </div>
-        {/* Dots AFTER block — siblings in same stacking context, z-300 > z-60 */}
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
 
 

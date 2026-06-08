@@ -42,7 +42,8 @@ const siteName = "Hypastack"
 const tagline = "Zero-Knowledge Encrypted File Sharing & CDN"
 const description = "Privacy-first file sharing with AES-256 browser-side encryption and a permanent CDN for public assets. No emails, no passwords, no tracking. Open source. Built in Europe by Kiko."
 const keywords = "encrypted file sharing, zero knowledge file hosting, private file transfer, secure file upload, temporary file sharing, burn after reading, CDN hosting, privacy file sharing, AES-256 encryption, anonymous file sharing, open source file sharing, Hypastack, no tracking file sharing, EXIF metadata stripping, European file hosting"
-const iconUrl = "https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp"
+const iconUrl = "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+const faviconUrl = "https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp"
 const previewUrl = "https://r2.hypastack.com/cdn/wpoxysqdixzy/preview-main.png"
 
 export const metadata: Metadata = {
@@ -99,19 +100,20 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: iconUrl, type: "image/webp", sizes: "32x32" },
-      { url: iconUrl, type: "image/webp", sizes: "16x16" },
+      { url: faviconUrl, type: "image/webp", sizes: "96x96" },
+      { url: faviconUrl, type: "image/webp", sizes: "32x32" },
+      { url: faviconUrl, type: "image/webp", sizes: "16x16" },
     ],
     apple: [
-      { url: iconUrl, sizes: "180x180", type: "image/webp" },
-      { url: iconUrl, sizes: "152x152", type: "image/webp" },
-      { url: iconUrl, sizes: "120x120", type: "image/webp" },
+      { url: faviconUrl, sizes: "180x180", type: "image/webp" },
+      { url: faviconUrl, sizes: "152x152", type: "image/webp" },
+      { url: faviconUrl, sizes: "120x120", type: "image/webp" },
     ],
-    shortcut: iconUrl,
+    shortcut: faviconUrl,
     other: [
       {
         rel: "mask-icon",
-        url: iconUrl,
+        url: faviconUrl,
         color: "#ffffff",
       },
     ],

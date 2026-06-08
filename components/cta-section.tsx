@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "motion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { MIcon } from "@/components/ui/material-icon";
+import { Button } from "@/components/ui/button";
 
 export function CtaSection() {
   const { user, isAuthenticated } = useAuth();
@@ -13,12 +13,14 @@ export function CtaSection() {
 
       <div className="relative w-full max-w-[1200px]">
       {/* The Block */}
-      <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.15)] border-r-[rgba(0,0,0,0.08)]">
+      <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)] border-r-[rgba(0,0,0,0.08)]">
         {/* Horizontal extending lines */}
-        <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-        <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-        <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
-        <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.15)] pointer-events-none" />
+        <div className="hidden md:block">
+          <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+          <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+          <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+          <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
+        </div>
 
         {/* Corner dots moved to wrapper level */}
 
@@ -52,20 +54,12 @@ export function CtaSection() {
                   Everything&apos;s where you left it. Upload something, check your links, or just look around.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <Link
-                    href="/manage/dashboard"
-                    className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 flex justify-center items-center text-center"
-                    style={{ height: 44, paddingLeft: 24, paddingRight: 24, borderRadius: 12, fontSize: 15, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-                  >
+                  <Button href="/manage/dashboard" variant="primary" size="lg">
                     Go to Dashboard
-                  </Link>
-                  <Link
-                    href="/manage/files"
-                    className="inline-flex justify-center items-center hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75 text-center"
-                    style={{ height: 44, paddingLeft: 20, paddingRight: 20, borderRadius: 12, fontSize: 15, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)' }}
-                  >
+                  </Button>
+                  <Button href="/manage/files" variant="secondary" size="lg">
                     My Files
-                  </Link>
+                  </Button>
                 </div>
               </>
             ) : (
@@ -80,31 +74,23 @@ export function CtaSection() {
                   Set up an account in seconds. Share files securely and host CDNs indefinitely.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <Link
-                    href="/new"
-                    className="hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 flex justify-center items-center text-center"
-                    style={{ height: 44, paddingLeft: 24, paddingRight: 24, borderRadius: 12, fontSize: 15, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-                  >
+                  <Button href="/new" variant="primary" size="lg">
                     Register
-                  </Link>
-                  <Link
-                    href="/signin"
-                    className="inline-flex justify-center items-center hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75 text-center"
-                    style={{ height: 44, paddingLeft: 20, paddingRight: 20, borderRadius: 12, fontSize: 15, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.15)' }}
-                  >
+                  </Button>
+                  <Button href="/signin" variant="secondary" size="lg">
                     Sign in
-                  </Link>
+                  </Button>
                 </div>
               </>
             )}
           </motion.div>
         </div>
       </div>
-      {/* All 4 corner dots AFTER block — siblings in same stacking context, z-300 > z-60 */}
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.2)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
+      {/* Dots AFTER block */}
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
     </section>
   );

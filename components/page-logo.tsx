@@ -21,7 +21,7 @@ export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className
     <motion.img
       {...(!disableLayoutAnimation ? { layoutId: "hypa-logo" } : {})}
       initial={false}
-      src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp"
+      src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
       alt="Hypastack"
       animate={
         pulse

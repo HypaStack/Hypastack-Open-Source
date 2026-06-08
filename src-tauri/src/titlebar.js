@@ -90,7 +90,7 @@
 
     bar.innerHTML = [
       '<div id="tauri-titlebar-left" data-tauri-drag-region>',
-      '  <img id="tauri-titlebar-icon" src="https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp"',
+      '  <img id="tauri-titlebar-icon" src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"',
       '       alt="" draggable="false" />',
       '</div>',
       '<div id="tauri-titlebar-controls">',
