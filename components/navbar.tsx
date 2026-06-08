@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { PageLogo } from "@/components/page-logo";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
 
@@ -13,7 +14,7 @@ function SkeletonPulse({ className }: { className: string }) {
 }
 
 export function Navbar() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, stats, isAuthenticated, isLoading, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -45,17 +46,15 @@ export function Navbar() {
   }, [popoverOpen]);
 
   const content = (
+    <>
     <header
-      className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1200px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl rounded-b-2xl py-3 px-6"
+      className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1200px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl rounded-b-2xl py-2 px-6"
     >
       <div className="w-full flex items-center justify-between">
         
-        {/* Left: Logo & Brand */}
+        {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <PageLogo size={32} borderRadius={8} />
-          <span className="text-[17px] font-semibold tracking-tight text-[#171717] group-hover:opacity-80 transition-opacity">
-            Hypastack
-          </span>
         </Link>
 
         {/* Right: Auth / Actions */}
@@ -66,57 +65,61 @@ export function Navbar() {
               <SkeletonPulse className="h-9 w-28" />
             </div>
           ) : isAuthenticated && user ? (
-            <div className="relative" ref={popoverRef}>
-              <button
-                onClick={() => setPopoverOpen(!popoverOpen)}
-                className="flex items-center gap-2 hover:bg-[rgba(0,0,0,0.04)] active:bg-[rgba(0,0,0,0.08)] transition-colors pl-3 pr-2 py-1.5 rounded-full border border-[rgba(0,0,0,0.06)] bg-white/50"
-              >
-                <span className="text-[14px] font-medium text-[#171717]">{user.nickname}</span>
-                <MIcon name="expand_more" size={18} style={{ color: '#171717' }} />
-              </button>
+            <div className="flex items-center gap-3">
+              <Button href="/manage/files" variant="primary" size="sm" className="hidden sm:inline-flex">
+                Dashboard
+              </Button>
+              
+              <div className="flex items-center gap-1.5">
+                <div className="h-8 w-8 relative shrink-0">
+                  {user.avatarUrl ? (
+                    <img src={`/api/v2/avatar?t=${user.avatarUrl}`} alt={user.nickname} className="h-8 w-8 rounded-full object-cover select-none pointer-events-none" draggable={false} />
+                  ) : (
+                    <div className="h-8 w-8 flex items-center justify-center bg-[#ccc] text-white text-[12px] font-bold rounded-full select-none">
+                      {(user.nickname || "?").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
 
-              {/* User Dropdown */}
-              <AnimatePresence>
-                {popoverOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute top-[calc(100%+8px)] right-0 w-[200px] z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl border border-[rgba(0,0,0,0.08)] shadow-[0_16px_64px_rgba(0,0,0,0.08)] rounded-[24px] overflow-hidden p-2"
+                <div className="relative" ref={popoverRef}>
+                  <button
+                    onClick={() => setPopoverOpen(!popoverOpen)}
+                    className="flex items-center justify-center h-8 w-8 rounded-full hover:bg-[rgba(0,0,0,0.04)] active:bg-[rgba(0,0,0,0.08)] transition-colors text-[#666]"
                   >
-                    <Link
-                      href="/manage/dashboard"
-                      onClick={() => setPopoverOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-[#f4f4f5] transition-colors text-[14px] font-medium text-[#171717]"
-                    >
-                      <MIcon name="grid_view" size={18} className="text-[#525252]" />
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/manage/files"
-                      onClick={() => setPopoverOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-[#f4f4f5] transition-colors text-[14px] font-medium text-[#171717]"
-                    >
-                      <MIcon name="folder" size={18} className="text-[#525252]" />
-                      Active shares
-                    </Link>
-                    
-                    <div className="h-[1px] bg-[rgba(0,0,0,0.08)] my-1.5 mx-2" />
-                    
-                    <button
-                      onClick={() => {
-                        setPopoverOpen(false);
-                        logout();
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-[rgba(239,68,68,0.1)] transition-colors text-[14px] font-medium text-[#ef4444] text-left"
-                    >
-                      <MIcon name="logout" size={18} />
-                      Log out
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <MIcon name="more_vert" size={20} />
+                  </button>
+
+                  <AnimatePresence>
+                    {popoverOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute top-[calc(100%+8px)] right-0 w-[280px] z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl border border-[rgba(0,0,0,0.08)] shadow-[0_16px_64px_rgba(0,0,0,0.08)] rounded-[16px] overflow-hidden py-2"
+                      >
+                        <div className="px-3 pb-2">
+                          <p className="text-sm font-semibold text-[#171717]">{user.nickname}</p>
+                          <p className="text-xs text-[#666] mt-0.5">{user.id}</p>
+                        </div>
+                        
+                        <div className="mx-3 border-b border-[rgba(0,0,0,0.08)] mb-1" />
+                        
+                        <div className="px-1.5 space-y-0.5">
+                          <button
+                            type="button"
+                            onClick={() => { setPopoverOpen(false); logout(); }}
+                            className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium text-[#333] hover:bg-[rgba(239,68,68,0.1)] hover:text-[#ef4444] transition-colors cursor-pointer"
+                          >
+                            <MIcon name="logout" size={18} className="text-[#666] group-hover:text-[#ef4444] transition-colors" />
+                            <span>Log out</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -137,6 +140,7 @@ export function Navbar() {
         </div>
       </div>
     </header>
+    </>
   );
 
   if (!mounted) return null;

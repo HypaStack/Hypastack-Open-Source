@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { MIcon } from "@/components/ui/material-icon";
+import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -122,37 +123,21 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    href="/manage/dashboard"
-                    className="flex items-center justify-center hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 w-full sm:w-[130px]"
-                    style={{ height: 40, borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-                  >
+                  <Button href="/manage/dashboard" variant="primary" size="md" className="w-full sm:w-[130px]">
                     Dashboard
-                  </Link>
-                  <Link
-                    href="/manage/files"
-                    className="flex items-center justify-center hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75 w-full sm:w-[130px]"
-                    style={{ height: 40, borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.1)' }}
-                  >
+                  </Button>
+                  <Button href="/manage/files" variant="secondary" size="md" className="w-full sm:w-[130px]">
                     Share
-                  </Link>
+                  </Button>
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/new"
-                    className="flex items-center justify-center hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 w-full sm:w-[140px]"
-                    style={{ height: 40, borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-                  >
+                  <Button href="/new" variant="primary" size="md" className="w-full sm:w-[140px]">
                     Start for free
-                  </Link>
-                  <Link
-                    href="/signin"
-                    className="flex items-center justify-center hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75 w-full sm:w-[140px]"
-                    style={{ height: 40, borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.1)' }}
-                  >
+                  </Button>
+                  <Button href="/signin" variant="secondary" size="md" className="w-full sm:w-[140px]">
                     Sign In
-                  </Link>
+                  </Button>
                 </>
               )}
             </div>
@@ -198,7 +183,7 @@ export function Hero() {
             className="inline-flex items-center gap-1.5 hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75"
             style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
           >
-            <MIcon name="bug_report" size={14} style={{ color: '#171717' }} />
+            <img src="https://r2.hypastack.com/cdn/tniuzl9r383i/GitHub_Invertocat_Black.svg" alt="" className="w-[14px] h-[14px] select-none" draggable={false} />
             <span>We&apos;re open source</span>
           </a>
 

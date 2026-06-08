@@ -38,7 +38,7 @@ async function ping(url: string | undefined, ok: boolean) {
   }
 }async function checkR2(): Promise<boolean> {
   try {
-    const res = await fetch('https://r2.hypastack.com/cdn/u1y77k752jdm/icon.webp', {
+    const res = await fetch('https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp', {
       method: 'HEAD', cache: 'no-store', signal: AbortSignal.timeout(6000),
     })
     return res.ok
