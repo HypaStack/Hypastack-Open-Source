@@ -28,8 +28,36 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
+// ──────────────────────────────────────────────
+// Flip this to `true` to enable maintenance mode
+const MAINTENANCE = true
+// ──────────────────────────────────────────────
+
+const LEGAL_PATHS = [
+  "/terms",
+  "/privacy",
+  "/acceptable-use",
+  "/child-safety",
+  "/coppa-gdpr",
+  "/dmca",
+  "/vulnerability-disclosure",
+]
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Maintenance mode — redirect everything except legal pages and /maintenance itself
+  if (MAINTENANCE) {
+    if (
+      pathname !== "/maintenance" &&
+      !LEGAL_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))
+    ) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/maintenance"
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
+  }
 
   // Auth guard for all dashboard routes
   if (pathname.startsWith('/manage')) {
