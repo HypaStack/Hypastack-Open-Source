@@ -30,7 +30,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 
 // ──────────────────────────────────────────────
 // Flip this to `true` to enable maintenance mode
-const MAINTENANCE = true
+const MAINTENANCE = false
 // ──────────────────────────────────────────────
 
 const LEGAL_PATHS = [
