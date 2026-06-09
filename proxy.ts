@@ -57,6 +57,13 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url)
     }
     return NextResponse.next()
+  } else {
+    // If maintenance mode is OFF, don't allow access to the /maintenance page
+    if (pathname === "/maintenance") {
+      const url = request.nextUrl.clone()
+      url.pathname = "/"
+      return NextResponse.redirect(url)
+    }
   }
 
   // Auth guard for all dashboard routes
