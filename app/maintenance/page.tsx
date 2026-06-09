@@ -78,10 +78,14 @@ export default function MaintenancePage() {
             experience. Thank you for your patience as we evolve Hypastack.
           </p>
 
+          <style>{`
+            .tg-btn:hover { background-color: #333 !important; }
+          `}</style>
           <a
             href="https://t.me/hypastack"
             target="_blank"
             rel="noopener noreferrer"
+            className="tg-btn"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -97,12 +101,6 @@ export default function MaintenancePage() {
               textDecoration: "none",
               transition: "background-color 0.15s",
             }}
-            onMouseEnter={(e: any) =>
-              (e.currentTarget.style.backgroundColor = "#333")
-            }
-            onMouseLeave={(e: any) =>
-              (e.currentTarget.style.backgroundColor = "#222")
-            }
           >
             <svg
               width="18"
