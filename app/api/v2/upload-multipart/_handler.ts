@@ -12,7 +12,7 @@ import { initiateMultipartUpload } from "@/lib/r2-multipart"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
-import { ensureFolderPath } from "@/lib/folder-model"
+import { ensureFolderPath, getFoldersByUserId } from "@/lib/folder-model"
 import { logOperation } from "@/lib/credits"
 
 export async function handleUploadMultipartPost(request: NextRequest) {
@@ -118,6 +118,13 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       : null
 
     let finalFolderId = folderId || null
+    if (finalFolderId) {
+      const userFolders = await getFoldersByUserId(currentUser.userId)
+      if (!userFolders.some(f => f.id === finalFolderId)) {
+        return NextResponse.json({ error: "Folder not found or unauthorized" }, { status: 403 })
+      }
+    }
+
     if (path) {
       // path may be "Folder/Subfolder/file.ext" — extract dir portion only
       const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null

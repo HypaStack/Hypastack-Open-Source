@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { headCdnObject } from "@/lib/r2"
 import { createCdnAsset, createCdnAssetsBatch, getTotalStorageUsed } from "@/lib/cdn-model"
+import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/lib/tier-limits"
 
@@ -42,6 +43,13 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     const cdnDomain = process.env.R2_CDN_DOMAIN
     if (!cdnDomain) {
       return NextResponse.json({ error: "R2_CDN_DOMAIN environment variable not configured" }, { status: 500 })
+    }
+
+    const userCdnFolders = await getCdnFoldersByUserId(currentUser.userId);
+    for (const f of filesToComplete) {
+      if (f.folderId && !userCdnFolders.some(folder => folder.id === f.folderId)) {
+        return NextResponse.json({ error: "CDN Folder not found or unauthorized" }, { status: 403 })
+      }
     }
 
     // Verify all files exist in R2 in parallel — one concurrent batch of HEAD requests

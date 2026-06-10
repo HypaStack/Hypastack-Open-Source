@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { expireOldCredits } from "@/lib/credits"
 import { getPool, ensureDatabase } from "@/lib/db"
+import crypto from "crypto"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
   try {
     const secret = request.nextUrl.searchParams.get("secret")
-    if (!secret || secret !== process.env.CRON_SECRET) {
+    const envSecret = process.env.CRON_SECRET || ""
+
+    if (!secret || !envSecret) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const secretHash = crypto.createHash("sha256").update(secret).digest()
+    const envSecretHash = crypto.createHash("sha256").update(envSecret).digest()
+
+    if (!crypto.timingSafeEqual(secretHash, envSecretHash)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
