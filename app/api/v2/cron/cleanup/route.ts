@@ -16,10 +16,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const [filesResult, stagingResult] = await Promise.all([
-      cleanupExpiredFiles(),
-      cleanupStaging(),
-    ])
+    const filesResult = await cleanupExpiredFiles()
+    const stagingResult = await cleanupStaging()
 
     return NextResponse.json({
       success: true,

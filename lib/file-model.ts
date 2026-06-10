@@ -157,32 +157,31 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
   let cleaned = 0
 
   try {
-    const result = await pool.query(
-      `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours'`
-    )
+    while (true) {
+      const result = await pool.query(
+        `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours' LIMIT 500`
+      )
 
-    for (const record of result.rows) {
-      try {
-        const fileName = record.r2_key.split('/').pop() || ''
+      if (result.rows.length === 0) break
+
+      for (const record of result.rows) {
         try {
           const { deleteByKey } = await import('./r2')
           await deleteByKey(record.r2_key)
-        } catch {}
+        } catch { /* r2 deletion best-effort */ }
 
-        await pool.query(
-          `DELETE FROM upload_staging WHERE id = $1`,
-          [record.id]
-        )
-
-        cleaned++
-      } catch (error: any) {
-        errors.push(`Failed to cleanup ${record.id}: ${error.message}`)
+        try {
+          await pool.query(`DELETE FROM upload_staging WHERE id = $1`, [record.id])
+          cleaned++
+        } catch (error: any) {
+          errors.push(`Failed to cleanup staging ${record.id}: ${error.message}`)
+        }
       }
     }
 
     return { cleaned, errors }
   } catch (error: any) {
-    return { cleaned, errors: [`Cleanup failed: ${error.message}`] }
+    return { cleaned, errors: [`Staging cleanup failed: ${error.message}`] }
   }
 }
 
@@ -284,11 +283,12 @@ export async function getIncompleteUploads(olderThanMinutes: number = 60): Promi
   }))
 }
 
-export async function getExpiredFiles(): Promise<FileRecord[]> {
+export async function getExpiredFiles(limit = 500): Promise<FileRecord[]> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
-    `SELECT * FROM basedrop_files WHERE expires_at < NOW()`
+    `SELECT * FROM basedrop_files WHERE expires_at < NOW() LIMIT $1`,
+    [limit]
   )
 
   return result.rows.map(row => ({
