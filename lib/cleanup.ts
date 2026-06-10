@@ -9,22 +9,27 @@ export async function cleanupExpiredFiles(): Promise<{
   let cleaned = 0
 
   try {
-    const expiredFiles = await getExpiredFiles()
+    // Process in batches of 500 until no expired files remain
+    while (true) {
+      const expiredFiles = await getExpiredFiles(500)
 
-    for (const file of expiredFiles) {
-      try {
-        await deleteByKey(file.r2_key)
-        await deleteFileRecord(file.id)
-        cleaned++
-      } catch (error: any) {
-        const errorMsg = `Failed to delete ${file.id}: ${error.message}`
-        console.error(`[Cleanup] ${errorMsg}`)
-        errors.push(errorMsg)
+      if (expiredFiles.length === 0) break
+
+      for (const file of expiredFiles) {
+        try {
+          await deleteByKey(file.r2_key)
+          await deleteFileRecord(file.id)
+          cleaned++
+        } catch (error: any) {
+          const errorMsg = `Failed to delete ${file.id}: ${error.message}`
+          console.error(`[Cleanup] ${errorMsg}`)
+          errors.push(errorMsg)
+        }
       }
     }
 
     if (cleaned > 0 || errors.length > 0) {
-      console.error(`[Cleanup] Expired files: cleaned=${cleaned}, errors=${errors.length}`)
+      console.log(`[Cleanup] Expired files: cleaned=${cleaned}, errors=${errors.length}`)
     }
   } catch (error: any) {
     console.error('[Cleanup] Fatal error in cleanupExpiredFiles:', error)
@@ -35,12 +40,15 @@ export async function cleanupExpiredFiles(): Promise<{
 }
 
 export function startCleanupScheduler(): NodeJS.Timeout {
-  cleanupExpiredFiles().catch(console.error)
-  cleanupStaging().catch(console.error)
+  // Run sequentially on startup
+  cleanupExpiredFiles()
+    .then(() => cleanupStaging())
+    .catch(console.error)
 
   return setInterval(() => {
-    cleanupExpiredFiles().catch(console.error)
-    cleanupStaging().catch(console.error)
+    cleanupExpiredFiles()
+      .then(() => cleanupStaging())
+      .catch(console.error)
   }, 60 * 60 * 1000)
 }
 
@@ -48,9 +56,10 @@ export async function cleanupStaging(): Promise<{
   cleaned: number
   errors: string[]
 }> {
+  // cleanupExpiredStaging already batches 500 at a time internally
   const result = await cleanupExpiredStaging()
   if (result.cleaned > 0 || result.errors.length > 0) {
-    console.error(`[Cleanup] Staging: cleaned=${result.cleaned}, errors=${result.errors.length}`)
+    console.log(`[Cleanup] Staging: cleaned=${result.cleaned}, errors=${result.errors.length}`)
   }
   return result
 }
