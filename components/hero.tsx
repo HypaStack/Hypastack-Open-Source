@@ -183,16 +183,8 @@ export function Hero() {
             <MIcon name="desktop_windows" size={13} style={{ color: '#171717' }} />
             <span>Download for Windows</span>
           </a>
-
-          {/* Learn more — always visible */}
-          <a
-            href="#features"
-            className="inline-flex items-center justify-center hover:bg-[#e8e9ee] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 32, paddingLeft: 13, paddingRight: 13, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
-          >
-            Learn more
-          </a>
         </motion.div>
+
       </div>
 
     </section>
