@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate } from "@/lib/r2"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
 import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
-import { ensureFolderPath } from "@/lib/folder-model"
+import { ensureFolderPath, getFoldersByUserId } from "@/lib/folder-model"
 import { getUserCdnStats } from "@/lib/cdn-model"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
@@ -123,6 +123,13 @@ export async function handleUploadPost(request: NextRequest) {
       : null
 
     let finalFolderId = folderId || null
+    if (finalFolderId) {
+      const userFolders = await getFoldersByUserId(currentUser.userId)
+      if (!userFolders.some(f => f.id === finalFolderId)) {
+        return NextResponse.json({ error: "Folder not found or unauthorized" }, { status: 403 })
+      }
+    }
+
     if (path) {
       const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null
       if (dirPath) {

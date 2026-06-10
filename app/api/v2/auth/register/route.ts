@@ -5,6 +5,7 @@ import { createUser } from "@/lib/user-model"
 import { checkRegisterRateLimit } from "@/lib/rate-limit"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
+import { getHashedIp } from "@/lib/ip"
 
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const rateLimit = await checkRegisterRateLimit(userId)
+    const rateLimit = await checkRegisterRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again later." },

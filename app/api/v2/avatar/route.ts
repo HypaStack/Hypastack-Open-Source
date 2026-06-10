@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById } from "@/lib/user-model"
-import { downloadHeadByKey } from "@/lib/r2"
+import { getPresignedDownloadUrl } from "@/lib/r2"
 
 export const dynamic = "force-dynamic"
 
@@ -17,8 +17,6 @@ export async function GET(request: NextRequest) {
       return new NextResponse("No avatar", { status: 404 })
     }
 
-    const buffer = await downloadHeadByKey(user.avatar_url, 10 * 1024 * 1024)
-
     // Determine content type from key extension
     const ext = user.avatar_url.split('.').pop()?.toLowerCase()
     const mimeMap: Record<string, string> = {
@@ -27,13 +25,15 @@ export async function GET(request: NextRequest) {
     }
     const safeContentType = mimeMap[ext || ''] || 'image/png'
 
-    return new NextResponse(buffer as unknown as BodyInit, {
-      headers: {
-        "Content-Type": safeContentType,
-        "X-Content-Type-Options": "nosniff",
-        "Cache-Control": "private, max-age=60",
-      },
+    const url = await getPresignedDownloadUrl({
+      r2Key: user.avatar_url,
+      originalName: `avatar.${ext || 'png'}`,
+      contentType: safeContentType,
+      expiresIn: 3600,
+      disposition: "inline",
     })
+
+    return NextResponse.redirect(url, 303)
   } catch (error: any) {
     console.error("[Avatar] Proxy error:", error)
     return new NextResponse("Failed to load avatar", { status: 500 })

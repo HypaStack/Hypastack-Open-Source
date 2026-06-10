@@ -63,10 +63,10 @@ export async function handleUploadProxyPost(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    if (file.size > tier.maxNormalUploadSize) {
-      const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
+    const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
+    if (file.size > MAX_PROXY_SIZE) {
       return NextResponse.json(
-        { error: `File too large. Max ${limitMB}MB on your plan.` },
+        { error: `File too large for zero-trust proxy upload. Maximum allowed size is 50MB.` },
         { status: 413 }
       )
     }

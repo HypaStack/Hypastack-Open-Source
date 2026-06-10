@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
-import { createFolder, deleteFolderRecursively } from "@/lib/folder-model"
+import { createFolder, deleteFolderRecursively, getFoldersByUserId } from "@/lib/folder-model"
 
 export const dynamic = "force-dynamic"
 
@@ -19,6 +19,13 @@ export async function POST(request: NextRequest) {
 
     if (name.length > 200) {
       return NextResponse.json({ error: "Folder name is too long" }, { status: 400 })
+    }
+
+    if (parentId) {
+      const userFolders = await getFoldersByUserId(currentUser.userId)
+      if (!userFolders.some(f => f.id === parentId)) {
+        return NextResponse.json({ error: "Parent folder not found or unauthorized" }, { status: 403 })
+      }
     }
 
     const folder = await createFolder(currentUser.userId, name.trim(), parentId || null)
