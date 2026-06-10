@@ -9,11 +9,15 @@ export async function cleanupExpiredFiles(): Promise<{
   let cleaned = 0
 
   try {
-    // Process in batches of 500 until no expired files remain
-    while (true) {
+    const MAX_BATCHES = 3 // max 1500 files per run
+    let batches = 0
+
+    // Process in batches of 500 until no expired files remain (or limit hit)
+    while (batches < MAX_BATCHES) {
       const expiredFiles = await getExpiredFiles(500)
 
       if (expiredFiles.length === 0) break
+      batches++
 
       for (const file of expiredFiles) {
         try {

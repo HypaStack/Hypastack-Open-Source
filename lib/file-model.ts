@@ -157,12 +157,16 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
   let cleaned = 0
 
   try {
-    while (true) {
+    const MAX_BATCHES = 3 // max 1500 staging records per run
+    let batches = 0
+
+    while (batches < MAX_BATCHES) {
       const result = await pool.query(
         `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours' LIMIT 500`
       )
 
       if (result.rows.length === 0) break
+      batches++
 
       for (const record of result.rows) {
         try {
