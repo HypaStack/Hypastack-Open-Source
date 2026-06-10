@@ -1,24 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { useAuth } from "@/hooks/useAuth";
 import { MIcon } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Hero() {
   const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const [pendingNav, setPendingNav] = useState(false);
 
+  // Navigate once auth resolves after button was clicked
+  useEffect(() => {
+    if (pendingNav && !isLoading) {
+      setPendingNav(false);
+      router.push(isAuthenticated ? "/manage/files" : "/signin");
+    }
+  }, [pendingNav, isLoading, isAuthenticated, router]);
+
+  function handleLoginClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if (isLoading) {
+      // Auth not settled yet — wait for it
+      setPendingNav(true);
+      return;
+    }
+    router.push(isAuthenticated ? "/manage/files" : "/signin");
+  }
   return (
     <section className="relative min-h-screen pb-32">
 
-      {/* Outer vertical rails moved into the SVG below to share the fade up effect */}
-
-      {/* Dot pattern fill between inner rail (±600px) and outer rail (±720px) moved into SVG below */}
-
       {/* ── Panel (in normal flow, stays at top) ── */}
       <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#ffffff] border-b border-[rgba(0,0,0,0.1)]">
-        {/* Subtle Grid Background */}
         {/* Subtle Grid Background */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
           <defs>
@@ -29,8 +45,6 @@ export function Hero() {
             <mask id="grid-mask">
               <rect width="100%" height="100%" fill="url(#grid-fade)" />
             </mask>
-            
-            {/* Linear gradient mask for the extended vertical lines so they fade cleanly at the bottom */}
             <linearGradient id="line-fade" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="white" />
               <stop offset="60%" stopColor="white" />
@@ -39,9 +53,6 @@ export function Hero() {
             <mask id="extended-line-mask">
               <rect x="-50vw" y="0" width="200vw" height="400vh" fill="url(#line-fade)" />
             </mask>
-
-
-
             <pattern id="hero-small-grid" width="60" height="60" patternUnits="userSpaceOnUse" x="50%">
               <rect width="60" height="60" fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth="1" shapeRendering="crispEdges" />
             </pattern>
@@ -55,17 +66,15 @@ export function Hero() {
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#hero-large-grid)" mask="url(#grid-mask)" />
-
         </svg>
 
-        {/* Top-level overlay SVG for vertical rails to ensure they sit above white card backgrounds */}
+        {/* Top-level overlay SVG for vertical rails */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 50, overflow: 'visible' }}>
           <defs>
             <linearGradient id="rail-fade-up" x1="0" y1="30%" x2="0" y2="100%" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="rgba(0,0,0,0)" />
               <stop offset="100%" stopColor="rgba(0,0,0,0.08)" />
             </linearGradient>
-
             <linearGradient id="mask-fade-up" x1="0" y1="30%" x2="0" y2="100%" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="rgba(0,0,0,0)" />
               <stop offset="100%" stopColor="rgba(255,255,255,1)" />
@@ -73,17 +82,12 @@ export function Hero() {
             <mask id="fade-mask">
               <rect width="100%" height="100%" fill="url(#mask-fade-up)" />
             </mask>
-
             <pattern id="dot-pattern" width="15" height="15" patternUnits="userSpaceOnUse" x="50%">
               <circle cx="7.5" cy="7.5" r="1.5" fill="rgba(0,0,0,0.1)" />
             </pattern>
           </defs>
-          
-          {/* Fading portion inside the hero */}
           <line x1="calc(50% - 600px)" y1="30%" x2="calc(50% - 600px)" y2="100%" stroke="url(#rail-fade-up)" strokeWidth="1" shapeRendering="crispEdges" />
           <line x1="calc(50% + 600px)" y1="30%" x2="calc(50% + 600px)" y2="100%" stroke="url(#rail-fade-up)" strokeWidth="1" shapeRendering="crispEdges" />
-          
-          {/* Solid portion extending downwards */}
           <line x1="calc(50% - 600px)" y1="100%" x2="calc(50% - 600px)" y2="99999px" stroke="rgba(0,0,0,0.08)" strokeWidth="1" shapeRendering="crispEdges" />
           <line x1="calc(50% + 600px)" y1="100%" x2="calc(50% + 600px)" y2="99999px" stroke="rgba(0,0,0,0.08)" strokeWidth="1" shapeRendering="crispEdges" />
         </svg>
@@ -108,9 +112,7 @@ export function Hero() {
 
           <h1
             className="text-center text-[clamp(24px,4vw,46px)] leading-[1.1] tracking-[-0.03em] whitespace-nowrap text-[#000] pb-1 font-medium"
-            style={{ 
-              fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif"
-            }}
+            style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             Privacy, the way it should be.
           </h1>
@@ -118,30 +120,15 @@ export function Hero() {
             Hypastack is the modern CDN and File Sharing platform<br/>for developers, creators, and more.
           </p>
 
-          {/* CTA buttons — directly below description */}
-          {!isLoading && (
-            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
-              {isAuthenticated ? (
-                <>
-                  <Button href="/manage/dashboard" variant="primary" size="md" className="w-full sm:w-[130px]">
-                    Dashboard
-                  </Button>
-                  <Button href="/manage/files" variant="secondary" size="md" className="w-full sm:w-[130px]">
-                    Share
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button href="/new" variant="primary" size="md" className="w-full sm:w-[140px]">
-                    Start for free
-                  </Button>
-                  <Button href="/signin" variant="secondary" size="md" className="w-full sm:w-[140px]">
-                    Sign In
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
+          {/* Static CTA buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
+            <Button href="/signin" onClick={handleLoginClick} variant="primary" size="md" className="w-full sm:w-[140px]">
+              Log in
+            </Button>
+            <Button href="#features" variant="secondary" size="md" className="w-full sm:w-[140px]">
+              Learn more
+            </Button>
+          </div>
         </motion.div>
 
         {/* Seamless SVG notch at panel bottom */}
@@ -153,12 +140,10 @@ export function Hero() {
           style={{ position: 'absolute', bottom: -48, left: 0, width: '100%', height: 48, zIndex: 1 }}
           aria-hidden="true"
         >
-          {/* Fill */}
           <path
             d="M 0 0 L 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0 L 1440 0 Z"
             fill="#ffffff"
           />
-          {/* Border — only the notch curves + flat bottom */}
           <path
             d="M 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0"
             fill="none"
@@ -199,16 +184,14 @@ export function Hero() {
             <span>Download for Windows</span>
           </a>
 
-          {/* Learn more */}
-          {(!isLoading && !isAuthenticated) && (
-            <a
-              href="#features"
-              className="inline-flex items-center justify-center hover:bg-[#e8e9ee] active:scale-[0.97] transition-all duration-75"
-              style={{ height: 32, paddingLeft: 13, paddingRight: 13, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
-            >
-              Learn more
-            </a>
-          )}
+          {/* Learn more — always visible */}
+          <a
+            href="#features"
+            className="inline-flex items-center justify-center hover:bg-[#e8e9ee] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 32, paddingLeft: 13, paddingRight: 13, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
+          >
+            Learn more
+          </a>
         </motion.div>
       </div>
 
