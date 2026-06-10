@@ -38,15 +38,16 @@ export function Button({
   const combinedClasses = `${baseClasses} ${variantClasses} ${sizeClasses} ${className}`.trim();
 
   if (href) {
+    const onClick = (props as any).onClick;
     if (href.startsWith("http")) {
       return (
-        <a href={href} className={combinedClasses} style={style} target={target} rel={rel}>
+        <a href={href} className={combinedClasses} style={style} target={target} rel={rel} onClick={onClick}>
           {children}
         </a>
       );
     }
     return (
-      <Link href={href} className={combinedClasses} style={style} target={target} rel={rel}>
+      <Link href={href} className={combinedClasses} style={style} target={target} rel={rel} onClick={onClick}>
         {children}
       </Link>
     );
