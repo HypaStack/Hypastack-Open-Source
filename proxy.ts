@@ -1,92 +1,127 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-async function isAuthenticated(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get('auth_token')?.value
-  if (!token) return false
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3) return false
-    const [header, body, signature] = parts
-    const secret = process.env.JWT_SECRET
-    if (!secret) return false
-
-    const key = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify']
-    )
-    const pad = (s: string) => s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4)
-    const sigBytes = Uint8Array.from(atob(pad(signature)), c => c.charCodeAt(0))
-    const valid = await crypto.subtle.verify('HMAC', key, sigBytes, new TextEncoder().encode(`${header}.${body}`))
-    if (!valid) return false
-    const payload = JSON.parse(atob(pad(body)))
-    return payload.exp > Math.floor(Date.now() / 1000)
-  } catch {
-    return false
-  }
-}
+export const runtime = 'edge'
 
 // ──────────────────────────────────────────────
 // Flip this to `true` to enable maintenance mode
 const MAINTENANCE = false
 // ──────────────────────────────────────────────
 
-const LEGAL_PATHS = [
-  "/terms",
-  "/privacy",
-  "/acceptable-use",
-  "/child-safety",
-  "/coppa-gdpr",
-  "/dmca",
-  "/vulnerability-disclosure",
+// Pre-computed lookup structures — built once at module init, not per-request
+const LEGAL_EXACT = new Set([
+  '/terms',
+  '/privacy',
+  '/acceptable-use',
+  '/child-safety',
+  '/coppa-gdpr',
+  '/dmca',
+  '/vulnerability-disclosure',
+])
+
+function isLegalPath(pathname: string): boolean {
+  if (LEGAL_EXACT.has(pathname)) return true
+  for (const p of LEGAL_EXACT) {
+    if (pathname.startsWith(p + '/')) return true
+  }
+  return false
+}
+
+// Module-level key cache — importKey runs once per cold start, not per request
+let _cachedKey: CryptoKey | null = null
+let _cachedSecret: string | null = null
+
+async function getCryptoKey(): Promise<CryptoKey | null> {
+  const secret = process.env.JWT_SECRET
+  if (!secret) return null
+  // Return cached key if secret hasn't changed
+  if (_cachedKey && _cachedSecret === secret) return _cachedKey
+  _cachedKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['verify']
+  )
+  _cachedSecret = secret
+  return _cachedKey
+}
+
+// Decode base64url to Uint8Array without allocating an intermediate string array
+function b64urlToBytes(b64url: string): Uint8Array<ArrayBuffer> {
+  const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4)
+  const binary = atob(padded)
+  const buf = new ArrayBuffer(binary.length)
+  const bytes = new Uint8Array(buf)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes
+}
+
+async function isAuthenticated(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get('auth_token')?.value
+  if (!token) return false
+  try {
+    const dot1 = token.indexOf('.')
+    const dot2 = token.indexOf('.', dot1 + 1)
+    if (dot1 === -1 || dot2 === -1) return false
+
+    const header = token.slice(0, dot1)
+    const body   = token.slice(dot1 + 1, dot2)
+    const sig    = token.slice(dot2 + 1)
+
+    const key = await getCryptoKey()
+    if (!key) return false
+
+    const sigBytes = b64urlToBytes(sig)
+    const msgBytes = new TextEncoder().encode(`${header}.${body}`)
+    const valid = await crypto.subtle.verify('HMAC', key, sigBytes, msgBytes)
+    if (!valid) return false
+
+    // Decode payload — use indexOf to avoid full JSON parse on invalid tokens
+    const payloadJson = atob(
+      token.slice(dot1 + 1, dot2).replace(/-/g, '+').replace(/_/g, '/') +
+      '='.repeat((4 - ((dot2 - dot1 - 1) % 4)) % 4)
+    )
+    const payload = JSON.parse(payloadJson) as { exp?: number }
+    return typeof payload.exp === 'number' && payload.exp > (Date.now() / 1000)
+  } catch {
+    return false
+  }
+}
+
+// Routes that require a valid session — checked in a single pass
+const AUTH_ROUTES: Array<{ prefix: string; fallback: string }> = [
+  { prefix: '/manage',     fallback: '/signin' },
+  { prefix: '/experience', fallback: '/new'    },
 ]
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Maintenance mode — redirect everything except legal pages and /maintenance itself
+  // ── Maintenance mode ────────────────────────────────────────────────────────
   if (MAINTENANCE) {
-    if (
-      pathname !== "/maintenance" &&
-      !LEGAL_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))
-    ) {
-      const url = request.nextUrl.clone()
-      url.pathname = "/maintenance"
-      return NextResponse.redirect(url)
+    if (pathname !== '/maintenance' && !isLegalPath(pathname)) {
+      return NextResponse.redirect(new URL('/maintenance', request.url))
     }
     return NextResponse.next()
-  } else {
-    // If maintenance mode is OFF, don't allow access to the /maintenance page
-    if (pathname === "/maintenance") {
-      const url = request.nextUrl.clone()
-      url.pathname = "/"
-      return NextResponse.redirect(url)
-    }
   }
 
-  // Auth guard for all dashboard routes
-  if (pathname.startsWith('/manage')) {
-    const authed = await isAuthenticated(request)
-    if (!authed) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/signin'
-      const redirectParam = pathname
-      if (redirectParam.startsWith('/') && !redirectParam.startsWith('//') && !redirectParam.includes('://')) {
-        url.searchParams.set('redirect', redirectParam)
+  // Block /maintenance when not in maintenance mode
+  if (pathname === '/maintenance') {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // ── Auth guards ─────────────────────────────────────────────────────────────
+  for (const { prefix, fallback } of AUTH_ROUTES) {
+    if (pathname.startsWith(prefix)) {
+      const authed = await isAuthenticated(request)
+      if (!authed) {
+        const dest = new URL(fallback, request.url)
+        // Only attach safe same-origin redirect params
+        if (prefix === '/manage') dest.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(dest)
       }
-      return NextResponse.redirect(url)
-    }
-  }
-
-  // Auth guard for /experience — redirect to /new (registration) if not logged in
-  if (pathname.startsWith('/experience')) {
-    const authed = await isAuthenticated(request)
-    if (!authed) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/new'
-      return NextResponse.redirect(url)
+      break // matched — no need to check further routes
     }
   }
 
@@ -94,6 +129,14 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Run on every path except Next.js internals, API routes, static assets, and files with extensions
-  matcher: ['/((?!_next/|api/|favicon\\.ico|fonts/|images/|.*\\.[\\w]+$).*)'],
+  matcher: [
+    /*
+     * Match all paths EXCEPT:
+     *  - _next/static  (static chunks)
+     *  - _next/image   (image optimisation)
+     *  - favicon.ico, sitemap.xml, robots.txt
+     *  - Any file with a common static extension
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|sitemap.*\\.xml|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|eot|css|js|map)$).*)',
+  ],
 }
