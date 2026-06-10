@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const runtime = 'edge'
-
 // ──────────────────────────────────────────────
 // Flip this to `true` to enable maintenance mode
 const MAINTENANCE = false
