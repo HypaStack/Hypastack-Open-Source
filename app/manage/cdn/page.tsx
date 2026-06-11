@@ -8,6 +8,7 @@ import { useManage } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
+import { apiFetch } from "@/lib/fetch"
 
 interface CdnAsset {
   id: string
@@ -147,7 +148,7 @@ export default function CdnPage() {
     })
     if (!name) return
     try {
-      const res = await fetch("/api/v2/cdn/folders", {
+      const res = await apiFetch("/api/v2/cdn/folders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, parentId: currentFolderId })
@@ -178,7 +179,7 @@ export default function CdnPage() {
     })
 
     try {
-      const res = await fetch("/api/v2/cdn/folders", {
+      const res = await apiFetch("/api/v2/cdn/folders", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ folderId }),
@@ -287,7 +288,7 @@ export default function CdnPage() {
 
     setDeleteLoading(assetId)
     try {
-      const res = await fetch("/api/v2/cdn/assets", {
+      const res = await apiFetch("/api/v2/cdn/assets", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ assetId }),
@@ -350,13 +351,13 @@ export default function CdnPage() {
 
     try {
       // 1. Get CSRF token
-      const csrfRes = await fetch("/api/v2/csrf")
+      const csrfRes = await apiFetch("/api/v2/csrf")
       const csrfData = await csrfRes.json()
       const csrfToken = csrfData.token
       if (!csrfToken) throw new Error("Failed to get CSRF token")
 
       // 2. Init hot swap — server returns presigned PUT for the existing R2 key
-      const initRes = await fetch("/api/v2/cdn/hot-swap", {
+      const initRes = await apiFetch("/api/v2/cdn/hot-swap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -388,7 +389,7 @@ export default function CdnPage() {
       }
 
       // 4. Complete hot swap — server verifies and updates DB
-      const completeRes = await fetch("/api/v2/cdn/hot-swap", {
+      const completeRes = await apiFetch("/api/v2/cdn/hot-swap", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ assetId: target.id }),
@@ -471,7 +472,7 @@ export default function CdnPage() {
         progressPercent: 0
       })
 
-      const res = await fetch("/api/v2/cdn/assets", {
+      const res = await apiFetch("/api/v2/cdn/assets", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ assetIds: Array.from(selectedAssets) }),

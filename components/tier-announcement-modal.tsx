@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
+import { apiFetch } from "@/lib/fetch"
 
 export function TierAnnouncementModal() {
   const { user, refreshUser } = useManage();
@@ -25,7 +26,7 @@ export function TierAnnouncementModal() {
     if (closing) return;
     setClosing(true);
     try {
-      await fetch("/api/v2/auth/acknowledge-tier", {
+      await apiFetch("/api/v2/auth/acknowledge-tier", {
         method: "POST",
         credentials: "include",
       });

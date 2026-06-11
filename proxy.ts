@@ -29,6 +29,56 @@ async function getCryptoKey(): Promise<CryptoKey | null> {
   return _cachedKey
 }
 
+// --- Proxy key verification ---
+const PROXY_HEADER = 'x-hypastack-proxy-key'
+const PROXY_TOKEN_TTL_S = 60
+
+let _cachedProxyKey: CryptoKey | null = null
+let _cachedProxySecret: string | null = null
+
+async function getProxyCryptoKey(): Promise<CryptoKey | null> {
+  const secret = process.env.PROXY_SECRET
+  if (!secret) return null
+  if (_cachedProxyKey && _cachedProxySecret === secret) return _cachedProxyKey
+  _cachedProxyKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['verify']
+  )
+  _cachedProxySecret = secret
+  return _cachedProxyKey
+}
+
+async function isValidProxyKey(request: NextRequest): Promise<boolean> {
+  const token = request.headers.get(PROXY_HEADER)
+  if (!token) return false
+
+  const parts = token.split('.')
+  if (parts.length !== 3) return false
+  const [sigHex, tsStr, nonce] = parts
+
+  // Reject expired tokens
+  const timestamp = parseInt(tsStr, 10)
+  if (isNaN(timestamp)) return false
+  const age = Math.floor(Date.now() / 1000) - timestamp
+  if (age < 0 || age > PROXY_TOKEN_TTL_S) return false
+
+  const key = await getProxyCryptoKey()
+  if (!key) return false
+
+  // Decode hex signature back to bytes
+  const sigBytes = new Uint8Array(sigHex.match(/.{2}/g)!.map(b => parseInt(b, 16)))
+  const message = new TextEncoder().encode(`${tsStr}:${nonce}`)
+
+  try {
+    return await crypto.subtle.verify('HMAC', key, sigBytes, message)
+  } catch {
+    return false
+  }
+}
+
 // Decode base64url to Uint8Array without allocating an intermediate string array
 function b64urlToBytes(b64url: string): Uint8Array<ArrayBuffer> {
   const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/')
@@ -92,6 +142,9 @@ export async function proxy(request: NextRequest) {
 
   // the /bin/[id]/raw endpoint is excluded to allow direct browser viewing of raw pastes.
   const isRawBin = pathname.startsWith('/api/v2/bin/') && pathname.endsWith('/raw')
+  // the /proxy-token endpoint issues tokens — it must be exempt from key verification (chicken-and-egg)
+  const isProxyToken = pathname === '/api/v2/proxy-token'
+
   if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
@@ -100,13 +153,13 @@ export async function proxy(request: NextRequest) {
 
     // direct browser
     if (fetchMode === 'navigate') {
-        console.error(`[API Error] 403 Forbidden: ${'Forbidden: Direct API access is not allowed'}`);
+      console.error(`[API Error] 403 Forbidden: Forbidden: Direct API access is not allowed`)
       return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     // programmatic requests
     if (fetchSite && fetchSite !== 'same-origin') {
-        console.error(`[API Error] 403 Forbidden: ${'Forbidden: Cross-origin requests are not allowed'}`);
+      console.error(`[API Error] 403 Forbidden: Forbidden: Cross-origin requests are not allowed`)
       return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
@@ -114,11 +167,20 @@ export async function proxy(request: NextRequest) {
     if (!fetchSite) {
       const appOrigin = new URL(request.url).origin
       if (origin && origin !== appOrigin) {
-          console.error(`[API Error] 403 Forbidden: ${'Forbidden: Invalid Origin'}`);
+        console.error(`[API Error] 403 Forbidden: Forbidden: Invalid Origin`)
         return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
       if (!origin && referer && !referer.startsWith(appOrigin)) {
-          console.error(`[API Error] 403 Forbidden: ${'Forbidden: Invalid Referer'}`);
+        console.error(`[API Error] 403 Forbidden: Forbidden: Invalid Referer`)
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      }
+    }
+
+    // proxy key verification — skip for the token-issuing endpoint itself
+    if (!isProxyToken) {
+      const validKey = await isValidProxyKey(request)
+      if (!validKey) {
+        console.error(`[API Error] 403 Forbidden: Missing or invalid proxy key from ${pathname}`)
         return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }

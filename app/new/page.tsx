@@ -9,6 +9,7 @@ import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateAccessKeyClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/crypto-client"
+import { apiFetch } from "@/lib/fetch"
 
 const FEATURES = [
   { icon: "shield", label: "Zero-knowledge encryption" },
@@ -47,10 +48,10 @@ export default function CreateAccountPage() {
       const accessKey = generateAccessKeyClient(userId)
       const masterKey = await deriveMasterKey(accessKey, userId)
       const nickname_encrypted = await encryptE2E(nickname, masterKey)
-      const csrfRes = await fetch("/api/v2/csrf", { credentials: "include" })
+      const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
       const csrfData = await csrfRes.json()
       const csrfToken: string = csrfData.token
-      const response = await fetch("/api/v2/auth/register", {
+      const response = await apiFetch("/api/v2/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, accessKey, nickname_encrypted, turnstileToken, csrfToken }),
