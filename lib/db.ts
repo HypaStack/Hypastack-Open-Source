@@ -203,13 +203,13 @@ export async function initDatabase(): Promise<void> {
         revoked BOOLEAN DEFAULT FALSE
       )
     `)
+    // Migrate existing tables first — columns must exist before indexes are created
+    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS refresh_token_hash TEXT UNIQUE`)
+    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_revoked ON user_sessions(revoked)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh ON user_sessions(refresh_token_hash) WHERE revoked = FALSE`)
-    // Migrate existing tables that may not have refresh_token_hash / updated_at
-    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS refresh_token_hash TEXT UNIQUE`)
-    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()`)
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS cdn_assets (
@@ -338,6 +338,7 @@ export async function initDatabase(): Promise<void> {
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')
   } catch (error: any) {
+    _initFailed = true
     console.error('[DB] Failed to initialize database:', error.message)
     throw error
   } finally {
@@ -345,10 +346,12 @@ export async function initDatabase(): Promise<void> {
   }
 }
 
+let _initFailed = false
+
 export async function ensureDatabase(): Promise<void> {
-  if (!globalThis.__basedropDbInitialized) {
-    await initDatabase()
-  }
+  if (globalThis.__basedropDbInitialized) return
+  if (_initFailed) return // Don't retry on every request after a failed init
+  await initDatabase()
 }
 
 export async function getClient(): Promise<PoolClient> {
