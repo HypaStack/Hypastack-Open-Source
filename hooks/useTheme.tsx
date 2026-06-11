@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import { STORAGE_KEY_THEME } from "@/constants"
 
 export type ThemePreference = "system" | "light" | "dark"
 export type ResolvedTheme = "light" | "dark"
 
-const STORAGE_KEY = "hypa-theme"
+const STORAGE_KEY = STORAGE_KEY_THEME
 
 function readStored(): ThemePreference {
   if (typeof window === "undefined") return "dark"

@@ -7,8 +7,10 @@ import { Faq } from "@/components/faq";
 import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 
-const siteUrl = "https://hypastack.com";
-const siteName = "Hypastack";
+import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from "@/constants";
+
+const siteUrl = SITE_URL;
+const siteName = SITE_NAME;
 const tagline = "Encrypted file sharing and permanent CDN hosting";
 const description =
   "Zero-knowledge file sharing with AES-256 browser-side encryption and a fast, permanent CDN for public assets. No accounts, no tracking, no compromises. Open source and built in Europe.";

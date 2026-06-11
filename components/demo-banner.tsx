@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import Link from "next/link"
-
-const BANNER_DISMISSED_KEY = "hypastack-tos-dismissed"
+import { STORAGE_KEY_BANNER_DISMISSED } from "@/constants"
 
 export function DemoBanner() {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     // Check if user already dismissed the banner
-    const isDismissed = localStorage.getItem(BANNER_DISMISSED_KEY) === "true"
+    const isDismissed = localStorage.getItem(STORAGE_KEY_BANNER_DISMISSED) === "true"
     if (!isDismissed) {
       const timer = setTimeout(() => setIsVisible(true), 800)
       return () => clearTimeout(timer)
@@ -20,7 +19,7 @@ export function DemoBanner() {
 
   const handleDismiss = () => {
     setIsVisible(false)
-    localStorage.setItem(BANNER_DISMISSED_KEY, "true")
+    localStorage.setItem(STORAGE_KEY_BANNER_DISMISSED, "true")
   }
 
   if (!isVisible) return null

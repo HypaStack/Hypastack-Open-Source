@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import { CREDIT_PACKAGES, MIN_CUSTOM_AMOUNT_EUR } from '@/constants'
 
 let _stripe: Stripe | null = null
 function getStripe(): Stripe {
@@ -8,13 +9,7 @@ function getStripe(): Stripe {
   return _stripe
 }
 
-export const CREDIT_PACKAGES = [
-  { amountEur: 10, credits: 20, label: '€10' },
-  { amountEur: 20, credits: 40, label: '€20' },
-  { amountEur: 50, credits: 100, label: '€50' },
-] as const
-
-export const MIN_CUSTOM_AMOUNT_EUR = 10
+export { CREDIT_PACKAGES, MIN_CUSTOM_AMOUNT_EUR }
 
 export function calculateCredits(amountEur: number): number {
   return Math.floor(amountEur * 2)

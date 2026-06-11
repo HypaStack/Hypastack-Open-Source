@@ -11,8 +11,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
 import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
-
-const FILES_PER_PAGE = 10
+import { FILES_PER_PAGE } from "@/constants"
 
 function getFileExt(name: string): string {
   const dot = name.lastIndexOf(".")

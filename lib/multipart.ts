@@ -1,6 +1,6 @@
-export const MULTIPART_THRESHOLD = 50 * 1024 * 1024
+import { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE, MAX_CONCURRENT_CHUNKS } from '@/constants'
 
-export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
+export { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE }
 
 export async function generateEncryptionKey(): Promise<{
   key: CryptoKey
@@ -89,8 +89,6 @@ export async function uploadChunkToR2(
   })
 }
 
-const MAX_CONCURRENT = 10
-
 export async function uploadFileMultipart(opts: {
   file: File
   encryptionKey: CryptoKey
@@ -140,7 +138,7 @@ export async function uploadFileMultipart(opts: {
     }
   }
 
-  const workerCount = Math.min(MAX_CONCURRENT, chunks.length)
+  const workerCount = Math.min(MAX_CONCURRENT_CHUNKS, chunks.length)
   const workers: Promise<void>[] = []
   for (let i = 0; i < workerCount; i++) {
     workers.push(worker())

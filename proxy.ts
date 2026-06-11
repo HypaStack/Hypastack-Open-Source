@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES } from '@/constants'
 
 // ──────────────────────────────────────────────
-// Flip this to `true` to enable maintenance mode
-const MAINTENANCE = false
+// Maintenance mode is now driven by @/constants/proxy.ts
 // ──────────────────────────────────────────────
-
-// Pre-computed lookup structures — built once at module init, not per-request
-const LEGAL_EXACT = new Set([
-  '/terms',
-  '/privacy',
-  '/acceptable-use',
-  '/child-safety',
-  '/coppa-gdpr',
-  '/dmca',
-  '/vulnerability-disclosure',
-])
 
 function isLegalPath(pathname: string): boolean {
   if (LEGAL_EXACT.has(pathname)) return true
@@ -87,11 +76,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
-// Routes that require a valid session — checked in a single pass
-const AUTH_ROUTES: Array<{ prefix: string; fallback: string }> = [
-  { prefix: '/manage',     fallback: '/signin' },
-  { prefix: '/experience', fallback: '/new'    },
-]
+// Routes that require a valid session are defined in @/constants/proxy.ts
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl

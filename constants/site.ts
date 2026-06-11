@@ -1,0 +1,8 @@
+export const SITE_URL = "https://hypastack.com"
+export const SITE_NAME = "Hypastack"
+export const SITE_TAGLINE = "Zero-Knowledge Encrypted File Sharing & CDN"
+export const SITE_DESCRIPTION = "Privacy-first file sharing with AES-256 browser-side encryption and a permanent CDN for public assets. No emails, no passwords, no tracking. Open source. Built in Europe by Kiko."
+export const SITE_KEYWORDS = "encrypted file sharing, zero knowledge file hosting, private file transfer, secure file upload, temporary file sharing, burn after reading, CDN hosting, privacy file sharing, AES-256 encryption, anonymous file sharing, open source file sharing, Hypastack, no tracking file sharing, EXIF metadata stripping, European file hosting"
+export const ICON_URL = "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+export const FAVICON_URL = "https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp"
+export const PREVIEW_URL = "https://r2.hypastack.com/cdn/wpoxysqdixzy/preview-main.png"

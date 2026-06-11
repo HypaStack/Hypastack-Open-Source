@@ -1,11 +1,21 @@
 import { getPool } from './db'
+import {
+  FREE_UNITS_PER_MONTH,
+  UNITS_PER_CREDIT,
+  CLASS_A_COST,
+  CLASS_B_COST,
+  CREDIT_EXPIRY_MONTHS,
+  CREDIT_PRICE_EUR,
+} from '@/constants'
 
-export const FREE_UNITS_PER_MONTH = 5000
-export const UNITS_PER_CREDIT = 1000
-export const CLASS_A_COST = 4
-export const CLASS_B_COST = 1
-export const CREDIT_EXPIRY_MONTHS = 6
-export const CREDIT_PRICE_EUR = 0.50
+export {
+  FREE_UNITS_PER_MONTH,
+  UNITS_PER_CREDIT,
+  CLASS_A_COST,
+  CLASS_B_COST,
+  CREDIT_EXPIRY_MONTHS,
+  CREDIT_PRICE_EUR,
+}
 
 export interface MonthlyUsage {
   userId: string

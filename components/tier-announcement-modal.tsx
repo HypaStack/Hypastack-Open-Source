@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
 import { useAuth } from "@/hooks/useAuth";
-
-const TIER_LABELS: Record<string, string> = {
-  essential: "Essential",
-  premium: "Premium",
-  ultimate: "Ultimate",
-};
+import { TIER_LABELS } from "@/constants";
 
 export function TierAnnouncementModal() {
   const { user, refreshUser } = useAuth();

@@ -1,26 +1,17 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import {
+  SUPPORTED_LANGUAGES,
+  DEFAULT_LANGUAGE_CODE,
+  type Language,
+} from "@/constants"
 
-export interface Language {
-  code: string
-  label: string
-  native: string
-}
-
-export const SUPPORTED_LANGUAGES: Language[] = [
-  { code: "en", label: "English", native: "English" },
-  { code: "es", label: "Spanish", native: "Español" },
-  { code: "fr", label: "French", native: "Français" },
-  { code: "de", label: "German", native: "Deutsch" },
-  { code: "pt", label: "Portuguese", native: "Português" },
-  { code: "it", label: "Italian", native: "Italiano" },
-  { code: "ja", label: "Japanese", native: "日本語" },
-  { code: "zh", label: "Chinese", native: "中文" },
-]
+export type { Language }
+export { SUPPORTED_LANGUAGES }
 
 const STORAGE_KEY = "hypa-language"
-const DEFAULT_CODE = "en"
+const DEFAULT_CODE = DEFAULT_LANGUAGE_CODE
 
 function readStored(): string {
   if (typeof window === "undefined") return DEFAULT_CODE
