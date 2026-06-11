@@ -4,6 +4,7 @@ import { deleteByKey, getPresignedDownloadUrl } from "@/lib/r2"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 import { getHashedIp } from "@/lib/ip"
+import { API_ERRORS } from "@/constants"
 
 export async function handleFileGet(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function handleFileGet(
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"Rate limit exceeded. Please try again later."}`);
       return NextResponse.json(
-        { error: "429 Too Many Requests" },
+        { error: API_ERRORS.TOO_MANY_REQUESTS },
         { status: 429 }
       )
     }
@@ -25,7 +26,7 @@ export async function handleFileGet(
     if (!id) {
         console.error(`[API Error] 400 Bad Request: ${"No file ID provided"}`);
       return NextResponse.json(
-        { error: "400 Bad Request" },
+        { error: API_ERRORS.BAD_REQUEST },
         { status: 400 }
       )
     }
@@ -38,7 +39,7 @@ export async function handleFileGet(
       console.error("[File] Database error:", dbError.message)
       console.error(`[API Error] 500 Internal Server Error: ${"Database error"}`);
       return NextResponse.json(
-        { error: "500 Internal Server Error" },
+        { error: API_ERRORS.INTERNAL_SERVER_ERROR },
         { status: 500 }
       )
     }
@@ -46,7 +47,7 @@ export async function handleFileGet(
     if (!record) {
         console.error(`[API Error] 404 Not Found: ${"File not found"}`);
       return NextResponse.json(
-        { error: "404 Not Found" },
+        { error: API_ERRORS.NOT_FOUND },
         { status: 404 }
       )
     }
@@ -55,7 +56,7 @@ export async function handleFileGet(
     if (record.burn_on_read === 2) {
         console.error(`[API Error] 410 Gone: ${"File has already been downloaded"}`);
       return NextResponse.json(
-        { error: "410 Gone" },
+        { error: API_ERRORS.GONE },
         { status: 410 }
       )
     }
@@ -73,7 +74,7 @@ export async function handleFileGet(
         console.error(`[API Error] 410 Gone: ${"File has expired"}`);
 
       return NextResponse.json(
-        { error: "410 Gone" },
+        { error: API_ERRORS.GONE },
         { status: 410 }
       )
     }
@@ -106,7 +107,7 @@ export async function handleFileGet(
     console.error("[File] Unexpected error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to get file"}`);
     return NextResponse.json(
-      { error: "500 Internal Server Error" },
+      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
       { status: 500 }
     )
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { constructWebhookEvent } from "@/lib/stripe"
 import { addCredits } from "@/lib/credits"
+import { API_ERRORS } from "@/constants"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     if (!signature) {
         console.error(`[API Error] 400 Bad Request: ${"Missing stripe-signature header"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const event = constructWebhookEvent(rawBody, signature)
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       if (!userId || !credits || !amountEur || !purchaseId) {
         console.error("[Webhook] Missing metadata in session:", session.id)
           console.error(`[API Error] 400 Bad Request: ${"Missing metadata"}`);
-        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+        return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
       }
 
       await addCredits(
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
     console.error("[Webhook] Error:", error.message)
     console.error(`[API Error] 400 Bad Request: ${"Webhook processing failed"}`);
     return NextResponse.json(
-      { error: "400 Bad Request" },
+      { error: API_ERRORS.BAD_REQUEST },
       { status: 400 }
     )
   }

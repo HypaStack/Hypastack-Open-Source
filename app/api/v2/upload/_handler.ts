@@ -12,13 +12,14 @@ import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
 import { logOperation } from "@/lib/credits"
+import { API_ERRORS } from "@/constants"
 
 export async function handleUploadPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"Authentication required. Please sign in."}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const body = await request.json()
@@ -26,12 +27,12 @@ export async function handleUploadPost(request: NextRequest) {
 
     if (!fileName || !fileSize || !contentType) {
         console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     if (fileName.length > 200) {
         console.error(`[API Error] 400 Bad Request: ${"Filename too long. Max 200 characters."}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const [userTier, fileStats, cdnStats] = await Promise.all([
@@ -44,39 +45,39 @@ export async function handleUploadPost(request: NextRequest) {
     if (fileSize > tier.maxNormalUploadSize) {
       const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
         console.error(`[API Error] 413 Payload Too Large: ${`File too large. Max ${limitMB}MB on your plan.`}`);
-      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
+      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
     if (fileStats.activeFiles >= tier.maxFileLinks) {
         console.error(`[API Error] 403 Forbidden: ${`You have reached your limit of ${tier.maxFileLinks} active file links on your current plan. Please delete a link or wait for one to expire to upload new ones.`}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
           console.error(`[API Error] 403 Forbidden: ${`You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
         console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"Rate limit reached, try again later"}`);
-      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
           console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security verification failed"}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
@@ -104,7 +105,7 @@ export async function handleUploadPost(request: NextRequest) {
       const userFolders = await getFoldersByUserId(currentUser.userId)
       if (!userFolders.some(f => f.id === finalFolderId)) {
           console.error(`[API Error] 403 Forbidden: ${"Folder not found or unauthorized"}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
@@ -152,6 +153,6 @@ export async function handleUploadPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[Upload] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate upload URL"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

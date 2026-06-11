@@ -5,6 +5,7 @@ import { createCdnAsset, createCdnAssetsBatch, getTotalStorageUsed } from "@/lib
 import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
+import { API_ERRORS } from "@/constants"
 
 interface FileCompleteInput {
   cdnId: string
@@ -18,7 +19,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const body = await request.json()
@@ -33,27 +34,27 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       const { cdnId, sanitizedName, contentType, folderId } = body
       if (!cdnId || !sanitizedName) {
           console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
-        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+        return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
       }
       filesToComplete = [{ cdnId, sanitizedName, contentType, folderId }]
     }
 
     if (filesToComplete.length === 0) {
         console.error(`[API Error] 400 Bad Request: ${"No files provided"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const cdnDomain = process.env.R2_CDN_DOMAIN
     if (!cdnDomain) {
         console.error(`[API Error] 500 Internal Server Error: ${"R2_CDN_DOMAIN environment variable not configured"}`);
-      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+      return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
     }
 
     const userCdnFolders = await getCdnFoldersByUserId(currentUser.userId);
     for (const f of filesToComplete) {
       if (f.folderId && !userCdnFolders.some(folder => folder.id === f.folderId)) {
           console.error(`[API Error] 403 Forbidden: ${"CDN Folder not found or unauthorized"}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
@@ -71,7 +72,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     if (missing.length > 0) {
       const names = missing.map(r => r.sanitizedName).join(", ")
         console.error(`[API Error] 404 Not Found: ${`Upload not found in storage for: ${names}. Did the upload finish?`}`);
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
     // Storage quota check using R2-reported sizes (don't trust the client)
@@ -84,7 +85,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
 
     if (currentStorage + batchTotalSize > tier.maxCdnStorage) {
         console.error(`[API Error] 413 Payload Too Large: ${"Storage limit exceeded after upload."}`);
-      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
+      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
     // Build asset records and do a single batch DB insert
@@ -130,6 +131,6 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
   } catch (error: any) {
     console.error("[CDN Complete] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to complete upload"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

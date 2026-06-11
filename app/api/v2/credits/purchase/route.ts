@@ -8,6 +8,7 @@ import {
   MIN_CUSTOM_AMOUNT_EUR,
   CREDIT_PACKAGES,
 } from "@/lib/stripe"
+import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const body = await request.json()
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     if (!amount || typeof amount !== "number" || !Number.isInteger(amount)) {
         console.error(`[API Error] 400 Bad Request: ${"Amount must be an integer in EUR"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const isPackage = VALID_AMOUNTS.includes(amount)
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!isPackage && !isValidCustom) {
         console.error(`[API Error] 400 Bad Request: ${`Amount must be one of ${VALID_AMOUNTS.join(", ")} or a custom amount >= ${MIN_CUSTOM_AMOUNT_EUR} EUR`}`);
       return NextResponse.json(
-        { error: "400 Bad Request" },
+        { error: API_ERRORS.BAD_REQUEST },
         { status: 400 }
       )
     }
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
     console.error("[Credits Purchase] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to create checkout session"}`);
     return NextResponse.json(
-      { error: "500 Internal Server Error" },
+      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
       { status: 500 }
     )
   }

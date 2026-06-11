@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { getStagingRecord } from "@/lib/file-model"
 import { listUploadedParts, getPresignedUrlsForParts } from "@/lib/r2-multipart"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
+import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -11,24 +12,24 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"Authentication required."}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const { fileId, uploadId, totalParts, chunkSize } = await request.json()
 
     if (!fileId || !uploadId || !totalParts) {
         console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const record = await getStagingRecord(fileId)
     if (!record) {
         console.error(`[API Error] 404 Not Found: ${"Upload session not found or expired"}`);
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
     if (record.user_id && record.user_id !== currentUser.userId) {
         console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     const uploadedParts = await listUploadedParts({
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     console.error("[Upload Resume] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to check upload status"}`);
     return NextResponse.json(
-      { error: "500 Internal Server Error" },
+      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
       { status: 500 }
     )
   }

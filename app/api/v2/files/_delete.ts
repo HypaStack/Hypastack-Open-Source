@@ -6,18 +6,19 @@ import { getUserTier } from "@/lib/user-model"
 import { getTierDelayMs } from "@/constants/tier-limits"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { checkApiRateLimit } from "@/lib/rate-limit"
+import { API_ERRORS } from "@/constants"
 
 export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     const { fileId, fileIds } = await request.json()
@@ -31,7 +32,7 @@ export async function DELETE(request: NextRequest) {
 
     if (idsToDelete.length === 0) {
         console.error(`[API Error] 400 Bad Request: ${"400: File IDs Required"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     // free tier throttle
@@ -106,6 +107,6 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error("[Auth Files] DELETE error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"500 Deletion Failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }
