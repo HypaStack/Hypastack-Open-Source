@@ -22,7 +22,7 @@ async function getProxyToken(): Promise<string> {
     return _cachedToken
   }
 
-  const res = await apiFetch("/api/v2/proxy-token", { credentials: "include" })
+  const res = await fetch("/api/v2/proxy-token", { credentials: "include" })
   if (!res.ok) throw new Error("[apiFetch] Failed to obtain proxy token")
   const { token } = await res.json()
   _cachedToken = token
