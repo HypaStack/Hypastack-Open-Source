@@ -114,7 +114,16 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[#222] pt-3 pb-1 rounded-[17px]">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[#222] pt-3 pb-1 rounded-[17px] flex flex-col">
+                <div className="flex items-center justify-between px-4 pb-3 pt-1">
+                  <span className="text-[17px] font-semibold text-[#111] dark:text-[#f0f0f0]">Settings</span>
+                  <button
+                    onClick={onClose}
+                    className="flex items-center justify-center w-8 h-8 bg-[#ebebeb] dark:bg-[#333] active:bg-[#e5e5e5] dark:active:bg-[#444] rounded-full text-[#555] dark:text-[#ccc] transition-colors"
+                  >
+                    <MIcon name="close" size={18} />
+                  </button>
+                </div>
                 <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="mobile" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="mobile" />
