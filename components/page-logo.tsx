@@ -28,7 +28,7 @@ export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className
         height={size}
         priority
         unoptimized
-        style={{ borderRadius, display: "block", flexShrink: 0, userSelect: "none", WebkitUserDrag: "none" }}
+        style={{ borderRadius, display: "block", flexShrink: 0, userSelect: "none", WebkitUserDrag: "none" } as any}
         className={`pointer-events-none ${className}`}
         draggable={false}
       />
