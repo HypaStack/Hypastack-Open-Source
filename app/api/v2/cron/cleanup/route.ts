@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { cleanupExpiredFiles, cleanupStaging } from "@/lib/cleanup"
+import { cleanupExpiredFiles, cleanupStaging, cleanupDumpsterPastes } from "@/lib/cleanup"
 
 export const dynamic = "force-dynamic"
 
@@ -18,11 +18,13 @@ export async function POST(request: NextRequest) {
   try {
     const filesResult = await cleanupExpiredFiles()
     const stagingResult = await cleanupStaging()
+    const dumpsterResult = await cleanupDumpsterPastes()
 
     return NextResponse.json({
       success: true,
       expiredFiles: { cleaned: filesResult.cleaned, errors: filesResult.errors.length },
       stagingRecords: { cleaned: stagingResult.cleaned, errors: stagingResult.errors.length },
+      dumpsterPastes: { cleaned: dumpsterResult.cleaned, errors: dumpsterResult.errors.length },
     })
   } catch (error) {
     console.error("[Cron] Cleanup error:", error)

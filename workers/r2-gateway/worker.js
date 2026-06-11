@@ -69,7 +69,15 @@ export default {
       });
     }
 
-    // 4. BLOCK everything else (uploads, raw paths, etc.)
+    // 4. BLOCK uploads and pastes specifically to ensure they are private
+    if (path.startsWith("uploads/") || path.startsWith("pastes/")) {
+      return new Response(
+        JSON.stringify({ error: "Access denied" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // 5. BLOCK everything else
     return new Response(
       JSON.stringify({ error: "Access denied" }),
       {

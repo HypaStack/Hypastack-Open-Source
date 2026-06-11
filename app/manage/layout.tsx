@@ -20,6 +20,7 @@ import {
   SECTION_BUTTONS,
   DRIVE_SUBNAV,
   CDN_SUBNAV,
+  DUMPSTER_SUBNAV,
   SECTION_ORDER,
   SIDEBAR_WIDTH,
   STORAGE_KEY_DONATION_NOTICE,
@@ -28,6 +29,7 @@ import {
 function getSubNav(pathname: string): NavItem[] {
   if (pathname.startsWith("/manage/files")) return DRIVE_SUBNAV
   if (pathname.startsWith("/manage/cdn")) return CDN_SUBNAV
+  if (pathname.startsWith("/manage/dumpster")) return DUMPSTER_SUBNAV
   return DRIVE_SUBNAV
 }
 
@@ -46,6 +48,7 @@ function formatStorageSize(bytes: number): string {
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/cdn")) return "CDN"
+  if (pathname.startsWith("/manage/dumpster")) return "Dumpster"
   if (pathname.startsWith("/manage/canary")) return "Canary"
   return "Drive"
 }
@@ -92,7 +95,7 @@ function NavRow({
 
 function SidebarNavContent({ section, pathname, isInsider }: { section: string, pathname: string, isInsider: boolean }) {
   // Use a fallback path if the section doesn't match the pathname to ensure we get the right nav items
-  const items = section === "CDN" ? CDN_SUBNAV : section === "Canary" ? [] : DRIVE_SUBNAV
+  const items = section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : section === "Canary" ? [] : DRIVE_SUBNAV
 
   return (
     <>
