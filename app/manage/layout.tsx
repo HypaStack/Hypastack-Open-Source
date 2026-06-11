@@ -491,7 +491,32 @@ export default function ManageLayout({
                 <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: '#d4d4d8' }} />
               </div>
 
-              <div className="flex flex-col gap-1.5 flex-1" style={{ padding: '8px 12px 16px' }}>
+              <div className="px-3 pb-3 pt-1">
+                <div className="flex bg-[#e5e5e5] dark:bg-[#111111] rounded-xl p-1 gap-1">
+                  {SECTION_BUTTONS.map((section) => {
+                    const active = isSectionActive(pathname, section.href)
+                    return (
+                      <Link
+                        key={section.href}
+                        href={section.href}
+                        onClick={() => setDrawerOpen(false)}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[14px] font-semibold transition-all ${
+                          active
+                            ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3] shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
+                            : "text-[#666] dark:text-[#888] active:bg-[rgba(0,0,0,0.05)] dark:active:bg-[#222]"
+                        }`}
+                      >
+                        <MIcon name={section.icon} size={16} />
+                        {section.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div style={{ height: 1, margin: '0 12px 12px', backgroundColor: resolvedTheme === 'dark' ? '#2a2a2a' : 'rgba(0,0,0,0.06)' }} />
+
+              <div className="flex flex-col gap-1.5 flex-1" style={{ padding: '0 12px 16px' }}>
                 {getSubNav(pathname).map((item) => {
                   const active = pathname === item.href
                   return (
