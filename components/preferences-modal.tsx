@@ -10,10 +10,10 @@ import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/crypto-client"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
+import { TIER_LABELS, TIER_STORAGE, type PreferencesTier } from "@/constants"
 
+export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
-
-export type PreferencesTier = "free" | "essential" | "premium" | "ultimate"
 
 export interface PreferencesUser {
   id: string
@@ -23,20 +23,6 @@ export interface PreferencesUser {
   tier?: PreferencesTier
   inactivityPurgeDays?: number
   is_insider?: number
-}
-
-const TIER_LABELS: Record<PreferencesTier, string> = {
-  free: "Free",
-  essential: "Essential",
-  premium: "Premium",
-  ultimate: "Ultimate",
-}
-
-const TIER_STORAGE: Record<PreferencesTier, string> = {
-  free: "5 GB",
-  essential: "300 GB",
-  premium: "750 GB",
-  ultimate: "1100 GB",
 }
 
 function resolveTier(user: PreferencesUser): PreferencesTier {

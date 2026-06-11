@@ -4,8 +4,7 @@ import { getUserById, updateAvatarUrl } from "@/lib/user-model"
 import { putObjectByKey, deleteByKey } from "@/lib/r2"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 import { fileTypeFromBuffer } from "file-type"
-
-const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+import { ALLOWED_AVATAR_TYPES } from "@/constants"
 
 export const dynamic = "force-dynamic"
 

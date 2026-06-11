@@ -3,10 +3,11 @@ import { getCurrentUser } from "@/lib/auth"
 import { getFileById } from "@/lib/file-model"
 import { getPresignedDownloadUrl } from "@/lib/r2"
 import { checkApiRateLimit } from "@/lib/rate-limit"
+import { PREVIEWABLE_MIME_REGEX } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-const PREVIEWABLE = /^(image|video|audio)\//
+const PREVIEWABLE = PREVIEWABLE_MIME_REGEX
 
 export async function GET(
   request: NextRequest,

@@ -15,28 +15,15 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 
 import { useTheme } from "@/hooks/useTheme"
 import { PageLogo } from "@/components/page-logo"
-
-interface NavItem {
-  label: string
-  href: string
-  icon: string
-}
-
-const SECTION_BUTTONS: NavItem[] = [
-  { label: "Drive", href: "/manage/files", icon: "hard_drive" },
-  { label: "CDN", href: "/manage/cdn", icon: "cloud" },
-]
-
-const DRIVE_SUBNAV: NavItem[] = [
-  { label: "Files", href: "/manage/files", icon: "folder" },
-  { label: "Analytics", href: "/manage/files/analytics", icon: "bar_chart" },
-  { label: "Recent", href: "/manage/files/recent", icon: "schedule" },
-]
-
-const CDN_SUBNAV: NavItem[] = [
-  { label: "Assets", href: "/manage/cdn", icon: "cloud" },
-  { label: "Analytics", href: "/manage/cdn/analytics", icon: "bar_chart" },
-]
+import {
+  type NavItem,
+  SECTION_BUTTONS,
+  DRIVE_SUBNAV,
+  CDN_SUBNAV,
+  SECTION_ORDER,
+  SIDEBAR_WIDTH,
+  STORAGE_KEY_DONATION_NOTICE,
+} from "@/constants"
 
 function getSubNav(pathname: string): NavItem[] {
   if (pathname.startsWith("/manage/files")) return DRIVE_SUBNAV
@@ -63,7 +50,6 @@ function sectionTitle(pathname: string): string {
   return "Drive"
 }
 
-const SIDEBAR_WIDTH = 232
 
 function NavRow({
   item,
@@ -142,11 +128,7 @@ function SidebarNavContent({ section, pathname, isInsider }: { section: string, 
   )
 }
 
-const SECTION_ORDER: Record<string, number> = {
-  "Drive": 0,
-  "CDN": 1,
-  "Canary": 2
-}
+// SECTION_ORDER imported from @/constants
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -257,7 +239,7 @@ export default function ManageLayout({
   }, [drawerOpen])
 
   useEffect(() => {
-    if (localStorage.getItem("hypastack_donation_notice_hidden") !== "true") {
+    if (localStorage.getItem(STORAGE_KEY_DONATION_NOTICE) !== "true") {
       setShowDonationNotice(true)
     }
   }, [])
@@ -670,7 +652,7 @@ export default function ManageLayout({
               <button
                 onClick={() => {
                   setShowDonationNotice(false)
-                  localStorage.setItem("hypastack_donation_notice_hidden", "true")
+                  localStorage.setItem(STORAGE_KEY_DONATION_NOTICE, "true")
                 }}
                 className="inline-flex items-center justify-center bg-[#f5f5f5] dark:bg-[#2a2a2a] hover:bg-[#eaeaea] dark:hover:bg-[#333] text-[#171717] dark:text-[#e3e3e3] font-medium transition-colors active:scale-[0.97]"
                 style={{ height: 34, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13 }}

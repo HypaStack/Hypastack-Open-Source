@@ -7,8 +7,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/lib/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
-
-const STORAGE_KEY = "hypa_interrupted_upload"
+import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
 
 export function useUpload({
   initialFiles,
@@ -49,7 +48,7 @@ export function useUpload({
   const [interruptedSession, setInterruptedSession] = useState<InterruptedSession | null>(() => {
     if (typeof window === "undefined") return null
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
+      const saved = localStorage.getItem(STORAGE_KEY_INTERRUPTED_UPLOAD)
       return saved ? JSON.parse(saved) : null
     } catch { return null }
   })
@@ -82,9 +81,9 @@ export function useUpload({
 
   useEffect(() => {
     if (interruptedSession) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(interruptedSession))
+      localStorage.setItem(STORAGE_KEY_INTERRUPTED_UPLOAD, JSON.stringify(interruptedSession))
     } else {
-      localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(STORAGE_KEY_INTERRUPTED_UPLOAD)
     }
   }, [interruptedSession])
 
@@ -362,7 +361,7 @@ export function useUpload({
       shareUrl: `${url}#key=${keyBase64}`,
     }
     setInterruptedSession(sessionInfo)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionInfo))
+    localStorage.setItem(STORAGE_KEY_INTERRUPTED_UPLOAD, JSON.stringify(sessionInfo))
 
     try {
       let etags: any[]

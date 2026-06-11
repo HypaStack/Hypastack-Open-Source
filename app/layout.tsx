@@ -9,9 +9,18 @@ import { ContextMenuUploader } from "@/components/context-menu-uploader"
 import { TauriTitleBar } from "@/components/tauri-titlebar"
 
 import { AuthProvider } from "@/hooks/useAuth"
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  ICON_URL,
+  FAVICON_URL,
+  PREVIEW_URL
+} from "@/constants"
 import "./globals.css"
 import "material-symbols/rounded.css"
-
 
 
 const jetbrains = JetBrains_Mono({ 
@@ -37,26 +46,18 @@ const dmSans = DM_Sans({
   preload: true,
 })
 
-const siteUrl = "https://hypastack.com"
-const siteName = "Hypastack"
-const tagline = "Zero-Knowledge Encrypted File Sharing & CDN"
-const description = "Privacy-first file sharing with AES-256 browser-side encryption and a permanent CDN for public assets. No emails, no passwords, no tracking. Open source. Built in Europe by Kiko."
-const keywords = "encrypted file sharing, zero knowledge file hosting, private file transfer, secure file upload, temporary file sharing, burn after reading, CDN hosting, privacy file sharing, AES-256 encryption, anonymous file sharing, open source file sharing, Hypastack, no tracking file sharing, EXIF metadata stripping, European file hosting"
-const iconUrl = "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
-const faviconUrl = "https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp"
-const previewUrl = "https://r2.hypastack.com/cdn/wpoxysqdixzy/preview-main.png"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${siteName} - ${tagline}`,
-    template: `%s | ${siteName}`,
+    default: `${SITE_NAME} - ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description,
-  keywords,
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
   authors: [
     { name: "Kiko", url: "https://usekiko.com" },
-    { name: "Hypastack", url: siteUrl },
+    { name: "Hypastack", url: SITE_URL },
   ],
   creator: "Kiko",
   publisher: "Hypastack",
@@ -76,13 +77,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteUrl,
-    siteName,
-    title: `${siteName} - ${tagline}`,
-    description,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} - ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
     images: [
       {
-        url: previewUrl,
+        url: PREVIEW_URL,
         width: 1200,
         height: 630,
         alt: "Hypastack - Zero-Knowledge Encrypted File Sharing & CDN",
@@ -92,28 +93,28 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: siteUrl,
+    canonical: SITE_URL,
     languages: {
-      "en-US": siteUrl,
-      "en": siteUrl,
+      "en-US": SITE_URL,
+      "en": SITE_URL,
     },
   },
   icons: {
     icon: [
-      { url: faviconUrl, type: "image/webp", sizes: "96x96" },
-      { url: faviconUrl, type: "image/webp", sizes: "32x32" },
-      { url: faviconUrl, type: "image/webp", sizes: "16x16" },
+      { url: FAVICON_URL, type: "image/webp", sizes: "96x96" },
+      { url: FAVICON_URL, type: "image/webp", sizes: "32x32" },
+      { url: FAVICON_URL, type: "image/webp", sizes: "16x16" },
     ],
     apple: [
-      { url: faviconUrl, sizes: "180x180", type: "image/webp" },
-      { url: faviconUrl, sizes: "152x152", type: "image/webp" },
-      { url: faviconUrl, sizes: "120x120", type: "image/webp" },
+      { url: FAVICON_URL, sizes: "180x180", type: "image/webp" },
+      { url: FAVICON_URL, sizes: "152x152", type: "image/webp" },
+      { url: FAVICON_URL, sizes: "120x120", type: "image/webp" },
     ],
-    shortcut: faviconUrl,
+    shortcut: FAVICON_URL,
     other: [
       {
         rel: "mask-icon",
-        url: faviconUrl,
+        url: FAVICON_URL,
         color: "#ffffff",
       },
     ],
@@ -172,21 +173,21 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "WebSite",
-                  "@id": `${siteUrl}/#website`,
-                  name: siteName,
-                  url: siteUrl,
-                  description,
+                  "@id": `${SITE_URL}/#website`,
+                  name: SITE_NAME,
+                  url: SITE_URL,
+                  description: SITE_DESCRIPTION,
                   publisher: {
-                    "@id": `${siteUrl}/#organization`,
+                    "@id": `${SITE_URL}/#organization`,
                   },
                   inLanguage: "en-US",
                 },
                 {
                   "@type": "WebApplication",
-                  "@id": `${siteUrl}/#webapp`,
-                  name: siteName,
-                  url: siteUrl,
-                  description,
+                  "@id": `${SITE_URL}/#webapp`,
+                  name: SITE_NAME,
+                  url: SITE_URL,
+                  description: SITE_DESCRIPTION,
                   applicationCategory: "FileSharingApplication",
                   operatingSystem: "Any",
                   browserRequirements: "Requires JavaScript. Requires HTML5.",
@@ -218,17 +219,17 @@ export default function RootLayout({
                 },
                 {
                   "@type": "Organization",
-                  "@id": `${siteUrl}/#organization`,
-                  name: siteName,
-                  url: siteUrl,
+                  "@id": `${SITE_URL}/#organization`,
+                  name: SITE_NAME,
+                  url: SITE_URL,
                   logo: {
                     "@type": "ImageObject",
-                    url: iconUrl,
+                    url: ICON_URL,
                     width: 512,
                     height: 512,
                     caption: "hypastack.com Logo",
                   },
-                  image: `${siteUrl}/images/hypastack-logo-and-text.webp`,
+                  image: `${SITE_URL}/images/hypastack-logo-and-text.webp`,
                   sameAs: [
                     "https://usekiko.com",
                     "https://noinfo.bio",
@@ -243,10 +244,10 @@ export default function RootLayout({
                 },
                 {
                   "@type": "Service",
-                  "@id": `${siteUrl}/#service`,
+                  "@id": `${SITE_URL}/#service`,
                   serviceType: "File Sharing Service",
                   provider: {
-                    "@id": `${siteUrl}/#organization`,
+                    "@id": `${SITE_URL}/#organization`,
                   },
                   areaServed: "Worldwide",
                   hasOfferCatalog: {
@@ -272,7 +273,7 @@ export default function RootLayout({
                 },
                 {
                   "@type": "FAQPage",
-                  "@id": `${siteUrl}/#faq`,
+                  "@id": `${SITE_URL}/#faq`,
                   mainEntity: [
                     {
                       "@type": "Question",
@@ -325,13 +326,13 @@ export default function RootLayout({
                   "@type": "ListItem",
                   position: 1,
                   name: "Home",
-                  item: siteUrl,
+                  item: SITE_URL,
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "Dashboard",
-                  item: `${siteUrl}/manage`,
+                  item: `${SITE_URL}/manage`,
                 },
               ],
             }),
