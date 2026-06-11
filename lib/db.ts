@@ -196,7 +196,9 @@ export async function initDatabase(): Promise<void> {
       CREATE TABLE IF NOT EXISTS user_sessions (
         id VARCHAR(36) PRIMARY KEY,
         user_id VARCHAR(36) NOT NULL,
+        refresh_token_hash TEXT UNIQUE,
         created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
         last_active_at TIMESTAMPTZ DEFAULT NOW(),
         revoked BOOLEAN DEFAULT FALSE
       )
@@ -204,6 +206,10 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_revoked ON user_sessions(revoked)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh ON user_sessions(refresh_token_hash) WHERE revoked = FALSE`)
+    // Migrate existing tables that may not have refresh_token_hash / updated_at
+    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS refresh_token_hash TEXT UNIQUE`)
+    await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()`)
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS cdn_assets (

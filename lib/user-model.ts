@@ -140,17 +140,50 @@ export async function updateAvatarUrl(userId: string, avatarUrl: string | null):
 }
 
 
-export async function createUserSession(userId: string): Promise<string> {
+export async function createUserSession(userId: string, refreshTokenHash: string): Promise<string> {
   await ensureDatabase()
   const pool = getPool()
   const id = crypto.randomUUID()
 
   await pool.query(
-    `INSERT INTO user_sessions (id, user_id) VALUES ($1, $2)`,
-    [id, userId]
+    `INSERT INTO user_sessions (id, user_id, refresh_token_hash) VALUES ($1, $2, $3)`,
+    [id, userId, refreshTokenHash]
   )
 
   return id
+}
+
+export async function getSessionByRefreshToken(
+  refreshTokenHash: string
+): Promise<{ id: string; user_id: string } | null> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<{ id: string; user_id: string }>(
+    `SELECT id, user_id FROM user_sessions WHERE refresh_token_hash = $1 AND revoked = FALSE`,
+    [refreshTokenHash]
+  )
+  return result.rows[0] ?? null
+}
+
+export async function rotateRefreshToken(
+  sessionId: string,
+  newRefreshTokenHash: string
+): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  await pool.query(
+    `UPDATE user_sessions SET refresh_token_hash = $1, updated_at = NOW() WHERE id = $2`,
+    [newRefreshTokenHash, sessionId]
+  )
+}
+
+export async function revokeSession(sessionId: string): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  await pool.query(
+    `UPDATE user_sessions SET revoked = TRUE WHERE id = $1`,
+    [sessionId]
+  )
 }
 
 export async function revokeAllUserSessions(userId: string, exceptSessionId?: string): Promise<void> {

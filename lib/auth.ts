@@ -1,6 +1,7 @@
 import crypto from "crypto"
 import { cookies } from "next/headers"
 import { NextRequest } from "next/server"
+import { getPool, ensureDatabase } from "@/lib/db"
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
@@ -58,13 +59,13 @@ export function generateAccessKey(userId?: string): string {
   return `hpsk_${secret}`
 }
 
-export function generateToken(payload: { userId: string }): string {
+export function generateToken(payload: { userId: string; sessionId: string }): string {
   const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url")
   const now = Math.floor(Date.now() / 1000)
   const body = Buffer.from(JSON.stringify({
     ...payload,
     iat: now,
-    exp: now + 7 * 24 * 60 * 60
+    exp: now + 15 * 60  // 15 minutes
   })).toString("base64url")
 
   const signature = crypto
@@ -75,7 +76,7 @@ export function generateToken(payload: { userId: string }): string {
   return `${header}.${body}.${signature}`
 }
 
-export function verifyToken(token: string): { userId: string } | null {
+export function verifyToken(token: string): { userId: string; sessionId: string } | null {
   try {
     const [header, body, signature] = token.split(".")
     if (!header || !body || !signature) return null
@@ -93,10 +94,32 @@ export function verifyToken(token: string): { userId: string } | null {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString())
     if (payload.exp < Math.floor(Date.now() / 1000)) return null
 
-    return { userId: payload.userId }
+    return { userId: payload.userId, sessionId: payload.sessionId }
   } catch {
     return null
   }
+}
+
+// --- Refresh token (opaque, stored in DB) ---
+
+export function generateRefreshToken(): string {
+  return crypto.randomBytes(48).toString("hex")
+}
+
+export async function setRefreshCookie(refreshToken: string) {
+  const cookieStore = await cookies()
+  cookieStore.set("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60,
+    path: "/",
+  })
+}
+
+export async function clearRefreshCookie() {
+  const cookieStore = await cookies()
+  cookieStore.delete("refresh_token")
 }
 
 export async function setAuthCookie(token: string, maxAge?: number) {
@@ -115,10 +138,27 @@ export async function clearAuthCookie() {
   cookieStore.delete("auth_token")
 }
 
-export async function getCurrentUser(request: NextRequest): Promise<{ userId: string } | null> {
+export async function getCurrentUser(request: NextRequest): Promise<{ userId: string; sessionId: string } | null> {
   const token = request.cookies.get("auth_token")?.value
   if (!token) return null
-  return verifyToken(token)
+  const payload = verifyToken(token)
+  if (!payload) return null
+
+  // #4: Verify the session is still active in the DB (catches revoked/stolen tokens)
+  try {
+    await ensureDatabase()
+    const pool = getPool()
+    const result = await pool.query<{ revoked: boolean }>(
+      `SELECT revoked FROM user_sessions WHERE id = $1 AND user_id = $2`,
+      [payload.sessionId, payload.userId]
+    )
+    if (result.rows.length === 0 || result.rows[0].revoked) return null
+  } catch {
+    // If DB is unreachable, fall back to JWT-only verification to avoid locking everyone out
+    return payload
+  }
+
+  return payload
 }
 
 export function generateUserId(): string {
