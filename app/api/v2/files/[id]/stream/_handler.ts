@@ -20,21 +20,21 @@ export async function handleStreamGet(
     const rateLimit = await verifyDownloadRateLimit('anonymous')
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: "Rate limit reached, try again later", retryAfter: rateLimit.resetInSeconds },
+        { error: "429 Too Many Requests", retryAfter: rateLimit.resetInSeconds },
         { status: 429 }
       )
     }
 
     const { valid, record } = await isFileValid(id)
     if (!record) {
-      return NextResponse.json({ error: "File not found" }, { status: 404 })
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
     if (!valid) {
-      return NextResponse.json({ error: "File has expired" }, { status: 410 })
+        console.error(`[API Error] 410 Gone: ${"410 File Expired"}`);
+      return NextResponse.json({ error: "410 Gone" }, { status: 410 })
     }
 
-    // Unencrypted files have no business going through this proxy — bounce
-    // them back to the share page so they go through /api/download/[id].
+    // bounce
     if (!record.encryption_iv || !record.encryption_auth_tag) {
       return NextResponse.redirect(new URL(`/d/${id}`, request.url), 303)
     }
@@ -46,7 +46,7 @@ export async function handleStreamGet(
 
     const response = await getR2Client().send(command)
     if (!response.Body) {
-      return NextResponse.json({ error: "File not found in storage" }, { status: 404 })
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     const s3Stream = response.Body as Readable
@@ -73,13 +73,13 @@ export async function handleStreamGet(
       headers: {
         'Content-Type': record.content_type || 'application/octet-stream',
         'Content-Disposition': buildContentDisposition(record.original_name),
-        // GCM ciphertext length == plaintext length (auth tag is stored separately).
         'Content-Length': record.file_size.toString(),
         'Cache-Control': 'no-cache',
       },
     })
   } catch (error: any) {
     console.error(`[DownloadProxy] Error for file ${fileId}:`, error)
-    return NextResponse.json({ error: "Failed to download file" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Download Failed"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

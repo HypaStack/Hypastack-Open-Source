@@ -6,8 +6,7 @@ import { getCdnAssetsByUserId } from "@/lib/cdn-model"
 import { getFoldersByUserId } from "@/lib/folder-model"
 import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { decryptFilename } from "@/lib/filename-crypto"
-import { normalizeTier, isPaidTier, getTierLimits } from "@/lib/tier-limits"
-
+import { normalizeTier, isPaidTier, getTierLimits } from "@/constants/tier-limits"
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
@@ -46,10 +45,8 @@ export async function GET(request: NextRequest) {
     ])
 
     if ((wantUser || wantStats) && !user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      )
+        console.error(`[API Error] 404 Not Found: ${"User not found"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     const body: Record<string, unknown> = { authenticated: true, userId: currentUser.userId }
@@ -101,7 +98,7 @@ export async function GET(request: NextRequest) {
         contentType: f.content_type,
         uploadedAt: f.upload_date,
         expiresAt: f.expires_at,
-        hasPin: !!f.pin,
+
         burnOnRead: f.burn_on_read,
         starred: !!f.starred,
         shareUrl: `${process.env.NEXT_PUBLIC_APP_URL}/d/${f.id}`,
@@ -127,9 +124,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Get user error:", error)
-    return NextResponse.json(
-      { error: "Failed to get user" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to get user"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get("stripe-signature")
 
     if (!signature) {
-      return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Missing stripe-signature header"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const event = constructWebhookEvent(rawBody, signature)
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
 
       if (!userId || !credits || !amountEur || !purchaseId) {
         console.error("[Webhook] Missing metadata in session:", session.id)
-        return NextResponse.json({ error: "Missing metadata" }, { status: 400 })
+          console.error(`[API Error] 400 Bad Request: ${"Missing metadata"}`);
+        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
       }
 
       await addCredits(
@@ -37,8 +39,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true })
   } catch (error: any) {
     console.error("[Webhook] Error:", error.message)
+    console.error(`[API Error] 400 Bad Request: ${"Webhook processing failed"}`);
     return NextResponse.json(
-      { error: "Webhook processing failed" },
+      { error: "400 Bad Request" },
       { status: 400 }
     )
   }

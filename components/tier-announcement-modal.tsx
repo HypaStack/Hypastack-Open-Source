@@ -11,8 +11,7 @@ export function TierAnnouncementModal() {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
 
-  // Surface the modal whenever the DB tier doesn't match what the user
-  // has last acknowledged. Skip 'free' — downgrades shouldn't celebrate.
+  // surface the modal whenever the db tier doesn't match what the user acknowledged
   useEffect(() => {
     if (!user) return;
     if (user.tier === "free") return;
@@ -64,7 +63,6 @@ export function TierAnnouncementModal() {
             className="theme-dashboard relative mx-4 w-full max-w-[420px] rounded-md overflow-hidden"
             style={{ backgroundColor: '#171717', padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
-            {/* Top row: close */}
             <div className="flex items-center justify-end px-4 pt-3 pb-1">
               <button
                 type="button"
@@ -76,7 +74,6 @@ export function TierAnnouncementModal() {
               </button>
             </div>
 
-            {/* Content centered */}
             <div className="px-5 pt-2 pb-6 flex flex-col items-center text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-[#222] mb-5">
                 <MIcon name="auto_awesome" className="text-[#a1a1aa]" size={28} />
@@ -87,11 +84,11 @@ export function TierAnnouncementModal() {
                 className="text-[22px] tracking-tight text-white mb-2"
                 style={{ fontWeight: 600, letterSpacing: '-0.02em' }}
               >
-                You&rsquo;re now on {tierLabel}
+                You're now on {tierLabel}
               </h2>
               <p className="text-[14px] leading-relaxed text-[#888] mb-6">
-                Thanks for supporting us! Your new limits are unlocked everywhere —
-                uploads, CDN storage, link counts, and retention windows.
+                Thanks for supporting us! Your new limits are unlocked everywhere,
+                uploads, CDN storage, and retention windows.
               </p>
 
               <button
@@ -100,7 +97,7 @@ export function TierAnnouncementModal() {
                 className="w-full hover:bg-[#222] hover:text-white active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
                 style={{ height: 40, borderRadius: 6, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
               >
-                {closing ? "Saving…" : "Awesome — let’s go"}
+                {closing ? "Closing.." : "Alright"}
               </button>
             </div>
           </motion.div>

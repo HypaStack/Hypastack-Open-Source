@@ -3,15 +3,14 @@ import { z } from "zod"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById, updateNickname } from "@/lib/user-model"
 import { checkApiRateLimit } from "@/lib/rate-limit"
-
 // Strict ciphertext format: base64(iv):base64(ciphertext), max 500 chars total
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
 const UpdateProfileSchema = z.object({
   nickname_encrypted: z.string()
-    .min(10, "Ciphertext too short")
-    .max(500, "Ciphertext too long")
-    .regex(CIPHERTEXT_REGEX, "Invalid ciphertext format")
+    .min(10, "Nickname too short")
+    .max(500, "Nickname too long")
+    .regex(CIPHERTEXT_REGEX, "Invalid format")
     .optional(),
 })
 
@@ -19,29 +18,27 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Not authenticated"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const body = await request.json()
     const validation = UpdateProfileSchema.safeParse(body)
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const { nickname_encrypted } = validation.data
     const user = await getUserById(currentUser.userId)
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+        console.error(`[API Error] 404 Not Found: ${"404 Not Found"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     if (nickname_encrypted !== undefined) {
@@ -55,10 +52,8 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error("[Auth] Update profile error:", error)
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    )
+    console.error("[Auth] 500 Failed to update profile:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Failed to update profile"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

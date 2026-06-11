@@ -15,15 +15,17 @@ export async function handleFileGet(
     // Rate limit file metadata lookups per IP
     const rateLimit = await checkApiRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
+        console.error(`[API Error] 429 Too Many Requests: ${"Rate limit exceeded. Please try again later."}`);
       return NextResponse.json(
-        { error: "Rate limit exceeded. Please try again later." },
+        { error: "429 Too Many Requests" },
         { status: 429 }
       )
     }
 
     if (!id) {
+        console.error(`[API Error] 400 Bad Request: ${"No file ID provided"}`);
       return NextResponse.json(
-        { error: "No file ID provided" },
+        { error: "400 Bad Request" },
         { status: 400 }
       )
     }
@@ -34,23 +36,26 @@ export async function handleFileGet(
       record = await getFileById(id)
     } catch (dbError: any) {
       console.error("[File] Database error:", dbError.message)
+      console.error(`[API Error] 500 Internal Server Error: ${"Database error"}`);
       return NextResponse.json(
-        { error: "Database error" },
+        { error: "500 Internal Server Error" },
         { status: 500 }
       )
     }
 
     if (!record) {
+        console.error(`[API Error] 404 Not Found: ${"File not found"}`);
       return NextResponse.json(
-        { error: "File not found" },
+        { error: "404 Not Found" },
         { status: 404 }
       )
     }
 
     // Check if file has been burned (burn_on_read = 2 means already downloaded)
     if (record.burn_on_read === 2) {
+        console.error(`[API Error] 410 Gone: ${"File has already been downloaded"}`);
       return NextResponse.json(
-        { error: "File has already been downloaded" },
+        { error: "410 Gone" },
         { status: 410 }
       )
     }
@@ -65,16 +70,15 @@ export async function handleFileGet(
       } catch (e) {
         console.error("[File] Failed to delete expired file from R2:", e)
       }
+        console.error(`[API Error] 410 Gone: ${"File has expired"}`);
 
       return NextResponse.json(
-        { error: "File has expired" },
+        { error: "410 Gone" },
         { status: 410 }
       )
     }
 
-    // Check PIN protection status
-    const hasPin = !!record.pin
-    const pinVerified = false // PIN verification happens inline at download time
+
 
     // Decrypt filenames for display and Content-Disposition
     const decryptedName = decryptFilename(record.original_name)
@@ -88,8 +92,7 @@ export async function handleFileGet(
         size: record.file_size,
         contentType: record.content_type,
         expiresAt: record.expires_at,
-        hasPin,
-        pinVerified,
+
         burnOnRead: record.burn_on_read,
         customFilename: decryptedCustom,
         note: record.note,
@@ -101,8 +104,9 @@ export async function handleFileGet(
 
   } catch (error: any) {
     console.error("[File] Unexpected error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to get file"}`);
     return NextResponse.json(
-      { error: "Failed to get file" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

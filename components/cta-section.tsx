@@ -12,22 +12,13 @@ export function CtaSection() {
     <section className="mt-32 sm:mt-48 lg:mt-64 relative flex flex-col items-center overflow-visible">
 
       <div className="relative w-full max-w-[1200px]">
-      {/* The Block */}
       <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)] border-r-[rgba(0,0,0,0.08)]">
-        {/* Horizontal extending lines */}
         <div className="hidden md:block">
           <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
           <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
           <div className="absolute bottom-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
           <div className="absolute bottom-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
         </div>
-
-        {/* Corner dots moved to wrapper level */}
-
-
-
-
-
 
         <div className="w-full px-8 sm:px-16 pt-16 pb-16 text-left relative z-10">
           <motion.div
@@ -45,11 +36,11 @@ export function CtaSection() {
                 >
                   <MIcon name="verified" size="1em" className="tracking-normal shrink-0 text-[#171717]" />
                   <div className="flex-1 min-w-0 truncate">
-                    <span>Welcome back.</span>
+                    <span>Welcome back!</span>
                   </div>
                 </h2>
                 <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#525252]">
-                  Everything&apos;s where you left it. Upload something, check your links, or just look around.
+                  We kept everything exactly where you left it, Probably. You should probably click the Dashboard button to check.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/manage" variant="primary" size="lg">
@@ -69,7 +60,7 @@ export function CtaSection() {
                   Wanna check it out?
                 </h2>
                 <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#525252]">
-                  Set up an account in seconds. Share files securely and host CDNs indefinitely.
+                  Set up an account in seconds, Share files securely and host CDNs indefinitely.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/new" variant="primary" size="lg">
@@ -84,7 +75,6 @@ export function CtaSection() {
           </motion.div>
         </div>
       </div>
-      {/* Dots AFTER block */}
       <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
       <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
       <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />

@@ -15,23 +15,28 @@ export async function GET(
 ) {
   const currentUser = await getCurrentUser(request)
   if (!currentUser) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+      console.error(`[API Error] 401 Unauthorized: ${"Not authenticated"}`);
+    return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
   }
   const rateLimit = await checkApiRateLimit(currentUser.userId)
   if (!rateLimit.allowed) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 })
+      console.error(`[API Error] 429 Too Many Requests: ${"Rate limit exceeded"}`);
+    return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
   }
 
   const { id } = await params
   const record = await getFileById(id)
   if (!record) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+      console.error(`[API Error] 404 Not Found: ${"Not found"}`);
+    return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
   }
   if (record.user_id !== currentUser.userId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      console.error(`[API Error] 403 Forbidden: ${"Forbidden"}`);
+    return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
   }
   if (!PREVIEWABLE.test(record.content_type || "")) {
-    return NextResponse.json({ error: "Not previewable" }, { status: 415 })
+      console.error(`[API Error] 415 Unsupported Media Type: ${"Not previewable"}`);
+    return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
   }
 
   const url = await getPresignedDownloadUrl({
@@ -60,6 +65,7 @@ export async function GET(
     return new NextResponse(response.body, { headers })
   } catch (error) {
     console.error("Preview fetch error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

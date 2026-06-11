@@ -1,6 +1,6 @@
 import { getPool, ensureDatabase } from './db'
 import crypto from 'node:crypto'
-import { Tier, normalizeTier, isPaidTier } from './tier-limits'
+import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 
 
 export interface User {

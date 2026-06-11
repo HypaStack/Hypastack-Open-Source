@@ -4,7 +4,7 @@ import { encryptFilename, decryptFilename } from './filename-crypto'
 import { getFilesByUserId, deleteFileRecord } from './file-model'
 import { deleteFileFromR2 } from './r2'
 import { getUserTier } from './user-model'
-import { getTierDelayMs } from './tier-limits'
+import { getTierDelayMs } from '@/constants/tier-limits'
 
 export interface FolderRecord {
   id: string

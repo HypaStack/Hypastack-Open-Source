@@ -3,14 +3,15 @@ import { getCurrentUser } from '@/lib/auth'
 import { getCdnAssetsByIds, deleteCdnAssetsByIds } from '@/lib/cdn-model'
 import { deleteObjectsBatch } from '@/lib/r2'
 import { getUserTier } from "@/lib/user-model"
-import { getTierDelayMs } from "@/lib/tier-limits"
+import { getTierDelayMs } from "@/constants/tier-limits"
 import { logOperation } from "@/lib/credits"
 
 export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${'Authentication required'}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
@@ -24,7 +25,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (idsToDelete.length === 0) {
-      return NextResponse.json({ error: 'Asset ID(s) required' }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${'Asset ID(s) required'}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     // Tier delay only applies when > 1 asset for free-tier throttling UX.
@@ -96,9 +98,7 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     console.error("[CDN] bulk delete error:", error)
-    return NextResponse.json(
-      { error: "Failed to delete assets" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to delete assets"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

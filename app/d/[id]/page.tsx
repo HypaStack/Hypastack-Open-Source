@@ -9,7 +9,7 @@ import { motion } from "motion/react";
 
 interface FileInfo {
   id: string; name: string; size: number; contentType: string; expiresAt: string;
-  downloadCount: number; hasPin: boolean; burnOnRead: boolean; customFilename?: string;
+  downloadCount: number; burnOnRead: boolean; customFilename?: string;
   note?: string; encryptionChunkSize?: number | null; encryptionTotalParts?: number | null;
 }
 

@@ -12,26 +12,22 @@ import {
   encryptFile,
 } from "@/lib/security/zero-trust"
 import { getUserTier } from "@/lib/user-model"
-import { getTierLimits } from "@/lib/tier-limits"
+import { getTierLimits } from "@/constants/tier-limits"
 
 export async function handleUploadProxyPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json(
-        { error: "Authentication required. Please sign in." },
-        { status: 401 }
-      )
+        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const userTier = await getUserTier(currentUser.userId)
     const tier = getTierLimits(userTier)
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const formData = await request.formData()
@@ -39,36 +35,30 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const fileId = formData.get("fileId") as string | null
     const proxyToken = formData.get("proxyToken") as string | null
     const csrfToken = formData.get("csrfToken") as string | null
-    const pin = formData.get("pin") as string | null
     const burnOnRead = formData.get("burnOnRead") === "true"
     const note = formData.get("note") as string | null
     const customFilename = formData.get("customFilename") as string | null
 
     if (!fileId || !proxyToken || !verifyProxyToken(proxyToken, fileId)) {
-      return NextResponse.json(
-        { error: "Invalid or expired upload session. Please start over." },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"403 Upload Session Invalid"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     const csrfValid = await validateCsrfToken(csrfToken || "")
     if (!csrfValid) {
-      return NextResponse.json(
-        { error: "Invalid security token. Please refresh the page and try again." },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"400 No File Provided"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
     if (file.size > MAX_PROXY_SIZE) {
-      return NextResponse.json(
-        { error: `We're having some internal issues, max proxy upload is 50MB.` },
-        { status: 413 }
-      )
+        console.error(`[API Error] 413 Payload Too Large: ${`413 Proxy Upload Limit Exceeded`}`);
+      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
     }
 
     const bytes = await file.arrayBuffer()
@@ -77,18 +67,14 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
     const typeVerification = await verifyFileType(buffer)
     if (!typeVerification.valid) {
-      return NextResponse.json(
-        { error: typeVerification.error || "Invalid file type" },
-        { status: 415 }
-      )
+        console.error(`[API Error] 415 Unsupported Media Type: ${typeVerification.error || "415 Unsupported File Type"}`);
+      return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
     }
 
     const filenameSanitization = sanitizeFilename(file.name)
     if (!filenameSanitization.isValid) {
-      return NextResponse.json(
-        { error: filenameSanitization.error || "Invalid filename" },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${filenameSanitization.error || "400 Invalid Filename"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     buffer = await stripMetadata(buffer, typeVerification.mimeType!)
@@ -99,13 +85,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
-
-    if (pin && !/^\d{6}$/.test(pin)) {
-      return NextResponse.json(
-        { error: "PIN must be 6 digits" },
-        { status: 400 }
-      )
-    }
 
     const expiresAt = getExpirationDate(buffer.length, tier.expirationMultiplier)
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
@@ -124,7 +103,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
       file_size: buffer.length,
       content_type: typeVerification.mimeType!,
       expires_at: expiresAt,
-      pin: pin || null,
+      pin: null,
       burn_on_read: burnOnRead,
       custom_filename: sanitizedCustomFilename,
       note: sanitizedNote,
@@ -144,9 +123,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
   } catch (error: any) {
     console.error("[UploadProxy] Error:", error)
-    return NextResponse.json(
-      { error: "Upload failed" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Proxy Upload Failed"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

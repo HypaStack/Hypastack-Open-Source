@@ -2,12 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
 import { checkUploadRateLimit } from "@/lib/rate-limit"
-import { isExtensionBlocked } from "@/lib/file-validation"
 import { generateFileId, getExpirationDate } from "@/lib/r2"
 import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
 import { getUserCdnStats } from "@/lib/cdn-model"
 import { getUserTier } from "@/lib/user-model"
-import { getTierLimits } from "@/lib/tier-limits"
+import { getTierLimits } from "@/constants/tier-limits"
 import { initiateMultipartUpload } from "@/lib/r2-multipart"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
@@ -19,7 +18,8 @@ export async function handleUploadMultipartPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"401 Authentication Required"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
@@ -27,28 +27,30 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       fileName,
       fileSize,
       contentType,
-      pin,
+
       burnOnRead,
       csrfToken,
       customFilename,
       chunkSize: clientChunkSize,
-      encryptionKeyHash,
       path,
       folderId,
       note,
     } = body
 
     if (!fileName || !fileSize || !contentType) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"400 Missing Required Fields"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     if (fileName.length > 200) {
-      return NextResponse.json({ error: "Filename too long. Max 200 characters." }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"400 File Name Too Long"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      return NextResponse.json({ error: "Invalid security token." }, { status: 403 })
+        console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     const [userTier, fileStats, cdnStats] = await Promise.all([
@@ -60,36 +62,26 @@ export async function handleUploadMultipartPost(request: NextRequest) {
 
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     if (fileSize > tier.maxNormalUploadSize) {
-      const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
-      return NextResponse.json({ error: `File too large. Max ${limitMB}MB on your plan.` }, { status: 413 })
+        console.error(`[API Error] 413 Payload Too Large: ${`413 File Too Large`}`);
+      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
     }
 
     if (fileStats.activeFiles >= tier.maxFileLinks) {
-      return NextResponse.json(
-        { error: `You have reached your limit of ${tier.maxFileLinks} active file links.` },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${`403 Active File Limit Reached`}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
-        return NextResponse.json(
-          { error: `Total limit of ${tier.maxTotalFiles} files reached. Upgrade or delete files.` },
-          { status: 403 }
-        )
+          console.error(`[API Error] 403 Forbidden: ${`403 Total File Limit Reached`}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
-    }
-
-    if (pin && !/^\d{6}$/.test(pin)) {
-      return NextResponse.json({ error: "PIN must be exactly 6 digits" }, { status: 400 })
     }
 
     const sanitizedCustomFilename = customFilename
@@ -121,7 +113,8 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     if (finalFolderId) {
       const userFolders = await getFoldersByUserId(currentUser.userId)
       if (!userFolders.some(f => f.id === finalFolderId)) {
-        return NextResponse.json({ error: "Folder not found or unauthorized" }, { status: 403 })
+          console.error(`[API Error] 403 Forbidden: ${"403 Folder Not Found"}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
@@ -140,19 +133,18 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       file_size: fileSize,
       content_type: contentType,
       expires_at: expiresAt,
-      pin: pin || null,
+      pin: null,
       burn_on_read: burnOnRead === true,
       share_url: shareUrl,
       custom_filename: encryptedCustomFilename,
       note: sanitizedNote,
       user_id: currentUser.userId,
-      // Required for correct per-chunk decryption on download
       encryption_chunk_size: chunkSize,
       encryption_total_parts: totalParts,
       folder_id: finalFolderId,
     })
 
-    // Track Class A operation (fire-and-forget)
+    // track class a operations
     logOperation(currentUser.userId, 'A', 'upload_multipart', false).catch(() => {})
 
     return NextResponse.json({
@@ -168,9 +160,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Upload Multipart] Error:", error)
-    return NextResponse.json(
-      { error: error.message || "Failed to initialize multipart upload" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${error.message || "500 Multipart Upload Failed"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

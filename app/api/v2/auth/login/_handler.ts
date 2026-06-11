@@ -6,14 +6,13 @@ import { checkLoginRateLimit } from "@/lib/rate-limit"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 import { getHashedIp } from "@/lib/ip"
-
-// Dummy hash used when the user isn't found — keeps timing consistent with wrong-password path
+// keeping timing consistent.
 const DUMMY_HASH = hashPassword("hpsk_0000000000000000000000000000000000000000_dummy").hash
 
 const LoginSchema = z.object({
   accessKey: z.string().min(1, "Access key is required"),
   turnstileToken: z.string().optional().default(""),
-  csrfToken: z.string().min(1, "CSRF token required"),
+  csrfToken: z.string().min(1, "CSRF Token not found"),
 })
 
 export async function handleLoginPost(request: NextRequest) {
@@ -22,38 +21,30 @@ export async function handleLoginPost(request: NextRequest) {
 
     const validation = LoginSchema.safeParse(body)
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const { accessKey, turnstileToken, csrfToken } = validation.data
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      return NextResponse.json(
-        { error: "Invalid security token. Please refresh the page and try again." },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"Invalid csrf token, try again."}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-        return NextResponse.json(
-          { error: turnstileResult.error || "Security verification failed" },
-          { status: 403 }
-        )
+          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification failed"}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
     const rateLimit = await checkLoginRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     // Key format: hpsk_<uuid_no_hyphens>_<secret>
@@ -77,10 +68,8 @@ export async function handleLoginPost(request: NextRequest) {
     }
 
     if (!matchedUserId) {
-      return NextResponse.json(
-        { error: "Invalid access key" },
-        { status: 401 }
-      )
+        console.error(`[API Error] 401 Unauthorized: ${"Invalid access key"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     await updateLastLogin(matchedUserId)
@@ -92,9 +81,7 @@ export async function handleLoginPost(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Login error:", error)
-    return NextResponse.json(
-      { error: "Failed to sign in" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to sign in"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

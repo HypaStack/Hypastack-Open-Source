@@ -7,7 +7,7 @@ import { PageLogo } from "@/components/page-logo";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const [, setScrolled] = useState(false);
   const [pendingNav, setPendingNav] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
@@ -19,7 +19,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Navigate once auth resolves after button was clicked
+  // navigate
   useEffect(() => {
     if (pendingNav && !isLoading) {
       setPendingNav(false);
@@ -30,7 +30,7 @@ export function Navbar() {
   function handleLoginClick(e: React.MouseEvent) {
     e.preventDefault();
     if (isLoading) {
-      // Auth not settled yet — wait for it
+      // Auth not settled yet
       setPendingNav(true);
       return;
     }
@@ -40,13 +40,9 @@ export function Navbar() {
   return (
     <header className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1200px] bg-[rgba(255,255,255,0.85)] backdrop-blur-2xl rounded-b-2xl py-2 px-4 sm:px-6">
       <div className="w-full flex items-center justify-between">
-
-        {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <PageLogo size={32} borderRadius={8} />
         </Link>
-
-        {/* Right: Static buttons */}
         <div className="flex items-center gap-2">
           <a
             href="/signin"

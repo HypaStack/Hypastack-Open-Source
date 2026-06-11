@@ -8,11 +8,13 @@ export async function POST(req: Request) {
     const content = body.content
 
     if (!content || typeof content !== "string") {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Content is required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     if (content.length > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Paste is too large (max 5MB)" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Paste is too large (max 5MB)"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const id = generateFileId()
@@ -36,6 +38,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ id })
   } catch (error) {
     console.error("[Dumpster] Error creating paste:", error)
-    return NextResponse.json({ error: "Failed to create paste" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create paste"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

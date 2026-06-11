@@ -65,9 +65,11 @@ export function readFileSlice(file: File, start: number, end: number): Promise<A
 export async function uploadChunkToR2(
   presignedUrl: string,
   data: ArrayBuffer,
-  onProgress?: (loaded: number, total: number) => void
+  onProgress?: (loaded: number, total: number) => void,
+  signal?: AbortSignal
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(new Error("Upload aborted"))
     const xhr = new XMLHttpRequest()
     if (onProgress) {
       xhr.upload.addEventListener("progress", (e) => {
@@ -83,7 +85,14 @@ export async function uploadChunkToR2(
       }
     })
     xhr.addEventListener("error", () => reject(new Error("Chunk upload network error")))
-    xhr.addEventListener("abort", () => reject(new Error("Chunk upload aborted")))
+    xhr.addEventListener("abort", () => reject(new Error("Upload aborted")))
+    
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        xhr.abort()
+      })
+    }
+
     xhr.open("PUT", presignedUrl)
     xhr.send(data)
   })
@@ -95,8 +104,9 @@ export async function uploadFileMultipart(opts: {
   presignedUrls: string[]
   chunkSize?: number
   onProgress?: (percent: number) => void
+  signal?: AbortSignal
 }): Promise<{ etags: { partNumber: number; etag: string }[] }> {
-  const { file, encryptionKey, presignedUrls, chunkSize = DEFAULT_CHUNK_SIZE, onProgress } = opts
+  const { file, encryptionKey, presignedUrls, chunkSize = DEFAULT_CHUNK_SIZE, onProgress, signal } = opts
   const chunks = [...chunkFile(file, chunkSize)]
   const totalBytes = file.size
 
@@ -113,6 +123,7 @@ export async function uploadFileMultipart(opts: {
 
   const worker = async () => {
     while (true) {
+      if (signal?.aborted) throw new Error("Upload aborted")
       const idx = nextChunkIndex++
       if (idx >= chunks.length) break
 
@@ -129,7 +140,8 @@ export async function uploadFileMultipart(opts: {
         (loaded, total) => {
           chunkProgress[idx] = (loaded / total) * chunkBytes
           reportProgress()
-        }
+        },
+        signal
       )
 
       etags[idx] = { partNumber, etag }
