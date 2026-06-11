@@ -140,7 +140,7 @@ export default function SignInPage() {
             )}
             {!isDesktop && (
               <p className="mt-6 text-[12px] text-[#666] leading-relaxed">
-                Lost your key? Access keys can&apos;t be recovered — this is by design for your privacy.
+                If you lost your key, we cannot recover it.
               </p>
             )}
             <p className="mt-8 text-[13px] text-[#666]">
@@ -170,7 +170,7 @@ export default function SignInPage() {
                 style={{ borderRadius: 6 }} 
               />
               <h2 className="text-[18px] font-semibold text-[#111] mb-5 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
-                Look how Hypastack looks behind the scenes
+                Hey! If you found any bugs or vulnerabilities, please inform us!
               </h2>
               <a
                 href="https://github.com/HypaStack/Hypastack-Open-Source"
@@ -179,7 +179,7 @@ export default function SignInPage() {
                 className="inline-block bg-[#e5e5e5] text-[#111] text-[13px] font-medium px-4 py-1.5 hover:bg-[#d5d5d5] active:scale-[0.98] transition-all"
                 style={{ borderRadius: 6 }}
               >
-                Take a look
+                Source code
               </a>
             </div>
           </div>

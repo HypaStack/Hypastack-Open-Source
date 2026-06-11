@@ -6,7 +6,6 @@ import { checkRegisterRateLimit } from "@/lib/rate-limit"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 import { getHashedIp } from "@/lib/ip"
-
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
 const RegisterSchema = z.object({
@@ -26,38 +25,30 @@ export async function POST(request: NextRequest) {
 
     const validation = RegisterSchema.safeParse(body)
     if (!validation.success) {
-      return NextResponse.json(
-        { error: validation.error.issues[0].message },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      return NextResponse.json(
-        { error: "Invalid security token. Please refresh the page and try again." },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-        return NextResponse.json(
-          { error: turnstileResult.error || "Security verification failed" },
-          { status: 403 }
-        )
+          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security verification failed"}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
     const rateLimit = await checkRegisterRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Too many registration attempts. Please try again later." },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"Too many registration attempts. Please try again later."}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const { hash: passwordHash } = hashPassword(accessKey)
@@ -72,9 +63,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Registration error:", error)
-    return NextResponse.json(
-      { error: "Failed to create account" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create account"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

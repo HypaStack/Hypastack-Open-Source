@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next"
 import Script from "next/script"
-import { DemoBanner } from "@/components/demo-banner"
 import { ConsoleGreeting } from "@/components/console-greeting"
 import { DesktopGate } from "@/components/desktop-gate"
 import { DesktopGuard } from "@/components/desktop-guard"

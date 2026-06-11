@@ -4,10 +4,6 @@ import { MIcon } from "@/components/ui/material-icon"
 import type { FileWithPreview } from "./upload-types"
 
 interface UploadOptionsPanelProps {
-  pinEnabled: boolean
-  setPinEnabled: (v: boolean) => void
-  pin: string
-  setPin: (v: string) => void
   burnOnRead: boolean
   setBurnOnRead: (v: boolean) => void
   customFilename: string

@@ -17,22 +17,25 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
     const { amount } = body
 
     if (!amount || typeof amount !== "number" || !Number.isInteger(amount)) {
-      return NextResponse.json({ error: "Amount must be an integer in EUR" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Amount must be an integer in EUR"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const isPackage = VALID_AMOUNTS.includes(amount)
     const isValidCustom = amount >= MIN_CUSTOM_AMOUNT_EUR
 
     if (!isPackage && !isValidCustom) {
+        console.error(`[API Error] 400 Bad Request: ${`Amount must be one of ${VALID_AMOUNTS.join(", ")} or a custom amount >= ${MIN_CUSTOM_AMOUNT_EUR} EUR`}`);
       return NextResponse.json(
-        { error: `Amount must be one of ${VALID_AMOUNTS.join(", ")} or a custom amount >= ${MIN_CUSTOM_AMOUNT_EUR} EUR` },
+        { error: "400 Bad Request" },
         { status: 400 }
       )
     }
@@ -73,8 +76,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Credits Purchase] Error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create checkout session"}`);
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

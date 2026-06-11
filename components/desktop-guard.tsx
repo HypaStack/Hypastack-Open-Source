@@ -3,25 +3,13 @@
 import { useEffect, useState, useRef, useCallback } from "react"
 import { isTauri } from "@/lib/tauri"
 
-/**
- * Rate limit config.
- * If the user refreshes more than MAX_REFRESHES within WINDOW_MS,
- * they get locked out for COOLDOWN_MS.
- */
-const MAX_REFRESHES = 3
-const WINDOW_MS = 8_000      // 8-second sliding window
-const COOLDOWN_MS = 30_000   // 30-second lockout
+// rate limit config
 
-/**
- * DesktopGuard — Tauri-only security layer.
- *
- * 1. Blocks all devtools shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U)
- * 2. Blocks Ctrl+R, Ctrl+Shift+R (refresh shortcuts)
- * 3. Rate-limits F5 — triggers inescapable fullscreen lockout on abuse
- * 4. Blocks right-click context menu
- *
- * On the web, this component renders nothing.
- */
+const MAX_REFRESHES = 3
+const WINDOW_MS = 8_000      // 8s sliding window
+const COOLDOWN_MS = 30_000   // 30s lockout
+
+
 export function DesktopGuard() {
   const [rateLimited, setRateLimited] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -60,7 +48,6 @@ export function DesktopGuard() {
     if (!isDesktop) return
 
     const handler = (e: KeyboardEvent) => {
-      // ─── DURING RATE LIMIT: block EVERYTHING ───
       if (rateLimited) {
         e.preventDefault()
         e.stopPropagation()
@@ -72,7 +59,6 @@ export function DesktopGuard() {
       const ctrl = e.ctrlKey || e.metaKey
       const shift = e.shiftKey
 
-      // ─── Block devtools shortcuts ───
       // F12
       if (e.key === "F12") {
         e.preventDefault()
@@ -104,7 +90,6 @@ export function DesktopGuard() {
         return
       }
 
-      // ─── Block refresh shortcuts (except F5 which is rate-limited) ───
       // Ctrl+R / Ctrl+Shift+R
       if (ctrl && key === "r") {
         e.preventDefault()
@@ -118,7 +103,6 @@ export function DesktopGuard() {
         return
       }
 
-      // ─── Rate-limit F5 ───
       if (e.key === "F5" && !ctrl && !shift) {
         const now = Date.now()
         // Prune old timestamps outside the window
@@ -166,7 +150,6 @@ export function DesktopGuard() {
 
   if (!isDesktop || !rateLimited) return null
 
-  // ─── INESCAPABLE RATE LIMIT OVERLAY ───
   const formatTime = (seconds: number) => {
     if (seconds >= 60) {
       const mins = Math.floor(seconds / 60)
@@ -181,7 +164,7 @@ export function DesktopGuard() {
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 2147483647, // Max z-index
+        zIndex: 2147483647, // highest z index to ensure it's on top of everything
         backgroundColor: "#0a0a0a",
         display: "flex",
         flexDirection: "column",
@@ -189,15 +172,14 @@ export function DesktopGuard() {
         justifyContent: "center",
         userSelect: "none",
         cursor: "default",
-        // Block pointer events on everything underneath
+        // block pointer events
         pointerEvents: "all",
       }}
-      // Block all mouse events from bubbling
+      // block mouse events
       onClick={(e) => { e.preventDefault(); e.stopPropagation() }}
       onMouseDown={(e) => { e.preventDefault(); e.stopPropagation() }}
       onContextMenu={(e) => { e.preventDefault(); e.stopPropagation() }}
     >
-      {/* Pulsing shield icon */}
       <div
         style={{
           width: 64,
@@ -239,7 +221,7 @@ export function DesktopGuard() {
           letterSpacing: "-0.01em",
         }}
       >
-        You&apos;ve been rate limited
+        You've been rate limited
       </h1>
 
       <p
@@ -253,7 +235,6 @@ export function DesktopGuard() {
         Too many refresh attempts detected.
       </p>
 
-      {/* Countdown */}
       <div
         style={{
           fontSize: 48,
@@ -277,7 +258,6 @@ export function DesktopGuard() {
         This restriction cannot be bypassed.
       </p>
 
-      {/* Pulse animation */}
       <style>{`
         @keyframes rl-pulse {
           0%, 100% { transform: scale(1); opacity: 1; }

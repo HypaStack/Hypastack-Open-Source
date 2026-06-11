@@ -10,21 +10,25 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required."}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const { fileId, uploadId, totalParts, chunkSize } = await request.json()
 
     if (!fileId || !uploadId || !totalParts) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const record = await getStagingRecord(fileId)
     if (!record) {
-      return NextResponse.json({ error: "Upload session not found or expired" }, { status: 404 })
+        console.error(`[API Error] 404 Not Found: ${"Upload session not found or expired"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
     if (record.user_id && record.user_id !== currentUser.userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+        console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     const uploadedParts = await listUploadedParts({
@@ -68,8 +72,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Upload Resume] Error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to check upload status"}`);
     return NextResponse.json(
-      { error: "Failed to check upload status" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

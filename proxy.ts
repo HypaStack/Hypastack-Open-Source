@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES } from '@/constants'
 
-// ──────────────────────────────────────────────
-// Maintenance mode is now driven by @/constants/proxy.ts
-// ──────────────────────────────────────────────
-
 function isLegalPath(pathname: string): boolean {
   if (LEGAL_EXACT.has(pathname)) return true
   for (const p of LEGAL_EXACT) {
@@ -81,7 +77,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // ── Maintenance mode ────────────────────────────────────────────────────────
+  // maintenance mode
   if (MAINTENANCE) {
     if (pathname !== '/maintenance' && !isLegalPath(pathname)) {
       return NextResponse.redirect(new URL('/maintenance', request.url))
@@ -94,7 +90,41 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  // ── Auth guards ─────────────────────────────────────────────────────────────
+  // the /bin/[id]/raw endpoint is excluded to allow direct browser viewing of raw pastes.
+  const isRawBin = pathname.startsWith('/api/v2/bin/') && pathname.endsWith('/raw')
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin) {
+    const fetchSite = request.headers.get('sec-fetch-site')
+    const fetchMode = request.headers.get('sec-fetch-mode')
+    const origin = request.headers.get('origin')
+    const referer = request.headers.get('referer')
+
+    // direct browser
+    if (fetchMode === 'navigate') {
+        console.error(`[API Error] 403 Forbidden: ${'Forbidden: Direct API access is not allowed'}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+    }
+
+    // programmatic requests
+    if (fetchSite && fetchSite !== 'same-origin') {
+        console.error(`[API Error] 403 Forbidden: ${'Forbidden: Cross-origin requests are not allowed'}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+    }
+
+    // fallback
+    if (!fetchSite) {
+      const appOrigin = new URL(request.url).origin
+      if (origin && origin !== appOrigin) {
+          console.error(`[API Error] 403 Forbidden: ${'Forbidden: Invalid Origin'}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      }
+      if (!origin && referer && !referer.startsWith(appOrigin)) {
+          console.error(`[API Error] 403 Forbidden: ${'Forbidden: Invalid Referer'}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      }
+    }
+  }
+
+  // auth guard
   for (const { prefix, fallback } of AUTH_ROUTES) {
     if (pathname.startsWith(prefix)) {
       const authed = await isAuthenticated(request)
@@ -104,13 +134,13 @@ export async function proxy(request: NextRequest) {
         if (prefix === '/manage') dest.searchParams.set('redirect', pathname)
         return NextResponse.redirect(dest)
       }
-      break // matched — no need to check further routes
+      break // matched
     }
   }
 
   const response = NextResponse.next()
 
-  // ── Security headers (belt-and-suspenders with next.config.mjs) ──────────
+  // security headers
   response.headers.set("X-Frame-Options", "SAMEORIGIN")
   response.headers.set("X-Content-Type-Options", "nosniff")
   response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
@@ -123,13 +153,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all paths EXCEPT:
-     *  - _next/static  (static chunks)
-     *  - _next/image   (image optimisation)
-     *  - favicon.ico, sitemap.xml, robots.txt
-     *  - Any file with a common static extension
-     */
     '/((?!_next/static|_next/image|favicon\\.ico|sitemap.*\\.xml|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|eot|css|js|map)$).*)',
   ],
 }

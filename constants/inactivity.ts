@@ -1,0 +1,2 @@
+export const MIN_INACTIVITY_PURGE_DAYS = 7;
+export const MAX_INACTIVITY_PURGE_DAYS = 365;

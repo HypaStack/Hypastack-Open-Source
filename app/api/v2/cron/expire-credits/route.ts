@@ -11,14 +11,16 @@ export async function GET(request: NextRequest) {
     const envSecret = process.env.CRON_SECRET || ""
 
     if (!secret || !envSecret) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const secretHash = crypto.createHash("sha256").update(secret).digest()
     const envSecretHash = crypto.createHash("sha256").update(envSecret).digest()
 
     if (!crypto.timingSafeEqual(secretHash, envSecretHash)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     await ensureDatabase()
@@ -39,8 +41,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Cron Expire Credits] Error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to run credit expiry"}`);
     return NextResponse.json(
-      { error: "Failed to run credit expiry" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

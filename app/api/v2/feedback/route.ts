@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-
 const WEBHOOK_URL = process.env.DISCORD_FEEDBACK_WEBHOOK
 
 export async function POST(req: Request) {
   if (!WEBHOOK_URL) {
-    return NextResponse.json({ error: "Feedback not configured" }, { status: 503 })
+      console.error(`[API Error] 503 Service Unavailable: ${"Feedback not configured"}`);
+    return NextResponse.json({ error: "503 Service Unavailable" }, { status: 503 })
   }
 
   try {
@@ -12,21 +12,25 @@ export async function POST(req: Request) {
     try {
       body = await req.json()
     } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+      console.error(`[API Error] 400 Bad Request: ${"Invalid JSON body"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const { message } = body
 
     if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Message is required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const trimmed = message.trim()
     if (trimmed.length < 2) {
-      return NextResponse.json({ error: "Message too short" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Message too short"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
     if (trimmed.length > 1000) {
-      return NextResponse.json({ error: "Message too long (max 1000 characters)" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Message too long (max 1000 characters)"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const payload = {
@@ -48,11 +52,13 @@ export async function POST(req: Request) {
     })
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Failed to send feedback" }, { status: 500 })
+        console.error(`[API Error] 500 Internal Server Error: ${"Failed to send feedback"}`);
+      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true })
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

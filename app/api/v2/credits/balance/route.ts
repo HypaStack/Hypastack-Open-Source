@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserCredits, FREE_UNITS_PER_MONTH } from "@/lib/credits"
 import { getPool, ensureDatabase } from "@/lib/db"
-
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     await ensureDatabase()
@@ -39,9 +39,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Credits Balance] Error:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch credit balance" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to fetch credit balance"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

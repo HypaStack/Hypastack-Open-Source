@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import JSZip from "jszip"
 import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { useManage } from "@/hooks/useManage"
-import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/lib/tier-limits"
+import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/constants/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
@@ -26,8 +26,6 @@ export function useUpload({
   const [shareUrl, setShareUrl] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const [isUploading, setIsUploading] = useState(false)
-  const [pinEnabled] = useState(false)
-  const [pin] = useState("")
   const [burnOnRead, setBurnOnRead] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string>("")
   const [turnstileReady, setTurnstileReady] = useState(process.env.NODE_ENV === "development")
@@ -44,6 +42,7 @@ export function useUpload({
   const resumeInputRef = useRef<HTMLInputElement>(null)
   const uploadStartTime = useRef<number>(0)
   const uploadedBytesRef = useRef<number>(0)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const [interruptedSession, setInterruptedSession] = useState<InterruptedSession | null>(() => {
     if (typeof window === "undefined") return null
@@ -68,7 +67,6 @@ export function useUpload({
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (state === "uploading" || state === "encrypting") {
         e.preventDefault()
-        e.returnValue = ""
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
@@ -220,7 +218,6 @@ export function useUpload({
     formData.append("fileId", proxyFileId)
     formData.append("proxyToken", proxyTokenValue)
     formData.append("csrfToken", currentCsrfToken)
-    if (pinEnabled && pin.length === 6) formData.append("pin", pin)
     if (burnOnRead) formData.append("burnOnRead", "true")
     if (noteValue) formData.append("note", noteValue)
     if (filenameValue) formData.append("customFilename", filenameValue)
@@ -259,7 +256,6 @@ export function useUpload({
         fileName: fileToUpload.name,
         fileSize: encrypted.byteLength,
         contentType: "application/octet-stream",
-        pin: pinEnabled && pin.length === 6 ? pin : null,
         burnOnRead,
         turnstileToken,
         csrfToken: currentCsrfToken,
@@ -330,7 +326,6 @@ export function useUpload({
         fileName: fileToUpload.name,
         fileSize: fileToUpload.size,
         contentType: fileToUpload.type || "application/octet-stream",
-        pin: pinEnabled && pin.length === 6 ? pin : null,
         burnOnRead,
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
@@ -401,6 +396,7 @@ export function useUpload({
           presignedUrls,
           chunkSize: DEFAULT_CHUNK_SIZE,
           onProgress: (pct) => setProgress(Math.min(95, pct)),
+          signal: abortControllerRef.current?.signal,
         })
         etags = result.etags
       }
@@ -420,6 +416,9 @@ export function useUpload({
       setInterruptedSession(null)
       return `${url}#key=${keyBase64}`
     } catch (uploadError: any) {
+      if (uploadError.message === "Upload aborted") {
+        throw uploadError
+      }
       console.error("[Upload] Multipart upload interrupted:", uploadError.message)
       throw uploadError
     }
@@ -574,6 +573,7 @@ export function useUpload({
     setUploadingIndex(0)
     uploadStartTime.current = Date.now()
     uploadedBytesRef.current = 0
+    abortControllerRef.current = new AbortController()
 
     try {
       if (uploadType === "cdn") {
@@ -604,6 +604,9 @@ export function useUpload({
               }
               urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
             } catch (err: any) {
+              if (err.message === "Upload aborted") {
+                return
+              }
               if (urls.length > 0) {
                 setShareUrl(urls.join("\n"))
                 setErrorMessage(err.message || "Upload partially failed.")
@@ -623,10 +626,14 @@ export function useUpload({
         onUploadComplete(null)
       }
     } catch (error: any) {
+      if (error.message === "Upload aborted") {
+        return
+      }
       setErrorMessage(error.message || "Upload failed. Please try again.")
       setState("error")
     } finally {
       setIsUploading(false)
+      abortControllerRef.current = null
     }
   }
 
@@ -711,6 +718,7 @@ export function useUpload({
     setInterruptedSession(null)
     setShowResumePopup(false)
     setResuming(false)
+    abortControllerRef.current?.abort()
     fetch("/api/v2/csrf")
       .then((r) => r.json())
       .then((d) => setCsrfToken(d.token || ""))

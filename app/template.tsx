@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation"
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  // The dashboard manages its own layout persistence and internal page transitions.
-  // Wrapping it in a key={pathname} would destroy its layout state on every click.
+  // layout persistance
   if (pathname?.startsWith("/manage")) {
     return <>{children}</>
   }

@@ -9,21 +9,25 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required."}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const { fileId, uploadId } = await request.json()
 
     if (!fileId || !uploadId) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const record = await getStagingRecord(fileId)
     if (!record) {
-      return NextResponse.json({ error: "Upload session not found" }, { status: 404 })
+        console.error(`[API Error] 404 Not Found: ${"Upload session not found"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
     if (record.user_id && record.user_id !== currentUser.userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+        console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     await abortMultipartUpload({
@@ -36,8 +40,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error("[Upload Abort] Error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to abort upload"}`);
     return NextResponse.json(
-      { error: "Failed to abort upload" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

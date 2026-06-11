@@ -10,7 +10,8 @@ import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/crypto-client"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
-import { TIER_LABELS, TIER_STORAGE, type PreferencesTier } from "@/constants"
+import { type PreferencesTier } from "@/constants"
+import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
 
 export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
@@ -71,8 +72,6 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
       document.body.style.overflow = prev
     }
   }, [open, onClose])
-
-  const [mobileTabsOpen, setMobileTabsOpen] = useState(false)
 
   return (
     <AnimatePresence>
@@ -150,23 +149,6 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
   )
 }
 
-function tabTitle(tab: PreferencesTab): string {
-  switch (tab) {
-    case "general":
-      return "General"
-    case "account":
-      return "Account"
-    case "plans":
-      return "Plans"
-    case "billing":
-      return "Billing"
-    case "integrations":
-      return "Integrations"
-    case "security":
-      return "Security"
-  }
-}
-
 function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean; onClick: () => void; label: string; layoutIdPrefix: string }) {
   return (
     <button
@@ -195,15 +177,6 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       )}
       <span className="relative z-10">{label}</span>
     </button>
-  )
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="mb-7">
-      <h4 className="text-[16px] font-medium text-[#111] dark:text-[#f0f0f0] mb-3">{title}</h4>
-      {children}
-    </section>
   )
 }
 
@@ -279,7 +252,7 @@ function GeneralTab() {
         style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
       >
         <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Support</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#ccc]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#ccc]">t.me/hypastack <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
   )
@@ -650,13 +623,13 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.totalStorage) : "-"}
+              {storage ? formatBytes(storage.totalStorage) : "Loading"}
             </p>
             <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
             <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.maxStorage) : "-"}
+              {storage ? formatBytes(storage.maxStorage) : "Loading"}
             </p>
             <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Total space</p>
           </div>
@@ -684,7 +657,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] bg-[#111] dark:bg-[#fff]"
               style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
             >
-              Upgrade now
+              Upgrade
             </button>
           </div>
           <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4">
@@ -722,7 +695,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           </button>
         </div>
         <p className="text-[11px] text-[#aaa] px-3 pb-2.5">
-          All data will be permanently erased. This cannot be undone.
+          All data will be permanently erased, This cannot be undone.
         </p>
       </div>
     </div>
@@ -772,7 +745,7 @@ function EditProfileDialog({
     try {
       const sessionKey = await getSessionKey()
       if (!sessionKey) {
-        setError("Session key not found. Please log out and log back in, then try again.")
+        setError("We couldn't find your session key, please log out and log in, then retry.")
         return
       }
       
@@ -785,13 +758,13 @@ function EditProfileDialog({
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || "Failed to update profile")
+        setError(data.error || "Profile update failed, contact us at t.me/hypastack")
         return
       }
       await refreshUser()
       onClose()
     } catch (err: any) {
-      setError(err?.message || "Network error. Please try again.")
+      setError(err?.message || "Well.. something got tangled up, try again later.")
     } finally {
       setSaving(false)
     }
@@ -872,69 +845,7 @@ function EditProfileDialog({
   )
 }
 
-type PlanInfo = {
-  key: PreferencesTier
-  label: string
-  size: string
-  monthly: string
-  annual: string
-  details: string[]
-}
 
-const PLAN_INFO: PlanInfo[] = [
-  {
-    key: "essential",
-    label: "Essential",
-    size: "300GB",
-    monthly: "13.99 € / month",
-    annual: "167.99 € / year",
-    details: [
-      "300 GB of storage",
-      "550 MB max upload, 200 MB CDN",
-      "30 CDN links - 25 file links",
-      "2x expiration windows",
-    ],
-  },
-  {
-    key: "premium",
-    label: "Premium",
-    size: "750GB",
-    monthly: "24.99 € / month",
-    annual: "299.99 € / year",
-    details: [
-      "750 GB of storage",
-      "1 GB max upload, 500 MB CDN",
-      "100 CDN links - 75 file links",
-      "3x expiration windows",
-    ],
-  },
-  {
-    key: "ultimate",
-    label: "Ultimate",
-    size: "1.1TB",
-    monthly: "39.99 € / month",
-    annual: "479.99 € / year",
-    details: [
-      "1.1 TB of storage",
-      "2.5 GB max upload, 1 GB CDN",
-      "500 CDN links - 500 file links",
-      "4x expiration - priority support",
-    ],
-  },
-  {
-    key: "free",
-    label: "Free",
-    size: "1GB",
-    monthly: "Free forever",
-    annual: "Free forever",
-    details: [
-      "1 GB of storage",
-      "100 MB max upload, 20 MB CDN",
-      "10 CDN links - 10 file links",
-      "Standard expiration",
-    ],
-  },
-]
 
 function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
@@ -1077,7 +988,7 @@ function PlanCard({
   )
 }
 
-function BillingTab({ user }: { user: PreferencesUser }) {
+function BillingTab({ } : { user: PreferencesUser }) {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 16px' }}>
@@ -1096,9 +1007,9 @@ function IntegrationsTab() {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
-        <p className="text-[13px] text-[#333] dark:text-[#ccc] font-medium mb-1">Coming soon</p>
+        <p className="text-[13px] text-[#333] dark:text-[#ccc] font-medium mb-1">Let's see..</p>
         <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] leading-relaxed">
-          Discord bots, integrations, and third-party connectors are on the way.
+          I'm currently playing with ideas for integrations, If you actually want Discord webhooks or something else, let me know, i'd rather build stuff you'll actually use
         </p>
       </div>
     </div>
@@ -1152,11 +1063,11 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
         <p className="text-[13px] text-[#666] dark:text-[#888] leading-relaxed">
-          Hypastack stores <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted usernames</span>,{" "}
+          Hypastack stores <span className="text-[#111] dark:text-[#f0f0f0] font-medium">hashed usernames</span>,{" "}
           <span className="text-[#111] dark:text-[#f0f0f0] font-medium">hashed access keys</span>,{" "}
-          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted filenames</span>, and{" "}
+          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted files with random filenames</span>, and{" "}
           <span className="text-[#111] dark:text-[#f0f0f0] font-medium">metadata-stripped assets</span>.{" "}
-          No emails, no IPs, no passwords, no plaintext PII - ever.
+          If you want me to change something up, lmk, i can think of something.
         </p>
       </div>
 
@@ -1202,37 +1113,9 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
       {!isPaid && (
         <p className="text-[11px] text-[#aaa] px-1">
-          Fixed at <span className="text-[#888] dark:text-[#a1a1aa] font-medium">7 days</span> for free accounts. Upgrade to customize.
+          Fixed at <span className="text-[#888] dark:text-[#a1a1aa] font-medium">7 days</span> for free accounts, Upgrade to customize.
         </p>
       )}
     </div>
-  )
-}
-
-function SecurityRow({
-  icon,
-  title,
-  description,
-  href,
-}: {
-  icon: string
-  title: string
-  description: string
-  href: string
-}) {
-  return (
-    <a
-      href={href}
-      className="flex items-center gap-4 px-4 py-3.5 hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
-    >
-      <div className="h-10 w-10 rounded-md bg-[#111]/8 flex items-center justify-center text-[#555] shrink-0">
-        <MIcon name={icon} size={20} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0]">{title}</p>
-        <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] truncate font-normal">{description}</p>
-      </div>
-      <MIcon name="chevron_right" size={20} className="text-[#aaa] shrink-0" />
-    </a>
   )
 }

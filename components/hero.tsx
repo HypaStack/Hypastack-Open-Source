@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
@@ -24,7 +23,7 @@ export function Hero() {
   function handleLoginClick(e: React.MouseEvent) {
     e.preventDefault();
     if (isLoading) {
-      // Auth not settled yet — wait for it
+      // Auth not settled yet, wait for it
       setPendingNav(true);
       return;
     }
@@ -32,10 +31,7 @@ export function Hero() {
   }
   return (
     <section className="relative min-h-screen pb-32">
-
-      {/* ── Panel (in normal flow, stays at top) ── */}
       <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#ffffff] border-b border-[rgba(0,0,0,0.1)]">
-        {/* Subtle Grid Background */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
           <defs>
             <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
@@ -67,8 +63,6 @@ export function Hero() {
           </defs>
           <rect width="100%" height="100%" fill="url(#hero-large-grid)" mask="url(#grid-mask)" />
         </svg>
-
-        {/* Top-level overlay SVG for vertical rails */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 50, overflow: 'visible' }}>
           <defs>
             <linearGradient id="rail-fade-up" x1="0" y1="30%" x2="0" y2="100%" gradientUnits="userSpaceOnUse">
@@ -99,39 +93,34 @@ export function Hero() {
           className="flex flex-col items-center px-4 relative z-10"
         >
           <a
-            href="https://discord.gg/CFD7G4SK"
+            href="https://t.me/hypastack"
             target="_blank"
             rel="noopener noreferrer"
             className="mb-6 inline-flex items-center gap-2 hover:bg-[#f5f5f5] active:scale-[0.97] transition-all duration-75"
             style={{ height: 30, paddingLeft: 16, paddingRight: 20, borderRadius: 15, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
           >
-            <MIcon name="terminal_2" size={14} style={{ color: '#666' }} />
+            <MIcon name="chat" size={14} style={{ color: '#666' }} />
             <div className="w-[1px] h-3.5 bg-[#e5e5e5]" />
-            <span>Join our insider program</span>
+            <span>Join our Telegram channel</span>
           </a>
-
           <h1
             className="text-center text-[clamp(24px,4vw,46px)] leading-[1.1] tracking-[-0.03em] whitespace-nowrap text-[#000] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
-            Privacy, the way it should be.
+            Private sharing made simple
           </h1>
           <p className="mt-3 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#525252] text-center">
-            Hypastack is the modern CDN and File Sharing platform<br/>for developers, creators, and more.
+            A secure CDN and file-sharing tool for when you need to get stuff from <br />point A to point B without any extra hoops to jump through.
           </p>
-
-          {/* Static CTA buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
             <Button href="/signin" onClick={handleLoginClick} variant="primary" size="md" className="w-full sm:w-[140px]">
-              Log in
+              Start for free
             </Button>
             <Button href="#features" variant="secondary" size="md" className="w-full sm:w-[140px]">
               Learn more
             </Button>
           </div>
         </motion.div>
-
-        {/* Seamless SVG notch at panel bottom */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 48"
@@ -152,15 +141,12 @@ export function Hero() {
             vectorEffect="non-scaling-stroke"
           />
         </svg>
-
-        {/* ── Notch buttons ── */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
           className="absolute left-0 right-0 flex flex-wrap justify-center items-center gap-2 z-20 px-4 bottom-6 md:bottom-auto md:top-[calc(100%+2px)]"
         >
-          {/* We're opensource */}
           <a
             href="https://github.com/HypaStack/Hypastack-Open-Source"
             target="_blank"
@@ -169,10 +155,8 @@ export function Hero() {
             style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
           >
             <img src="https://r2.hypastack.com/cdn/tniuzl9r383i/GitHub_Invertocat_Black.svg" alt="" className="w-[14px] h-[14px] select-none" draggable={false} />
-            <span>We&apos;re open source</span>
+            <span>We're open source</span>
           </a>
-
-          {/* Download for Windows */}
           <a
             href="https://hypastack.com/d/987vw0zy#key=9OU2rAIyA3j3Eye90DrxYoimxWbNCcycuyT6LNn7_BA"
             target="_blank"
@@ -184,9 +168,7 @@ export function Hero() {
             <span>Download for Windows</span>
           </a>
         </motion.div>
-
       </div>
-
     </section>
   );
 }

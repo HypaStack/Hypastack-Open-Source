@@ -1,24 +1,26 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { createCdnFolder, deleteCdnFolderRecursively } from "@/lib/cdn-folder-model"
-
 export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const { name, parentId } = await request.json()
 
     if (!name || typeof name !== "string" || name.trim() === "") {
-      return NextResponse.json({ error: "Folder name is required" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Folder name is required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     if (name.length > 200) {
-      return NextResponse.json({ error: "Folder name is too long" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Folder name is too long"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const folder = await createCdnFolder(currentUser.userId, name.trim(), parentId || null)
@@ -26,7 +28,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, folder })
   } catch (error: any) {
     console.error("[CDN Folders] Error creating folder:", error)
-    return NextResponse.json({ error: "Failed to create folder" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create folder"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }
 
@@ -34,13 +37,15 @@ export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const { folderId } = await request.json()
 
     if (!folderId) {
-      return NextResponse.json({ error: "Folder ID is required" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"Folder ID is required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const { deletedAssets, folderIds } = await deleteCdnFolderRecursively(currentUser.userId, folderId)
@@ -85,6 +90,7 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Folders] Error deleting folder:", error)
-    return NextResponse.json({ error: "Failed to delete folder" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to delete folder"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

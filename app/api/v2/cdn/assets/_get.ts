@@ -6,7 +6,8 @@ export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${'Authentication required'}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const assets = await getCdnAssetsByUserId(currentUser.userId)
@@ -25,6 +26,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('[CDN] List error:', error)
-    return NextResponse.json({ error: 'Failed to load assets' }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${'Failed to load assets'}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

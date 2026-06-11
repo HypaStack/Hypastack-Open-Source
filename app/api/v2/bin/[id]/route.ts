@@ -9,7 +9,8 @@ export async function GET(
   const { id } = await params
   
   if (!id || typeof id !== 'string') {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 })
+      console.error(`[API Error] 400 Bad Request: ${"Invalid ID"}`);
+    return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
   }
 
   const client = await getClient()
@@ -17,7 +18,8 @@ export async function GET(
     const { rows } = await client.query(`SELECT r2_key, created_at FROM dumpster_pastes WHERE id = $1`, [id])
     
     if (rows.length === 0) {
-      return NextResponse.json({ error: "Paste not found" }, { status: 404 })
+        console.error(`[API Error] 404 Not Found: ${"Paste not found"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
     
     const paste = rows[0]
@@ -37,11 +39,13 @@ export async function GET(
       })
     } catch (e: any) {
       console.error("[Dumpster] Error reading from R2:", e)
-      return NextResponse.json({ error: "Failed to read paste content" }, { status: 500 })
+      console.error(`[API Error] 500 Internal Server Error: ${"Failed to read paste content"}`);
+      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
     }
   } catch (error) {
     console.error("[Dumpster] DB error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   } finally {
     client.release()
   }

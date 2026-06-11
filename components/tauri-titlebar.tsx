@@ -2,11 +2,8 @@
 
 import { useEffect, useState } from "react"
 
-/**
- * Custom window titlebar — rendered only inside Tauri.
- * Replaces the native OS chrome (decorations: false in tauri.conf.json).
- * Shows only the Hypastack icon on the left + window controls on the right.
- */
+// custom title bar
+
 export function TauriTitleBar() {
   const [isTauri, setIsTauri] = useState(false)
 
@@ -26,7 +23,7 @@ export function TauriTitleBar() {
         else if (action === "maximize") ipc.invoke("plugin:window|toggle_maximize", { label: "main" })
         else if (action === "close") ipc.invoke("plugin:window|hide", { label: "main" })
       }
-    } catch { /* ignore */ }
+    } catch { }
   }
 
   return (
@@ -70,13 +67,11 @@ export function TauriTitleBar() {
           overflow: hidden !important;
         }
 
-        /* 100vh elements must use viewport units minus 30px to pierce through Next.js parent wrappers without collapsing */
         html.is-tauri .h-screen {
           height: calc(100vh - 30px) !important;
           max-height: calc(100vh - 30px) !important;
         }
 
-        /* Preloader needs to sit exactly inside the wrapper bounds */
         html.is-tauri #global-preloader {
           top: 30px !important;
         }
@@ -146,7 +141,6 @@ export function TauriTitleBar() {
       `}</style>
 
       <div className="tauri-titlebar" data-tauri-drag-region>
-        {/* Left — icon only */}
         <div className="tauri-titlebar-left" data-tauri-drag-region>
           <img
             src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
@@ -156,7 +150,6 @@ export function TauriTitleBar() {
           />
         </div>
 
-        {/* Right — window controls */}
         <div className="tauri-titlebar-controls">
           <button
             className="tauri-titlebar-btn"

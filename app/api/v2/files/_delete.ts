@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { getFilesByIds, deleteFilesByIds } from "@/lib/file-model"
 import { deleteObjectsBatch } from "@/lib/r2"
 import { getUserTier } from "@/lib/user-model"
-import { getTierDelayMs } from "@/lib/tier-limits"
+import { getTierDelayMs } from "@/constants/tier-limits"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 
@@ -11,14 +11,13 @@ export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const { fileId, fileIds } = await request.json()
@@ -31,22 +30,22 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (idsToDelete.length === 0) {
-      return NextResponse.json({ error: "File ID(s) required" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"400: File IDs Required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
-    // Tier delay only applies when > 1 file for free-tier throttling UX.
-    // For batch deletes we still honour it as a single pre-flight wait.
+    // free tier throttle
     const userTier = await getUserTier(currentUser.userId)
     const delayMs = getTierDelayMs(userTier)
     if (idsToDelete.length > 1 && delayMs > 0) {
       await new Promise(resolve => setTimeout(resolve, delayMs))
     }
 
-    // 1. Batch-fetch all records (single DB query, ownership-filtered)
+    // batch fetch all
     const ownedFiles = await getFilesByIds(idsToDelete, currentUser.userId)
     const ownedById = new Map(ownedFiles.map(f => [f.id, f]))
 
-    // 2. Batch-delete from R2 in one HTTP call (up to 1000 keys)
+    // batch delete (up to 1000 keys - but we're limiting it to 500 per batch)
     const r2Keys = ownedFiles.map(f => f.r2_key)
     let failedR2Keys = new Set<string>()
     if (r2Keys.length > 0) {
@@ -58,7 +57,7 @@ export async function DELETE(request: NextRequest) {
       }
     }
 
-    // 3. Batch-delete from DB in one query
+    // batch delete
     const idsWithR2Ok = ownedFiles
       .filter(f => !failedR2Keys.has(f.r2_key))
       .map(f => f.id)
@@ -67,7 +66,7 @@ export async function DELETE(request: NextRequest) {
       await deleteFilesByIds(idsWithR2Ok, currentUser.userId)
     }
 
-    // 4. Stream results back (all at once, preserving existing frontend contract)
+    // stream results back
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       start(controller) {
@@ -91,9 +90,9 @@ export async function DELETE(request: NextRequest) {
               success,
               name,
             }) + "\n"))
-          } catch { /* client disconnected */ }
+          } catch { }
         })
-        try { controller.close() } catch { /* ignore */ }
+        try { controller.close() } catch { }
       }
     })
 
@@ -106,9 +105,7 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     console.error("[Auth Files] DELETE error:", error)
-    return NextResponse.json(
-      { error: "Failed to delete file" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Deletion Failed"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

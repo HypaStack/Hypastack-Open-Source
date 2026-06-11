@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 
-// Static dot pattern background (replaces animated RippleDots)
+// static dotted bg
 function StaticDots() {
   return (
     <svg
@@ -28,7 +28,7 @@ function StaticDots() {
   );
 }
 
-// Block chrome — top lines only (for first block or standalone)
+// top lines only
 function BlockLinesTop() {
   return (
     <div className="hidden md:block">
@@ -40,7 +40,7 @@ function BlockLinesTop() {
   );
 }
 
-// Block chrome — bottom lines only
+// bottom lines only
 function BlockLinesBottom() {
   return (
     <div className="hidden md:block">
@@ -50,7 +50,7 @@ function BlockLinesBottom() {
   );
 }
 
-// Corner dots — all 4 corners
+// all 4 corners
 function CornerDots() {
   const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
   const base = "hidden md:block pointer-events-none";
@@ -67,12 +67,9 @@ function CornerDots() {
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="relative flex flex-col items-center">
-
-      {/* ── BLOCK 1: Drop a file ── */}
       <div className="mt-0 relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
         <BlockLinesTop />
         <CornerDots />
-
         <div className="w-full px-6 sm:px-16 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -85,10 +82,10 @@ export function HowItWorks() {
               className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#000] pb-1 font-medium"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
-              Drop a file. Get a link.
+              A simple way to share files.
             </h2>
             <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#525252]">
-              Upload anything and instantly get an encrypted, shareable link. No accounts required on the receiving end — just a link and the key.
+              Get an encrypted link for whatever you're sending. You don't need to sign up, and the person on the other end just needs the link.
             </p>
             <Button href="/new" variant="primary" size="lg" className="mt-8">
               Try it now
@@ -97,7 +94,6 @@ export function HowItWorks() {
         </div>
       </div>
 
-      {/* ── BLOCK 2: Open Source ── */}
       <div className="relative w-full max-w-[1200px] mt-12 sm:mt-24">
         <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
           <BlockLinesTop />
@@ -115,34 +111,27 @@ export function HowItWorks() {
                 className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#000] pb-1 font-medium"
                 style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
               >
-                Trust the code, not the company.
+                Trust the code not the company.
               </h2>
               <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#525252]">
                 Every line of our code is public. Inspect our architecture, audit our security, or host it yourself. We believe trust is earned through complete transparency.
               </p>
               <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="primary" size="lg" className="mt-8">
-                View on GitHub
+                Source code
               </Button>
             </motion.div>
           </div>
         </div>
-        {/* Corner dots — outside stacking context so they render above */}
         <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
         <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
         <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
         <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
-
-      {/* ── BLOCK 3: Quote ── */}
       <div className="relative w-full max-w-[1200px] mt-12 sm:mt-24">
         <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
-
-          {/* Static dotted background */}
           <StaticDots />
-
           <div className="w-full px-6 sm:px-16 py-12 sm:py-20 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">
-              {/* Quote */}
               <div className="text-left flex-1">
                 <h2
                   className="text-[clamp(20px,2.8vw,32px)] leading-[1.4] tracking-[-0.02em] text-transparent bg-clip-text"
@@ -153,26 +142,21 @@ export function HowItWorks() {
                     backgroundSize: '100% 100%'
                   }}
                 >
-                  &ldquo;Hypastack&apos;s encrypted delivery network is flawlessly reliable — we&apos;ve been routing our core assets through their permanent CDN, pushing massive payloads with zero tracking and near-instant request speeds.&rdquo;
+                  "Hypastack's encrypted delivery network is flawlessly reliable, we've been routing our core assets through their permanent CDN, pushing massive payloads with zero tracking and near-instant request speeds."
                 </h2>
               </div>
-
-              {/* Attribution — hidden on mobile */}
               <div className="hidden sm:flex flex-col items-end text-right shrink-0">
-                {/* Name & Title */}
                 <div className="flex flex-col gap-0.5 mb-3">
                   <span
                     className="text-[17px] font-semibold text-transparent bg-clip-text"
                     style={{ backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)' }}
                   >
-                    Maybe you
+                    Someone
                   </span>
                   <span className="text-[#000000] text-[14px] font-medium">User</span>
                 </div>
-
-                {/* Avatar — smaller, hidden on mobile */}
                 <div className="w-[32px] h-[32px] rounded-full overflow-hidden border border-[rgba(0,0,0,0.08)] shadow-sm bg-white">
-                  <img src="/user/no-profile.png" alt="Maybe you" className="w-full h-full object-cover" />
+                  <img src="/user/no-profile.png" alt="Someone" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>

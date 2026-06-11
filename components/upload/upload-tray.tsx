@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import Turnstile from "react-turnstile"
-import { normalizeTier } from "@/lib/tier-limits"
+import { normalizeTier } from "@/constants/tier-limits"
 import { formatFileSize } from "./utils"
 import type { UseUploadReturn } from "./use-upload"
 
@@ -135,21 +135,21 @@ export function UploadTray({
                       {zippedFile ? (
                         <div className="relative flex items-center gap-3 group" style={{ padding: "10px 16px" }}>
                           <div className="min-w-0 flex-1">
-                            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{zippedFile.name}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{zippedFile.name}</p>
+                              <span className="shrink-0 bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
                                 ZIP
                               </span>
-                              <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
-                                {state === "done"
-                                  ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
-                                  : state === "error"
-                                  ? "Failed"
-                                  : state === "uploading"
-                                  ? `${formatFileSize(zippedFile.size * (progress / 100))} / ${formatFileSize(zippedFile.size)}`
-                                  : "Pending"}
-                              </span>
                             </div>
+                            <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
+                              {state === "done"
+                                ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
+                                : state === "error"
+                                ? "Failed"
+                                : state === "uploading"
+                                ? "Uploading..."
+                                : "Pending"}
+                            </span>
                           </div>
                           {state === "done" && (
                             <div className="shrink-0">
@@ -164,7 +164,7 @@ export function UploadTray({
                             </div>
                           )}
                           {state === "uploading" && (
-                            <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
+                            <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
                               <div style={{ height: "100%", width: `${progress}%`, borderRadius: 1, backgroundColor: "#555", transition: "width 0.3s ease" }} />
                             </div>
                           )}
@@ -173,29 +173,29 @@ export function UploadTray({
                         files.map((f, index) => (
                           <div key={f.id} className="relative flex items-center gap-3 group" style={{ padding: "10px 16px" }}>
                             <div className="min-w-0 flex-1">
-                              <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{f.path || f.file.name}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{f.path || f.file.name}</p>
+                                <span className="shrink-0 bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
                                   {f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
                                 </span>
-                                <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
-                                  {state === "done"
-                                    ? "Uploaded"
-                                    : state === "error"
-                                    ? index < uploadingIndex
-                                      ? "Uploaded"
-                                      : index === uploadingIndex
-                                      ? "Failed"
-                                      : "Skipped"
-                                    : state === "uploading"
-                                    ? index < uploadingIndex
-                                      ? "Uploaded"
-                                      : index === uploadingIndex
-                                      ? `${formatFileSize(f.file.size * (progress / 100))} / ${formatFileSize(f.file.size)}`
-                                      : "Pending"
-                                    : "Pending"}
-                                </span>
                               </div>
+                              <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
+                                {state === "done"
+                                  ? "Uploaded"
+                                  : state === "error"
+                                  ? index < uploadingIndex
+                                    ? "Uploaded"
+                                    : index === uploadingIndex
+                                    ? "Failed"
+                                    : "Skipped"
+                                  : state === "uploading"
+                                  ? index < uploadingIndex
+                                    ? "Uploaded"
+                                    : index === uploadingIndex
+                                    ? "Uploading..."
+                                    : "Pending"
+                                  : "Pending"}
+                              </span>
                             </div>
                             {state === "done" && (
                               <div className="shrink-0">
@@ -210,12 +210,12 @@ export function UploadTray({
                               </div>
                             )}
                             {state === "uploading" && index === uploadingIndex && (
-                              <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
+                              <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
                                 <div style={{ height: "100%", width: `${progress}%`, borderRadius: 1, backgroundColor: "#555", transition: "width 0.3s ease" }} />
                               </div>
                             )}
                             {state === "uploading" && index < uploadingIndex && (
-                              <div className="absolute left-4 right-4" style={{ bottom: 4, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
+                              <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
                                 <div style={{ height: "100%", width: "100%", borderRadius: 1, backgroundColor: "#555" }} />
                               </div>
                             )}

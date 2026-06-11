@@ -6,10 +6,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "./page-logo"
 
-/**
- * Shows a premium loading splash and redirects desktop users
- * past the marketing landing page. On the web, renders nothing.
- */
+// shows splash screen
+
 export function DesktopGate({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -23,7 +21,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
     if (pathname === "/") {
       setShowSplash(true)
     } else {
-      // Navigation completed — tear down the overlay
+      // Navigation completed
       setShowSplash(false)
       setFadeOut(false)
     }
@@ -32,10 +30,10 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!showSplash || isLoading) return
 
-    // Auth resolved — redirect
+    // authentication resolved, redirect
     const target = isAuthenticated ? "/manage" : "/signin"
 
-    // Brief delay for the splash to feel intentional
+    // brief delay -- will remove soon
     const timer = setTimeout(() => {
       setFadeOut(true)
       setTimeout(() => {
@@ -55,12 +53,10 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
         style={{ background: "#0a0a0a" }}
       >
         <div className="flex flex-col items-center gap-6">
-          {/* Logo */}
           <div className="relative">
             <PageLogo size={72} borderRadius={16} className="relative drop-shadow-2xl" />
           </div>
 
-          {/* App name */}
           <h1
             className="text-xl font-medium tracking-wide"
             style={{ color: "#e4e4e7", fontFamily: "var(--font-codec-pro), system-ui, sans-serif" }}
@@ -68,7 +64,6 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
             Hypastack
           </h1>
 
-          {/* Loading spinner */}
           <div className="flex items-center gap-2 mt-2">
             <div className="relative h-5 w-5">
               <div

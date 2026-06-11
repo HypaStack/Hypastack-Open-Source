@@ -7,9 +7,7 @@ export async function POST() {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("[Auth] Logout error:", error)
-    return NextResponse.json(
-      { error: "Failed to logout" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to logout"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

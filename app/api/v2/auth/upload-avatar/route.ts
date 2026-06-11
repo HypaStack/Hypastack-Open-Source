@@ -5,28 +5,27 @@ import { putObjectByKey, deleteByKey } from "@/lib/r2"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 import { fileTypeFromBuffer } from "file-type"
 import { ALLOWED_AVATAR_TYPES } from "@/constants"
-
 export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const formData = await request.formData()
     const file = formData.get("avatar") as File | null
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 })
+        console.error(`[API Error] 400 Bad Request: ${"400 No File Provided"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const bytes = await file.arrayBuffer()
@@ -34,10 +33,8 @@ export async function POST(request: NextRequest) {
 
     const fileType = await fileTypeFromBuffer(buffer)
     if (!fileType || !ALLOWED_AVATAR_TYPES.includes(fileType.mime)) {
-      return NextResponse.json(
-        { error: "Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed." },
-        { status: 415 }
-      )
+        console.error(`[API Error] 415 Unsupported Media Type: ${"415 Invalid File Extension, only JPEG, PNG, WebP, and GIF are allowed."}`);
+      return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
     }
 
     const user = await getUserById(currentUser.userId)
@@ -62,9 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, url: avatarKey })
   } catch (error: any) {
     console.error("[Avatar] Upload error:", error)
-    return NextResponse.json(
-      { error: "Failed to upload avatar" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Failed to upload avatar"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

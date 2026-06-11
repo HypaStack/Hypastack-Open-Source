@@ -121,7 +121,7 @@ export default function CreateAccountPage() {
             >
               Account created
             </h1>
-            <p className="text-[14px] text-[#888] mb-8">Save your access key somewhere safe — it&apos;s the only way to sign in.</p>
+            <p className="text-[14px] text-[#888] mb-8">Save your access key somewhere safe, it's the only way to sign in.</p>
 
             <div className="border border-[rgba(0,0,0,0.12)] bg-[#f9f9f9] rounded-[8px] mb-5">
               <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-[rgba(0,0,0,0.07)]">
@@ -142,7 +142,7 @@ export default function CreateAccountPage() {
             <div className="flex items-start gap-2.5 text-[12px] text-[#888] mb-6 leading-relaxed">
               <MIcon name="warning" size={14} className="shrink-0 mt-0.5 text-[#c47f00]" />
               <span>
-                This key is your <span className="text-[#111] font-semibold">only way to log in</span>. We don&apos;t store it — if you lose it, your account is permanently inaccessible.
+                Hey! This key is the <span className="text-[#111] font-semibold">ONLY way of logging in</span>, we don't store it, if you lose it your account is permanently inaccessible!
               </span>
             </div>
 

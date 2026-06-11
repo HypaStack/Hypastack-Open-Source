@@ -3,21 +3,19 @@ import { getCurrentUser } from "@/lib/auth"
 import { getUserById, updateAvatarUrl } from "@/lib/user-model"
 import { deleteByKey } from "@/lib/r2"
 import { checkApiRateLimit } from "@/lib/rate-limit"
-
 export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     const user = await getUserById(currentUser.userId)
@@ -36,9 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error("[Avatar] Delete error:", error)
-    return NextResponse.json(
-      { error: "Failed to delete avatar" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"500 Avatar Deletion Failed"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

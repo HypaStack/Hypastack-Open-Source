@@ -10,35 +10,27 @@ export async function handleUploadCompletePost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      )
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
     const { fileId, uploadId, parts } = body
 
     if (!fileId) {
-      return NextResponse.json(
-        { error: "File ID is required" },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${"File ID is required"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const record = await getStagingRecord(fileId)
     if (!record) {
-      return NextResponse.json(
-        { error: "Upload session not found or expired" },
-        { status: 404 }
-      )
+        console.error(`[API Error] 404 Not Found: ${"Upload session not found or expired"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     if (record.user_id && record.user_id !== currentUser.userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (uploadId && Array.isArray(parts) && parts.length > 0) {
@@ -51,19 +43,15 @@ export async function handleUploadCompletePost(request: NextRequest) {
       } catch (mpError: any) {
         console.error(`[UploadComplete] Multipart completion failed:`, mpError)
         await abortMultipartUpload({ r2Key: record.r2_key, uploadId }).catch(() => {})
-        return NextResponse.json(
-          { error: "Failed to finalize multipart upload. Please try again." },
-          { status: 500 }
-        )
+        console.error(`[API Error] 500 Internal Server Error: ${"Failed to finalize multipart upload. Please try again."}`);
+        return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
       }
     }
 
     const exists = await fileExistsByKey(record.r2_key)
     if (!exists) {
-      return NextResponse.json(
-        { error: "File not found in storage. Please upload again." },
-        { status: 404 }
-      )
+        console.error(`[API Error] 404 Not Found: ${"File not found in storage. Please upload again."}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     // Skip magic-byte validation for multipart: the assembled object is AES-256-GCM
@@ -77,28 +65,22 @@ export async function handleUploadCompletePost(request: NextRequest) {
         if (!validation.valid) {
           await deleteByKey(record.r2_key)
           console.error(`[UploadComplete] Blocked file type detected and deleted: ${fileId}`)
-          return NextResponse.json(
-            { error: validation.error || "This file type is not allowed." },
-            { status: 415 }
-          )
+            console.error(`[API Error] 415 Unsupported Media Type: ${validation.error || "This file type is not allowed."}`);
+          return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
         }
       } catch (validationError) {
         console.error(`[UploadComplete] Magic bytes validation error:`, validationError)
         await deleteByKey(record.r2_key)
-        return NextResponse.json(
-          { error: "File validation failed. Please try again." },
-          { status: 422 }
-        )
+        console.error(`[API Error] 422 Error: ${"File validation failed. Please try again."}`);
+        return NextResponse.json({ error: "422 Error" }, { status: 422 })
       }
     }
 
     const promoted = await promoteStagingToFile(fileId)
 
     if (!promoted) {
-      return NextResponse.json(
-        { error: "Failed to finalize upload" },
-        { status: 500 }
-      )
+        console.error(`[API Error] 500 Internal Server Error: ${"Failed to finalize upload"}`);
+      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
     }
 
     const displayName = decryptFilename(record.custom_filename || record.original_name)
@@ -110,9 +92,7 @@ export async function handleUploadCompletePost(request: NextRequest) {
 
   } catch (error) {
     console.error("[UploadComplete] Error:", error)
-    return NextResponse.json(
-      { error: "Failed to confirm upload" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to confirm upload"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }

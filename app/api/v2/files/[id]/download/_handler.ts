@@ -54,9 +54,10 @@ export async function handleDownloadPost(
 
     const rateLimit = await checkDownloadRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
+        console.error(`[API Error] 429 Too Many Requests: ${"Download limit reached"}`);
       return NextResponse.json(
         {
-          error: "Download limit reached",
+          error: "429 Too Many Requests",
           message: "You've downloaded too many files recently. Please wait a moment.",
           retryAfter: rateLimit.resetInSeconds,
         },
@@ -67,11 +68,13 @@ export async function handleDownloadPost(
     const { valid, record } = await isFileValid(id)
 
     if (!record) {
-      return NextResponse.json({ error: "File not found" }, { status: 404 })
+        console.error(`[API Error] 404 Not Found: ${"File not found"}`);
+      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
     }
 
     if (!valid) {
-      return NextResponse.json({ error: "File has expired" }, { status: 410 })
+        console.error(`[API Error] 410 Gone: ${"File has expired"}`);
+      return NextResponse.json({ error: "410 Gone" }, { status: 410 })
     }
 
     // Atomic burn-mark BEFORE issuing any URL so concurrent requests can't
@@ -80,8 +83,9 @@ export async function handleDownloadPost(
     if (record.burn_on_read === 1) {
       const burnResult = await markFileBurned(id)
       if (!burnResult.success) {
+          console.error(`[API Error] 410 Gone: ${"File has already been downloaded"}`);
         return NextResponse.json(
-          { error: "File has already been downloaded" },
+          { error: "410 Gone" },
           { status: 410 }
         )
       }
@@ -125,8 +129,9 @@ export async function handleDownloadPost(
     })
   } catch (error) {
     console.error("[Download] Error:", error)
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate download URL"}`);
     return NextResponse.json(
-      { error: "Failed to generate download URL" },
+      { error: "500 Internal Server Error" },
       { status: 500 }
     )
   }

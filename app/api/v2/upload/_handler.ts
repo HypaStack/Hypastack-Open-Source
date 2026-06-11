@@ -10,34 +10,28 @@ import { checkUploadRateLimit } from "@/lib/rate-limit"
 import { getCurrentUser, generateProxyToken } from "@/lib/auth"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { getUserTier } from "@/lib/user-model"
-import { getTierLimits } from "@/lib/tier-limits"
+import { getTierLimits } from "@/constants/tier-limits"
 import { logOperation } from "@/lib/credits"
 
 export async function handleUploadPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      return NextResponse.json(
-        { error: "Authentication required. Please sign in." },
-        { status: 401 }
-      )
+        console.error(`[API Error] 401 Unauthorized: ${"Authentication required. Please sign in."}`);
+      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
-    const { fileName, fileSize, contentType, pin, burnOnRead, turnstileToken, csrfToken, customFilename, note, path, folderId } = body
+    const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, note, path, folderId } = body
 
     if (!fileName || !fileSize || !contentType) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     if (fileName.length > 200) {
-      return NextResponse.json(
-        { error: "Filename too long. Max 200 characters." },
-        { status: 400 }
-      )
+        console.error(`[API Error] 400 Bad Request: ${"Filename too long. Max 200 characters."}`);
+      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
     }
 
     const [userTier, fileStats, cdnStats] = await Promise.all([
@@ -49,52 +43,40 @@ export async function handleUploadPost(request: NextRequest) {
 
     if (fileSize > tier.maxNormalUploadSize) {
       const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
-      return NextResponse.json(
-        { error: `File too large. Max ${limitMB}MB on your plan.` },
-        { status: 413 }
-      )
+        console.error(`[API Error] 413 Payload Too Large: ${`File too large. Max ${limitMB}MB on your plan.`}`);
+      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
     }
 
     if (fileStats.activeFiles >= tier.maxFileLinks) {
-      return NextResponse.json(
-        { error: `You have reached your limit of ${tier.maxFileLinks} active file links on your current plan. Please delete a link or wait for one to expire to upload new ones.` },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${`You have reached your limit of ${tier.maxFileLinks} active file links on your current plan. Please delete a link or wait for one to expire to upload new ones.`}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
-        return NextResponse.json(
-          { error: `You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.` },
-          { status: 403 }
-        )
+          console.error(`[API Error] 403 Forbidden: ${`You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      return NextResponse.json(
-        { error: "Invalid security token. Please refresh the page and try again." },
-        { status: 403 }
-      )
+        console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
+      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit reached, try again later" },
-        { status: 429 }
-      )
+        console.error(`[API Error] 429 Too Many Requests: ${"Rate limit reached, try again later"}`);
+      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-        return NextResponse.json(
-          { error: turnstileResult.error || "Security verification failed" },
-          { status: 403 }
-        )
+          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security verification failed"}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
@@ -105,12 +87,7 @@ export async function handleUploadPost(request: NextRequest) {
     const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
     const uploadUrl = await getPresignedUploadUrlByKey(r2Key, contentType)
 
-    if (pin && (!/^\d{6}$/.test(pin))) {
-      return NextResponse.json(
-        { error: "PIN must be exactly 6 digits" },
-        { status: 400 }
-      )
-    }
+
 
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
@@ -126,7 +103,8 @@ export async function handleUploadPost(request: NextRequest) {
     if (finalFolderId) {
       const userFolders = await getFoldersByUserId(currentUser.userId)
       if (!userFolders.some(f => f.id === finalFolderId)) {
-        return NextResponse.json({ error: "Folder not found or unauthorized" }, { status: 403 })
+          console.error(`[API Error] 403 Forbidden: ${"Folder not found or unauthorized"}`);
+        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
     }
 
@@ -146,7 +124,7 @@ export async function handleUploadPost(request: NextRequest) {
       file_size: fileSize,
       content_type: contentType,
       expires_at: expiresAt,
-      pin: pin || null,
+      pin: null,
       burn_on_read: burnOnRead === true,
       share_url: shareUrl,
       custom_filename: encryptedCustomFilename,
@@ -173,9 +151,7 @@ export async function handleUploadPost(request: NextRequest) {
 
   } catch (error: any) {
     console.error("[Upload] Error:", error)
-    return NextResponse.json(
-      { error: "Failed to generate upload URL" },
-      { status: 500 }
-    )
+    console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate upload URL"}`);
+    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
   }
 }
