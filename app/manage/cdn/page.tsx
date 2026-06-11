@@ -7,6 +7,7 @@ import { UploadZone } from "@/components/upload"
 import { useAuth } from "@/hooks/useAuth"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
 
 interface CdnAsset {
   id: string
@@ -73,6 +74,8 @@ export default function CdnPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
 
   // Upload state
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -311,6 +314,11 @@ export default function CdnPage() {
   }
 
   // ── Hot Swap ──
+  const handleHotSwapAsset = (asset: CdnAsset) => {
+    swapTargetRef.current = asset
+    swapInputRef.current?.click()
+  }
+
   const handleHotSwapClick = () => {
     const ids = Array.from(selectedAssets)
     if (ids.length !== 1) return
@@ -537,6 +545,12 @@ export default function CdnPage() {
 
   const allInFolderSelected = filteredAssets.length > 0 && filteredAssets.every(a => selectedAssets.has(a.id))
 
+  const handleContextMenu = (e: React.MouseEvent, id: string) => {
+    e.preventDefault()
+    setOpenMenuId(id)
+    setContextMenuPos({ x: e.clientX, y: e.clientY })
+  }
+
   const handleSelectAll = () => {
     if (allInFolderSelected) {
       setSelectedAssets(new Set())
@@ -573,7 +587,7 @@ export default function CdnPage() {
             <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
             {breadcrumbs.map(crumb => (
               <span key={crumb.id} className="flex items-center gap-2 text-[#666] dark:text-[#888]">
-                <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#666]" />
+                <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#a1a1aa]" />
                 <span className="cursor-pointer hover:underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors" onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
               </span>
             ))}
@@ -732,7 +746,7 @@ export default function CdnPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
-                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#666] hover:text-red-400"
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#a1a1aa] hover:text-red-400"
                         style={{ height: 28, width: 28, borderRadius: 6 }}
                         aria-label="Delete folder"
                       >
@@ -775,6 +789,15 @@ export default function CdnPage() {
                       asset={asset}
                       selected={selectedAssets.has(asset.id)}
                       onToggleSelect={() => toggleSelect(asset.id)}
+                      copiedId={copiedId}
+                      onContextMenu={handleContextMenu}
+                      isMenuOpen={openMenuId === asset.id}
+                      contextMenuPos={contextMenuPos}
+                      onCloseMenu={() => { setOpenMenuId(null); setContextMenuPos(null) }}
+                      onCopy={handleCopy}
+                      onView={(a) => window.open(a.cdnUrl, "_blank", "noopener,noreferrer")}
+                      onHotSwap={handleHotSwapAsset}
+                      onDelete={handleDelete}
                       onDragAction={(action) => {
                         if (action === 'start') {
                           const mode = selectedAssets.has(asset.id) ? 'deselect' : 'select'
@@ -797,7 +820,7 @@ export default function CdnPage() {
 
       {totalPages > 1 && (
         <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: '8px 12px', marginTop: 8 }}>
-          <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 13 }}>
+          <p className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">
@@ -843,11 +866,29 @@ function CdnAssetTile({
   selected,
   onToggleSelect,
   onDragAction,
+  onContextMenu,
+  isMenuOpen,
+  contextMenuPos,
+  onCloseMenu,
+  onCopy,
+  onView,
+  onHotSwap,
+  onDelete,
+  copiedId
 }: {
   asset: CdnAsset
   selected: boolean
   onToggleSelect: () => void
   onDragAction: (action: 'start' | 'enter') => void
+  onContextMenu: (e: React.MouseEvent, id: string) => void
+  isMenuOpen: boolean
+  contextMenuPos: { x: number; y: number } | null
+  onCloseMenu: () => void
+  onCopy: (url: string, id: string) => void
+  onView: (asset: CdnAsset) => void
+  onHotSwap: (asset: CdnAsset) => void
+  onDelete: (id: string) => void
+  copiedId: string | null
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const [imgLoading, setImgLoading] = useState(true)
@@ -879,6 +920,7 @@ function CdnAssetTile({
             onDragAction('start')
           }
         }}
+        onContextMenu={(e) => onContextMenu(e, asset.id)}
         onMouseEnter={(e) => {
           if (e.buttons === 1 && e.ctrlKey) {
             onDragAction('enter')
@@ -902,7 +944,7 @@ function CdnAssetTile({
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
-            <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 12, marginBottom: 10 }}>
+            <p className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 12, marginBottom: 10 }}>
               Preview <span className="text-[#333] dark:text-[#ccc]" style={{ fontWeight: 500 }}>.{ext}</span>
             </p>
             <button
@@ -923,7 +965,7 @@ function CdnAssetTile({
           <>
             {imgLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#171717]">
-                <svg className="animate-spin h-6 w-6 text-[#999] dark:text-[#666]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <svg className="animate-spin h-6 w-6 text-[#999] dark:text-[#a1a1aa]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -939,7 +981,7 @@ function CdnAssetTile({
         ) : revealed && !showImage ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f5f5f5] dark:bg-[#1a1a1a]">
             <MIcon name="preview_off" size={24} style={{ color: '#bbb' }} />
-            <span className="text-[12px] font-medium text-[#999] dark:text-[#666]">No preview available</span>
+            <span className="text-[12px] font-medium text-[#999] dark:text-[#a1a1aa]">No preview available</span>
           </div>
         ) : null}
 
@@ -980,6 +1022,33 @@ function CdnAssetTile({
           {formatBytes(asset.size)}
         </p>
       </div>
+
+      <ContextMenu isOpen={isMenuOpen} pos={contextMenuPos} onClose={onCloseMenu}>
+        <ContextMenuItem
+          icon={copiedId === asset.id ? "check" : "content_copy"}
+          label={copiedId === asset.id ? "Copied" : "Copy link"}
+          onClick={() => { onCopy(asset.cdnUrl, asset.id); onCloseMenu() }}
+          accent={copiedId === asset.id ? "success" : undefined}
+        />
+        <ContextMenuItem
+          icon="open_in_new"
+          label="View asset"
+          onClick={() => { onView(asset); onCloseMenu() }}
+        />
+        <ContextMenuDivider />
+        <ContextMenuItem
+          icon="swap_horiz"
+          label="Hot swap"
+          onClick={() => { onHotSwap(asset); onCloseMenu() }}
+          accent="warning"
+        />
+        <ContextMenuItem
+          icon="delete"
+          label="Delete"
+          onClick={() => { onDelete(asset.id); onCloseMenu() }}
+          accent="danger"
+        />
+      </ContextMenu>
     </motion.div>
   )
 }
@@ -1030,7 +1099,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
           <div className="inline-flex items-center justify-center mb-5 bg-[#f0f0f0] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ width: 64, height: 64, borderRadius: 6 }}>
-            <MIcon name="search" size={28} className="text-[#999] dark:text-[#666]" />
+            <MIcon name="search" size={28} className="text-[#999] dark:text-[#a1a1aa]" />
           </div>
         ) : null}
         {query ? (

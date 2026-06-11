@@ -115,7 +115,7 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
       <div className="flex gap-1">
         <button
           onClick={handleCancel}
-          className="flex-1 flex items-center justify-center hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#777]"
+          className="flex-1 flex items-center justify-center hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#a1a1aa]"
           style={{ height: 36, borderRadius: 6, fontSize: 13, fontWeight: 400 }}
         >
           {notif.cancelText ?? "Cancel"}
@@ -192,7 +192,7 @@ export function HypaNotifProvider() {
                   {notif.title}
                 </p>
                 {notif.description && (
-                  <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
+                  <p className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
                     {notif.description}
                   </p>
                 )}
@@ -207,7 +207,7 @@ export function HypaNotifProvider() {
               >
                 {notif.items.map((item, i) => (
                   <div key={i} className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 6 }}>
-                    <MIcon name="description" size={14} className="text-[#999] dark:text-[#666]" style={{ flexShrink: 0 }} />
+                    <MIcon name="description" size={14} className="text-[#999] dark:text-[#a1a1aa]" style={{ flexShrink: 0 }} />
                     <span className="text-[#333] dark:text-[#ccc]" style={{ fontSize: 13, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
                   </div>
                 ))}
@@ -218,7 +218,7 @@ export function HypaNotifProvider() {
             {notif.isProgress ? (
               <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '12px 14px' }}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#888] dark:text-[#777]" style={{ fontSize: 13 }}>{notif.progressText || "Processing..."}</span>
+                  <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>{notif.progressText || "Processing..."}</span>
                   <span className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 13, fontWeight: 500 }}>{Math.round(notif.progressPercent || 0)}%</span>
                 </div>
                 <div className="bg-[#e5e5e5] dark:bg-[#333]" style={{ height: 5, borderRadius: 3, overflow: 'hidden' }}>
@@ -249,7 +249,7 @@ export function HypaNotifProvider() {
                     className="w-full flex items-center gap-3 hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#ccc]"
                     style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 400 }}
                   >
-                    <MIcon name="close" size={15} className="text-[#999] dark:text-[#666]" />
+                    <MIcon name="close" size={15} className="text-[#999] dark:text-[#a1a1aa]" />
                     {notif.cancelText || "Cancel"}
                   </button>
                 )}

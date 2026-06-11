@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "rea
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
+import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { useAuth, type FileItem } from "@/hooks/useAuth"
 import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
@@ -94,6 +95,7 @@ function FilesPageInner() {
   const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
+  const activeContextMenuFile = files.find(f => f.id === openMenuId)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [wtStep, setWtStep] = useState(0)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
@@ -452,7 +454,7 @@ function FilesPageInner() {
           <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map(f => (
             <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#888]">
-              <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#666]" />
+              <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#a1a1aa]" />
               <span className="cursor-pointer hover:underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
@@ -554,11 +556,11 @@ function FilesPageInner() {
                   deleteLoading={deleteLoading}
                   onToggleStar={handleToggleStar}
                   starLoading={starLoading}
-                  openMenuId={openMenuId}
-                  setOpenMenuId={setOpenMenuId}
-                  menuRef={menuRef}
-                  contextMenuPos={contextMenuPos}
-                  setContextMenuPos={setContextMenuPos}
+                  onContextMenu={(e, id) => {
+                    e.preventDefault();
+                    setOpenMenuId(id);
+                    setContextMenuPos({ x: e.clientX, y: e.clientY });
+                  }}
                 />
               ) : (
                 <GridView
@@ -574,13 +576,7 @@ function FilesPageInner() {
                   onContextMenu={(e, id) => {
                     e.preventDefault();
                     setOpenMenuId(id);
-                    const mainEl = e.currentTarget.closest('main');
-                    if (mainEl) {
-                      const rect = mainEl.getBoundingClientRect();
-                      setContextMenuPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-                    } else {
-                      setContextMenuPos({ x: e.clientX, y: e.clientY });
-                    }
+                    setContextMenuPos({ x: e.clientX, y: e.clientY });
                   }}
                 />
               )}
@@ -671,6 +667,40 @@ function FilesPageInner() {
           </>
         )}
       </AnimatePresence>
+
+      <ContextMenu isOpen={!!activeContextMenuFile} pos={contextMenuPos} onClose={() => { setOpenMenuId(null); setContextMenuPos(null) }}>
+        {activeContextMenuFile && (
+          <>
+            <ContextMenuItem
+              icon={copiedId === activeContextMenuFile.id ? "check" : "content_copy"}
+              label={copiedId === activeContextMenuFile.id ? "Copied" : "Copy link"}
+              onClick={() => { handleCopyLink(activeContextMenuFile.shareUrl, activeContextMenuFile.id); setOpenMenuId(null); setContextMenuPos(null) }}
+              accent={copiedId === activeContextMenuFile.id ? "success" : undefined}
+            />
+            <ContextMenuLink
+              icon="open_in_new"
+              label="View"
+              href={`/d/${activeContextMenuFile.id}`}
+              onClick={() => { setOpenMenuId(null); setContextMenuPos(null) }}
+              target="_blank"
+            />
+            <ContextMenuDivider />
+            <ContextMenuItem
+              icon="star"
+              label={activeContextMenuFile.starred ? "Unstar" : "Star"}
+              onClick={() => { handleToggleStar(activeContextMenuFile.id, activeContextMenuFile.starred); setOpenMenuId(null); setContextMenuPos(null) }}
+              disabled={starLoading === activeContextMenuFile.id}
+            />
+            <ContextMenuItem
+              icon="delete"
+              label="Delete"
+              onClick={() => { handleDelete(activeContextMenuFile.id); setOpenMenuId(null); setContextMenuPos(null) }}
+              disabled={deleteLoading === activeContextMenuFile.id}
+              accent="danger"
+            />
+          </>
+        )}
+      </ContextMenu>
 
       <Walkthrough
         id="drive_onboarding"
@@ -797,7 +827,7 @@ function SortLabel({
       type="button"
       onClick={() => onClick(field)}
       className={`inline-flex items-center gap-1.5 text-[14px] font-medium tracking-wide transition-colors ${
-        active ? "text-[#111] dark:text-[#f0f0f0]" : "text-[#888] dark:text-[#666] hover:text-[#333] dark:hover:text-[#ccc]"
+        active ? "text-[#111] dark:text-[#f0f0f0]" : "text-[#888] dark:text-[#a1a1aa] hover:text-[#333] dark:hover:text-[#ccc]"
       }`}
     >
       {label}
@@ -829,11 +859,7 @@ function ListView({
   deleteLoading,
   onToggleStar,
   starLoading,
-  openMenuId,
-  setOpenMenuId,
-  menuRef,
-  contextMenuPos,
-  setContextMenuPos,
+  onContextMenu,
 }: {
   files: FileItem[]
   selectedFiles: Set<string>
@@ -849,11 +875,7 @@ function ListView({
   deleteLoading: string | null
   onToggleStar: (id: string, current: boolean) => void
   starLoading: string | null
-  openMenuId: string | null
-  setOpenMenuId: (id: string | null) => void
-  menuRef: React.RefObject<HTMLDivElement | null>
-  contextMenuPos: { x: number; y: number } | null
-  setContextMenuPos: (pos: { x: number; y: number } | null) => void
+  onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   return (
     <div className="bg-[#ebebeb] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: 1, boxShadow: 'none' }}>
@@ -879,7 +901,6 @@ function ListView({
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
           const isImage = isImagePreviewable(file.contentType, file.name)
-          const isMenuOpen = openMenuId === file.id
           return (
             <div
               key={file.id}
@@ -894,17 +915,7 @@ function ListView({
                 if ((e.target as HTMLElement).closest('input') || (e.target as HTMLElement).closest('button')) return;
                 window.open(`/d/${file.id}`, '_blank');
               }}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                setOpenMenuId(file.id);
-                const mainEl = e.currentTarget.closest('main');
-                if (mainEl) {
-                  const rect = mainEl.getBoundingClientRect();
-                  setContextMenuPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-                } else {
-                  setContextMenuPos({ x: e.clientX, y: e.clientY });
-                }
-              }}
+              onContextMenu={(e) => onContextMenu(e, file.id)}
             >
               <input
                 type="checkbox"
@@ -915,7 +926,7 @@ function ListView({
               />
 
               <div className="flex items-center gap-3.5 min-w-0">
-                <div className="relative h-8 w-8 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-white">
+                <div className="relative h-8 w-8 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-[#444] dark:text-[#ccc]">
                   <MIcon name={getFileIconForType(file.contentType, file.name)} size={22} />
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -943,129 +954,21 @@ function ListView({
                 </div>
               </div>
 
-              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#666] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#a1a1aa] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatDate(file.uploadedAt)}
               </span>
 
-              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#666] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="hidden md:block text-[13px] text-[#999] dark:text-[#a1a1aa] font-normal" style={{ fontVariantNumeric: "tabular-nums" }}>
                 {formatBytes(file.size)}
               </span>
 
               <div className="relative flex justify-end">
-
-                <AnimatePresence>
-                  {isMenuOpen && (
-                    <motion.div
-                      ref={menuRef}
-                      initial={{ opacity: 0, scale: 0.98, ...(contextMenuPos ? {} : { y: 4 }) }}
-                      animate={{ opacity: 1, scale: 1, ...(contextMenuPos ? {} : { y: 0 }) }}
-                      exit={{ opacity: 0, scale: 0.98, ...(contextMenuPos ? {} : { y: 4 }) }}
-                      transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-                      className={contextMenuPos ? "fixed z-[9999] bg-[#ffffff] dark:bg-[#1c1c1c]" : "absolute right-0 top-full mt-1.5 z-30 bg-[#ffffff] dark:bg-[#1c1c1c]"}
-                      style={{ 
-                        width: 220, 
-                        padding: 6,
-                        borderRadius: 6, 
-                        boxShadow: '0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)', 
-                        transformOrigin: contextMenuPos ? 'top left' : 'top right',
-                        ...(contextMenuPos ? { left: contextMenuPos.x, top: contextMenuPos.y } : {})
-                      }}
-                      onClick={(e) => {
-                        const target = e.target as HTMLElement;
-                        if (!target.closest('button') && !target.closest('a')) {
-                          setOpenMenuId(null);
-                          setContextMenuPos(null);
-                        }
-                      }}
-                    >
-                      <ActionItem
-                        icon={copiedId === file.id ? "check" : "content_copy"}
-                        label={copiedId === file.id ? "Copied" : "Copy link"}
-                        onClick={() => { onCopyLink(file.shareUrl, file.id); setOpenMenuId(null); setContextMenuPos(null) }}
-                        accent={copiedId === file.id ? "success" : undefined}
-                      />
-                      <ActionLink icon="visibility" label="View" href={`/d/${file.id}`} onClick={() => { setOpenMenuId(null); setContextMenuPos(null) }} />
-                      <ActionItem
-                        icon="star"
-                        label={file.starred ? "Unstar" : "Star"}
-                        onClick={() => { onToggleStar(file.id, file.starred); setOpenMenuId(null); setContextMenuPos(null) }}
-                        disabled={starLoading === file.id}
-                      />
-                      <ActionItem
-                        icon="delete"
-                        label={deleteLoading === file.id ? "Deleting" : "Delete"}
-                        onClick={() => { onDelete(file.id); setContextMenuPos(null) }}
-                        disabled={deleteLoading === file.id}
-                        accent="danger"
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
             </div>
           )
         })}
       </div>
     </div>
-  )
-}
-
-function ActionItem({
-  icon,
-  label,
-  onClick,
-  disabled,
-  accent,
-}: {
-  icon: string
-  label: string
-  onClick: () => void
-  disabled?: boolean
-  accent?: "danger" | "success"
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="w-full flex items-center bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
-      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 6, border: 'none' }}
-    >
-      <div className="flex items-center w-full" style={{ gap: 12 }}>
-        <span className="shrink-0" style={{ color: accent === 'danger' ? '#ef4444' : accent === 'success' ? '#16a34a' : '#666' }}>
-          <MIcon name={icon} size={15} />
-        </span>
-        <span className={accent === 'danger' ? 'text-[#ef4444]' : 'text-[#111] dark:text-[#f0f0f0]'} style={{ fontSize: 14, fontWeight: 400, lineHeight: 1 }}>{label}</span>
-      </div>
-    </button>
-  )
-}
-
-function ActionLink({
-  icon,
-  label,
-  href,
-  onClick,
-}: {
-  icon: string
-  label: string
-  href: string
-  onClick?: () => void
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="flex items-center hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 6, border: 'none' }}
-    >
-      <div className="flex items-center w-full" style={{ gap: 12 }}>
-        <span className="shrink-0" style={{ color: '#666' }}>
-          <MIcon name={icon} size={15} />
-        </span>
-        <span className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 400, lineHeight: 1 }}>{label}</span>
-      </div>
-    </Link>
   )
 }
 
@@ -1142,7 +1045,7 @@ function GridView({
             }`}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <MIcon name={iconName} size={48} className="text-[#999] dark:text-[#555]" />
+              <MIcon name={iconName} size={48} className="text-[#999] dark:text-[#999]" />
             </div>
 
               <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
@@ -1213,7 +1116,7 @@ function GridView({
                 <span className="uppercase tracking-wider">
                   {getFileTypeLabel(file.name, file.contentType)}
                 </span>
-                <span className="mx-1.5 text-[#999] dark:text-[#666]">·</span>
+                <span className="mx-1.5 text-[#999] dark:text-[#a1a1aa]">·</span>
                 {formatBytes(file.size)}
               </p>
             </div>
