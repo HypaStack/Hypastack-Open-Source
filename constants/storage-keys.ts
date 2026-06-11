@@ -1,8 +1,3 @@
-/**
- * localStorage / sessionStorage key constants.
- * Centralising all storage keys prevents typo bugs and key collisions.
- */
-
 /** User's preferred UI theme ("light" | "dark" | "system") */
 export const STORAGE_KEY_THEME = "hypa-theme"
 

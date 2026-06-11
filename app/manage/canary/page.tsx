@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/hooks/useAuth"
+import { useManage } from "@/hooks/useManage"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 
@@ -35,7 +35,7 @@ const PERKS = [
 ]
 
 export default function CanaryPage() {
-  const { user } = useAuth()
+  const { user } = useManage()
   const router = useRouter()
 
   useEffect(() => {

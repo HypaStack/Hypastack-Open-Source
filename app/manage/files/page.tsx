@@ -7,7 +7,8 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
-import { useAuth, type FileItem } from "@/hooks/useAuth"
+import { type FileItem } from "@/hooks/useManage"
+import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
@@ -81,7 +82,7 @@ type SortField = "name" | "size" | "date"
 type SortDirection = "asc" | "desc"
 
 function FilesPageInner() {
-  const { user, files, folders, setFiles, setFolders, refreshUser, isLoading } = useAuth()
+  const { user, files, folders, setFiles, setFolders, refreshUser, isLoading } = useManage()
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "")
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)

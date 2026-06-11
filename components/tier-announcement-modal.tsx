@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
-import { useAuth } from "@/hooks/useAuth";
+import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
 
 export function TierAnnouncementModal() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser } = useManage();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
 

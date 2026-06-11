@@ -8,6 +8,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
+import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -152,9 +153,22 @@ export default function ManageLayout({
 }: {
   children: React.ReactNode
 }) {
+  return (
+    <ManageProvider>
+      <ManageLayoutInner>{children}</ManageLayoutInner>
+    </ManageProvider>
+  )
+}
+
+function ManageLayoutInner({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const router = useRouter()
   const pathname = usePathname()
-  const { user, stats, isAuthenticated, isLoading, logout } = useAuth()
+  const { isAuthenticated } = useAuth()
+  const { user, stats, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
 
   const currentSection = sectionTitle(pathname)
