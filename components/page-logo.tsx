@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { motion } from "motion/react"
 import { useTheme } from "@/hooks/useTheme"
 
@@ -12,17 +13,27 @@ interface PageLogoProps {
   darkSrc?: string
 }
 
-/**
- * Single shared logo component used across ALL pages.
- * layoutId="hypa-logo" tells Framer Motion to animate
- * this element between its positions when pages transition.
- * Render this ONCE per page — never render it multiple times on the same page.
- */
 export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className = "", disableLayoutAnimation = false, darkSrc }: PageLogoProps) {
   const { resolvedTheme } = useTheme()
   const src = darkSrc && resolvedTheme === "dark"
     ? darkSrc
     : "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+
+  if (disableLayoutAnimation && !pulse) {
+    return (
+      <Image
+        src={src}
+        alt="Hypastack"
+        width={size}
+        height={size}
+        priority
+        unoptimized
+        style={{ borderRadius, display: "block", flexShrink: 0, userSelect: "none", WebkitUserDrag: "none" }}
+        className={`pointer-events-none ${className}`}
+        draggable={false}
+      />
+    )
+  }
 
   return (
     <motion.img
