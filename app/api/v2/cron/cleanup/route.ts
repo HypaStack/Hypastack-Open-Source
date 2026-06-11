@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { cleanupExpiredFiles, cleanupStaging, cleanupDumpsterPastes } from "@/lib/cleanup"
+import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -9,12 +10,12 @@ export async function POST(request: NextRequest) {
 
   if (!expectedKey) {
       console.error(`[API Error] 503 Service Unavailable: ${"Not configured"}`);
-    return NextResponse.json({ error: "503 Service Unavailable" }, { status: 503 })
+    return NextResponse.json({ error: API_ERRORS.SERVICE_UNAVAILABLE }, { status: 503 })
   }
 
   if (!authHeader || !authHeader.startsWith("Bearer ") || authHeader.slice(7) !== expectedKey) {
       console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-    return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+    return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
   }
 
   try {
@@ -31,6 +32,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Cron] Cleanup error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Cleanup failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

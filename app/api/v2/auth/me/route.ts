@@ -7,6 +7,7 @@ import { getFoldersByUserId } from "@/lib/folder-model"
 import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { normalizeTier, isPaidTier, getTierLimits } from "@/constants/tier-limits"
+import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     if ((wantUser || wantStats) && !user) {
         console.error(`[API Error] 404 Not Found: ${"User not found"}`);
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
     const body: Record<string, unknown> = { authenticated: true, userId: currentUser.userId }
@@ -125,6 +126,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("[Auth] Get user error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to get user"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

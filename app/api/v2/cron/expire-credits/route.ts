@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { expireOldCredits } from "@/lib/credits"
 import { getPool, ensureDatabase } from "@/lib/db"
 import crypto from "crypto"
+import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     if (!secret || !envSecret) {
         console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const secretHash = crypto.createHash("sha256").update(secret).digest()
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     if (!crypto.timingSafeEqual(secretHash, envSecretHash)) {
         console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     await ensureDatabase()
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     console.error("[Cron Expire Credits] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to run credit expiry"}`);
     return NextResponse.json(
-      { error: "500 Internal Server Error" },
+      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
       { status: 500 }
     )
   }

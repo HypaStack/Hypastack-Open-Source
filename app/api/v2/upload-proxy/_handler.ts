@@ -13,13 +13,14 @@ import {
 } from "@/lib/security/zero-trust"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
+import { API_ERRORS } from "@/constants"
 
 export async function handleUploadProxyPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const userTier = await getUserTier(currentUser.userId)
@@ -27,7 +28,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     const formData = await request.formData()
@@ -41,24 +42,24 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
     if (!fileId || !proxyToken || !verifyProxyToken(proxyToken, fileId)) {
         console.error(`[API Error] 403 Forbidden: ${"403 Upload Session Invalid"}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     const csrfValid = await validateCsrfToken(csrfToken || "")
     if (!csrfValid) {
         console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     if (!file) {
         console.error(`[API Error] 400 Bad Request: ${"400 No File Provided"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
     if (file.size > MAX_PROXY_SIZE) {
         console.error(`[API Error] 413 Payload Too Large: ${`413 Proxy Upload Limit Exceeded`}`);
-      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
+      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
     const bytes = await file.arrayBuffer()
@@ -68,13 +69,13 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const typeVerification = await verifyFileType(buffer)
     if (!typeVerification.valid) {
         console.error(`[API Error] 415 Unsupported Media Type: ${typeVerification.error || "415 Unsupported File Type"}`);
-      return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
+      return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
     }
 
     const filenameSanitization = sanitizeFilename(file.name)
     if (!filenameSanitization.isValid) {
         console.error(`[API Error] 400 Bad Request: ${filenameSanitization.error || "400 Invalid Filename"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     buffer = await stripMetadata(buffer, typeVerification.mimeType!)
@@ -124,6 +125,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[UploadProxy] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"500 Proxy Upload Failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

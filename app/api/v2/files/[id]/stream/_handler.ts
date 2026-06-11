@@ -6,6 +6,7 @@ import { createDecryptStream } from "@/lib/security/zero-trust"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { Readable } from "stream"
 import { logOperation } from "@/lib/credits"
+import { API_ERRORS } from "@/constants"
 
 export async function handleStreamGet(
   request: NextRequest,
@@ -20,18 +21,18 @@ export async function handleStreamGet(
     const rateLimit = await verifyDownloadRateLimit('anonymous')
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: "429 Too Many Requests", retryAfter: rateLimit.resetInSeconds },
+        { error: API_ERRORS.TOO_MANY_REQUESTS, retryAfter: rateLimit.resetInSeconds },
         { status: 429 }
       )
     }
 
     const { valid, record } = await isFileValid(id)
     if (!record) {
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
     if (!valid) {
         console.error(`[API Error] 410 Gone: ${"410 File Expired"}`);
-      return NextResponse.json({ error: "410 Gone" }, { status: 410 })
+      return NextResponse.json({ error: API_ERRORS.GONE }, { status: 410 })
     }
 
     // bounce
@@ -46,7 +47,7 @@ export async function handleStreamGet(
 
     const response = await getR2Client().send(command)
     if (!response.Body) {
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
     const s3Stream = response.Body as Readable
@@ -80,6 +81,6 @@ export async function handleStreamGet(
   } catch (error: any) {
     console.error(`[DownloadProxy] Error for file ${fileId}:`, error)
     console.error(`[API Error] 500 Internal Server Error: ${"500 Download Failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

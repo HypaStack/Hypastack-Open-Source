@@ -3,18 +3,19 @@ import { getCurrentUser } from "@/lib/auth"
 import { getFilesByUserId } from "@/lib/file-model"
 import { decryptFilename } from "@/lib/filename-crypto"
 import { checkApiRateLimit } from "@/lib/rate-limit"
+import { API_ERRORS } from "@/constants"
 
 export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     const files = await getFilesByUserId(currentUser.userId)
@@ -36,6 +37,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("[Auth Files] GET error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"500 File Fetch Failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

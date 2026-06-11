@@ -4,6 +4,7 @@ import { getFileById } from "@/lib/file-model"
 import { getPresignedDownloadUrl } from "@/lib/r2"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 import { PREVIEWABLE_MIME_REGEX } from "@/constants"
+import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -16,27 +17,27 @@ export async function GET(
   const currentUser = await getCurrentUser(request)
   if (!currentUser) {
       console.error(`[API Error] 401 Unauthorized: ${"Not authenticated"}`);
-    return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+    return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
   }
   const rateLimit = await checkApiRateLimit(currentUser.userId)
   if (!rateLimit.allowed) {
       console.error(`[API Error] 429 Too Many Requests: ${"Rate limit exceeded"}`);
-    return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+    return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
   }
 
   const { id } = await params
   const record = await getFileById(id)
   if (!record) {
       console.error(`[API Error] 404 Not Found: ${"Not found"}`);
-    return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+    return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
   }
   if (record.user_id !== currentUser.userId) {
       console.error(`[API Error] 403 Forbidden: ${"Forbidden"}`);
-    return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+    return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
   }
   if (!PREVIEWABLE.test(record.content_type || "")) {
       console.error(`[API Error] 415 Unsupported Media Type: ${"Not previewable"}`);
-    return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
+    return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
   }
 
   const url = await getPresignedDownloadUrl({
@@ -66,6 +67,6 @@ export async function GET(
   } catch (error) {
     console.error("Preview fetch error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

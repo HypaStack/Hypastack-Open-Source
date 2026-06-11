@@ -13,6 +13,7 @@ import {
   PRESIGNED_TTL_SECONDS,
   BURN_PRESIGNED_TTL_SECONDS,
   BURN_DELETE_DELAY_MS,
+  API_ERRORS,
 } from "@/constants"
 
 const executeBurnDeletion = async (id: string, r2Key: string) => {
@@ -57,7 +58,7 @@ export async function handleDownloadPost(
         console.error(`[API Error] 429 Too Many Requests: ${"Download limit reached"}`);
       return NextResponse.json(
         {
-          error: "429 Too Many Requests",
+          error: API_ERRORS.TOO_MANY_REQUESTS,
           message: "You've downloaded too many files recently. Please wait a moment.",
           retryAfter: rateLimit.resetInSeconds,
         },
@@ -69,12 +70,12 @@ export async function handleDownloadPost(
 
     if (!record) {
         console.error(`[API Error] 404 Not Found: ${"File not found"}`);
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
     if (!valid) {
         console.error(`[API Error] 410 Gone: ${"File has expired"}`);
-      return NextResponse.json({ error: "410 Gone" }, { status: 410 })
+      return NextResponse.json({ error: API_ERRORS.GONE }, { status: 410 })
     }
 
     // Atomic burn-mark BEFORE issuing any URL so concurrent requests can't
@@ -85,7 +86,7 @@ export async function handleDownloadPost(
       if (!burnResult.success) {
           console.error(`[API Error] 410 Gone: ${"File has already been downloaded"}`);
         return NextResponse.json(
-          { error: "410 Gone" },
+          { error: API_ERRORS.GONE },
           { status: 410 }
         )
       }
@@ -131,7 +132,7 @@ export async function handleDownloadPost(
     console.error("[Download] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate download URL"}`);
     return NextResponse.json(
-      { error: "500 Internal Server Error" },
+      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
       { status: 500 }
     )
   }

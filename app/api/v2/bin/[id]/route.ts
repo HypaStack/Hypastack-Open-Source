@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getClient } from "@/lib/db"
 import { downloadHeadByKey } from "@/lib/r2"
+import { API_ERRORS } from "@/constants"
 
 export async function GET(
   req: Request,
@@ -10,7 +11,7 @@ export async function GET(
   
   if (!id || typeof id !== 'string') {
       console.error(`[API Error] 400 Bad Request: ${"Invalid ID"}`);
-    return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+    return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
   }
 
   const client = await getClient()
@@ -19,7 +20,7 @@ export async function GET(
     
     if (rows.length === 0) {
         console.error(`[API Error] 404 Not Found: ${"Paste not found"}`);
-      return NextResponse.json({ error: "404 Not Found" }, { status: 404 })
+      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
     
     const paste = rows[0]
@@ -40,12 +41,12 @@ export async function GET(
     } catch (e: any) {
       console.error("[Dumpster] Error reading from R2:", e)
       console.error(`[API Error] 500 Internal Server Error: ${"Failed to read paste content"}`);
-      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+      return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
     }
   } catch (error) {
     console.error("[Dumpster] DB error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   } finally {
     client.release()
   }

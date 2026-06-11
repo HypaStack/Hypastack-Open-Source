@@ -11,6 +11,7 @@ import { getPresignedCdnUploadUrl } from "@/lib/r2"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
 import { logOperation } from "@/lib/credits"
+import { API_ERRORS } from "@/constants"
 
 interface FileInitInput {
   fileName: string
@@ -23,7 +24,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
         console.error(`[API Error] 401 Unauthorized: ${"401 Authentication Required"}`);
-      return NextResponse.json({ error: "401 Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     const body = await request.json()
@@ -39,32 +40,32 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       const { fileName, fileSize, contentType } = body
       if (!fileName || typeof fileSize !== "number" || !contentType) {
           console.error(`[API Error] 400 Bad Request: ${"400 Missing Required Fields"}`);
-        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+        return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
       }
       filesToInit = [{ fileName, fileSize, contentType }]
     }
 
     if (filesToInit.length === 0) {
         console.error(`[API Error] 400 Bad Request: ${"400 No Files Provided"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     if (!csrfToken) {
         console.error(`[API Error] 400 Bad Request: ${"400 Missing Required Fields"}`);
-      return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
         console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     if (process.env.NODE_ENV !== "development" && turnstileToken) {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
           console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "403 Security Verification Failed"}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
@@ -79,7 +80,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     const rateLimit = await checkCdnUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
         console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: "429 Too Many Requests" }, { status: 429 })
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     // Credits gate — CDN operations require credits after free tier
@@ -94,7 +95,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     // Check CDN asset count limit
     if (cdnStats.totalAssets + filesToInit.length > tier.maxCdnLinks) {
         console.error(`[API Error] 403 Forbidden: ${`403 CDN Asset Limit Reached`}`);
-      return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     // Check total file cap (Drive + CDN combined)
@@ -102,7 +103,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets + filesToInit.length
       if (totalFiles > tier.maxTotalFiles) {
           console.error(`[API Error] 403 Forbidden: ${`403 Total File Limit Reached`}`);
-        return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
@@ -113,21 +114,21 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     for (const f of filesToInit) {
       if (!f.fileName || typeof f.fileSize !== "number" || !f.contentType) {
           console.error(`[API Error] 400 Bad Request: ${"400 Missing Required Fields"}`);
-        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+        return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
       }
       if (f.fileSize <= 0 || f.fileSize > tier.maxCdnFileSize) {
         const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
           console.error(`[API Error] 413 Payload Too Large: ${`413 File Exceeds Limit (maximum ${limitMB}MB per file on your plan)`}`);
-        return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
+        return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
       }
       if (isExtensionBlocked(f.fileName)) {
           console.error(`[API Error] 415 Unsupported Media Type: ${`415 File Type Not Allowed`}`);
-        return NextResponse.json({ error: "415 Unsupported Media Type" }, { status: 415 })
+        return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
       }
       const sanitization = sanitizeCdnFilename(f.fileName)
       if (!sanitization.isValid) {
           console.error(`[API Error] 400 Bad Request: ${sanitization.error || `400 Invalid Filename`}`);
-        return NextResponse.json({ error: "400 Bad Request" }, { status: 400 })
+        return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
       }
       batchTotalSize += f.fileSize
       sanitizedFiles.push({ ...f, sanitizedName: sanitization.sanitized })
@@ -136,7 +137,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     // Storage quota check for the entire batch at once
     if (currentStorage + batchTotalSize > tier.maxCdnStorage) {
         console.error(`[API Error] 413 Payload Too Large: ${`413 Insufficient Storage`}`);
-      return NextResponse.json({ error: "413 Payload Too Large" }, { status: 413 })
+      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
     // Generate all presigned URLs in parallel — pure crypto signing, no R2 network calls
@@ -144,7 +145,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     if (!cdnDomain) {
       console.error("500 Internal Server Error: R2_CDN_DOMAIN Env Variable Not Set!");
         console.error(`[API Error] 500 Internal Server Error: ${"500 Internal Server Error"}`);
-      return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+      return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
     }
 
     const results = await Promise.all(
@@ -184,6 +185,6 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
   } catch (error: any) {
     console.error("[CDN Init] Error:", error)
     console.error(`[API Error] 500 Internal Server Error: ${"500 Upload Failed"}`);
-    return NextResponse.json({ error: "500 Internal Server Error" }, { status: 500 })
+    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }
