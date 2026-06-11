@@ -1,5 +1,6 @@
 import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from './file-model'
 import { deleteByKey } from './r2'
+import { getClient } from './db'
 
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number
@@ -47,11 +48,13 @@ export function startCleanupScheduler(): NodeJS.Timeout {
   // Run sequentially on startup
   cleanupExpiredFiles()
     .then(() => cleanupStaging())
+    .then(() => cleanupDumpsterPastes())
     .catch(console.error)
 
   return setInterval(() => {
     cleanupExpiredFiles()
       .then(() => cleanupStaging())
+      .then(() => cleanupDumpsterPastes())
       .catch(console.error)
   }, 60 * 60 * 1000)
 }
@@ -70,4 +73,41 @@ export async function cleanupStaging(): Promise<{
 
 export function stopCleanupScheduler(timer: NodeJS.Timeout): void {
   clearInterval(timer)
+}
+
+export async function cleanupDumpsterPastes(): Promise<{ cleaned: number; errors: string[] }> {
+  const errors: string[] = []
+  let cleaned = 0
+  const client = await getClient()
+
+  try {
+    const { rows } = await client.query(`
+      SELECT id, r2_key FROM dumpster_pastes 
+      WHERE last_accessed_at < NOW() - INTERVAL '180 days'
+      LIMIT 100
+    `)
+
+    for (const paste of rows) {
+      try {
+        await deleteByKey(paste.r2_key)
+        await client.query(`DELETE FROM dumpster_pastes WHERE id = $1`, [paste.id])
+        cleaned++
+      } catch (error: any) {
+        const errorMsg = `Failed to delete paste ${paste.id}: ${error.message}`
+        console.error(`[Cleanup] ${errorMsg}`)
+        errors.push(errorMsg)
+      }
+    }
+    
+    if (cleaned > 0 || errors.length > 0) {
+      console.log(`[Cleanup] Dumpster pastes: cleaned=${cleaned}, errors=${errors.length}`)
+    }
+  } catch (error: any) {
+    console.error('[Cleanup] Fatal error in cleanupDumpsterPastes:', error)
+    errors.push(`Fatal error: ${error.message}`)
+  } finally {
+    client.release()
+  }
+
+  return { cleaned, errors }
 }

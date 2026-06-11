@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server"
+import { getClient } from "@/lib/db"
+import { generateFileId, putObjectByKey } from "@/lib/r2"
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    const content = body.content
+
+    if (!content || typeof content !== "string") {
+      return NextResponse.json({ error: "Content is required" }, { status: 400 })
+    }
+
+    if (content.length > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "Paste is too large (max 5MB)" }, { status: 400 })
+    }
+
+    const id = generateFileId()
+    const r2Key = `pastes/${id}/${id}.txt`
+    const buffer = Buffer.from(content, "utf-8")
+
+    // Upload to R2
+    await putObjectByKey(r2Key, buffer, "text/plain")
+
+    // Save to DB
+    const client = await getClient()
+    try {
+      await client.query(
+        `INSERT INTO dumpster_pastes (id, r2_key, created_at, last_accessed_at) VALUES ($1, $2, NOW(), NOW())`,
+        [id, r2Key]
+      )
+    } finally {
+      client.release()
+    }
+
+    return NextResponse.json({ id })
+  } catch (error) {
+    console.error("[Dumpster] Error creating paste:", error)
+    return NextResponse.json({ error: "Failed to create paste" }, { status: 500 })
+  }
+}

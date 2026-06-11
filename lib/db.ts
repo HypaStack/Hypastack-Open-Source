@@ -234,6 +234,16 @@ export async function initDatabase(): Promise<void> {
 
     await client.query(`ALTER TABLE cdn_assets ADD COLUMN IF NOT EXISTS folder_id VARCHAR(36) DEFAULT NULL`)
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS dumpster_pastes (
+        id VARCHAR(36) PRIMARY KEY,
+        r2_key VARCHAR(500) NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        last_accessed_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_dumpster_pastes_last_accessed ON dumpster_pastes(last_accessed_at)`)
+
 
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS inactivity_purge_days INTEGER NOT NULL DEFAULT 7`)
