@@ -18,7 +18,7 @@ async function ping(url: string | undefined, ok: boolean) {
 }async function checkAuth(): Promise<boolean> {
   try {
     const { generateToken, verifyToken } = await import('./lib/auth')
-    const token = generateToken({ userId: 'heartbeat-probe' })
+    const token = generateToken({ userId: 'heartbeat-probe', sessionId: 'heartbeat-probe' })
     const result = verifyToken(token)
     return result?.userId === 'heartbeat-probe'
   } catch (err: any) {

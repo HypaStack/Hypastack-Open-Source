@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
+import crypto from "crypto"
 import { z } from "zod"
-import { verifyPassword, generateToken, setAuthCookie, hashPassword } from "@/lib/auth"
+import { verifyPassword, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword } from "@/lib/auth"
 import { getUserForAuthById, updateLastLogin, createUserSession } from "@/lib/user-model"
 import { checkLoginRateLimit } from "@/lib/rate-limit"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
 import { getHashedIp } from "@/lib/ip"
 import { API_ERRORS } from "@/constants"
+
 // keeping timing consistent.
 const DUMMY_HASH = hashPassword("hpsk_0000000000000000000000000000000000000000_dummy").hash
 
@@ -22,7 +24,7 @@ export async function handleLoginPost(request: NextRequest) {
 
     const validation = LoginSchema.safeParse(body)
     if (!validation.success) {
-        console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`);
+      console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`)
       return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
@@ -30,21 +32,21 @@ export async function handleLoginPost(request: NextRequest) {
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"Invalid csrf token, try again."}`);
+      console.error(`[API Error] 403 Forbidden: Invalid csrf token, try again.`)
       return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification failed"}`);
+        console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification failed"}`)
         return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
       }
     }
 
     const rateLimit = await checkLoginRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
+      console.error(`[API Error] 429 Too Many Requests: rate limit exceeded`)
       return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
@@ -69,20 +71,23 @@ export async function handleLoginPost(request: NextRequest) {
     }
 
     if (!matchedUserId) {
-        console.error(`[API Error] 401 Unauthorized: ${"Invalid access key"}`);
+      console.error(`[API Error] 401 Unauthorized: Invalid access key`)
       return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
     await updateLastLogin(matchedUserId)
-    const token = generateToken({ userId: matchedUserId })
+    const refreshToken = generateRefreshToken()
+    const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
+    const sessionId = await createUserSession(matchedUserId, refreshTokenHash)
+    const token = generateToken({ userId: matchedUserId, sessionId })
     await setAuthCookie(token)
-    await createUserSession(matchedUserId)
+    await setRefreshCookie(refreshToken)
 
     return NextResponse.json({ success: true })
 
   } catch (error) {
     console.error("[Auth] Login error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to sign in"}`);
+    console.error(`[API Error] 500 Internal Server Error: Failed to sign in`)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }
