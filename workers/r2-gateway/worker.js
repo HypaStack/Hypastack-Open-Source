@@ -2,9 +2,9 @@
  * R2 Access Control Worker — r2.hypastack.com
  * 
  * Routes:
- *   /cdn/*      → pass through (public CDN assets)
- *   /og/*       → pass through (OG preview images)
- *   /avatars/*  → pass through (public profile pictures)
+ *   /cdn/*       → pass through (public CDN assets)
+ *   /og/*        → pass through (OG preview images)
+ *   /profiles/*  → pass through (public profile pictures)
  *   /uploads/*  → BLOCK (must go through the API)
  *   /*          → BLOCK (deny everything else)
  */
@@ -13,6 +13,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.slice(1); // remove leading /
+    
+    // Explicitly block path traversal attempts before decoding
+    if (path.includes("..") || path.includes("%2e%2e") || path.includes("%2E%2E")) {
+      return new Response(
+        JSON.stringify({ error: "Invalid path" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
@@ -54,8 +62,8 @@ export default {
       });
     }
 
-    // 3. Avatars — public, hourly cache
-    if (path.startsWith("avatars/")) {
+    // 3. Profiles — public, hourly cache
+    if (path.startsWith("profiles/")) {
       return serveFromR2(env, path, corsHeaders, {
         cacheControl: "public, max-age=3600",
       });
