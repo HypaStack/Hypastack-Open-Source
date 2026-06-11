@@ -12,6 +12,7 @@ import { getSessionKey, encryptE2E } from "@/lib/crypto-client"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { type PreferencesTier } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
+import { apiFetch } from "@/lib/fetch"
 
 export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
@@ -386,7 +387,7 @@ function AvatarCropperModal({
 
       onClose()
 
-      fetch("/api/v2/auth/upload-avatar", {
+      apiFetch("/api/v2/auth/upload-avatar", {
         method: "POST",
         body: fd,
       }).then(res => {
@@ -483,7 +484,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     if (!confirmed) return
     setTrashLoading(true)
     try {
-      const res = await fetch("/api/v2/files", {
+      const res = await apiFetch("/api/v2/files", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileIds: files.map(f => f.id) }),
@@ -510,7 +511,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     if (!confirmed) return
     setDeleteAccountLoading(true)
     try {
-      const res = await fetch("/api/v2/auth/delete-account", { method: "DELETE" })
+      const res = await apiFetch("/api/v2/auth/delete-account", { method: "DELETE" })
       if (res.ok) {
         await logout()
       }
@@ -751,7 +752,7 @@ function EditProfileDialog({
       
       const nickname_encrypted = await encryptE2E(nickname.trim(), sessionKey)
 
-      const res = await fetch("/api/v2/auth/update-profile", {
+      const res = await apiFetch("/api/v2/auth/update-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nickname_encrypted }),
@@ -1042,7 +1043,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
     }
     setPurgeSaving(true)
     try {
-      const res = await fetch("/api/v2/auth/inactivity-purge", {
+      const res = await apiFetch("/api/v2/auth/inactivity-purge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ days: val }),

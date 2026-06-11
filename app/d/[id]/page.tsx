@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/multipart";
 import { motion } from "motion/react";
+import { apiFetch } from "@/lib/fetch"
 
 interface FileInfo {
   id: string; name: string; size: number; contentType: string; expiresAt: string;
@@ -53,7 +54,7 @@ export default function DownloadPage() {
       setEncryptionKeyBase64(m[1]);
       (async () => {
         try {
-          const r = await fetch(`/api/v2/files/${fileId}`);
+          const r = await apiFetch(`/api/v2/files/${fileId}`);
           const d = await r.json();
           if (!r.ok) { setError(d.error || "File not found"); return }
           setFileInfo(d.file);
@@ -76,7 +77,7 @@ export default function DownloadPage() {
     let downloadUrl = "";
 
     try {
-      const r = await fetch(`/api/v2/files/${fileId}/download`, { method: "POST" });
+      const r = await apiFetch(`/api/v2/files/${fileId}/download`, { method: "POST" });
       const data = await r.json();
       if (r.status === 429) {
         setRateLimitError({ message: data.message || "Too many downloads.", retryAfter: Math.ceil(data.retryAfter || 60) });

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { useMemo, useState } from "react"
+import { apiFetch } from "@/lib/fetch"
 
 const GREETINGS = [
   (n: string) => `What's the move, ${n}?`,
@@ -58,7 +59,7 @@ export default function ManageLandingPage() {
     if (!feedback.trim() || feedbackState === "sending") return
     setFeedbackState("sending")
     try {
-      const res = await fetch("/api/v2/feedback", {
+      const res = await apiFetch("/api/v2/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: feedback }),

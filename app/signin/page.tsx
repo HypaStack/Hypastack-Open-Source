@@ -10,6 +10,7 @@ import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/crypto-client"
+import { apiFetch } from "@/lib/fetch"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -31,10 +32,10 @@ export default function SignInPage() {
     setError("")
     setIsLoading(true)
     try {
-      const csrfRes = await fetch("/api/v2/csrf", { credentials: "include" })
+      const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
       const csrfData = await csrfRes.json()
       const csrfToken: string = csrfData.token
-      const response = await fetch("/api/v2/auth/login", {
+      const response = await apiFetch("/api/v2/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accessKey, turnstileToken, csrfToken }),

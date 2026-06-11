@@ -14,6 +14,7 @@ import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
 import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
 import { FILES_PER_PAGE } from "@/constants"
+import { apiFetch } from "@/lib/fetch"
 
 function getFileExt(name: string): string {
   const dot = name.lastIndexOf(".")
@@ -234,7 +235,7 @@ function FilesPageInner() {
 
     setStarLoading(fileId)
     try {
-      const res = await fetch("/api/v2/files", {
+      const res = await apiFetch("/api/v2/files", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileId, starred: !currentStarred }),
@@ -262,7 +263,7 @@ function FilesPageInner() {
     if (!confirmed) return
     setDeleteLoading(fileId)
     try {
-      const res = await fetch("/api/v2/files", {
+      const res = await apiFetch("/api/v2/files", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileId }),
@@ -308,7 +309,7 @@ function FilesPageInner() {
         progressPercent: 0
       })
 
-      const res = await fetch("/api/v2/files", {
+      const res = await apiFetch("/api/v2/files", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileIds: Array.from(selectedFiles) }),
@@ -368,7 +369,7 @@ function FilesPageInner() {
     })
     if (!name) return
     try {
-      const res = await fetch("/api/v2/folders", {
+      const res = await apiFetch("/api/v2/folders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, parentId: currentFolderId })
@@ -395,7 +396,7 @@ function FilesPageInner() {
     })
     if (!confirmed) return
     try {
-      const res = await fetch("/api/v2/folders", {
+      const res = await apiFetch("/api/v2/folders", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ folderId })

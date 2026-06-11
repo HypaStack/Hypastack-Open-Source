@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { useRouter } from "next/navigation"
+import { apiFetch } from "@/lib/fetch"
 
 export default function DumpsterPage() {
   const [content, setContent] = useState("")
@@ -16,7 +17,7 @@ export default function DumpsterPage() {
     setError("")
 
     try {
-      const res = await fetch("/api/v2/bin", {
+      const res = await apiFetch("/api/v2/bin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),

@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import Link from "next/link"
 import { motion } from "motion/react"
+import { apiFetch } from "@/lib/fetch"
 
 function fmtBytes(bytes: number): string {
   if (bytes === 0) return "0 B"
@@ -25,7 +26,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    fetch(`/api/v2/bin/${id}`)
+    apiFetch(`/api/v2/bin/${id}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) throw new Error(data.error)

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
+import { apiFetch } from "@/lib/fetch"
 
 interface AuthContextType {
   userId: string | null
@@ -21,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchAuth = useCallback(async () => {
     try {
-      const response = await fetch("/api/v2/auth/me", {
+      const response = await apiFetch("/api/v2/auth/me", {
         credentials: "include",
       })
 
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/v2/auth/logout", { method: "POST" })
+      await apiFetch("/api/v2/auth/logout", { method: "POST" })
       setUserId(null)
       localStorage.removeItem("hpsk_e2e_master")
       window.location.href = "/"

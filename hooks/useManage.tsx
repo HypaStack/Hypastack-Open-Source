@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
 import { getSessionKey, decryptE2E } from "@/lib/crypto-client"
+import { apiFetch } from "@/lib/fetch"
 
 export type Tier = "free" | "essential" | "premium" | "ultimate"
 
@@ -100,7 +101,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch("/api/v2/auth/me?include=user,stats,files,cdn,folders", {
+      const response = await apiFetch("/api/v2/auth/me?include=user,stats,files,cdn,folders", {
         credentials: "include",
       })
 
@@ -176,7 +177,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/v2/auth/logout", { method: "POST" })
+      await apiFetch("/api/v2/auth/logout", { method: "POST" })
       setUser(null)
       setStats(null)
       setFiles([])

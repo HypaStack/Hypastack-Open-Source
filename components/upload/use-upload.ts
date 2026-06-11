@@ -8,6 +8,7 @@ import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/con
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
+import { apiFetch } from "@/lib/fetch"
 
 export function useUpload({
   initialFiles,
@@ -95,7 +96,7 @@ export function useUpload({
   useEffect(() => {
     async function fetchCsrfToken() {
       try {
-        const response = await fetch("/api/v2/csrf")
+        const response = await apiFetch("/api/v2/csrf")
         const data = await response.json()
         if (data.token) setCsrfToken(data.token)
       } catch (err) {
@@ -249,7 +250,7 @@ export function useUpload({
       type: fileToUpload.type || "application/octet-stream",
     })
 
-    const initResponse = await fetch("/api/v2/upload", {
+    const initResponse = await apiFetch("/api/v2/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -277,7 +278,7 @@ export function useUpload({
       await uploadWithXHR(uploadUrl, "PUT", encryptedBlob, (pct) => setProgress(pct))
       setProgress(100)
 
-      const completeResponse = await fetch("/api/v2/upload-complete", {
+      const completeResponse = await apiFetch("/api/v2/upload-complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileId }),
@@ -319,7 +320,7 @@ export function useUpload({
   ): Promise<string> => {
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
-    const initResponse = await fetch("/api/v2/upload-multipart", {
+    const initResponse = await apiFetch("/api/v2/upload-multipart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -401,7 +402,7 @@ export function useUpload({
         etags = result.etags
       }
 
-      const completeResponse = await fetch("/api/v2/upload-complete", {
+      const completeResponse = await apiFetch("/api/v2/upload-complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileId, uploadId, parts: etags }),
@@ -434,7 +435,7 @@ export function useUpload({
       contentType: f.file.type || "application/octet-stream",
     }))
 
-    const initResponse = await fetch("/api/v2/cdn/upload-init", {
+    const initResponse = await apiFetch("/api/v2/cdn/upload-init", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -492,7 +493,7 @@ export function useUpload({
       completedUploads.push({ cdnId, sanitizedName, contentType })
     }
 
-    const completeRes = await fetch("/api/v2/cdn/upload-complete", {
+    const completeRes = await apiFetch("/api/v2/cdn/upload-complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -539,7 +540,7 @@ export function useUpload({
 
     let currentCsrfToken = csrfToken
     try {
-      const csrfRes = await fetch("/api/v2/csrf")
+      const csrfRes = await apiFetch("/api/v2/csrf")
       const csrfData = await csrfRes.json()
       currentCsrfToken = csrfData.token || currentCsrfToken
       setCsrfToken(currentCsrfToken)
@@ -719,7 +720,7 @@ export function useUpload({
     setShowResumePopup(false)
     setResuming(false)
     abortControllerRef.current?.abort()
-    fetch("/api/v2/csrf")
+    apiFetch("/api/v2/csrf")
       .then((r) => r.json())
       .then((d) => setCsrfToken(d.token || ""))
     if (turnstileRef.current) turnstileRef.current.reset()
@@ -738,7 +739,7 @@ export function useUpload({
   const handleAbortUpload = async () => {
     if (!interruptedSession) return
     try {
-      await fetch("/api/v2/upload-multipart/abort", {
+      await apiFetch("/api/v2/upload-multipart/abort", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -777,7 +778,7 @@ export function useUpload({
     setErrorMessage("")
 
     try {
-      const resumeRes = await fetch("/api/v2/upload-multipart/resume", {
+      const resumeRes = await apiFetch("/api/v2/upload-multipart/resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -849,7 +850,7 @@ export function useUpload({
 
       allEtags.sort((a, b) => a.partNumber - b.partNumber)
 
-      const completeRes = await fetch("/api/v2/upload-complete", {
+      const completeRes = await apiFetch("/api/v2/upload-complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
