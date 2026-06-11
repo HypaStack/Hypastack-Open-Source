@@ -50,13 +50,26 @@ export function useTheme() {
   }, [theme])
 
   // Sync .dark class to <html> so Tailwind dark: variants work globally
+  // and sync theme-color for iOS safe areas
   useEffect(() => {
     if (typeof document === "undefined") return
     const root = document.documentElement
+    
+    let metaTheme = document.querySelector('meta[name="theme-color"]')
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta')
+      metaTheme.setAttribute('name', 'theme-color')
+      document.head.appendChild(metaTheme)
+    }
+    
+    const isDashboard = window.location.pathname.startsWith('/manage')
+
     if (resolvedTheme === "dark") {
       root.classList.add("dark")
+      metaTheme.setAttribute('content', isDashboard ? '#111111' : '#111111')
     } else {
       root.classList.remove("dark")
+      metaTheme.setAttribute('content', isDashboard ? '#f0f0f0' : '#ffffff')
     }
   }, [resolvedTheme])
 
