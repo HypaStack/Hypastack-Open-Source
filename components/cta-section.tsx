@@ -6,7 +6,7 @@ import { MIcon } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
 
 export function CtaSection() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <section className="mt-32 sm:mt-48 lg:mt-64 relative flex flex-col items-center overflow-visible">
@@ -37,7 +37,7 @@ export function CtaSection() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-xl"
           >
-            {isAuthenticated && user ? (
+            {isAuthenticated ? (
               <>
                 <h2
                   className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#000] pb-1 flex items-center gap-3 sm:gap-4 font-medium"
@@ -45,16 +45,14 @@ export function CtaSection() {
                 >
                   <MIcon name="verified" size="1em" className="tracking-normal shrink-0 text-[#171717]" />
                   <div className="flex-1 min-w-0 truncate">
-                    <span>Welcome back, </span>
-                    <span className="text-[#171717] underline decoration-[rgba(0,0,0,0.2)] underline-offset-[0.1em]">{user.nickname}</span>
-                    <span className="text-[#a3a3a3]">.</span>
+                    <span>Welcome back.</span>
                   </div>
                 </h2>
                 <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#525252]">
                   Everything&apos;s where you left it. Upload something, check your links, or just look around.
                 </p>
                 <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <Button href="/manage/dashboard" variant="primary" size="lg">
+                  <Button href="/manage" variant="primary" size="lg">
                     Go to Dashboard
                   </Button>
                   <Button href="/manage/files" variant="secondary" size="lg">

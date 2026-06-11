@@ -16,62 +16,48 @@ export async function GET(request: NextRequest) {
 
     if (!currentUser) {
       return NextResponse.json(
-        { authenticated: false, user: null },
+        { authenticated: false },
         { status: 200 }
       )
     }
 
-    // 5 queries in parallel (down from 8 — stats derived from raw data in JS)
+    // Parse ?include=user,stats,files,cdn,folders to control what data is returned
+    const includeParam = request.nextUrl.searchParams.get("include") || ""
+    const includes = new Set(includeParam.split(",").map(s => s.trim()).filter(Boolean))
+
+    // No includes → lightweight auth-only response
+    if (includes.size === 0) {
+      return NextResponse.json({ authenticated: true, userId: currentUser.userId })
+    }
+
+    const wantUser = includes.has("user")
+    const wantStats = includes.has("stats")
+    const wantFiles = includes.has("files")
+    const wantCdn = includes.has("cdn")
+    const wantFolders = includes.has("folders")
+
+    // Fetch only what's needed
     const [user, rawFiles, rawCdnAssets, rawFolders, rawCdnFolders] = await Promise.all([
-      getUserById(currentUser.userId),
-      getFilesByUserId(currentUser.userId),
-      getCdnAssetsByUserId(currentUser.userId),
-      getFoldersByUserId(currentUser.userId),
-      getCdnFoldersByUserId(currentUser.userId),
+      (wantUser || wantStats) ? getUserById(currentUser.userId) : Promise.resolve(null),
+      (wantFiles || wantStats) ? getFilesByUserId(currentUser.userId) : Promise.resolve([]),
+      (wantCdn || wantStats) ? getCdnAssetsByUserId(currentUser.userId) : Promise.resolve([]),
+      wantFolders ? getFoldersByUserId(currentUser.userId) : Promise.resolve([]),
+      wantCdn ? getCdnFoldersByUserId(currentUser.userId) : Promise.resolve([]),
     ])
 
-    if (!user) {
+    if ((wantUser || wantStats) && !user) {
       return NextResponse.json(
         { error: "User not found" },
         { status: 404 }
       )
     }
 
-    const tier = normalizeTier(user.tier)
-    const lastAcknowledgedTier = normalizeTier(user.last_acknowledged_tier)
-    const tierLimits = getTierLimits(tier)
+    const body: Record<string, unknown> = { authenticated: true, userId: currentUser.userId }
 
-    const now = Date.now()
-    const fileStorageUsed = rawFiles.reduce((sum, f) => sum + f.file_size, 0)
-    const cdnStorageUsed = rawCdnAssets.reduce((sum, a) => sum + a.file_size, 0)
-    const totalStorage = fileStorageUsed + cdnStorageUsed
-
-    const files = rawFiles.map(f => ({
-      id: f.id,
-      name: decryptFilename(f.custom_filename || f.original_name),
-      size: f.file_size,
-      contentType: f.content_type,
-      uploadedAt: f.upload_date,
-      expiresAt: f.expires_at,
-      hasPin: !!f.pin,
-      burnOnRead: f.burn_on_read,
-      starred: !!f.starred,
-      shareUrl: `${process.env.NEXT_PUBLIC_APP_URL}/d/${f.id}`,
-      folderId: f.folder_id || null,
-    }))
-
-    const cdnAssets = rawCdnAssets.map(a => ({
-      id: a.id,
-      name: a.original_name,
-      size: a.file_size,
-      contentType: a.content_type,
-      cdnUrl: a.cdn_url,
-      folderId: a.folder_id || null,
-      createdAt: a.created_at,
-    }))
-
-    return NextResponse.json({
-      user: {
+    if (wantUser && user) {
+      const tier = normalizeTier(user.tier)
+      const lastAcknowledgedTier = normalizeTier(user.last_acknowledged_tier)
+      body.user = {
         id: user.id,
         nickname_encrypted: user.nickname_encrypted,
         avatarUrl: user.avatar_url,
@@ -82,8 +68,18 @@ export async function GET(request: NextRequest) {
         inactivityPurgeDays: user.inactivity_purge_days ?? 7,
         is_insider: user.is_insider ?? 0,
         creditsBalance: user.credits_balance ?? 0,
-      },
-      stats: {
+      }
+    }
+
+    if (wantStats && user) {
+      const tier = normalizeTier(user.tier)
+      const tierLimits = getTierLimits(tier)
+      const now = Date.now()
+      const fileStorageUsed = rawFiles.reduce((sum, f) => sum + f.file_size, 0)
+      const cdnStorageUsed = rawCdnAssets.reduce((sum, a) => sum + a.file_size, 0)
+      const totalStorage = fileStorageUsed + cdnStorageUsed
+
+      body.stats = {
         totalUploads: rawFiles.length,
         activeFiles: rawFiles.filter(f => new Date(f.expires_at).getTime() > now).length,
         totalDownloads: 0,
@@ -94,12 +90,40 @@ export async function GET(request: NextRequest) {
         maxStorage: tierLimits.maxCdnStorage,
         storagePercent: Math.min(100, Math.round((totalStorage / tierLimits.maxCdnStorage) * 100)),
         tierLabel: tierLimits.label,
-      },
-      files,
-      folders: rawFolders,
-      cdnAssets,
-      cdnFolders: rawCdnFolders,
-    })
+      }
+    }
+
+    if (wantFiles) {
+      body.files = rawFiles.map(f => ({
+        id: f.id,
+        name: decryptFilename(f.custom_filename || f.original_name),
+        size: f.file_size,
+        contentType: f.content_type,
+        uploadedAt: f.upload_date,
+        expiresAt: f.expires_at,
+        hasPin: !!f.pin,
+        burnOnRead: f.burn_on_read,
+        starred: !!f.starred,
+        shareUrl: `${process.env.NEXT_PUBLIC_APP_URL}/d/${f.id}`,
+        folderId: f.folder_id || null,
+      }))
+      body.folders = rawFolders
+    }
+
+    if (wantCdn) {
+      body.cdnAssets = rawCdnAssets.map(a => ({
+        id: a.id,
+        name: a.original_name,
+        size: a.file_size,
+        contentType: a.content_type,
+        cdnUrl: a.cdn_url,
+        folderId: a.folder_id || null,
+        createdAt: a.created_at,
+      }))
+      body.cdnFolders = rawCdnFolders
+    }
+
+    return NextResponse.json(body)
 
   } catch (error) {
     console.error("[Auth] Get user error:", error)

@@ -13,7 +13,7 @@ import { PageLogo } from "./page-logo"
 export function DesktopGate({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const { user, isLoading } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
   const [showSplash, setShowSplash] = useState(false)
   const [fadeOut, setFadeOut] = useState(false)
 
@@ -33,7 +33,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
     if (!showSplash || isLoading) return
 
     // Auth resolved — redirect
-    const target = user ? "/manage/dashboard" : "/signin"
+    const target = isAuthenticated ? "/manage" : "/signin"
 
     // Brief delay for the splash to feel intentional
     const timer = setTimeout(() => {
@@ -44,7 +44,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
     }, 800)
 
     return () => clearTimeout(timer)
-  }, [showSplash, isLoading, user, router])
+  }, [showSplash, isLoading, isAuthenticated, router])
 
   if (showSplash) {
     return (

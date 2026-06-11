@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react"
 import JSZip from "jszip"
 import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
-import { useAuth } from "@/hooks/useAuth"
+import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/lib/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
@@ -55,7 +55,7 @@ export function useUpload({
   const [showResumePopup, setShowResumePopup] = useState(false)
   const [resuming, setResuming] = useState(false)
 
-  const { user } = useAuth()
+  const { user } = useManage()
   const tierLimits = user?.tier ? getTierLimits(user.tier) : FREE_LIMITS
   const uploadDelayMs = getTierDelayMs(normalizeTier(user?.tier))
   const MAX_SIZE = uploadType === "cdn" ? tierLimits.maxCdnFileSize : tierLimits.maxNormalUploadSize

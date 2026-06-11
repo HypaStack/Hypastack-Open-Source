@@ -4,7 +4,7 @@ import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-noti
 import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
-import { useAuth } from "@/hooks/useAuth"
+import { useManage } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
@@ -67,7 +67,7 @@ function getFileIcon(contentType: string) {
 }
 
 export default function CdnPage() {
-  const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useAuth()
+  const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useManage()
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [copiedSelection, setCopiedSelection] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)

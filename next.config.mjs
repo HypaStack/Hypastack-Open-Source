@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: undefined,
+  poweredByHeader: false,
   outputFileTracingRoot: __dirname,
   images: {
     unoptimized: true,
@@ -231,22 +232,22 @@ const nextConfig = {
       },
       {
         source: "/transfer",
-        destination: "/manage/dashboard",
+        destination: "/manage",
         permanent: true,
       },
       {
         source: "/upload",
-        destination: "/manage/dashboard",
+        destination: "/manage",
         permanent: true,
       },
       {
         source: "/share",
-        destination: "/manage/dashboard",
+        destination: "/manage",
         permanent: true,
       },
       {
         source: "/send",
-        destination: "/manage/dashboard",
+        destination: "/manage",
         permanent: true,
       },
       {

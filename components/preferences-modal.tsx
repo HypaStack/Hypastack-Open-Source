@@ -5,7 +5,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
 import Cropper from "react-easy-crop"
 import { MIcon } from "@/components/ui/material-icon"
-import { useAuth } from "@/hooks/useAuth"
+import { useManage } from "@/hooks/useManage"
 import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/crypto-client"
@@ -484,7 +484,7 @@ function AvatarCropperModal({
 }
 
 function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; storage: PreferencesStorage | null; onSwitchTab?: (tab: PreferencesTab) => void }) {
-  const { refreshUser, files, setFiles, logout } = useAuth()
+  const { refreshUser, files, setFiles, logout } = useManage()
   const [editing, setEditing] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
@@ -740,7 +740,7 @@ function EditProfileDialog({
   user: PreferencesUser
   onClose: () => void
 }) {
-  const { refreshUser } = useAuth()
+  const { refreshUser } = useManage()
   const [nickname, setNickname] = useState(user.nickname)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)

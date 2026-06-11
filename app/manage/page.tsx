@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@/hooks/useAuth"
+import { useManage } from "@/hooks/useManage"
 import Link from "next/link"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
@@ -38,7 +38,7 @@ const TIPS = [
 
 
 export default function ManageLandingPage() {
-  const { user, files, stats, cdnAssets } = useAuth()
+  const { user, files, stats, cdnAssets } = useManage()
 
   const greeting = useMemo(
     () => GREETINGS[Math.floor(Math.random() * GREETINGS.length)],
