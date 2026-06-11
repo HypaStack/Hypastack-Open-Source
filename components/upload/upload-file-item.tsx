@@ -47,7 +47,7 @@ export function UploadFileItem({
             type="button"
             onClick={(e) => { e.stopPropagation(); onCopy(); }}
             className="hover:bg-[#e2e2e8] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 10, fontSize: 13, fontWeight: 500, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#0a0a0a', backgroundColor: '#ffffff' }}
           >
             {copied ? "Copied" : "Copy link"}
           </button>

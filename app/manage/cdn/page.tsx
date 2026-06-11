@@ -585,7 +585,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleSelectAll}
-                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                 >
                   <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
                   <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
@@ -594,7 +594,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleCopySelected}
-                  className={`inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] border font-medium text-[15px] transition-colors leading-none ${
+                  className={`inline-flex items-center gap-2 px-4 py-[11px] rounded-md border font-medium text-[15px] transition-colors leading-none ${
                     copiedSelection
                       ? "bg-emerald-50 text-emerald-600 border-emerald-200"
                       : "bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border-[#e5e5e5] dark:border-transparent hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a]"
@@ -608,7 +608,7 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleViewSelected}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                   >
                     <MIcon name="open_in_new" size={16} className="shrink-0" />
                     <span className="hidden sm:inline">View</span>
@@ -620,7 +620,7 @@ export default function CdnPage() {
                     type="button"
                     onClick={handleHotSwapClick}
                     disabled={swapLoading !== null}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#d97706] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#fef3c7] dark:hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#d97706] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#fef3c7] dark:hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 leading-none"
                   >
                     <MIcon name="swap_horiz" size={17} className="shrink-0" />
                     <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
@@ -631,7 +631,7 @@ export default function CdnPage() {
                   type="button"
                   onClick={handleBulkDelete}
                   disabled={deleteLoading === "bulk"}
-                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50 leading-none"
+                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50 leading-none"
                 >
                   <MIcon name="delete" size={18} />
                   {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
@@ -643,7 +643,7 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleSelectAll}
-                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                    className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                   >
                     <MIcon name="select_all" size={17} className="shrink-0" />
                     <span className="hidden sm:inline">Select all</span>
@@ -652,7 +652,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={handleCreateFolder}
-                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
                 >
                   <MIcon name="create_new_folder" size={17} className="shrink-0" />
                   <span className="hidden sm:inline">New Folder</span>
@@ -660,7 +660,7 @@ export default function CdnPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
+                  className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
                 >
                   <MIcon name="cloud_upload" size={15} className="shrink-0" />
                   <span>Upload files</span>
@@ -687,7 +687,7 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && (
-          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: '6px 12px' }}>
+          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: '6px 12px' }}>
             <div className="flex items-center justify-center bg-white dark:bg-[#171717] rounded-[6px] px-1.5 py-0.5 text-[#555] dark:text-[#aaa] text-[11px] font-bold border border-[#e5e5e5] dark:border-transparent">CTRL</div>
             <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
@@ -725,7 +725,7 @@ export default function CdnPage() {
                       key={folder.id}
                       onClick={() => setCurrentFolderId(folder.id)}
                       className="group flex items-center gap-3 bg-[#f5f5f5] dark:bg-[#1a1a1a] hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-[#e5e5e5] dark:border-transparent"
-                      style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
+                      style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
                     >
                       <MIcon name="folder" size={16} className="text-[#666] dark:text-[#888] shrink-0" />
                       <span className="text-[#111] dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
@@ -733,7 +733,7 @@ export default function CdnPage() {
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
                         className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#666] hover:text-red-400"
-                        style={{ height: 28, width: 28, borderRadius: 8 }}
+                        style={{ height: 28, width: 28, borderRadius: 6 }}
                         aria-label="Delete folder"
                       >
                         <MIcon name="delete" size={14} />
@@ -752,7 +752,7 @@ export default function CdnPage() {
                 <button
                   onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
                   className="inline-flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#222] text-[#333] dark:text-[#ccc] border border-[#e5e5e5] dark:border-transparent hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500 }}
+                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                 >
                   <MIcon name="arrow_back" size={14} />
                   Go back
@@ -796,7 +796,7 @@ export default function CdnPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: '8px 12px', marginTop: 8 }}>
+        <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: '8px 12px', marginTop: 8 }}>
           <p className="text-[#888] dark:text-[#777]" style={{ fontSize: 13 }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
@@ -805,7 +805,7 @@ export default function CdnPage() {
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               className="flex items-center justify-center text-[#666] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8 }}
+              style={{ width: 28, height: 28, borderRadius: 6 }}
             >
                <MIcon name="chevron_left" size={16} />
             </button>
@@ -816,7 +816,7 @@ export default function CdnPage() {
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className="flex items-center justify-center text-[#666] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ width: 28, height: 28, borderRadius: 8 }}
+              style={{ width: 28, height: 28, borderRadius: 6 }}
             >
                <MIcon name="chevron_right" size={16} />
             </button>
@@ -895,7 +895,7 @@ function CdnAssetTile({
         className={`relative w-full aspect-square overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-transparent ${
           selected ? "" : "hover:opacity-90"
         }`}
-        style={{ borderRadius: 14 }}
+        style={{ borderRadius: 6 }}
       >
         {!revealed && isImage && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5] dark:bg-[#1a1a1a]">
@@ -912,7 +912,7 @@ function CdnAssetTile({
                 setRevealed(true)
               }}
               className="hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
-              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500 }}
+              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 12, fontWeight: 500 }}
             >
               Reveal
             </button>
@@ -1029,7 +1029,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex items-center justify-center mb-5 bg-[#f0f0f0] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ width: 64, height: 64, borderRadius: 14 }}>
+          <div className="inline-flex items-center justify-center mb-5 bg-[#f0f0f0] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ width: 64, height: 64, borderRadius: 6 }}>
             <MIcon name="search" size={28} className="text-[#999] dark:text-[#666]" />
           </div>
         ) : null}

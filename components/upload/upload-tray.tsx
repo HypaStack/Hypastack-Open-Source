@@ -58,10 +58,10 @@ export function UploadTray({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 500 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-[16px] bg-[#ffffff] dark:bg-[#1a1a1a] font-sans mb-8 sm:mb-0 border border-transparent dark:border-transparent"
+          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-md bg-[#ffffff] dark:bg-[#1a1a1a] font-sans mb-8 sm:mb-0 border border-transparent dark:border-transparent"
           style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10)" }}
         >
-          <div className="w-full h-full bg-[#ffffff] dark:bg-[#1a1a1a] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
+          <div className="w-full h-full bg-[#ffffff] dark:bg-[#1a1a1a] overflow-hidden flex flex-col sm:rounded-md rounded-t-[16px]">
             <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
               <div className="flex items-center justify-between">
                 <h3
@@ -75,7 +75,7 @@ export function UploadTray({
                     type="button"
                     onClick={handleReset}
                     className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#666] dark:text-[#888]"
-                    style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 12, fontSize: 13, fontWeight: 500 }}
+                    style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                   >
                     Clear
                   </button>
@@ -103,7 +103,7 @@ export function UploadTray({
                 </p>
               )}
               {uploadType !== "cdn" && state === "done" && shareUrl && shareUrl.includes("\n") && (
-                <div className="mt-1 p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
+                <div className="mt-1 p-2.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-400">
                   <div className="flex items-start gap-2">
                     <MIcon name="warning" size={16} className="mt-0.5 shrink-0" />
                     <div className="flex flex-col text-[12px] leading-snug">
@@ -157,7 +157,7 @@ export function UploadTray({
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleCopy() }}
                                 className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
-                                style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 10, fontSize: 13, fontWeight: 500 }}
+                                style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                               >
                                 {copied ? "Copied" : "Copy link"}
                               </button>
@@ -203,7 +203,7 @@ export function UploadTray({
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); handleCopy() }}
                                   className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
-                                  style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 10, fontSize: 13, fontWeight: 500 }}
+                                  style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                                 >
                                   {copied ? "Copied" : "Copy link"}
                                 </button>
@@ -224,10 +224,10 @@ export function UploadTray({
                       )}
                   
                   {state === "selected" && uploadType !== "cdn" && (
-                    <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ margin: "0 12px 8px", borderRadius: 16 }}>
+                    <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ margin: "0 12px 8px", borderRadius: 6 }}>
                       <div
                         className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] dark:hover:bg-[#222] transition-all duration-75"
-                        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
+                        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
                         onClick={() => setBurnOnRead(!burnOnRead)}
                       >
                         <div className="flex items-center gap-2.5">
@@ -236,7 +236,7 @@ export function UploadTray({
                         </div>
                         <div
                           className="relative shrink-0 transition-colors"
-                          style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: burnOnRead ? "#555" : "#ddd", border: burnOnRead ? "none" : "1px solid #ccc" }}
+                          style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: burnOnRead ? "#555" : "#ddd", border: burnOnRead ? "none" : "1px solid #ccc" }}
                         >
                           <div
                             className="absolute top-[3px] transition-transform bg-white"
@@ -251,7 +251,7 @@ export function UploadTray({
                         <>
                           <div
                             className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] dark:hover:bg-[#222] transition-all duration-75"
-                            style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
+                            style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
                             onClick={() => setZipMultipleFiles(!zipMultipleFiles)}
                           >
                             <div className="flex items-center gap-2.5">
@@ -260,7 +260,7 @@ export function UploadTray({
                             </div>
                             <div
                               className="relative shrink-0 transition-colors"
-                              style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: zipMultipleFiles ? "#555" : "#ddd", border: zipMultipleFiles ? "none" : "1px solid #ccc" }}
+                              style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: zipMultipleFiles ? "#555" : "#ddd", border: zipMultipleFiles ? "none" : "1px solid #ccc" }}
                             >
                               <div
                                 className="absolute top-[3px] transition-transform bg-white"
@@ -287,7 +287,7 @@ export function UploadTray({
                                     onChange={(e) => setCustomFilename(e.target.value)}
                                     placeholder="hypastack-archive"
                                     className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
-                                    style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                                    style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                                   />
                                 </div>
                                 <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
@@ -307,7 +307,7 @@ export function UploadTray({
                               onChange={(e) => setCustomFilename(e.target.value)}
                               placeholder={files[0]?.file.name || "example.pdf"}
                               className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
-                              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                             />
                           </div>
                           <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
@@ -326,7 +326,7 @@ export function UploadTray({
                           maxLength={100}
                           rows={2}
                           className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] resize-none bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
-                          style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 10, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                          style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                         />
                       </div>
                     </div>
@@ -383,7 +383,7 @@ export function UploadTray({
                           type="button"
                           onClick={handleReset}
                           className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#777]"
-                          style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 12, fontSize: 13, fontWeight: 500 }}
+                          style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                         >
                           Cancel
                         </button>
@@ -392,7 +392,7 @@ export function UploadTray({
                           onClick={handleUpload}
                           disabled={isUploading || (uploadType !== "cdn" && !turnstileReady)}
                           className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
-                          style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 13, fontWeight: 600 }}
+                          style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
                         >
                           Start
                         </button>
@@ -402,7 +402,7 @@ export function UploadTray({
                         type="button"
                         onClick={handleCopy}
                         className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
-                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 16, fontSize: 13, fontWeight: 600 }}
+                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
                       >
                         {copied ? "Copied All" : "Copy All Links"}
                       </button>
@@ -411,7 +411,7 @@ export function UploadTray({
                         type="button"
                         onClick={() => inputRef.current?.click()}
                         className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#555] dark:text-[#aaa]"
-                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 12, fontSize: 13, fontWeight: 500 }}
+                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                       >
                         Add more
                       </button>

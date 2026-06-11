@@ -76,7 +76,7 @@ export default function CanaryPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
+            style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-3">
               <MIcon name="science" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
@@ -101,7 +101,7 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col overflow-hidden"
-            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
+            style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-1">
               <MIcon name="labs" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
@@ -115,7 +115,7 @@ export default function CanaryPage() {
                 <div
                   key={f.label}
                   className="flex items-center gap-3 hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] transition-all duration-75"
-                  style={{ height: 48, paddingLeft: 12, paddingRight: 12, borderRadius: 12, margin: '2px 0' }}
+                  style={{ height: 48, paddingLeft: 12, paddingRight: 12, borderRadius: 6, margin: '2px 0' }}
                 >
                   <MIcon name={f.icon} size={15} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0 }} />
                   <div className="flex flex-col flex-1 min-w-0">
@@ -145,7 +145,7 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col overflow-hidden"
-            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
+            style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <div className="flex items-center gap-2 mb-3">
               <MIcon name="star" size={18} style={{ color: 'rgba(0,0,0,0.5)' }} />
@@ -171,7 +171,7 @@ export default function CanaryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-start gap-3"
-            style={{ borderRadius: 12, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
+            style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '14px 16px', border: '1px solid #e5e5e5' }}
           >
             <MIcon name="info" size={15} style={{ color: 'rgba(0,0,0,0.4)', flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.4)', lineHeight: 1.6 }}>

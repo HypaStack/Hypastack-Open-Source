@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next"
-import { JetBrains_Mono, Syne, DM_Sans } from "next/font/google"
 import Script from "next/script"
 import { DemoBanner } from "@/components/demo-banner"
 import { ConsoleGreeting } from "@/components/console-greeting"
@@ -23,28 +22,7 @@ import "./globals.css"
 import "material-symbols/rounded.css"
 
 
-const jetbrains = JetBrains_Mono({ 
-  subsets: ["latin"], 
-  variable: "--font-jetbrains",
-  display: "swap",
-  preload: true,
-})
 
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-syne",
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-  preload: true,
-})
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-  preload: true,
-})
 
 
 export const metadata: Metadata = {
@@ -346,7 +324,7 @@ export default function RootLayout({
           else document.documentElement.classList.add('is-public');
         `}</Script>
       </head>
-      <body className={`${jetbrains.variable} ${syne.variable} ${dmSans.variable} font-sans antialiased`}>
+      <body className={`font-sans antialiased`}>
         <TauriTitleBar />
 
         <div id="app-content-wrapper">

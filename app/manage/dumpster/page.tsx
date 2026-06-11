@@ -63,7 +63,7 @@ export default function DumpsterPage() {
             type="button"
             onClick={() => setContent("")}
             disabled={saving || !content}
-            className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none disabled:opacity-50"
           >
             <MIcon name="clear_all" size={17} className="shrink-0" />
             <span className="hidden sm:inline">Clear</span>
@@ -72,7 +72,7 @@ export default function DumpsterPage() {
             type="button"
             onClick={handleSave}
             disabled={saving || !content.trim()}
-            className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? (
               <div className="w-[15px] h-[15px] border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin shrink-0" />
@@ -85,7 +85,7 @@ export default function DumpsterPage() {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 rounded-[12px] bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-[14px] font-medium flex items-center gap-2 border border-red-100 dark:border-red-500/20">
+        <div className="mb-4 p-4 rounded-md bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-[14px] font-medium flex items-center gap-2 border border-red-100 dark:border-red-500/20">
           <MIcon name="error" size={18} />
           {error}
         </div>

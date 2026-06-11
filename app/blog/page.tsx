@@ -55,7 +55,7 @@ export default function BlogPage() {
                   <Link
                     href={`/blog/${post.slug}`}
                     className="inline-flex items-center justify-center hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                    style={{ height: 38, paddingLeft: 18, paddingRight: 18, borderRadius: 10, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
+                    style={{ height: 38, paddingLeft: 18, paddingRight: 18, borderRadius: 6, fontSize: 14, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
                   >
                     Read post
                   </Link>

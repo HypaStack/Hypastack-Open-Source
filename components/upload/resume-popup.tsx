@@ -42,14 +42,14 @@ export function ResumePopup({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed z-[201] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[420px] rounded-[20px]"
+              className="fixed z-[201] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[420px] rounded-md"
               style={{
                 backgroundColor: "#1f1f1f",
                 boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)",
                 padding: 3,
               }}
             >
-              <div className="p-6 rounded-[17px]" style={{ backgroundColor: "#111111" }}>
+              <div className="p-6 rounded-md" style={{ backgroundColor: "#111111" }}>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <MIcon name="cloud_upload" size={22} className="text-primary" />
@@ -64,7 +64,7 @@ export function ResumePopup({
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-secondary/50 px-4 py-3 mb-5">
+                <div className="rounded-md bg-secondary/50 px-4 py-3 mb-5">
                   <p className="text-[13px] text-muted-foreground font-medium truncate">
                     {interruptedSession.fileName}
                   </p>
@@ -77,14 +77,14 @@ export function ResumePopup({
                   <button
                     type="button"
                     onClick={handleAbortUpload}
-                    className="flex-1 px-4 py-2.5 rounded-[16px] bg-[#1f1f1f] hover:bg-[#1a1a1a] text-[14px] font-semibold text-foreground transition-colors"
+                    className="flex-1 px-4 py-2.5 rounded-md bg-[#1f1f1f] hover:bg-[#1a1a1a] text-[14px] font-semibold text-foreground transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleResumeUpload}
-                    className="flex-1 px-4 py-2.5 rounded-[16px] bg-white text-black text-[14px] font-semibold hover:bg-[#e2e2e8] transition-colors"
+                    className="flex-1 px-4 py-2.5 rounded-md bg-white text-black text-[14px] font-semibold hover:bg-[#e2e2e8] transition-colors"
                   >
                     Continue
                   </button>

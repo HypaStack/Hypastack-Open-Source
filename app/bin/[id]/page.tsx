@@ -57,7 +57,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
           <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
             <img 
               src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp" 
-              className="select-none h-14 w-14 rounded-[12px]" 
+              className="select-none h-14 w-14 rounded-md" 
               alt="Hypastack" 
               draggable={false} 
             />
@@ -75,7 +75,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 20, padding: 24, border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: 6, padding: 24, border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
               <div className="flex items-center gap-3 mb-3">
                 <MIcon name="error" className="text-red-500" size={28} />
                 <h2 className="text-[20px] font-semibold text-[#111] tracking-tight">
@@ -89,12 +89,12 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 <Link
                   href="/manage/dumpster"
                   className="hover:bg-[#111] active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
+                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
                 >New Paste</Link>
                 <Link
                   href="/"
                   className="hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 12, fontSize: 13, fontWeight: 500, color: '#333', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5' }}
+                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#333', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5' }}
                 >Home</Link>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {content !== null && !error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 20, overflow: 'hidden', border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: 6, overflow: 'hidden', border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
               <div style={{ padding: '20px 20px 16px' }}>
                 <h1 className="text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 text-[#111]">
                   {id}.txt
@@ -116,10 +116,10 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 </div>
               </div>
 
-              <div style={{ margin: '0 12px 12px', borderRadius: 14, backgroundColor: '#f9f9f9', border: '1px solid #ebebeb', padding: 4 }}>
+              <div style={{ margin: '0 12px 12px', borderRadius: 6, backgroundColor: '#f9f9f9', border: '1px solid #ebebeb', padding: 4 }}>
                 <div
                   className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
-                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 10 }}
+                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
                 >
                   <span className="flex items-center gap-2.5" style={{ fontSize: 13, color: '#888' }}>
                     <MIcon name="schedule" size={14} style={{ color: '#bbb' }} />Retention
@@ -129,7 +129,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 <div style={{ height: 1, margin: '0 8px', backgroundColor: '#ebebeb' }} />
                 <div
                   className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
-                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 10 }}
+                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
                 >
                   <span className="flex items-center gap-2.5" style={{ fontSize: 13, color: '#888' }}>
                     <MIcon name="visibility_off" size={14} style={{ color: '#bbb' }} />Privacy
@@ -143,7 +143,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                   <button
                     onClick={copyToClipboard}
                     className="flex-1 flex items-center justify-center gap-2 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                    style={{ height: 42, borderRadius: 14, fontSize: 14, fontWeight: 600, color: '#fff', backgroundColor: '#030303' }}
+                    style={{ height: 42, borderRadius: 6, fontSize: 14, fontWeight: 600, color: '#fff', backgroundColor: '#030303' }}
                   >
                     <MIcon name={copied ? "check" : "content_copy"} size={16} />
                     {copied ? "Copied" : "Copy to Clipboard"}
@@ -151,7 +151,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                   <button
                     onClick={handleRaw}
                     className="flex items-center justify-center hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75"
-                    style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', color: '#111' }}
+                    style={{ width: 42, height: 42, borderRadius: 6, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', color: '#111' }}
                     title="View Raw"
                   >
                     <MIcon name="code" size={18} />

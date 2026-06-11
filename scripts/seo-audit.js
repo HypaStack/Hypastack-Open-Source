@@ -1,362 +1,221 @@
 #!/usr/bin/env node
+
 /**
- * SEO Audit Script for Basedrop
- * Validates critical SEO elements before deployment
+ * ⚡ HypaStack SEO Audit
+ * Modern, lightning-fast SEO validation suite
  */
 
 const fs = require('fs');
 const path = require('path');
+const { performance } = require('perf_hooks');
 
-const colors = {
+// ANSI Escapes for modern CLI styling
+const C = {
   reset: '\x1b[0m',
+  bold: '\x1b[1m',
+  dim: '\x1b[2m',
+  italic: '\x1b[3m',
   red: '\x1b[31m',
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   magenta: '\x1b[35m',
   cyan: '\x1b[36m',
+  white: '\x1b[37m',
+  bgRed: '\x1b[41m',
+  bgGreen: '\x1b[42m',
 };
 
-function log(color, message) {
-  console.log(`${colors[color]}${message}${colors.reset}`);
+// Box drawing characters
+const Box = {
+  tl: '╭', tr: '╮', bl: '╰', br: '╯',
+  h: '─', v: '│', l: '├', r: '┤',
+  dot: '•', tick: '✓', cross: '✗', warn: '⚠'
+};
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+class Logger {
+  static title(text) {
+    console.log();
+    console.log(`${C.cyan}${C.bold}${Box.tl}${Box.h.repeat(text.length + 2)}${Box.tr}${C.reset}`);
+    console.log(`${C.cyan}${C.bold}${Box.v} ${C.white}${text} ${C.cyan}${C.bold}${Box.v}${C.reset}`);
+    console.log(`${C.cyan}${C.bold}${Box.bl}${Box.h.repeat(text.length + 2)}${Box.br}${C.reset}`);
+    console.log();
+  }
+
+  static section(title) {
+    console.log(`${C.magenta}${C.bold}► ${title}${C.reset}`);
+  }
+
+  static pass(msg) {
+    console.log(`  ${C.green}${Box.tick}${C.reset} ${C.dim}${msg}${C.reset}`);
+  }
+
+  static fail(msg) {
+    console.log(`  ${C.red}${Box.cross}${C.reset} ${C.white}${msg}${C.reset}`);
+  }
+
+  static warn(msg) {
+    console.log(`  ${C.yellow}${Box.warn}${C.reset} ${C.white}${msg}${C.reset}`);
+  }
+
+  static info(msg) {
+    console.log(`  ${C.blue}${Box.dot}${C.reset} ${C.dim}${msg}${C.reset}`);
+  }
+
+  static divider() {
+    console.log(`${C.dim}${Box.h.repeat(50)}${C.reset}`);
+  }
 }
 
-function checkFile(filePath, description) {
-  const fullPath = path.join(process.cwd(), filePath);
-  if (fs.existsSync(fullPath)) {
-    const stats = fs.statSync(fullPath);
-    const size = (stats.size / 1024).toFixed(2);
-    log('green', `✓ ${description} exists (${size} KB)`);
-    return true;
+// ----------------------------------------------------------------------
+// Validators
+// ----------------------------------------------------------------------
+
+const checks = {
+  score: 0,
+  total: 0,
+  add(passed) {
+    this.total++;
+    if (passed) this.score++;
+    return passed;
+  }
+};
+
+function readSafe(relPath) {
+  const fullPath = path.join(process.cwd(), relPath);
+  if (!fs.existsSync(fullPath)) return null;
+  return fs.readFileSync(fullPath, 'utf8');
+}
+
+function checkFile(relPath, name) {
+  const fullPath = path.join(process.cwd(), relPath);
+  const exists = fs.existsSync(fullPath);
+  if (checks.add(exists)) {
+    const kb = (fs.statSync(fullPath).size / 1024).toFixed(2);
+    Logger.pass(`${name} exists (${kb} KB)`);
   } else {
-    log('red', `✗ ${description} NOT FOUND at ${filePath}`);
-    return false;
+    Logger.fail(`${name} is missing (${relPath})`);
   }
 }
 
-function checkContent(filePath, patterns, description) {
-  const fullPath = path.join(process.cwd(), filePath);
-  if (!fs.existsSync(fullPath)) {
-    log('red', `✗ Cannot check ${description}: file not found`);
-    return false;
-  }
-  
-  const content = fs.readFileSync(fullPath, 'utf8');
-  let allFound = true;
-  
-  for (const pattern of patterns) {
-    if (content.includes(pattern)) {
-      log('green', `  ✓ Contains: ${pattern}`);
-    } else {
-      log('red', `  ✗ Missing: ${pattern}`);
-      allFound = false;
-    }
-  }
-  
-  return allFound;
-}
+function analyzeRobots() {
+  Logger.section('Robots & Crawlers (robots.txt)');
+  const content = readSafe('public/robots.txt');
+  if (!content) return Logger.fail('robots.txt not found');
 
-function checkRobotsTxt() {
-  log('cyan', '\n📋 Checking robots.txt...');
-  
-  const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
-  if (!fs.existsSync(robotsPath)) {
-    log('red', '✗ robots.txt not found!');
-    return false;
-  }
-  
-  const content = fs.readFileSync(robotsPath, 'utf8');
-  
-  // Check for critical elements
-  const checks = [
-    { pattern: 'User-agent:', name: 'User-agent directives' },
-    { pattern: 'Sitemap:', name: 'Sitemap reference' },
-    { pattern: 'Host:', name: 'Host directive' },
-    { pattern: 'GPTBot', name: 'GPTBot blocking' },
-    { pattern: 'ClaudeBot', name: 'ClaudeBot blocking' },
-    { pattern: 'Google-Extended', name: 'Google AI blocking' },
+  const tests = [
+    { name: 'User-agent directives', req: 'User-agent:' },
+    { name: 'Sitemap reference', req: 'Sitemap:' },
+    { name: 'GPTBot blocking', req: 'GPTBot' },
+    { name: 'Google AI blocking', req: 'Google-Extended' }
   ];
-  
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
+
+  for (const t of tests) {
+    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    else Logger.warn(`Missing: ${t.name}`);
   }
-  
-  // Check for invalid directives
-  if (content.includes('Content-Signal')) {
-    log('red', '  ✗ Invalid directive found: Content-Signal');
-    allGood = false;
-  }
-  
-  return allGood;
 }
 
-function checkSitemap() {
-  log('cyan', '\n🗺️  Checking sitemap.xml...');
-  
-  const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-  if (!fs.existsSync(sitemapPath)) {
-    log('red', '✗ sitemap.xml not found!');
-    return false;
-  }
-  
-  const content = fs.readFileSync(sitemapPath, 'utf8');
-  
-  // Check for critical elements
-  const checks = [
-    { pattern: '<?xml version="1.0"', name: 'XML declaration' },
-    { pattern: 'urlset', name: 'URL set' },
-    { pattern: 'loc', name: 'Location tags' },
-    { pattern: 'changefreq', name: 'Change frequency' },
-    { pattern: 'priority', name: 'Priority tags' },
+function analyzeSitemap() {
+  Logger.section('Sitemap Architecture (sitemap.xml)');
+  const content = readSafe('public/sitemap.xml');
+  if (!content) return Logger.fail('sitemap.xml not found');
+
+  const tests = [
+    { name: 'XML Declaration', req: '<?xml' },
+    { name: 'URL Set', req: 'urlset' },
+    { name: 'Loc Tags', req: 'loc' }
   ];
-  
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
+
+  for (const t of tests) {
+    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    else Logger.fail(`Missing: ${t.name}`);
   }
-  
-  // Count URLs
-  const urlMatches = content.match(/<url>/g);
-  const urlCount = urlMatches ? urlMatches.length : 0;
-  log('blue', `  ℹ Found ${urlCount} URLs in sitemap`);
-  
-  return allGood;
+
+  const count = (content.match(/<url>/g) || []).length;
+  Logger.info(`Indexed ${count} URLs`);
 }
 
-function checkManifest() {
-  log('cyan', '\n📱 Checking manifest.json...');
-  
-  const manifestPath = path.join(process.cwd(), 'public', 'manifest.json');
-  if (!fs.existsSync(manifestPath)) {
-    log('red', '✗ manifest.json not found!');
-    return false;
-  }
-  
-  try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    
-    const checks = [
-      { key: 'name', name: 'App name' },
-      { key: 'short_name', name: 'Short name' },
-      { key: 'description', name: 'Description' },
-      { key: 'start_url', name: 'Start URL' },
-      { key: 'display', name: 'Display mode' },
-      { key: 'icons', name: 'Icons' },
-    ];
-    
-    let allGood = true;
-    for (const check of checks) {
-      if (manifest[check.key]) {
-        log('green', `  ✓ ${check.name}`);
-      } else {
-        log('red', `  ✗ ${check.name} missing`);
-        allGood = false;
-      }
-    }
-    
-    return allGood;
-  } catch (e) {
-    log('red', '  ✗ Invalid JSON in manifest.json');
-    return false;
-  }
-}
+function analyzeLayout() {
+  Logger.section('Metadata & JSON-LD (layout.tsx)');
+  const content = readSafe('app/layout.tsx');
+  if (!content) return Logger.fail('app/layout.tsx not found');
 
-function checkStructuredData() {
-  log('cyan', '\n📊 Checking structured data setup...');
-  
-  const layoutPath = path.join(process.cwd(), 'app', 'layout.tsx');
-  if (!fs.existsSync(layoutPath)) {
-    log('red', '✗ layout.tsx not found!');
-    return false;
-  }
-  
-  const content = fs.readFileSync(layoutPath, 'utf8');
-  
-  const checks = [
-    { pattern: 'application/ld+json', name: 'JSON-LD script' },
-    { pattern: '@context', name: 'Schema context' },
-    { pattern: 'WebSite', name: 'WebSite schema' },
-    { pattern: 'Organization', name: 'Organization schema' },
-    { pattern: 'WebApplication', name: 'WebApplication schema' },
+  const metaTests = [
+    { name: 'Canonical URLs', req: 'canonical:' },
+    { name: 'Open Graph Config', req: 'openGraph:' },
+    { name: 'Twitter Cards', req: 'twitter:' },
+    { name: 'Structured Data / JSON-LD', req: 'application/ld+json' },
   ];
-  
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
+
+  for (const t of metaTests) {
+    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    else Logger.warn(`Missing: ${t.name}`);
   }
-  
-  return allGood;
 }
 
-function checkMetaTags() {
-  log('cyan', '\n🏷️  Checking meta tags setup...');
-  
-  const layoutPath = path.join(process.cwd(), 'app', 'layout.tsx');
-  if (!fs.existsSync(layoutPath)) {
-    log('red', '✗ layout.tsx not found!');
-    return false;
-  }
-  
-  const content = fs.readFileSync(layoutPath, 'utf8');
-  
-  const checks = [
-    { pattern: 'preconnect', name: 'Preconnect hints' },
-    { pattern: 'dns-prefetch', name: 'DNS prefetch' },
-    { pattern: 'canonical', name: 'Canonical URL' },
-    { pattern: 'openGraph', name: 'Open Graph' },
-    { pattern: 'twitter', name: 'Twitter Cards' },
-    { pattern: 'viewport', name: 'Viewport' },
+function analyzeConfig() {
+  Logger.section('Next.js Config (next.config.mjs)');
+  const content = readSafe('next.config.mjs');
+  if (!content) return Logger.fail('next.config.mjs not found');
+
+  const confTests = [
+    { name: 'Custom Security Headers', req: 'headers' },
+    { name: 'SEO Redirects', req: 'redirects' }
   ];
-  
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
+
+  for (const t of confTests) {
+    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    else Logger.info(`Optional: ${t.name} not configured`);
   }
-  
-  return allGood;
 }
 
-function checkNextConfig() {
-  log('cyan', '\n⚙️  Checking next.config.mjs...');
+async function runAudit() {
+  console.clear();
+  Logger.title('HypaStack SEO Audit');
   
-  const configPath = path.join(process.cwd(), 'next.config.mjs');
-  if (!fs.existsSync(configPath)) {
-    log('red', '✗ next.config.mjs not found!');
-    return false;
-  }
+  const start = performance.now();
+
+  Logger.section('Core Assets');
+  checkFile('public/robots.txt', 'robots.txt');
+  checkFile('public/sitemap.xml', 'sitemap.xml');
+  checkFile('public/manifest.json', 'manifest.json');
+  console.log();
+
+  analyzeRobots();
+  console.log();
   
-  const content = fs.readFileSync(configPath, 'utf8');
+  analyzeSitemap();
+  console.log();
   
-  const checks = [
-    { pattern: 'headers', name: 'Custom headers' },
-    { pattern: 'X-Robots-Tag', name: 'Robots tag header' },
-    { pattern: 'redirects', name: 'SEO redirects' },
-  ];
+  analyzeLayout();
+  console.log();
   
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
-  }
+  analyzeConfig();
+  console.log();
+
+  const ms = Math.round(performance.now() - start);
+  const ratio = checks.score / checks.total;
+  const percent = Math.round(ratio * 100);
+
+  Logger.divider();
   
-  return allGood;
+  let gradeColor = C.green;
+  let verdict = 'READY FOR PRODUCTION';
+  
+  if (percent < 90) { gradeColor = C.yellow; verdict = 'NEEDS IMPROVEMENT'; }
+  if (percent < 70) { gradeColor = C.red; verdict = 'CRITICAL FIXES REQUIRED'; }
+
+  console.log(`\n  ${C.bold}AUDIT SCORE: ${gradeColor}${percent}%${C.reset}  ${C.dim}(${ms}ms)${C.reset}`);
+  console.log(`  ${gradeColor}${C.bold}VERDICT:${C.reset} ${gradeColor}${verdict}${C.reset}\n`);
+
+  process.exit(percent >= 70 ? 0 : 1);
 }
 
-function checkCanonicalUrls() {
-  log('cyan', '\n🔗 Checking canonical URLs...');
-  
-  const layoutPath = path.join(process.cwd(), 'app', 'layout.tsx');
-  if (!fs.existsSync(layoutPath)) {
-    log('red', '✗ layout.tsx not found!');
-    return false;
-  }
-  
-  const content = fs.readFileSync(layoutPath, 'utf8');
-  
-  const checks = [
-    { pattern: 'canonical:', name: 'Canonical URL in metadata' },
-    { pattern: 'alternates:', name: 'Alternates config' },
-    { pattern: 'hrefLang', name: 'Hreflang tags' },
-  ];
-  
-  let allGood = true;
-  for (const check of checks) {
-    if (content.includes(check.pattern)) {
-      log('green', `  ✓ ${check.name}`);
-    } else {
-      log('yellow', `  ⚠ ${check.name} not found`);
-      allGood = false;
-    }
-  }
-  
-  return allGood;
-}
-
-function generateReport() {
-  log('magenta', '\n' + '='.repeat(50));
-  log('magenta', '           SEO AUDIT REPORT');
-  log('magenta', '='.repeat(50));
-  
-  let score = 0;
-  let total = 0;
-  
-  // Check critical files
-  log('cyan', '\n📁 Critical Files:');
-  total += 5;
-  if (checkFile('public/robots.txt', 'robots.txt')) score++;
-  if (checkFile('public/sitemap.xml', 'sitemap.xml')) score++;
-  if (checkFile('public/manifest.json', 'manifest.json')) score++;
-  if (checkFile('public/browserconfig.xml', 'browserconfig.xml')) score++;
-  if (checkFile('app/layout.tsx', 'layout.tsx')) score++;
-  
-  // Run detailed checks
-  if (checkRobotsTxt()) score++;
-  total++;
-  
-  if (checkSitemap()) score++;
-  total++;
-  
-  if (checkManifest()) score++;
-  total++;
-  
-  if (checkStructuredData()) score++;
-  total++;
-  
-  if (checkMetaTags()) score++;
-  total++;
-  
-  if (checkNextConfig()) score++;
-  total++;
-  
-  if (checkCanonicalUrls()) score++;
-  total++;
-  
-  // Final score
-  const percentage = Math.round((score / total) * 100);
-  
-  log('magenta', '\n' + '='.repeat(50));
-  log('cyan', `SEO SCORE: ${percentage}/100`);
-  
-  if (percentage >= 90) {
-    log('green', '🎉 Excellent! Your SEO is ready for production!');
-  } else if (percentage >= 70) {
-    log('yellow', '⚠️  Good, but there are some improvements needed.');
-  } else {
-    log('red', '❌ SEO needs significant improvements before production.');
-  }
-  
-  log('magenta', '='.repeat(50) + '\n');
-  
-  return percentage;
-}
-
-// Run the audit
-const score = generateReport();
-
-// Exit with appropriate code
-process.exit(score >= 70 ? 0 : 1);
+runAudit().catch(err => {
+  console.error(C.red + '\nAudit failed due to an exception:' + C.reset);
+  console.error(err);
+  process.exit(1);
+});

@@ -37,7 +37,7 @@ export default function WaitlistPage() {
                     type="text" 
                     id="nickname"
                     placeholder="Anonymous"
-                    className="w-full rounded-[16px] bg-[#e8eaf0] border border-border px-4 py-3.5 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-shadow"
+                    className="w-full rounded-md bg-[#e8eaf0] border border-border px-4 py-3.5 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-shadow"
                   />
                 </div>
                 
@@ -45,7 +45,7 @@ export default function WaitlistPage() {
                   <label htmlFor="interest" className="block text-[13px] font-medium text-foreground mb-2 pl-1">Area of Interest</label>
                   <select 
                     id="interest"
-                    className="w-full rounded-[16px] bg-[#e8eaf0] border border-border px-4 py-3.5 text-[15px] text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-shadow appearance-none"
+                    className="w-full rounded-md bg-[#e8eaf0] border border-border px-4 py-3.5 text-[15px] text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-shadow appearance-none"
                   >
                     <option value="general">General Platform Testing</option>
                     <option value="desktop">Native Desktop Client</option>
@@ -56,7 +56,7 @@ export default function WaitlistPage() {
                 
                 <button
                   type="button"
-                  className="relative mt-4 w-full rounded-[16px] bg-foreground text-background px-4 py-3.5 text-[15px] font-semibold hover:opacity-90 transition-opacity"
+                  className="relative mt-4 w-full rounded-md bg-foreground text-background px-4 py-3.5 text-[15px] font-semibold hover:opacity-90 transition-opacity"
                 >
                   Generate Beta Token
                 </button>

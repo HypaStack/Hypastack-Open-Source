@@ -6,11 +6,6 @@ import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
 import { Walkthrough } from "@/components/ui/walkthrough"
 
-const getGlassyVariant = (text: string) => {
-  let hash = 0
-  for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash)
-  return ["glassy-border", "glassy-border-bright", "glassy-border-tl"][Math.abs(hash) % 3]
-}
 
 type Port = { id: string; side: "left" | "right" | "top" | "bottom"; index: number }
 type CNode = {
@@ -671,7 +666,7 @@ export default function CanvasPage() {
                 {/* Card body — kind-specific layout wrapped in card-in-card */}
                 <div 
                   onContextMenu={(e) => onNodeCtx(e, node.id)}
-                  style={{ width: nw, height: nh, borderRadius: 14, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
+                  style={{ width: nw, height: nh, borderRadius: 6, backgroundColor: '#1f1f1f', padding: 3, boxShadow: '0 0 0 1px rgba(255,255,255,0.04)' }}
                   className="flex flex-col cursor-context-menu"
                 >
                   <div className="w-full h-full bg-[#111111] flex flex-col overflow-hidden" style={{ borderRadius: 13 }}>
@@ -702,7 +697,7 @@ export default function CanvasPage() {
                           <div className="px-4 pt-2 flex-1 flex flex-col">
                             <div contentEditable suppressContentEditableWarning spellCheck={false} onBlur={updDesc} className="outline-none cursor-text min-h-[16px] focus:bg-white/5 rounded px-1" style={{ fontSize: 13, color: '#a1a1aa' }}>{node.desc}</div>
                             <div className="mt-auto pb-3 flex gap-1.5">
-                              {["SQL", "ACID", "REPLICA"].map(t => <span key={t} style={{ fontSize: 10, fontFamily: 'monospace', backgroundColor: '#1f1f1f', color: '#a1a1aa', paddingLeft: 8, paddingRight: 8, paddingTop: 2, paddingBottom: 2, borderRadius: 8 }}>{t}</span>)}
+                              {["SQL", "ACID", "REPLICA"].map(t => <span key={t} style={{ fontSize: 10, fontFamily: 'monospace', backgroundColor: '#1f1f1f', color: '#a1a1aa', paddingLeft: 8, paddingRight: 8, paddingTop: 2, paddingBottom: 2, borderRadius: 6 }}>{t}</span>)}
                             </div>
                           </div>
                         </div>)
@@ -714,7 +709,7 @@ export default function CanvasPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <div contentEditable suppressContentEditableWarning spellCheck={false} onBlur={updTitle} className="outline-none cursor-text leading-snug focus:bg-white/5 rounded px-1" style={{ fontSize: 14, fontWeight: 500, color: '#e3e3e3' }}>{node.title}</div>
-                              <span style={{ fontSize: 10, fontFamily: 'monospace', backgroundColor: '#1f1f1f', color: '#a1a1aa', paddingLeft: 6, paddingRight: 6, paddingTop: 2, paddingBottom: 2, borderRadius: 8 }}>L7</span>
+                              <span style={{ fontSize: 10, fontFamily: 'monospace', backgroundColor: '#1f1f1f', color: '#a1a1aa', paddingLeft: 6, paddingRight: 6, paddingTop: 2, paddingBottom: 2, borderRadius: 6 }}>L7</span>
                             </div>
                             <div contentEditable suppressContentEditableWarning spellCheck={false} onBlur={updDesc} className="outline-none cursor-text min-h-[14px] focus:bg-white/5 rounded px-1 mt-0.5" style={{ fontSize: 13, color: '#a1a1aa' }}>{node.desc}</div>
                           </div>
@@ -744,7 +739,7 @@ export default function CanvasPage() {
                         <div className="flex-1 flex items-center gap-3 px-5 w-full h-full">
                           <MIcon name="layers" size={15} className="shrink-0" style={{ color: '#a1a1aa' }} />
                           <div contentEditable suppressContentEditableWarning spellCheck={false} onBlur={updTitle} className="outline-none cursor-text leading-snug focus:bg-white/5 rounded px-1 flex-1" style={{ fontSize: 14, fontWeight: 500, color: '#e3e3e3' }}>{node.title}</div>
-                          <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#a1a1aa', backgroundColor: '#1f1f1f', paddingLeft: 8, paddingRight: 8, paddingTop: 2, paddingBottom: 2, borderRadius: 8 }}>EDGE</span>
+                          <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#a1a1aa', backgroundColor: '#1f1f1f', paddingLeft: 8, paddingRight: 8, paddingTop: 2, paddingBottom: 2, borderRadius: 6 }}>EDGE</span>
                         </div>)
 
                       // ── IMAGE ──
@@ -765,7 +760,7 @@ export default function CanvasPage() {
                               onBlur={(e) => setNodes(ns => ns.map(n => n.id === node.id ? { ...n, imageUrl: e.target.value } : n))}
                               onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur() }}
                               className="outline-none focus:text-white transition-colors w-full"
-                              style={{ fontSize: 11, color: '#a1a1aa', backgroundColor: '#1f1f1f', borderRadius: 8, paddingLeft: 8, paddingRight: 8, paddingTop: 4, paddingBottom: 4 }}
+                              style={{ fontSize: 11, color: '#a1a1aa', backgroundColor: '#1f1f1f', borderRadius: 6, paddingLeft: 8, paddingRight: 8, paddingTop: 4, paddingBottom: 4 }}
                             />
                           </div>
                         </div>)
@@ -877,7 +872,7 @@ export default function CanvasPage() {
                   exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
                   className="overflow-hidden min-w-[210px] pointer-events-auto p-[3px]"
-                  style={{ transformOrigin: "top left", borderRadius: 14, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}
+                  style={{ transformOrigin: "top left", borderRadius: 6, backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}
                 >
               {ctxMenu.action.t === "canvas" && (() => {
                 const iconMap: Record<string, React.ReactNode> = {
@@ -897,7 +892,7 @@ export default function CanvasPage() {
                     {NODE_PRESETS.map(p => (
                       <button key={p.key} onClick={() => addComponent(p.key)}
                         className="flex items-center gap-2.5 w-full text-left hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                        style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 14, fontWeight: 400, color: '#e3e3e3' }}
+                        style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 400, color: '#e3e3e3' }}
                       >
                         <span style={{ color: '#a1a1aa' }}>{iconMap[p.icon]}</span>
                         {p.label}
@@ -915,17 +910,17 @@ export default function CanvasPage() {
                     <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold text-[#555] uppercase tracking-wider">Ports</p>
                     {totalPorts < maxPorts ? (
                       <div className="grid grid-cols-2 gap-1 px-1 mb-1">
-                        <button onClick={() => { addPort(nid, "left"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Left</button>
-                        <button onClick={() => { addPort(nid, "right"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Right</button>
-                        <button onClick={() => { addPort(nid, "top"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Top</button>
-                        <button onClick={() => { addPort(nid, "bottom"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 12, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Bottom</button>
+                        <button onClick={() => { addPort(nid, "left"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 6, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Left</button>
+                        <button onClick={() => { addPort(nid, "right"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 6, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Right</button>
+                        <button onClick={() => { addPort(nid, "top"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 6, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Top</button>
+                        <button onClick={() => { addPort(nid, "bottom"); setCtxMenu(null) }} className="flex items-center justify-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75" style={{ height: 32, borderRadius: 6, fontSize: 13, fontWeight: 400, color: '#e3e3e3' }}><MIcon name="add" size={12} style={{ color: '#a1a1aa' }} />Bottom</button>
                       </div>
                     ) : (
                       <div className="px-3 py-1.5 text-[10px] text-[#f59e0b] mb-1">Max ports reached.</div>
                     )}
                     <button onClick={() => deleteNode(nid)}
                       className="flex items-center gap-2 w-full text-left hover:bg-[#2a1414] active:scale-[0.97] transition-all duration-75"
-                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}
+                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}
                     >Remove component</button>
                   </div>
                 )
@@ -980,7 +975,7 @@ export default function CanvasPage() {
                     {/* Disconnect */}
                     <button onClick={() => deleteEdge(edgeId)}
                       className="flex items-center gap-2 w-full text-left hover:bg-[#2a1414] active:scale-[0.97] transition-all duration-75"
-                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: '#fca5a5', marginTop: 4, marginBottom: 4 }}
+                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#fca5a5', marginTop: 4, marginBottom: 4 }}
                     >Disconnect</button>
                   </div>
                 )
@@ -991,7 +986,7 @@ export default function CanvasPage() {
                   <div style={{ backgroundColor: '#111111', borderRadius: 13, overflow: 'hidden' }}>
                     <button onClick={() => deletePort(a.nid, a.pid)}
                       className="flex items-center gap-2 w-full text-left hover:bg-[#2a1414] active:scale-[0.97] transition-all duration-75"
-                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}
+                      style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#fca5a5' }}
                     >Remove connection</button>
                   </div>
                 )
@@ -1011,20 +1006,20 @@ export default function CanvasPage() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className="absolute top-3 right-3 z-[90] flex items-center gap-2"
-              style={{ borderRadius: 14, backgroundColor: 'rgba(23,23,23,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.06)', padding: '8px 10px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}
+              style={{ borderRadius: 6, backgroundColor: 'rgba(23,23,23,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.06)', padding: '8px 10px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}
             >
               <span style={{ fontSize: 12, color: '#888', fontWeight: 500, whiteSpace: 'nowrap' }}>You have unsaved changes</span>
               <button
                 onClick={handleCancel}
                 disabled={isSaving}
                 className="hover:bg-[#222] active:scale-[0.96] transition-all duration-75 disabled:opacity-50"
-                style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 8, fontSize: 12, fontWeight: 500, color: '#888', backgroundColor: 'transparent' }}
+                style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 12, fontWeight: 500, color: '#888', backgroundColor: 'transparent' }}
               >Cancel</button>
               <button
                 onClick={handleSave}
                 disabled={isSaving}
                 className="hover:opacity-90 active:scale-[0.96] transition-all duration-75 disabled:opacity-50 flex items-center gap-1.5"
-                style={{ height: 26, paddingLeft: 12, paddingRight: 12, borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+                style={{ height: 26, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 12, fontWeight: 600, color: '#0a0a0a', backgroundColor: '#ffffff' }}
               >
                 {isSaving ? "Saving…" : "Save"}
               </button>
@@ -1042,7 +1037,7 @@ export default function CanvasPage() {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 backdrop-blur-2xl border border-[#f59e0b]/20 px-4 py-3 shadow-2xl max-w-sm w-full"
-              style={{ borderRadius: 16, backgroundColor: 'rgba(23,23,23,0.9)' }}
+              style={{ borderRadius: 6, backgroundColor: 'rgba(23,23,23,0.9)' }}
             >
               <div className="flex-shrink-0 flex items-center justify-center pt-0.5">
                 <MIcon name="error" size={20} className="text-[#f59e0b]" />

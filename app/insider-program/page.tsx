@@ -47,7 +47,7 @@ export default function InsiderProgramPage() {
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.1 }}
-             style={{ borderRadius: 16, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
+             style={{ borderRadius: 6, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
            >
              <MIcon name="bug_report" size={24} className="text-[#a1a1aa] mb-4" />
              <h3 className="text-[18px] font-semibold text-white mb-2">Early Access Builds</h3>
@@ -58,7 +58,7 @@ export default function InsiderProgramPage() {
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.2 }}
-             style={{ borderRadius: 16, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
+             style={{ borderRadius: 6, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
            >
              <MIcon name="forum" size={24} className="text-[#a1a1aa] mb-4" />
              <h3 className="text-[18px] font-semibold text-white mb-2">Private Discord</h3>
@@ -69,7 +69,7 @@ export default function InsiderProgramPage() {
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.3 }}
-             style={{ borderRadius: 16, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
+             style={{ borderRadius: 6, backgroundColor: '#171717', padding: 24, display: 'flex', flexDirection: 'column' }}
            >
              <MIcon name="card_giftcard" size={24} className="text-[#a1a1aa] mb-4" />
              <h3 className="text-[18px] font-semibold text-white mb-2">Exclusive Perks</h3>
