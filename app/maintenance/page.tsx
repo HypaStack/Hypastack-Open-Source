@@ -84,7 +84,7 @@ export default function MaintenancePage() {
               height: 42,
               paddingLeft: 20,
               paddingRight: 20,
-              borderRadius: 12,
+              borderRadius: 6,
               backgroundColor: "#222",
               color: "#e3e3e3",
               fontSize: 14,

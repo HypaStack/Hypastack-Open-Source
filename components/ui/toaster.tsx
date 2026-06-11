@@ -18,7 +18,7 @@ export function Toaster() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="pointer-events-auto min-w-[280px] max-w-[380px] rounded-[18px] overflow-hidden"
+            className="pointer-events-auto min-w-[280px] max-w-[380px] rounded-md overflow-hidden"
             style={{
               backgroundColor: '#ffffff',
               border: '1px solid #e5e5e5',
@@ -43,7 +43,7 @@ export function Toaster() {
               </div>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="shrink-0 p-1 rounded-lg hover:bg-[#f0f0f0] text-[#999] hover:text-[#333] transition-colors"
+                className="shrink-0 p-1 rounded-md hover:bg-[#f0f0f0] text-[#999] hover:text-[#333] transition-colors"
               >
                 <MIcon name="close" size={16} />
               </button>

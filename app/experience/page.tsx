@@ -124,7 +124,7 @@ export default function ExperiencePage() {
                 style={{
                   width: 230,
                   padding: 4,
-                  borderRadius: 20,
+                  borderRadius: 6,
                   backgroundColor: '#1f1f1f',
                   boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)',
                 }}
@@ -156,7 +156,7 @@ export default function ExperiencePage() {
                               href={item.href}
                               onClick={() => setMenuOpen(false)}
                               className="flex items-center hover:bg-[#313131] active:bg-[#313131] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-                              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16 }}
+                              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
                             >
                               {content}
                             </Link>
@@ -169,7 +169,7 @@ export default function ExperiencePage() {
                             type="button"
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center w-full hover:bg-[#313131] active:bg-[#313131] active:scale-[0.97] transition-all duration-75 cursor-pointer text-left"
-                            style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 16, border: 'none', background: 'none' }}
+                            style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, border: 'none', background: 'none' }}
                           >
                             {content}
                           </button>
@@ -184,7 +184,7 @@ export default function ExperiencePage() {
 
           {/* Input pill */}
           <form onSubmit={handleSubmit}>
-            <div className="flex items-center gap-2 rounded-[32px] bg-[#1e1f20] py-2 pl-2 pr-2">
+            <div className="flex items-center gap-2 rounded-md bg-[#1e1f20] py-2 pl-2 pr-2">
               {/* + / × toggle button */}
               <button
                 type="button"

@@ -464,7 +464,7 @@ function FilesPageInner() {
               type="button"
               onClick={handleBulkDelete}
               disabled={deleteLoading === "bulk"}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
             >
               <MIcon name="delete" size={18} />
               {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
@@ -474,7 +474,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={handleCreateFolder}
-                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-[10px] bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
               >
                 <MIcon name="create_new_folder" size={17} className="shrink-0" />
                 <span className="hidden sm:inline">New Folder</span>
@@ -482,7 +482,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={triggerFilePicker}
-                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-[10px] bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
+                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
               >
                 <MIcon name="cloud_upload" size={15} className="shrink-0" />
                 <span>Upload files</span>
@@ -517,14 +517,14 @@ function FilesPageInner() {
                     key={folder.id} 
                     onClick={() => setCurrentFolderId(folder.id)}
                     className="group flex items-center gap-3 bg-[#ebebeb] dark:bg-[#1a1a1a] hover:bg-[#e5e5e5] dark:hover:bg-[#222] border border-[#e5e5e5] dark:border-transparent active:scale-[0.97] transition-all duration-75 cursor-pointer"
-                    style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 12 }}
+                    style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
                   >
                     <MIcon name="folder" size={16} className="text-[#666] dark:text-[#888] shrink-0" />
                     <span className="text-[#111] dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
                       className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] hover:text-red-400"
-                      style={{ height: 28, width: 28, borderRadius: 8 }}
+                      style={{ height: 28, width: 28, borderRadius: 6 }}
                       aria-label="Delete folder"
                     >
                       <MIcon name="delete" size={14} />
@@ -599,7 +599,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -607,7 +607,7 @@ function FilesPageInner() {
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-5 py-2 rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent text-[15px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -646,14 +646,14 @@ function FilesPageInner() {
                 initial={{ opacity: 0, scale: 0.97, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 6 }}
-                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[20px] bg-white dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent overflow-hidden pointer-events-auto"
+                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-md bg-white dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent overflow-hidden pointer-events-auto"
               >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] dark:border-transparent shrink-0">
                   <h2 className="text-[18px] font-semibold text-[#171717] dark:text-[#e3e3e3]">Upload files</h2>
                   <button
                     type="button"
                     onClick={closeUpload}
-                    className="p-1.5 rounded-[10px] text-[#666] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
+                    className="p-1.5 rounded-md text-[#666] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
@@ -739,7 +739,7 @@ function EmptyState({ query, username }: { query: string; username: string }) {
     <div className="flex-1 flex flex-col items-center justify-center text-center">
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-[10px] bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent mb-5">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent mb-5">
             <MIcon name="search" size={28} className="text-[#666] dark:text-[#888]" />
           </div>
         ) : null}
@@ -856,7 +856,7 @@ function ListView({
   setContextMenuPos: (pos: { x: number; y: number } | null) => void
 }) {
   return (
-    <div className="bg-[#ebebeb] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 14, padding: 1, boxShadow: 'none' }}>
+    <div className="bg-[#ebebeb] dark:bg-[#222] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: 1, boxShadow: 'none' }}>
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
           type="checkbox"
@@ -874,7 +874,7 @@ function ListView({
         <span />
       </div>
 
-      <div className="bg-white dark:bg-[#171717]" style={{ borderRadius: 13, overflow: 'hidden' }}>
+      <div className="bg-white dark:bg-[#171717]" style={{ borderRadius: 6, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
@@ -965,7 +965,7 @@ function ListView({
                       style={{ 
                         width: 220, 
                         padding: 6,
-                        borderRadius: 14, 
+                        borderRadius: 6, 
                         boxShadow: '0 2px 16px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)', 
                         transformOrigin: contextMenuPos ? 'top left' : 'top right',
                         ...(contextMenuPos ? { left: contextMenuPos.x, top: contextMenuPos.y } : {})
@@ -1029,7 +1029,7 @@ function ActionItem({
       onClick={onClick}
       disabled={disabled}
       className="w-full flex items-center bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer disabled:opacity-50"
-      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
+      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 6, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: accent === 'danger' ? '#ef4444' : accent === 'success' ? '#16a34a' : '#666' }}>
@@ -1057,7 +1057,7 @@ function ActionLink({
       href={href}
       onClick={onClick}
       className="flex items-center hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 14, border: 'none' }}
+      style={{ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 6, border: 'none' }}
     >
       <div className="flex items-center w-full" style={{ gap: 12 }}>
         <span className="shrink-0" style={{ color: '#666' }}>
@@ -1129,7 +1129,7 @@ function GridView({
         const iconName = getFileIconForType(file.contentType, file.name)
         const isImage = isImagePreviewable(file.contentType, file.name)
         return (
-          <div key={file.id} className="group relative bg-[#ebebeb] dark:bg-[#222] rounded-[24px] p-[1px] border border-[#e5e5e5] dark:border-transparent" style={{ boxShadow: 'none' }}>
+          <div key={file.id} className="group relative bg-[#ebebeb] dark:bg-[#222] rounded-md p-[1px] border border-[#e5e5e5] dark:border-transparent" style={{ boxShadow: 'none' }}>
           <div
             role="button"
             tabIndex={0}
@@ -1137,7 +1137,7 @@ function GridView({
             onDoubleClick={() => window.open(`/d/${file.id}`, '_blank')}
             onContextMenu={(e) => onContextMenu(e, file.id)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleSelect(file.id) } }}
-            className={`relative w-full aspect-square rounded-[21px] overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none ${
+            className={`relative w-full aspect-square rounded-md overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none ${
               isSelected ? "opacity-80" : "hover:opacity-90"
             }`}
           >
@@ -1148,7 +1148,7 @@ function GridView({
               <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
 
                 {!!file.burnOnRead && (
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-[10px] bg-black/40 backdrop-blur-sm text-orange-400">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/40 backdrop-blur-sm text-orange-400">
                     <MIcon name="local_fire_department" size={12} />
                   </span>
                 )}
@@ -1159,7 +1159,7 @@ function GridView({
                     onToggleStar(file.id, file.starred)
                   }}
                   disabled={starLoading === file.id}
-                  className={`inline-flex h-6 w-6 items-center justify-center rounded-[10px] backdrop-blur-sm transition-all ${
+                  className={`inline-flex h-6 w-6 items-center justify-center rounded-md backdrop-blur-sm transition-all ${
                     file.starred
                       ? "bg-black/40 text-yellow-500"
                       : "bg-black/40 text-zinc-300 opacity-0 group-hover:opacity-100"
@@ -1174,11 +1174,11 @@ function GridView({
                 onClick={(e) => e.stopPropagation()}
                 className="absolute inset-x-0 bottom-0 px-2 pb-2 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <div className="flex items-center gap-1 rounded-[10px] bg-black/40 backdrop-blur-md p-1">
+                <div className="flex items-center gap-1 rounded-md bg-black/40 backdrop-blur-md p-1">
                   <button
                     type="button"
                     onClick={() => onCopyLink(file.shareUrl, file.id)}
-                    className={`flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-[10px] text-xs font-medium transition-colors ${
+                    className={`flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       copiedId === file.id ? "text-emerald-400" : "text-white/90 hover:bg-white/10"
                     }`}
                   >
@@ -1187,7 +1187,7 @@ function GridView({
                   </button>
                   <Link
                     href={`/d/${file.id}`}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-[10px] text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
                   >
                      <MIcon name="visibility" size={12} />
                     View
@@ -1196,7 +1196,7 @@ function GridView({
                     type="button"
                     onClick={() => onDelete(file.id)}
                     disabled={deleteLoading === file.id}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-[10px] text-xs font-medium text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50"
                   >
                      <MIcon name="delete" size={12} />
                     {deleteLoading === file.id ? "€" : "Delete"}

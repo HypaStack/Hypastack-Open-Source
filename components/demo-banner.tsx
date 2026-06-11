@@ -26,7 +26,7 @@ export function DemoBanner() {
 
   return (
     <div className="fixed bottom-3 md:bottom-4 right-3 md:right-4 left-3 md:left-auto z-[100] md:max-w-md animate-fade-in-up">
-      <div className="rounded-xl md:rounded-2xl bg-card border border-border p-3 md:p-4">
+      <div className="rounded-md md:rounded-md bg-card border border-border p-3 md:p-4">
         <div className="flex items-start gap-2.5 md:gap-3">
           <div className="flex shrink-0 items-center justify-center pt-0.5">
             <MIcon name="shield" className="text-emerald-500" size={24} />
@@ -47,7 +47,7 @@ export function DemoBanner() {
           </div>
           <button
             onClick={handleDismiss}
-            className="absolute top-2.5 right-2.5 md:top-3 md:right-3 rounded-lg p-1 md:p-1.5 text-muted-foreground transition-colors duration-200 hover:bg-secondary hover:text-foreground"
+            className="absolute top-2.5 right-2.5 md:top-3 md:right-3 rounded-md p-1 md:p-1.5 text-muted-foreground transition-colors duration-200 hover:bg-secondary hover:text-foreground"
             aria-label="Dismiss"
           >
             <MIcon name="close" className="md:!text-[16px]" size={14} />

@@ -61,7 +61,7 @@ export function TierAnnouncementModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="theme-dashboard relative mx-4 w-full max-w-[420px] rounded-[24px] overflow-hidden"
+            className="theme-dashboard relative mx-4 w-full max-w-[420px] rounded-md overflow-hidden"
             style={{ backgroundColor: '#171717', padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
             {/* Top row: close */}
@@ -70,7 +70,7 @@ export function TierAnnouncementModal() {
                 type="button"
                 onClick={handleDismiss}
                 className="flex items-center justify-center hover:bg-[#222] hover:text-white transition-all duration-75 active:scale-[0.95] shrink-0"
-                style={{ height: 32, width: 32, borderRadius: 10, color: '#a1a1aa' }}
+                style={{ height: 32, width: 32, borderRadius: 6, color: '#a1a1aa' }}
               >
                 <MIcon name="close" size={16} />
               </button>
@@ -98,7 +98,7 @@ export function TierAnnouncementModal() {
                 onClick={handleDismiss}
                 disabled={closing}
                 className="w-full hover:bg-[#222] hover:text-white active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                style={{ height: 40, borderRadius: 16, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
+                style={{ height: 40, borderRadius: 6, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
               >
                 {closing ? "Saving…" : "Awesome — let’s go"}
               </button>

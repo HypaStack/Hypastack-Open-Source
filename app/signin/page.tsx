@@ -88,7 +88,7 @@ export default function SignInPage() {
                 <label className="block text-[12px] font-medium text-[#333] mb-1.5">Access key</label>
                 <div
                   className="flex items-center border border-[rgba(0,0,0,0.15)] bg-white focus-within:border-[#111] transition-colors"
-                  style={{ borderRadius: 8 }}
+                  style={{ borderRadius: 6 }}
                 >
                   <span className="pl-3 text-[#888]"><MIcon name="key" size={15} /></span>
                   <input
@@ -118,7 +118,7 @@ export default function SignInPage() {
                   type="submit"
                   disabled={!accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
                   className="w-full bg-[#111] text-white text-[14px] font-semibold hover:bg-[#2a2a2a] active:scale-[0.99] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ borderRadius: 8, height: 40 }}
+                  style={{ borderRadius: 6, height: 40 }}
                 >
                   Sign in
                 </button>
@@ -167,7 +167,7 @@ export default function SignInPage() {
                 src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png" 
                 alt="Behind the scenes" 
                 className="w-full h-auto mb-6 object-cover" 
-                style={{ borderRadius: 12 }} 
+                style={{ borderRadius: 6 }} 
               />
               <h2 className="text-[18px] font-semibold text-[#111] mb-5 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
                 Look how Hypastack looks behind the scenes
@@ -177,7 +177,7 @@ export default function SignInPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-[#e5e5e5] text-[#111] text-[13px] font-medium px-4 py-1.5 hover:bg-[#d5d5d5] active:scale-[0.98] transition-all"
-                style={{ borderRadius: 8 }}
+                style={{ borderRadius: 6 }}
               >
                 Take a look
               </a>

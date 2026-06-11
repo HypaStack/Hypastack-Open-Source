@@ -37,11 +37,11 @@ export function UploadOptionsPanel({
   files,
 }: UploadOptionsPanelProps) {
   return (
-    <div style={{ margin: '0 12px 8px', borderRadius: 16, backgroundColor: '#171717', padding: '4px' }}>
+    <div style={{ margin: '0 12px 8px', borderRadius: 6, backgroundColor: '#171717', padding: '4px' }}>
       {/* Burn toggle */}
       <div
         className="flex items-center justify-between cursor-pointer hover:bg-[#222] transition-all duration-75"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
+        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
         onClick={() => setBurnOnRead(!burnOnRead)}
       >
         <div className="flex items-center gap-2.5">
@@ -50,7 +50,7 @@ export function UploadOptionsPanel({
         </div>
         <div
           className="relative shrink-0 transition-colors"
-          style={{ width: 34, height: 20, borderRadius: 10, backgroundColor: burnOnRead ? '#9b9b9b' : '#2a2a2a', border: burnOnRead ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
+          style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: burnOnRead ? '#9b9b9b' : '#2a2a2a', border: burnOnRead ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
         >
           <div
             className="absolute top-[3px] transition-transform bg-white"
@@ -76,7 +76,7 @@ export function UploadOptionsPanel({
               onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
               placeholder={files[0]?.file.name || "example.pdf"}
               className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
-              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
             />
             {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
           </div>
@@ -97,7 +97,7 @@ export function UploadOptionsPanel({
           maxLength={100}
           rows={2}
           className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)] resize-none"
-          style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 10, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+          style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 6, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
         />
         {noteError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{noteError}</p>}
       </div>

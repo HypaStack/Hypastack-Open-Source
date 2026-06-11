@@ -153,7 +153,7 @@ export default function RecentActivityPage() {
       </div>
 
       {/* Activity list */}
-      <div className="rounded-lg bg-card border border-border/40 shadow-sm">
+      <div className="rounded-md bg-card border border-border/40 shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <MIcon name="refresh" size={24} className="text-muted-foreground animate-spin" />

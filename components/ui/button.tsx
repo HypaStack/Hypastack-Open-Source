@@ -32,8 +32,8 @@ export function Button({
   const sizeClasses = size === "sm"
     ? "h-9 px-4 rounded-full text-[13px]"
     : size === "md"
-      ? "h-[40px] px-6 rounded-[10px] text-[14px]"
-      : "h-[44px] px-[24px] rounded-[12px] text-[15px]"; // lg
+      ? "h-[40px] px-6 rounded-md text-[14px]"
+      : "h-[44px] px-[24px] rounded-md text-[15px]"; // lg
 
   const combinedClasses = `${baseClasses} ${variantClasses} ${sizeClasses} ${className}`.trim();
 
