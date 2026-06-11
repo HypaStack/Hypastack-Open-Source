@@ -125,12 +125,10 @@ export const metadata: Metadata = {
   other: {
     "msapplication-TileColor": "#ffffff",
     "msapplication-config": "/browserconfig.xml",
-    "theme-color": "#ffffff",
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
