@@ -51,7 +51,7 @@ export function HintTip({ id, text, icon = "emoji_objects" }: HintTipProps) {
           {id && (
             <button
               onClick={handleDismiss}
-              className="ml-1 flex items-center justify-center hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] dark:text-[#666] hover:text-[#333] dark:hover:text-[#ccc]"
+              className="ml-1 flex items-center justify-center hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] dark:text-[#a1a1aa] hover:text-[#333] dark:hover:text-[#ccc]"
             >
               <MIcon name="remove" size={16} />
             </button>

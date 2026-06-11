@@ -66,7 +66,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
     if (file.size > MAX_PROXY_SIZE) {
       return NextResponse.json(
-        { error: `File too large for zero-trust proxy upload. Maximum allowed size is 50MB.` },
+        { error: `We're having some internal issues, max proxy upload is 50MB.` },
         { status: 413 }
       )
     }
@@ -102,7 +102,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
     if (pin && !/^\d{6}$/.test(pin)) {
       return NextResponse.json(
-        { error: "PIN must be exactly 6 digits" },
+        { error: "PIN must be 6 digits" },
         { status: 400 }
       )
     }

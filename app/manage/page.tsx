@@ -163,7 +163,6 @@ export default function ManageLandingPage() {
           {[
             { icon: "hard_drive", label: "Drive", desc: "Manage your encrypted files", href: "/manage/files" },
             { icon: "cloud", label: "CDN Assets", desc: "Public asset hosting", href: "/manage/cdn" },
-            { icon: "widgets", label: "Canvas", desc: "Infrastructure planner", href: "/manage/canvas" },
           ].map((action) => (
             <Link
               key={action.label}

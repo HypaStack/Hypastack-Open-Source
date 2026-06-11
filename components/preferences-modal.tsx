@@ -175,7 +175,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 ${
         active
           ? "text-[#111111] dark:text-[#f0f0f0] font-medium"
-          : "text-[#888] dark:text-[#777] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
+          : "text-[#888] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
       }`}
       style={{
         height: 34,
@@ -215,7 +215,7 @@ function GeneralTab() {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
-        <p className="text-[12px] font-medium text-[#888] dark:text-[#777] mb-3">Appearance</p>
+        <p className="text-[12px] font-medium text-[#888] dark:text-[#a1a1aa] mb-3">Appearance</p>
         <div className="grid grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
           <ThemeTile variant="light" label="Light" active={theme === "light"} onClick={() => setTheme("light")} />
@@ -228,9 +228,9 @@ function GeneralTab() {
         style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
         onClick={() => setLangOpen((o) => !o)}
       >
-        <span className="text-[13px] text-[#888] dark:text-[#777]">Language</span>
+        <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Language</span>
         <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111] dark:text-[#f0f0f0]">
-          {language.label} <span className="text-[#999] dark:text-[#666]">({language.native})</span>
+          {language.label} <span className="text-[#999] dark:text-[#a1a1aa]">({language.native})</span>
           <MIcon
             name="expand_more"
             size={15}
@@ -278,7 +278,7 @@ function GeneralTab() {
         className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
         style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
       >
-        <span className="text-[13px] text-[#888] dark:text-[#777]">Support</span>
+        <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Support</span>
         <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#ccc]">Open Support Centre <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
@@ -316,7 +316,7 @@ function ThemeTile({
         {variant === "light" && <ThemeMock dark={false} />}
         {variant === "dark" && <ThemeMock dark />}
       </button>
-      <span className={`text-[13px] ${active ? "font-medium text-[#111] dark:text-[#f0f0f0]" : "font-normal text-[#888] dark:text-[#777]"}`}>
+      <span className={`text-[13px] ${active ? "font-medium text-[#111] dark:text-[#f0f0f0]" : "font-normal text-[#888] dark:text-[#a1a1aa]"}`}>
         {label}
       </span>
     </div>
@@ -652,13 +652,13 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.totalStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Space used ({Math.round(usedPct)}%)</p>
+            <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
             <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.maxStorage) : "-"}
             </p>
-            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Total space</p>
+            <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Total space</p>
           </div>
         </div>
         <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] dark:bg-[#333] overflow-hidden">
@@ -667,7 +667,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             style={{ width: `${Math.min(100, usedPct)}%` }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#777] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#111]" /> Drive
           </span>
@@ -678,7 +678,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
           <div>
             <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
-            <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
+            <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
               className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] bg-[#111] dark:bg-[#fff]"
@@ -689,7 +689,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           </div>
           <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4">
             <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
-            <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
+            <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
             <button
               type="button"
               onClick={handleEmptyTrash}
@@ -709,7 +709,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
         >
           <div>
-            <span className="text-[13px] text-[#888] dark:text-[#777]">Delete account</span>
+            <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Delete account</span>
           </div>
           <button
             type="button"
@@ -828,7 +828,7 @@ function EditProfileDialog({
             <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 6 }}>
               <div className="p-5 space-y-3">
                 <div>
-                  <p className="text-[12px] font-medium text-[#888] dark:text-[#777] mb-1.5">Username</p>
+                  <p className="text-[12px] font-medium text-[#888] dark:text-[#a1a1aa] mb-1.5">Username</p>
                   <input
                     type="text"
                     value={nickname}
@@ -956,7 +956,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("monthly")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#777] font-normal"
+              billing === "monthly" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Monthly
@@ -965,7 +965,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("annual")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "annual" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#777] font-normal"
+              billing === "annual" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Annual
@@ -997,7 +997,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
               </span>
             )}
           </div>
-          <p className="text-[13px] text-[#888] dark:text-[#777] mb-4 font-normal">
+          <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-4 font-normal">
             {selectedPlan.key === "free"
               ? "Free forever"
               : isSelectedCurrent
@@ -1072,175 +1072,21 @@ function PlanCard({
         )}
       </div>
       <p className="text-[22px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight">{size}</p>
-      <p className="text-[13px] text-[#888] dark:text-[#777] mt-0.5 font-normal">{price}</p>
+      <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
     </button>
   )
 }
 
 function BillingTab({ user }: { user: PreferencesUser }) {
-  const currentTier = resolveTier(user)
-
-  const [creditsBalance, setCreditsBalance] = useState(0)
-  const [creditsBalanceEur, setCreditsBalanceEur] = useState(0)
-  const [freeUnitsRemaining, setFreeUnitsRemaining] = useState(5000)
-  const [mUsage, setMUsage] = useState({ opUnitsUsed: 0, freeUnitsUsed: 0, creditUnitsUsed: 0 })
-  const [creditsLoading, setCreditsLoading] = useState(true)
-  const [purchaseLoading, setPurchaseLoading] = useState<number | null>(null)
-  const [customAmount, setCustomAmount] = useState("")
-  const [creditsError, setCreditsError] = useState("")
-  const FREE_UNITS_TOTAL = 5000
-
-  useEffect(() => { fetchCredits() }, [])
-
-  const fetchCredits = async () => {
-    try {
-      const r = await fetch("/api/v2/credits/balance")
-      if (r.ok) {
-        const d = await r.json()
-        setCreditsBalance(d.balance ?? 0)
-        setCreditsBalanceEur(d.balanceEur ?? 0)
-        setFreeUnitsRemaining(d.freeUnitsRemaining ?? 0)
-        if (d.monthlyUsage) setMUsage(d.monthlyUsage)
-      }
-    } catch {} finally { setCreditsLoading(false) }
-  }
-
-  const purchaseCredits = async (amountEur: number) => {
-    setCreditsError(""); setPurchaseLoading(amountEur)
-    try {
-      const r = await fetch("/api/v2/credits/purchase", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: amountEur }),
-      })
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error || "Failed to create checkout")
-      if (d.checkoutUrl) window.location.href = d.checkoutUrl
-    } catch (e: any) { setCreditsError(e.message) } finally { setPurchaseLoading(null) }
-  }
-
-  const handleCustomPurchase = () => {
-    const amt = parseInt(customAmount, 10)
-    if (isNaN(amt) || amt < 10) { setCreditsError("Minimum custom amount is €10"); return }
-    purchaseCredits(amt)
-  }
-
-  const freeUsedPct = creditsLoading ? 0 : Math.min(100, Math.round(((FREE_UNITS_TOTAL - freeUnitsRemaining) / FREE_UNITS_TOTAL) * 100))
-
   return (
-    <div>
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div>
-            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "—" : creditsBalance.toLocaleString()}
-            </p>
-            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Credits available</p>
-          </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {creditsLoading ? "—" : `€${creditsBalanceEur.toFixed(2)}`}
-            </p>
-            <p className="text-[12px] text-[#888] dark:text-[#777] font-normal">Balance value</p>
-          </div>
-        </div>
-        <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] dark:bg-[#333] overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${freeUsedPct}%`,
-              backgroundColor: freeUsedPct >= 90 ? '#ef4444' : freeUsedPct >= 70 ? '#f59e0b' : '#16a34a',
-            }}
-          />
-        </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#777] font-normal">
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#16a34a]" /> Free: {creditsLoading ? "€" : `${(FREE_UNITS_TOTAL - freeUnitsRemaining).toLocaleString()} / ${FREE_UNITS_TOTAL.toLocaleString()}`}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#818cf8]" /> Paid: {creditsLoading ? "€" : mUsage.creditUnitsUsed.toLocaleString()}
-          </span>
-        </div>
-        {!creditsLoading && freeUnitsRemaining <= 0 && (
-          <p className="text-[11px] text-red-500 mt-2">Free tier exhausted € CDN operations consume credits.</p>
-        )}
-      </div>
-
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
-        <div>
-          <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Buy Credits</p>
-          <p className="text-[13px] text-[#888] dark:text-[#777] mb-3 font-normal leading-snug">Top up your credits to keep using CDN and storage operations</p>
-          <div className="grid grid-cols-3 gap-2">
-            {[{ eur: 10, credits: 20 }, { eur: 20, credits: 40 }, { eur: 50, credits: 100 }].map(pkg => (
-              <button
-                key={pkg.eur}
-                onClick={() => purchaseCredits(pkg.eur)}
-                disabled={purchaseLoading !== null}
-                className="flex flex-col items-center justify-center gap-0.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
-                style={{ height: 52, borderRadius: 6 }}
-              >
-                {purchaseLoading === pkg.eur ? (
-                  <MIcon name="progress_activity" size={16} className="animate-spin text-[#333] dark:text-[#ccc]" />
-                ) : (
-                  <>
-                    <span className="text-[14px] font-medium text-[#111] dark:text-[#f0f0f0]">€{pkg.eur}</span>
-                    <span className="text-[11px] text-[#16a34a] font-medium">{pkg.credits} credits</span>
-                  </>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4 flex flex-col justify-between">
-          <div>
-            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Custom Amount</p>
-            <p className="text-[13px] text-[#888] dark:text-[#777] font-normal leading-snug">Enter any amount starting from €10</p>
-          </div>
-          <div className="flex items-center gap-2 mt-3">
-            <div className="flex-1 flex items-center gap-1.5 bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, paddingLeft: 12, paddingRight: 12, height: 42 }}>
-              <span className="text-[14px] text-[#888] dark:text-[#777] font-medium">€</span>
-              <input
-                type="number"
-                min="10"
-                placeholder="10"
-                value={customAmount}
-                onChange={e => setCustomAmount(e.target.value)}
-                className="w-full bg-transparent text-[14px] text-[#111] dark:text-[#f0f0f0] outline-none placeholder-[#ccc] font-medium"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-              />
-            </div>
-            <button
-              onClick={handleCustomPurchase}
-              disabled={purchaseLoading !== null || !customAmount}
-              className="inline-flex items-center justify-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
-              style={{ width: 64, height: 42, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
-            >
-              {purchaseLoading !== null && customAmount ? <MIcon name="progress_activity" size={16} className="animate-spin" /> : "Buy"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {creditsError && (
-        <div className="bg-[rgba(239,68,68,0.06)] dark:bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.15)] dark:border-[rgba(239,68,68,0.2)]" style={{ borderRadius: 6, padding: '8px 12px', marginBottom: 16 }}>
-          <p className="text-[12px] text-red-500">{creditsError}</p>
-        </div>
-      )}
-
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6 }}>
-        <div className="flex items-center justify-between" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}>
-          <span className="text-[13px] text-[#888] dark:text-[#777]">Current plan</span>
-          <span className="text-[13px] font-medium text-[#111] dark:text-[#f0f0f0]">{TIER_LABELS[currentTier]}</span>
-        </div>
-        <div className="flex items-center justify-between border-t border-[#ebebeb] dark:border-transparent" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
-          <span className="text-[13px] text-[#888] dark:text-[#777]">Credit rate</span>
-          <span className="text-[13px] text-[#333] dark:text-[#ccc]">1 credit = 1,000 op-units</span>
-        </div>
-        <div className="flex items-center justify-between border-t border-[#ebebeb] dark:border-transparent" style={{ minHeight: 38, paddingLeft: 12, paddingRight: 12 }}>
-          <span className="text-[13px] text-[#888] dark:text-[#777]">Operations</span>
-          <span className="text-[13px] text-[#333] dark:text-[#ccc]">Upload/delete = 4 units, Download = 1 unit</span>
-        </div>
-        <p className="text-[11px] text-[#aaa] px-3 pb-2.5">Credits expire 6 months after purchase.</p>
+    <div className="space-y-4">
+      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 16px' }}>
+        <p className="text-[15px] font-normal text-[#111] dark:text-[#f0f0f0] mb-1.5">We're working on it.</p>
+        <p className="text-[13px] font-normal text-[#888] dark:text-[#a1a1aa] leading-relaxed max-w-md">
+          Billing not expected untill 2027, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
+          <br /><br />
+          All donations appreciated, this project is self funded.
+        </p>
       </div>
     </div>
   )
@@ -1251,7 +1097,7 @@ function IntegrationsTab() {
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
         <p className="text-[13px] text-[#333] dark:text-[#ccc] font-medium mb-1">Coming soon</p>
-        <p className="text-[13px] text-[#888] dark:text-[#777] leading-relaxed">
+        <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] leading-relaxed">
           Discord bots, integrations, and third-party connectors are on the way.
         </p>
       </div>
@@ -1319,7 +1165,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
           className="flex items-center justify-between"
           style={{ height: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
         >
-          <span className="text-[13px] text-[#888] dark:text-[#777]">Inactivity purge</span>
+          <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Inactivity purge</span>
           <div className="flex items-center gap-2">
             <div className="relative">
               <input
@@ -1356,7 +1202,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
       {!isPaid && (
         <p className="text-[11px] text-[#aaa] px-1">
-          Fixed at <span className="text-[#888] dark:text-[#777] font-medium">7 days</span> for free accounts. Upgrade to customize.
+          Fixed at <span className="text-[#888] dark:text-[#a1a1aa] font-medium">7 days</span> for free accounts. Upgrade to customize.
         </p>
       )}
     </div>
@@ -1384,7 +1230,7 @@ function SecurityRow({
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0]">{title}</p>
-        <p className="text-[13px] text-[#888] dark:text-[#777] truncate font-normal">{description}</p>
+        <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] truncate font-normal">{description}</p>
       </div>
       <MIcon name="chevron_right" size={20} className="text-[#aaa] shrink-0" />
     </a>
