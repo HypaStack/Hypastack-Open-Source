@@ -494,7 +494,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [avatarSrc, setAvatarSrc] = useState(
-    user.avatarUrl ? `/api/v2/avatar?t=${user.avatarUrl}` : null
+    user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : null
   )
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = storage?.storagePercent ?? 0
@@ -555,7 +555,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
 
   const handleUploadSuccess = async () => {
     await refreshUser()
-    setAvatarSrc(`/api/v2/avatar?t=${Date.now()}`)
+    setAvatarSrc(`https://r2.hypastack.com/${user.avatarUrl}?t=${Date.now()}`)
   }
 
   return (
