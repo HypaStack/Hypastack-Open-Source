@@ -5,7 +5,6 @@ export const WINDOW_MINUTES = {
   login: 5,
   register: 5,
   api: 1,
-  passwordChange: 5,
 } as const
 
 export const MAX_ATTEMPTS = {
@@ -15,5 +14,4 @@ export const MAX_ATTEMPTS = {
   login:          { free: 5 },
   register:       { free: 5 },
   api:            { free: 120 },
-  passwordChange: { free: 3 },
 } as const
