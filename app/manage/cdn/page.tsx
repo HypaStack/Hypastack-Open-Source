@@ -75,6 +75,12 @@ export default function CdnPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
+  const [hideCtrlHint, setHideCtrlHint] = useState(true)
+
+  useEffect(() => {
+    setHideCtrlHint(localStorage.getItem('hideCtrlHint') === '1')
+  }, [])
+
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
 
@@ -701,12 +707,22 @@ export default function CdnPage() {
           </div>
         </div>
 
-        {(assets.length > 0 || folders.length > 0) && (
-          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent" style={{ borderRadius: 6, padding: '6px 12px' }}>
+        {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
+          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent relative group pr-8" style={{ borderRadius: 6, padding: '6px 12px' }}>
             <div className="flex items-center justify-center bg-white dark:bg-[#171717] rounded-[6px] px-1.5 py-0.5 text-[#555] dark:text-[#aaa] text-[11px] font-bold border border-[#e5e5e5] dark:border-transparent">CTRL</div>
             <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
+            <button 
+              onClick={() => {
+                localStorage.setItem('hideCtrlHint', '1')
+                setHideCtrlHint(true)
+              }}
+              className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#999] hover:text-[#333] dark:hover:text-[#fff]"
+              aria-label="Dismiss hint"
+            >
+              <MIcon name="close" size={16} />
+            </button>
           </div>
         )}
       </div>
@@ -739,7 +755,7 @@ export default function CdnPage() {
                     <div
                       key={folder.id}
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex items-center gap-3 bg-[#f5f5f5] dark:bg-[#1a1a1a] hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 cursor-pointer border border-[#e5e5e5] dark:border-transparent"
+                      className="group flex items-center gap-3 bg-[#ebebeb] dark:bg-[#1a1a1a] hover:bg-[#e5e5e5] dark:hover:bg-[#222] border border-[#e5e5e5] dark:border-transparent active:scale-[0.97] transition-all duration-75 cursor-pointer"
                       style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
                     >
                       <MIcon name="folder" size={16} className="text-[#666] dark:text-[#888] shrink-0" />
