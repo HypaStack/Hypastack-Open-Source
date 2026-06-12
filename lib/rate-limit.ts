@@ -142,7 +142,4 @@ export async function checkApiRateLimit(accountId: string): Promise<RateLimitRes
   return checkRateLimit(accountId, 'api', WINDOW_MINUTES.api, MAX_ATTEMPTS.api.free)
 }
 
-export async function checkPasswordChangeRateLimit(accountId: string): Promise<RateLimitResult> {
-  return checkRateLimit(accountId, 'password_change', WINDOW_MINUTES.passwordChange, MAX_ATTEMPTS.passwordChange.free)
-}
 
