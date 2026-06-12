@@ -414,7 +414,7 @@ export async function stripMetadata(buffer: Buffer, mimeType: string): Promise<B
   try {
     // Use sharp to strip all metadata
     const processed = await sharp(buffer, {
-      failOnError: false,
+      failOn: "none",
       limitInputPixels: 268402689, // ~16384x16384
     })
       .rotate() // Auto-rotate based on EXIF orientation
