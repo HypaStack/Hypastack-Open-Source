@@ -2,35 +2,34 @@
  * R2 Access Control Worker — r2.hypastack.com
  * 
  * Routes:
- *   /cdn/*       → pass through (public CDN assets)
- *   /og/*        → pass through (OG preview images)
- *   /profiles/*  → pass through (public profile pictures)
- *   /uploads/*  → BLOCK (must go through the API)
- *   /*          → BLOCK (deny everything else)
+ *   /cdn/*       → pass through (public CDN assets, no origin check)
+ *   /uploads/*   → BLOCK (must go through the API)
+ *   /profiles/*  → BLOCK (must go through the API)
+ *   /og/*        → BLOCK (deprecated, removed)
+ *   /*           → BLOCK (deny everything else)
+ * 
+ * Origin enforcement:
+ *   CDN assets are fully public.
+ *   All other routes (uploads, profiles) are restricted to requests
+ *   originating from the hypastack.com application server.
  */
+
+const ALLOWED_ORIGINS = [
+  "https://hypastack.com",
+  "https://www.hypastack.com",
+];
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.slice(1); // remove leading /
-    
+
     // Explicitly block path traversal attempts before decoding
     if (path.includes("..") || path.includes("%2e%2e") || path.includes("%2E%2E")) {
       return new Response(
         JSON.stringify({ error: "Invalid path" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
-    }
-
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-      "Access-Control-Max-Age": "86400",
-    };
-
-    // Preflight
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders });
     }
 
     // Only allow GET and HEAD
@@ -40,53 +39,97 @@ export default {
 
     // Empty path
     if (!path) {
-      return new Response(
-        JSON.stringify({ error: "404 Forbidden" }),
-        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return forbidden();
     }
 
     // --- Route by prefix ---
 
-    // 1. CDN assets — public, immutable cache
+    // 1. CDN assets — fully public, no origin check, immutable cache
     if (path.startsWith("cdn/")) {
+      const corsHeaders = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD",
+      };
       return serveFromR2(env, path, corsHeaders, {
         cacheControl: "public, max-age=31536000, immutable",
       });
     }
 
-    // 2. OG preview images — public, weekly cache
+    // 2. OG images — deprecated and removed, block all access
     if (path.startsWith("og/")) {
-      return serveFromR2(env, path, corsHeaders, {
-        cacheControl: "public, max-age=604800",
-      });
+      return forbidden();
     }
 
-    // 3. Profiles — public, hourly cache
+    // 3. Profiles — restricted: only accessible from the app server
     if (path.startsWith("profiles/")) {
+      const originCheck = checkOrigin(request);
+      if (!originCheck.ok) return originCheck.response;
+      const corsHeaders = buildRestrictedCors(request);
       return serveFromR2(env, path, corsHeaders, {
-        cacheControl: "public, max-age=3600",
+        cacheControl: "private, max-age=3600",
       });
     }
 
-    // 4. BLOCK uploads and pastes specifically to ensure they are private
+    // 4. Uploads — restricted: must go through the API, never directly
     if (path.startsWith("uploads/") || path.startsWith("pastes/")) {
-      return new Response(
-        JSON.stringify({ error: "404 Forbidden" }),
-        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return forbidden();
     }
 
     // 5. BLOCK everything else
-    return new Response(
-      JSON.stringify({ error: "404 Forbidden" }),
-      {
-        status: 403,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return forbidden();
   },
 };
+
+/**
+ * Check that the request originates from the hypastack.com app server.
+ * Inspects the Origin and Referer headers.
+ */
+function checkOrigin(request) {
+  const origin = request.headers.get("Origin") || "";
+  const referer = request.headers.get("Referer") || "";
+
+  const originAllowed = ALLOWED_ORIGINS.some(
+    (o) => origin === o || referer.startsWith(o)
+  );
+
+  if (!originAllowed) {
+    return {
+      ok: false,
+      response: new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        }
+      ),
+    };
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Build CORS headers that only allow the matched origin.
+ */
+function buildRestrictedCors(request) {
+  const origin = request.headers.get("Origin") || "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "GET, HEAD",
+    "Vary": "Origin",
+  };
+}
+
+/**
+ * Generic 403 Forbidden response.
+ */
+function forbidden() {
+  return new Response(
+    JSON.stringify({ error: "Forbidden" }),
+    { status: 403, headers: { "Content-Type": "application/json" } }
+  );
+}
 
 /**
  * Serve an object from the R2 bucket with proper headers.
