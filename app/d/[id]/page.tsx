@@ -280,7 +280,7 @@ export default function DownloadPage() {
                   <div className="flex gap-2">
                     <MIcon name="info" size={16} className="text-[#888] shrink-0 mt-0.5" />
                     <p className="text-[12px] text-[#666] leading-relaxed">
-                      Your file is downloading securely in the background. It will automatically save to your device once finished—this may take a moment depending on your connection speed.
+                      Your file is downloading securely in the background. It will automatically save to your device once finished, this may take a moment depending on your connection speed.
                     </p>
                   </div>
                 </div>
