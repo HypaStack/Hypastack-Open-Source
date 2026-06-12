@@ -995,7 +995,7 @@ function BillingTab({ } : { user: PreferencesUser }) {
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 16px' }}>
         <p className="text-[15px] font-normal text-[#111] dark:text-[#f0f0f0] mb-1.5">We're working on it.</p>
         <p className="text-[13px] font-normal text-[#888] dark:text-[#a1a1aa] leading-relaxed max-w-md">
-          Billing not expected untill 2027, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
+          Billing not expected until next month, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
           <br /><br />
           All donations appreciated, this project is self funded.
         </p>
