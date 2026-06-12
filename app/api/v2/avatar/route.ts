@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById } from "@/lib/user-model"
+import { createHmac } from "crypto"
 
 export const dynamic = "force-dynamic"
+
+/**
+ * Generates a short-lived HMAC-SHA256 presigned URL for a profile picture.
+ * The signature covers "<r2Key>:<expiresMs>" so it is bound to both
+ * the specific file and the expiry time.
+ */
+function signAvatarUrl(r2Key: string): string {
+  const secret = process.env.AVATAR_SIGNING_SECRET!
+  const expires = Date.now() + 60 * 60 * 1000 // 1 hour
+  const sig = createHmac("sha256", secret)
+    .update(`${r2Key}:${expires}`)
+    .digest("hex")
+  return `https://r2.hypastack.com/${r2Key}?expires=${expires}&sig=${sig}`
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,27 +31,12 @@ export async function GET(request: NextRequest) {
       return new NextResponse("No avatar", { status: 404 })
     }
 
-    // Proxy the image server-side so the browser never touches r2.hypastack.com directly
-    const r2Url = `https://r2.hypastack.com/${user.avatar_url}`
-    const r2Res = await fetch(r2Url)
+    const presignedUrl = signAvatarUrl(user.avatar_url)
 
-    if (!r2Res.ok) {
-      return new NextResponse("Avatar not found", { status: 404 })
-    }
-
-    const contentType = r2Res.headers.get("Content-Type") || "image/webp"
-    const buffer = await r2Res.arrayBuffer()
-
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "private, max-age=3600",
-        "Content-Length": buffer.byteLength.toString(),
-      },
-    })
+    // Redirect browser to the presigned R2 URL — loaded directly, no proxy overhead
+    return NextResponse.redirect(presignedUrl, { status: 302 })
   } catch (error: any) {
-    console.error("[Avatar] Proxy error:", error)
+    console.error("[Avatar] Error generating presigned URL:", error)
     return new NextResponse("Failed to load avatar", { status: 500 })
   }
 }
