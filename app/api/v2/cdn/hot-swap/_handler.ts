@@ -5,7 +5,6 @@ import { getCdnAssetById, getTotalStorageUsed, updateCdnAssetAfterSwap } from "@
 import { getPresignedCdnUploadUrl, headCdnObject } from "@/lib/r2"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
-import { logOperation } from "@/lib/credits"
 import { API_ERRORS } from "@/constants"
 
 /**
@@ -19,7 +18,7 @@ export async function handleHotSwapInit(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
+      console.error(`[API Error] 401 Unauthorized: Authentication required`)
       return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
@@ -27,28 +26,21 @@ export async function handleHotSwapInit(request: NextRequest) {
     const { assetId, fileSize, contentType, csrfToken } = body
 
     if (!assetId || typeof fileSize !== "number" || !contentType || !csrfToken) {
-        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
+      console.error(`[API Error] 400 Bad Request: Missing required fields`)
       return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"Invalid CSRF token"}`);
+      console.error(`[API Error] 403 Forbidden: Invalid CSRF token`)
       return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     // Verify asset exists and belongs to user
     const asset = await getCdnAssetById(assetId)
     if (!asset || asset.user_id !== currentUser.userId) {
-        console.error(`[API Error] 404 Not Found: ${"Asset not found"}`);
+      console.error(`[API Error] 404 Not Found: Asset not found`)
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
-    }
-
-    // Credits gate
-    const opsResult = await logOperation(currentUser.userId, 'A', 'cdn_hotswap', true)
-    if (!opsResult.allowed) {
-        console.error(`[API Error] 402 Error: ${opsResult.reason || "Insufficient credits for CDN operations."}`);
-      return NextResponse.json({ error: "402 Error" }, { status: 402 })
     }
 
     // Tier limits check
@@ -60,7 +52,7 @@ export async function handleHotSwapInit(request: NextRequest) {
 
     if (fileSize <= 0 || fileSize > tier.maxCdnFileSize) {
       const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
-        console.error(`[API Error] 413 Payload Too Large: ${`File is too large. Maximum ${limitMB}MB per file on your plan.`}`);
+      console.error(`[API Error] 413 Payload Too Large: File is too large. Maximum ${limitMB}MB per file on your plan.`)
       return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
@@ -69,7 +61,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     if (sizeDelta > 0 && currentStorage + sizeDelta > tier.maxCdnStorage) {
       const remaining = Math.max(0, tier.maxCdnStorage - currentStorage)
       const remainingMB = Math.floor(remaining / (1024 * 1024))
-        console.error(`[API Error] 413 Payload Too Large: ${`Not enough storage. You have ${remainingMB}MB remaining.`}`);
+      console.error(`[API Error] 413 Payload Too Large: Not enough storage. You have ${remainingMB}MB remaining.`)
       return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
@@ -89,7 +81,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Hot Swap Init] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to initialize hot swap"}`);
+    console.error(`[API Error] 500 Internal Server Error: Failed to initialize hot swap`)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }
@@ -101,7 +93,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Authentication required"}`);
+      console.error(`[API Error] 401 Unauthorized: Authentication required`)
       return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
     }
 
@@ -109,21 +101,21 @@ export async function handleHotSwapComplete(request: NextRequest) {
     const { assetId } = body
 
     if (!assetId) {
-        console.error(`[API Error] 400 Bad Request: ${"Missing assetId"}`);
+      console.error(`[API Error] 400 Bad Request: Missing assetId`)
       return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
     }
 
     // Verify asset exists and belongs to user
     const asset = await getCdnAssetById(assetId)
     if (!asset || asset.user_id !== currentUser.userId) {
-        console.error(`[API Error] 404 Not Found: ${"Asset not found"}`);
+      console.error(`[API Error] 404 Not Found: Asset not found`)
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
     // HEAD the R2 object to confirm the new file landed
     const head = await headCdnObject(asset.r2_key)
     if (!head) {
-        console.error(`[API Error] 404 Not Found: ${"Upload not found in storage. Did the upload finish?"}`);
+      console.error(`[API Error] 404 Not Found: Upload not found in storage. Did the upload finish?`)
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
@@ -134,7 +126,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
     })
 
     if (!updated) {
-        console.error(`[API Error] 500 Internal Server Error: ${"Failed to update asset record"}`);
+      console.error(`[API Error] 500 Internal Server Error: Failed to update asset record`)
       return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
     }
 
@@ -148,7 +140,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Hot Swap Complete] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to complete hot swap"}`);
+    console.error(`[API Error] 500 Internal Server Error: Failed to complete hot swap`)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 }

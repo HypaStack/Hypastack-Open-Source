@@ -15,10 +15,10 @@ export const TIER_LABELS: Record<string, string> = {
 
 /** Storage quota label shown in the plans/account UI */
 export const TIER_STORAGE: Record<PreferencesTier, string> = {
-  free: "5 GB",
+  free: "300 MB",
   essential: "300 GB",
   premium: "750 GB",
-  ultimate: "1100 GB",
+  ultimate: "1 TB",
 }
 
 /** Ordered list of all tiers */

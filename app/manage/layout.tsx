@@ -416,21 +416,7 @@ function ManageLayoutInner({
           </div>
           
           <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="bolt" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>Credits</span>
-                </div>
-                <span className="text-[#666] dark:text-[#888]">{user.creditsBalance ?? 0}</span>
-              </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
-                <div 
-                  className="h-full rounded-full bg-[#007AFF]" 
-                  style={{ width: `${Math.min(((user.creditsBalance ?? 0) / 1000) * 100, 100)}%` }} 
-                />
-              </div>
-            </div>
+
             <div>
               <div className="flex items-center justify-between text-sm mb-1.5">
                 <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
