@@ -144,8 +144,11 @@ export async function proxy(request: NextRequest) {
   const isRawBin = pathname.startsWith('/api/v2/bin/') && pathname.endsWith('/raw')
   // the /proxy-token endpoint issues tokens — it must be exempt from key verification (chicken-and-egg)
   const isProxyToken = pathname === '/api/v2/proxy-token'
+  // the /avatar endpoint is loaded as an <img src> — browsers can't send custom headers for image requests.
+  // It has its own JWT auth via getCurrentUser, so the proxy key is not needed.
+  const isAvatar = pathname === '/api/v2/avatar'
 
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
     const origin = request.headers.get('origin')
