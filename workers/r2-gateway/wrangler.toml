@@ -12,3 +12,6 @@ routes = [
 binding = "R2_BUCKET"
 bucket_name = "hypastack-upload"
 jurisdiction = "eu"
+
+# Secret bindings — set via: npx wrangler secret put AVATAR_SIGNING_SECRET
+# Must match AVATAR_SIGNING_SECRET in your Next.js .env
