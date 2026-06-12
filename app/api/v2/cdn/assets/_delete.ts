@@ -4,7 +4,6 @@ import { getCdnAssetsByIds, deleteCdnAssetsByIds } from '@/lib/cdn-model'
 import { deleteObjectsBatch } from '@/lib/r2'
 import { getUserTier } from "@/lib/user-model"
 import { getTierDelayMs } from "@/constants/tier-limits"
-import { logOperation } from "@/lib/credits"
 import { API_ERRORS } from "@/constants"
 
 export async function DELETE(request: NextRequest) {
@@ -62,9 +61,7 @@ export async function DELETE(request: NextRequest) {
       await deleteCdnAssetsByIds(idsWithR2Ok, currentUser.userId)
     }
 
-    // Track Class A operations (one per deleted asset, fire-and-forget)
     for (const _id of idsWithR2Ok) {
-      logOperation(currentUser.userId, 'A', 'cdn_delete', true).catch(() => {})
     }
 
     // 4. Stream results back (all at once, preserving existing frontend contract)

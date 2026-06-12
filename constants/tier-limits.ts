@@ -21,27 +21,27 @@ const GB = 1024 * MB
 
 export const FREE_LIMITS: TierLimits = {
   label: "Free",
-  maxNormalUploadSize: 100 * MB,
+  maxNormalUploadSize: 50 * MB,
   maxCdnFileSize: 20 * MB,
-  maxCdnStorage: 5 * GB,
-  maxCdnLinks: 10,
-  maxFileLinks: 10,
-  maxFilesPerUpload: 10,
-  maxCdnFilesPerUpload: 20,
-  maxTotalFiles: 10,
+  maxCdnStorage: 300 * MB,
+  maxCdnLinks: 3,
+  maxFileLinks: 3,
+  maxFilesPerUpload: 3,
+  maxCdnFilesPerUpload: 3,
+  maxTotalFiles: 6, // 3 CDN + 3 Normal
   expirationMultiplier: 1,
 }
 
 export const ESSENTIAL_LIMITS: TierLimits = {
   label: "Essential",
-  maxNormalUploadSize: 550 * MB,
+  maxNormalUploadSize: 500 * MB,
   maxCdnFileSize: 200 * MB,
   maxCdnStorage: 300 * GB,
-  maxCdnLinks: 30,
-  maxFileLinks: 25,
-  maxFilesPerUpload: 50,
-  maxCdnFilesPerUpload: 100,
-  maxTotalFiles: 0,
+  maxCdnLinks: 45,
+  maxFileLinks: 45,
+  maxFilesPerUpload: 45,
+  maxCdnFilesPerUpload: 45,
+  maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 2,
 }
 
@@ -51,10 +51,10 @@ export const PREMIUM_LIMITS: TierLimits = {
   maxCdnFileSize: 500 * MB,
   maxCdnStorage: 750 * GB,
   maxCdnLinks: 100,
-  maxFileLinks: 75,
-  maxFilesPerUpload: 200,
-  maxCdnFilesPerUpload: 500,
-  maxTotalFiles: 0,
+  maxFileLinks: 100,
+  maxFilesPerUpload: 100,
+  maxCdnFilesPerUpload: 100,
+  maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 3,
 }
 
@@ -62,12 +62,12 @@ export const ULTIMATE_LIMITS: TierLimits = {
   label: "Ultimate",
   maxNormalUploadSize: 2500 * MB,
   maxCdnFileSize: 1000 * MB,
-  maxCdnStorage: 1100 * GB,
-  maxCdnLinks: 500,
-  maxFileLinks: 500,
-  maxFilesPerUpload: 1000,
-  maxCdnFilesPerUpload: 2500,
-  maxTotalFiles: 0,
+  maxCdnStorage: 1000 * GB, // Adjusted to exactly 1TB
+  maxCdnLinks: 125,
+  maxFileLinks: 125,
+  maxFilesPerUpload: 125,
+  maxCdnFilesPerUpload: 125,
+  maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 4,
 }
 

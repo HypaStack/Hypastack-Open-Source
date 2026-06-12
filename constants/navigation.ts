@@ -19,14 +19,11 @@ export const SECTION_BUTTONS: NavItem[] = [
 /** Sub-navigation items for the Drive section */
 export const DRIVE_SUBNAV: NavItem[] = [
   { label: "Files", href: "/manage/files", icon: "folder" },
-  { label: "Analytics", href: "/manage/files/analytics", icon: "bar_chart" },
-  { label: "Recent", href: "/manage/files/recent", icon: "schedule" },
 ]
 
 /** Sub-navigation items for the CDN section */
 export const CDN_SUBNAV: NavItem[] = [
   { label: "Assets", href: "/manage/cdn", icon: "cloud" },
-  { label: "Analytics", href: "/manage/cdn/analytics", icon: "bar_chart" },
 ]
 
 /** Sub-navigation items for the Dumpster section */

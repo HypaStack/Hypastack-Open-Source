@@ -3,13 +3,13 @@
  * Import from "@/constants" instead of individual files for convenience.
  *
  * @example
- * import { TIER_LABELS, SIDEBAR_WIDTH, CREDIT_PACKAGES } from "@/constants"
+ * import { TIER_LABELS, SIDEBAR_WIDTH } from "@/constants"
  */
 
 export * from "./navigation"
 export * from "./tiers"
 export * from "./upload"
-export * from "./credits"
+
 export * from "./storage-keys"
 export * from "./languages"
 export * from "./site"

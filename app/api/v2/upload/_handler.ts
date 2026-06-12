@@ -11,7 +11,6 @@ import { getCurrentUser, generateProxyToken } from "@/lib/auth"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
-import { logOperation } from "@/lib/credits"
 import { API_ERRORS } from "@/constants"
 
 export async function handleUploadPost(request: NextRequest) {
@@ -138,8 +137,6 @@ export async function handleUploadPost(request: NextRequest) {
 
     const proxyToken = generateProxyToken(fileId)
 
-    // Track Class A operation (fire-and-forget)
-    logOperation(currentUser.userId, 'A', 'upload', false).catch(() => {})
 
     return NextResponse.json({
       success: true,

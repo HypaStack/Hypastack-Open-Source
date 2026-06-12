@@ -290,50 +290,7 @@ export async function initDatabase(): Promise<void> {
       await client.query(`ALTER TABLE user_sessions DROP COLUMN IF EXISTS user_agent`)
     } catch {}
 
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS credit_purchases (
-        id VARCHAR(36) PRIMARY KEY,
-        user_id VARCHAR(36) NOT NULL,
-        credits INTEGER NOT NULL,
-        remaining INTEGER NOT NULL,
-        amount_eur NUMERIC(10,2) NOT NULL,
-        stripe_session_id VARCHAR(255),
-        stripe_payment_intent VARCHAR(255),
-        status VARCHAR(20) NOT NULL DEFAULT 'pending',
-        expires_at TIMESTAMPTZ NOT NULL,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      )
-    `)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_credit_purchases_user ON credit_purchases(user_id)`)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_credit_purchases_active ON credit_purchases(user_id, status) WHERE status = 'completed'`)
 
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS operation_logs (
-        id BIGSERIAL PRIMARY KEY,
-        user_id VARCHAR(36) NOT NULL,
-        op_class CHAR(1) NOT NULL,
-        action VARCHAR(30) NOT NULL,
-        op_units INTEGER NOT NULL DEFAULT 1,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      )
-    `)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_operation_logs_user_month ON operation_logs(user_id, created_at)`)
-
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS monthly_usage (
-        user_id VARCHAR(36) NOT NULL,
-        month CHAR(7) NOT NULL,
-        op_units_used INTEGER DEFAULT 0,
-        free_units_used INTEGER DEFAULT 0,
-        credit_units_used INTEGER DEFAULT 0,
-        updated_at TIMESTAMPTZ DEFAULT NOW(),
-        PRIMARY KEY (user_id, month)
-      )
-    `)
-
-    try {
-      await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS credits_balance INTEGER DEFAULT 0`)
-    } catch {}
 
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')

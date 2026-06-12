@@ -12,7 +12,6 @@ import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
 import { ensureFolderPath, getFoldersByUserId } from "@/lib/folder-model"
-import { logOperation } from "@/lib/credits"
 import { API_ERRORS } from "@/constants"
 
 export async function handleUploadMultipartPost(request: NextRequest) {
@@ -145,8 +144,6 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       folder_id: finalFolderId,
     })
 
-    // track class a operations
-    logOperation(currentUser.userId, 'A', 'upload_multipart', false).catch(() => {})
 
     return NextResponse.json({
       success: true,
