@@ -277,9 +277,11 @@ export default function DownloadPage() {
 
               {downloadPhase === 'downloading' && (
                 <div style={{ margin: '0 12px 12px', borderRadius: 6, backgroundColor: '#f9f9f9', border: '1px solid #ebebeb', padding: '10px 14px' }}>
-                  <p className="text-[12px] text-[#888] mb-1.5">Downloading...</p>
-                  <div className="w-full h-1.5 rounded-full bg-[#ebebeb] overflow-hidden">
-                    <div className="h-full bg-[#111] rounded-full transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
+                  <div className="flex gap-2">
+                    <MIcon name="info" size={16} className="text-[#888] shrink-0 mt-0.5" />
+                    <p className="text-[12px] text-[#666] leading-relaxed">
+                      Your file is downloading securely in the background. It will automatically save to your device once finished—this may take a moment depending on your connection speed.
+                    </p>
                   </div>
                 </div>
               )}
@@ -326,7 +328,7 @@ export default function DownloadPage() {
                     style={{ height: 42, borderRadius: 6, fontSize: 14, fontWeight: 600, color: '#fff', backgroundColor: '#030303' }}
                   >
                     {downloading && !forceLocked ? (
-                      <><svg className="animate-spin h-4 w-4 text-[#888]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Preparing…</>
+                      <><svg className="animate-spin h-4 w-4 text-[#888]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Downloading…</>
                     ) : downloadCooldown > 0 ? (
                       <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
                     ) : !encryptionKeyBase64 || forceLocked ? (
