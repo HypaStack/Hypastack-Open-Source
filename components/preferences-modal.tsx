@@ -462,9 +462,8 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
   const [editing, setEditing] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
-  const [avatarSrc, setAvatarSrc] = useState(
-    user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : null
-  )
+  const [avatarKey, setAvatarKey] = useState(0)
+  const avatarSrc = user.avatarUrl ? `/api/v2/avatar?t=${avatarKey}` : null
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = storage?.storagePercent ?? 0
 
@@ -524,7 +523,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
 
   const handleUploadSuccess = async () => {
     await refreshUser()
-    setAvatarSrc(`https://r2.hypastack.com/${user.avatarUrl}?t=${Date.now()}`)
+    setAvatarKey(k => k + 1)
   }
 
   return (
