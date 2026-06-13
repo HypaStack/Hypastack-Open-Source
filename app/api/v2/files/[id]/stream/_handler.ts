@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "crypto"
 import { isFileValid } from "@/lib/file-model"
 import { getR2Client, getBucketName, buildContentDisposition } from "@/lib/r2"
 import { verifyDownloadRateLimit } from "@/lib/rate-limit"
@@ -17,7 +18,11 @@ export async function handleStreamGet(
     const { id } = await params
     fileId = id
 
-    const rateLimit = await verifyDownloadRateLimit('anonymous')
+    const forwardedFor = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip")
+    const rawIp = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1'
+    const hashedIp = createHash('sha256').update(rawIp).digest('hex')
+
+    const rateLimit = await verifyDownloadRateLimit(hashedIp)
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: API_ERRORS.TOO_MANY_REQUESTS, retryAfter: rateLimit.resetInSeconds },
