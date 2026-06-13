@@ -69,7 +69,7 @@ export default function AcceptableUse() {
                 Consequently, our enforcement mechanisms rely on:
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">User Reports:</strong> We actively process abuse reports sent to <strong>abuse@hypastack.com</strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
+                <li><strong className="text-foreground">User Reports:</strong> We actively process abuse reports sent via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
                 <li><strong className="text-foreground">Traffic Analysis:</strong> We monitor anomalous traffic patterns, bandwidth spikes, and request origins to detect automated abuse or malware distribution networks.</li>
                 <li><strong className="text-foreground">Metadata Heuristics:</strong> We utilize unencrypted metadata (file size ratios, upload patterns) to identify coordinated abuse campaigns.</li>
               </ul>
@@ -84,7 +84,7 @@ export default function AcceptableUse() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Reporting Abuse</h2>
               <p className="mb-4">
-                If you encounter content hosted on Hypastack that violates this policy, send a report to <strong>abuse@hypastack.com</strong> with the file link and a brief description of the violation.
+                If you encounter content hosted on Hypastack that violates this policy, send a report to <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with the file link and a brief description of the violation.
               </p>
               <p className="mb-4">
                 <strong className="text-foreground">Do not include the decryption key fragment.</strong> We will not ask for it, and you should not send it. Receiving the key would require us to actively decrypt and view potentially illegal content, including CSAM, which creates direct legal liability for us under laws governing possession and viewing of such material. We are not equipped or willing to act as a human review queue for illegal content.
