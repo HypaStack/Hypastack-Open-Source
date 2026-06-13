@@ -190,7 +190,7 @@ function GeneralTab() {
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
         <p className="text-[12px] font-medium text-[#888] dark:text-[#a1a1aa] mb-3">Appearance</p>
-        <div className="grid grid-cols-3 gap-3 max-w-[520px]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
           <ThemeTile variant="light" label="Light" active={theme === "light"} onClick={() => setTheme("light")} />
           <ThemeTile variant="dark" label="Dark" active={theme === "dark"} onClick={() => setTheme("dark")} />
@@ -538,7 +538,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     )}
     <div>
 
-      <div className="flex items-center gap-5 mb-4 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 20px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 20px' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {avatarSrc ? (
@@ -648,7 +648,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       </div>
 
       {!user.premium && (
-        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, marginBottom: 16 }}>
+        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
           <div>
             <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
             <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
@@ -660,7 +660,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               Upgrade
             </button>
           </div>
-          <div className="border-l border-[#e5e5e5] dark:border-transparent pl-4">
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-4">
             <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
             <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
             <button
