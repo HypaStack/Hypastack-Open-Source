@@ -12,6 +12,8 @@ import {
   PRESIGNED_TTL_SECONDS,
   BURN_PRESIGNED_TTL_SECONDS,
   BURN_DELETE_DELAY_MS,
+  BURN_DELETE_MAX_RETRIES,
+  BURN_DELETE_RETRY_INTERVAL_MS,
   API_ERRORS,
 } from "@/constants"
 
@@ -22,17 +24,15 @@ const executeBurnDeletion = async (id: string, r2Key: string) => {
   await new Promise(resolve => setTimeout(resolve, BURN_DELETE_DELAY_MS));
 
   let attempts = 0;
-  const maxAttempts = 5; // 1 initial + 4 retries
-  const retryIntervalMs = 7500;
 
-  while (attempts < maxAttempts) {
+  while (attempts < BURN_DELETE_MAX_RETRIES) {
     try {
       await deleteFileRecord(id);
       await deleteByKey(r2Key);
       return;
     } catch (error) {
       attempts++
-      if (attempts >= maxAttempts) {
+      if (attempts >= BURN_DELETE_MAX_RETRIES) {
         const msg = `[BurnDeletionFailed] completely failed to delete file id: ${id}, key: ${r2Key}, err: ${error instanceof Error ? error.message : String(error)}`;
         if (process.env.NODE_ENV === 'production') {
           try {
@@ -44,7 +44,7 @@ const executeBurnDeletion = async (id: string, r2Key: string) => {
           console.error(msg);
         }
       } else {
-        await new Promise(resolve => setTimeout(resolve, retryIntervalMs));
+        await new Promise(resolve => setTimeout(resolve, BURN_DELETE_RETRY_INTERVAL_MS));
       }
     }
   }

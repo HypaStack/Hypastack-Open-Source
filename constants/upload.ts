@@ -26,6 +26,12 @@ export const BURN_PRESIGNED_TTL_SECONDS = 60
 /** Delay in ms before a burn-on-read file is deleted after first access (90 s) */
 export const BURN_DELETE_DELAY_MS = 90_000
 
+/** Maximum retry attempts for burn-on-read deletion (1 initial + retries) */
+export const BURN_DELETE_MAX_RETRIES = 5
+
+/** Interval in ms between burn deletion retry attempts */
+export const BURN_DELETE_RETRY_INTERVAL_MS = 7_500
+
 /** File size threshold above which multipart upload is used (50 MB) */
 export const MULTIPART_THRESHOLD = 50 * 1024 * 1024
 
