@@ -61,7 +61,7 @@ export function TierAnnouncementModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="theme-dashboard relative mx-4 w-full max-w-[420px] rounded-md overflow-hidden"
+            className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[420px] rounded-md overflow-hidden"
             style={{ backgroundColor: '#171717', padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
             <div className="flex items-center justify-end px-4 pt-3 pb-1">
