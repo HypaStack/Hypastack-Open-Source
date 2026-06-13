@@ -445,6 +445,7 @@ export function useUpload({
           contentType: f.contentType,
         })),
         csrfToken: currentCsrfToken,
+        turnstileToken,
         folderId: currentFolderId,
       }),
     })

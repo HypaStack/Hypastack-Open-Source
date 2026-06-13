@@ -335,7 +335,7 @@ export function UploadTray({
                   )}
                 </div>
 
-                {state === "selected" && uploadType !== "cdn" && process.env.NODE_ENV !== "development" && (
+                {state === "selected" && process.env.NODE_ENV !== "development" && (
                   <div className="flex justify-center px-4 py-3 border-t border-border/40 bg-secondary/10">
                     <TurnstileWithRef
                       ref={turnstileRef}
@@ -390,7 +390,7 @@ export function UploadTray({
                         <button
                           type="button"
                           onClick={handleUpload}
-                          disabled={isUploading || (uploadType !== "cdn" && !turnstileReady)}
+                          disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
                           className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
                           style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
                         >
