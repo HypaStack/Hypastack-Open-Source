@@ -39,7 +39,7 @@ export default function DumpsterPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <div>
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex flex-wrap items-center gap-3">
             <span>New Paste</span>
@@ -59,7 +59,7 @@ export default function DumpsterPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-4 sm:mt-0">
           <button
             type="button"
             onClick={() => setContent("")}
