@@ -57,8 +57,10 @@ export async function handleUploadProxyPost(request: NextRequest) {
     }
 
     const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
-    if (file.size > MAX_PROXY_SIZE) {
-        console.error(`[API Error] 413 Payload Too Large: ${`413 Proxy Upload Limit Exceeded`}`);
+    const limit = Math.min(tier.maxNormalUploadSize, MAX_PROXY_SIZE);
+    if (file.size > limit) {
+      const limitMB = Math.round(limit / (1024 * 1024))
+      console.error(`[API Error] 413 Payload Too Large: Proxy Upload Limit Exceeded (Max ${limitMB}MB)`);
       return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
