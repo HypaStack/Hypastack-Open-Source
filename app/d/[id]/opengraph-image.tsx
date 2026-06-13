@@ -39,6 +39,17 @@ export default async function Image({ params }: Props) {
 
   const displayName = fileName.length > 36 ? fileName.slice(0, 33) + "..." : fileName
 
+  // Fetch logo and convert to data URL — Satori can't resolve external image URLs
+  let logoSrc = ""
+  try {
+    const logoRes = await fetch("https://r2.hypastack.com/cdn/td2jaozbj6or/og-img-logo.png")
+    if (logoRes.ok) {
+      const buf = await logoRes.arrayBuffer()
+      const b64 = Buffer.from(buf).toString("base64")
+      logoSrc = `data:image/png;base64,${b64}`
+    }
+  } catch {}
+
   return new ImageResponse(
     (
       <div
@@ -61,12 +72,12 @@ export default async function Image({ params }: Props) {
             marginBottom: "36px",
           }}
         >
-          <img
-            src="https://r2.hypastack.com/cdn/td2jaozbj6or/og-img-logo.png"
+          {logoSrc && <img
+            src={logoSrc}
             width="52"
             height="52"
             style={{ borderRadius: 12 }}
-          />
+          />}
         </div>
 
         {/* Card */}
