@@ -2,13 +2,9 @@
 
 import { useEffect, useState, useRef, useCallback } from "react"
 import { isTauri } from "@/lib/tauri"
+import { DESKTOP_MAX_REFRESHES, DESKTOP_REFRESH_WINDOW_MS, DESKTOP_COOLDOWN_MS } from "@/constants"
 
 // rate limit config
-
-const MAX_REFRESHES = 3
-const WINDOW_MS = 8_000      // 8s sliding window
-const COOLDOWN_MS = 30_000   // 30s lockout
-
 
 export function DesktopGuard() {
   const [rateLimited, setRateLimited] = useState(false)
@@ -38,8 +34,8 @@ export function DesktopGuard() {
   }, [rateLimited])
 
   const triggerRateLimit = useCallback(() => {
-    lockoutEnd.current = Date.now() + COOLDOWN_MS
-    setCountdown(Math.ceil(COOLDOWN_MS / 1000))
+    lockoutEnd.current = Date.now() + DESKTOP_COOLDOWN_MS
+    setCountdown(Math.ceil(DESKTOP_COOLDOWN_MS / 1000))
     setRateLimited(true)
   }, [])
 
@@ -107,11 +103,11 @@ export function DesktopGuard() {
         const now = Date.now()
         // Prune old timestamps outside the window
         refreshTimestamps.current = refreshTimestamps.current.filter(
-          (t) => now - t < WINDOW_MS
+          (t) => now - t < DESKTOP_REFRESH_WINDOW_MS
         )
         refreshTimestamps.current.push(now)
 
-        if (refreshTimestamps.current.length > MAX_REFRESHES) {
+        if (refreshTimestamps.current.length > DESKTOP_MAX_REFRESHES) {
           e.preventDefault()
           e.stopImmediatePropagation()
           triggerRateLimit()

@@ -15,3 +15,12 @@ export const MAX_ATTEMPTS = {
   register:       { free: 3 },
   api:            { free: 150 },
 } as const
+
+/** Max page refreshes allowed before triggering a lockout (Tauri desktop) */
+export const DESKTOP_MAX_REFRESHES = 3
+
+/** Sliding window in ms for counting rapid refreshes (Tauri desktop) */
+export const DESKTOP_REFRESH_WINDOW_MS = 8_000
+
+/** Lockout duration in ms after too many refreshes (Tauri desktop) */
+export const DESKTOP_COOLDOWN_MS = 30_000
