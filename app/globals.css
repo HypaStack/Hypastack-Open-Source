@@ -86,7 +86,11 @@ a:hover .material-symbols-rounded,
 }
 
 html.is-dashboard, html.is-dashboard body {
-  background-color: var(--background) !important;
+  background-color: #f0f0f0 !important;
+}
+
+html.is-dashboard.dark, html.is-dashboard.dark body {
+  background-color: #111111 !important;
 }
 
 
