@@ -58,17 +58,15 @@ export default async function Image({ params }: Props) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "14px",
-            marginBottom: "40px",
+            marginBottom: "36px",
           }}
         >
           <img
             src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
-            width="44"
-            height="44"
-            style={{ borderRadius: 10 }}
+            width="52"
+            height="52"
+            style={{ borderRadius: 12 }}
           />
-          <span style={{ fontSize: "32px", fontWeight: 700, color: "#111111", letterSpacing: "-0.02em" }}>Hypastack</span>
         </div>
 
         {/* Card */}
