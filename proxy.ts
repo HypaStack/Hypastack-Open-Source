@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES } from '@/constants'
+import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES, PROXY_HEADER, PROXY_TOKEN_TTL_S } from '@/constants'
 
 function isLegalPath(pathname: string): boolean {
   if (LEGAL_EXACT.has(pathname)) return true
@@ -29,9 +29,6 @@ async function getCryptoKey(): Promise<CryptoKey | null> {
   return _cachedKey
 }
 
-// --- Proxy key verification ---
-const PROXY_HEADER = 'x-hypastack-proxy-key'
-const PROXY_TOKEN_TTL_S = 60
 
 let _cachedProxyKey: CryptoKey | null = null
 let _cachedProxySecret: string | null = null
