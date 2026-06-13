@@ -5,6 +5,7 @@ import { fileTypeFromBuffer } from "file-type"
 import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
+import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from "@/constants"
 
 const window = new JSDOM("").window
 const purify = DOMPurify(window)
@@ -35,39 +36,7 @@ const BLOCKED_EXTENSIONS_SET = new Set([
   "lnk", "url", "inf", "ins",
 ])
 
-// ---------------------------------------------------------------------------
-// CDN ALLOWLIST — embeddable/usable web content. Single source of truth.
-// Extension allowlist is the ONLY gate; magic bytes only block dangerous types.
-// ---------------------------------------------------------------------------
-export const CDN_ALLOWED_EXTENSIONS = new Set([
-  // Images
-  "jpg", "jpeg", "png", "gif", "webp", "svg",
-  "ico", "cur", "ani", "bmp", "tiff", "tif",
-  "avif", "heic", "heif", "jxl", "apng", "dng",
-  // Fonts
-  "ttf", "otf", "woff", "woff2", "eot",
-  // Audio
-  "mp3", "wav", "ogg", "oga", "flac", "aac", "m4a", "opus",
-  "mid", "midi", "weba",
-  // Video
-  "mp4", "m4v", "webm", "mov", "avi", "mkv", "ogv", "3gp", "wmv",
-  // Subtitles
-  "vtt", "srt", "ass", "ssa",
-  // 3D / models
-  "glb", "gltf", "obj", "fbx", "stl", "usdz", "ply",
-  // Data / markup
-  "json", "xml", "csv", "tsv", "txt", "md", "yaml", "yml", "toml",
-  "html", "htm", "css",
-  // Documents
-  "pdf", "epub",
-  // Archives (downloadable assets)
-  "zip", "gz", "tar", "7z",
-  // Web manifests
-  "webmanifest", "manifest",
-])
-
 // size limits
-export const MAX_FILE_SIZE = 500 * 1024 * 1024 // equals 500MB
 const MAX_NOTE_LENGTH = 100
 
 export const UploadRequestSchema = z.object({
