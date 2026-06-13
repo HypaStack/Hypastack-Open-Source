@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { STORAGE_KEY_THEME } from "@/constants"
-import { usePathname } from "next/navigation"
 
 export type ThemePreference = "system" | "light" | "dark"
 export type ResolvedTheme = "light" | "dark"
@@ -32,12 +31,14 @@ function resolveTheme(pref: ThemePreference): ResolvedTheme {
  * dashboard layout reads `resolvedTheme` and applies it as a class on its
  * wrapper. We also sync .dark to <html> so Tailwind dark: variants work
  * globally.
+ *
+ * NOTE: is-dashboard / is-public classes are set by the inline script in
+ * app/layout.tsx on initial load, so we do NOT touch them here to avoid
+ * causing re-render cascades on every navigation.
  */
 export function useTheme() {
   const [theme, setThemeState] = useState<ThemePreference>(() => readStored())
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => resolveTheme(readStored()))
-  
-  const pathname = usePathname() || ""
 
   // Resolve "system" against OS, react to changes
   useEffect(() => {
@@ -52,30 +53,28 @@ export function useTheme() {
       return () => mq.removeEventListener("change", compute)
     }
   }, [theme])
-  
+
   // Sync .dark class to <html> so Tailwind dark: variants work globally
-  // and sync theme-color for iOS safe areas
+  // and sync theme-color meta tag for mobile browser chrome (iOS Safari bars etc.)
   useEffect(() => {
     if (typeof document === "undefined") return
     const root = document.documentElement
-    
-    // Remove any server-rendered theme-color tags to avoid conflicts
+    const isDashboard = root.classList.contains("is-dashboard")
+
+    // Recreate the theme-color tag cleanly
     document.querySelectorAll('meta[name="theme-color"]').forEach(el => el.remove())
-    
-    let metaTheme = document.createElement('meta')
+    const metaTheme = document.createElement('meta')
     metaTheme.setAttribute('name', 'theme-color')
     document.head.appendChild(metaTheme)
-    
-    const isDashboard = pathname.startsWith('/manage')
 
     if (resolvedTheme === "dark") {
       root.classList.add("dark")
       metaTheme.setAttribute('content', '#111111')
     } else {
       root.classList.remove("dark")
-      metaTheme.setAttribute('content', isDashboard ? '#f4f1f2' : '#ffffff')
+      metaTheme.setAttribute('content', isDashboard ? '#f0f0f0' : '#ffffff')
     }
-  }, [resolvedTheme, pathname])
+  }, [resolvedTheme])
 
   const setTheme = useCallback((next: ThemePreference) => {
     if (typeof window !== "undefined") {
