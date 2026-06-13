@@ -7,8 +7,7 @@ export const dynamic = "force-dynamic"
 
 /**
  * Generates a short-lived HMAC-SHA256 presigned URL for a profile picture.
- * The signature covers "<r2Key>:<expiresMs>" so it is bound to both
- * the specific file and the expiry time.
+ * The signature covers "<r2Key>:<expiresMs>" so it is bound to the specific file and expiry time.
  */
 function signAvatarUrl(r2Key: string): string {
   const secret = process.env.AVATAR_SIGNING_SECRET!
