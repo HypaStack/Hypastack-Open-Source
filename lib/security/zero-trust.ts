@@ -5,36 +5,10 @@ import { fileTypeFromBuffer } from "file-type"
 import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
-import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE } from "@/constants"
+import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTENSIONS } from "@/constants"
 
 const window = new JSDOM("").window
 const purify = DOMPurify(window)
-
-const BLOCKED_MIME_TYPES_SET = new Set([
-  "application/x-msdownload",
-  "application/x-ms-installer",
-  "application/x-executable",
-  "application/x-shockwave-flash",
-  "application/x-java-archive",
-  "application/x-php",
-  "application/x-shellscript",
-  "application/x-bat",
-  "application/vnd.microsoft.portable-executable",
-])
-
-const BLOCKED_EXTENSIONS_SET = new Set([
-  "exe", "msi", "com", "scr", "pif", "gadget",
-  "bat", "cmd", "ps1", "psm1", "psd1", "vbs", "vbe",
-  "wsf", "wsh", "msc", "reg",
-  "sh", "bash", "zsh", "csh", "fish", "command",
-  "php", "php3", "php4", "php5", "phtml",
-  "asp", "aspx", "ashx", "asmx",
-  "jsp", "jspx", "cgi",
-  "py", "pyw", "pyc",
-  "pl", "pm", "rb",
-  "jar", "war", "class",
-  "lnk", "url", "inf", "ins",
-])
 
 // size limits
 const MAX_NOTE_LENGTH = 100
@@ -333,7 +307,7 @@ export function sanitizeCdnFilename(filename: string): {
   // Block hidden dangerous extensions in multi-dot names
   const allExts = sanitized.split(".").slice(1).map(e => e.toLowerCase())
   for (const ext of allExts) {
-    if (BLOCKED_EXTENSIONS_SET.has(ext)) {
+    if (BLOCKED_EXTENSIONS.has(ext)) {
       return { sanitized: "", extension: "", isValid: false, error: `Hidden extension "${ext}" detected and blocked` }
     }
   }
@@ -364,7 +338,7 @@ export async function verifyCdnFileType(
 
     // Block files whose actual content is a known-dangerous executable/script,
     // even if they were renamed to a safe extension
-    if (BLOCKED_MIME_TYPES_SET.has(fileType.mime) || BLOCKED_EXTENSIONS_SET.has(fileType.ext)) {
+    if (BLOCKED_MIME_TYPES.has(fileType.mime) || BLOCKED_EXTENSIONS.has(fileType.ext)) {
       return { valid: false, mimeType: fileType.mime, extension: fileType.ext, error: `File contents detected as "${fileType.ext}" which is not allowed` }
     }
 

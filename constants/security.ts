@@ -2,8 +2,34 @@
  * Security-related constants shared between API validation and client-side logic.
  */
 
-/** Maximum allowed file size for standard uploads (500 MB) */
-export const MAX_FILE_SIZE = 500 * 1024 * 1024
+/** MIME types that are always blocked from upload regardless of extension */
+export const BLOCKED_MIME_TYPES = new Set([
+  "application/x-msdownload",
+  "application/x-ms-installer",
+  "application/x-executable",
+  "application/x-shockwave-flash",
+  "application/x-java-archive",
+  "application/x-php",
+  "application/x-shellscript",
+  "application/x-bat",
+  "application/vnd.microsoft.portable-executable",
+])
+
+/** File extensions that are always blocked from upload */
+export const BLOCKED_EXTENSIONS = new Set([
+  "exe", "msi", "com", "scr", "pif", "gadget",
+  "bat", "cmd", "ps1", "psm1", "psd1", "vbs", "vbe",
+  "wsf", "wsh", "msc", "reg",
+  "sh", "bash", "zsh", "csh", "fish", "command",
+  "php", "php3", "php4", "php5", "phtml",
+  "asp", "aspx", "ashx", "asmx",
+  "jsp", "jspx", "cgi",
+  "py", "pyw", "pyc",
+  "pl", "pm", "rb",
+  "jar", "war", "class",
+  "lnk", "url", "inf", "ins",
+])
+
 
 /**
  * CDN allowlist — embeddable/usable web content.
