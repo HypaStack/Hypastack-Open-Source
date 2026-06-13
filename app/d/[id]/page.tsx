@@ -150,10 +150,18 @@ export default function DownloadPage() {
       setDownloaded(true);
         setBurned(true);
         setForceLocked(true);
-        setTimeout(() => window.location.reload(), 2500);
+        setTimeout(() => window.location.reload(), 5000);
       }
     } catch {
-      setError("Decryption failed. The link may be invalid.");
+      if (wasBurned) {
+        // Download failed but the file is already marked burned server-side.
+        // Show a specific error so the user knows the file is gone.
+        setError("Download failed and this burn-on-read file has been consumed. The file is no longer available.");
+        setBurned(true);
+        setForceLocked(true);
+      } else {
+        setError("Decryption failed. The link may be invalid.");
+      }
     } finally {
       setDownloading(false);
     }
