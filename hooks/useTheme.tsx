@@ -61,11 +61,14 @@ export function useTheme() {
     const root = document.documentElement
     const isDashboard = root.classList.contains("is-dashboard")
 
-    // Recreate the theme-color tag cleanly
-    document.querySelectorAll('meta[name="theme-color"]').forEach(el => el.remove())
-    const metaTheme = document.createElement('meta')
-    metaTheme.setAttribute('name', 'theme-color')
-    document.head.appendChild(metaTheme)
+    // Find or create a single theme-color meta tag — never remove existing ones
+    // (removing causes Cannot read properties of null (reading 'removeChild') during React hydration)
+    let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta')
+      metaTheme.setAttribute('name', 'theme-color')
+      document.head.appendChild(metaTheme)
+    }
 
     if (resolvedTheme === "dark") {
       root.classList.add("dark")
