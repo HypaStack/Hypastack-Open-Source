@@ -159,8 +159,9 @@ export async function getCurrentUser(request: NextRequest): Promise<{ userId: st
     )
     if (result.rows.length === 0 || result.rows[0].revoked) return null
   } catch {
-    // If DB is unreachable, fall back to JWT-only verification to avoid locking everyone out
-    return payload
+    // Fail closed: If DB is unreachable, we must assume the session might be revoked
+    // to prevent stolen/revoked tokens from bypassing security during an outage.
+    return null
   }
 
   return payload
