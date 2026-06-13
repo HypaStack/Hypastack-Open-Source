@@ -43,7 +43,7 @@ export const CDN_ALLOWED_EXTENSIONS = new Set([
   // Images
   "jpg", "jpeg", "png", "gif", "webp", "svg",
   "ico", "cur", "ani", "bmp", "tiff", "tif",
-  "avif", "heic", "heif", "jxl", "apng",
+  "avif", "heic", "heif", "jxl", "apng", "dng",
   // Fonts
   "ttf", "otf", "woff", "woff2", "eot",
   // Audio
