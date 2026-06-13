@@ -62,7 +62,7 @@ export default async function Image({ params }: Props) {
           }}
         >
           <img
-            src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+            src="https://r2.hypastack.com/cdn/td2jaozbj6or/og-img-logo.png"
             width="52"
             height="52"
             style={{ borderRadius: 12 }}
