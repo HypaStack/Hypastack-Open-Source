@@ -58,7 +58,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
-    if (process.env.NODE_ENV !== "development" && turnstileToken) {
+    if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
         console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification Failed"}`)
