@@ -21,7 +21,7 @@ export const DRIVE_SUBNAV: NavItem[] = [
   { label: "Files", href: "/manage/files", icon: "folder" },
 ]
 
-/** Sub-navigation items for the CDN section */
+/** sub-navigation items for the CDN section */
 export const CDN_SUBNAV: NavItem[] = [
   { label: "Assets", href: "/manage/cdn", icon: "cloud" },
 ]
@@ -39,7 +39,7 @@ export const SECTION_ORDER: Record<string, number> = {
   Canary: 3,
 }
 
-/** Width of the secondary (sub-nav) sidebar in pixels */
+/** width of the secondary (sub-nav) sidebar in pixels */
 export const SIDEBAR_WIDTH = 232
 
 /** Number of files shown per page in the file list */
