@@ -1,6 +1,11 @@
 /**
  * Security-related constants shared between API validation and client-side logic.
  */
+/** Maximum allowed file size for standard uploads (500 MB) */
+export const MAX_FILE_SIZE = 500 * 1024 * 1024
+
+/** Maximum characters allowed for an upload note */
+export const MAX_NOTE_LENGTH = 100
 
 /** MIME types that are always blocked from upload regardless of extension */
 export const BLOCKED_MIME_TYPES = new Set([

@@ -5,13 +5,10 @@ import { fileTypeFromBuffer } from "file-type"
 import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
-import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTENSIONS } from "@/constants"
+import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTENSIONS, MAX_NOTE_LENGTH } from "@/constants"
 
 const window = new JSDOM("").window
 const purify = DOMPurify(window)
-
-// size limits
-const MAX_NOTE_LENGTH = 100
 
 export const UploadRequestSchema = z.object({
   fileName: z
