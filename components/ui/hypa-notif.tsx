@@ -169,7 +169,7 @@ export function HypaNotifProvider() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
+    <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 z-[9999] flex flex-col items-center sm:items-end gap-3 pointer-events-none">
       <AnimatePresence>
         {notifs.map((notif) => (
           <motion.div
@@ -178,7 +178,7 @@ export function HypaNotifProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="w-[380px] pointer-events-auto overflow-hidden bg-[#ffffff] dark:bg-[#1c1c1c]"
+            className="w-full sm:w-[380px] pointer-events-auto overflow-hidden bg-[#ffffff] dark:bg-[#1c1c1c]"
             style={{
               borderRadius: 6,
               boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.10)',
