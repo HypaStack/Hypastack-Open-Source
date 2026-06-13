@@ -589,7 +589,7 @@ export default function CdnPage() {
     <div className="w-full flex-1 min-h-0 flex flex-col">
 
       <div className="shrink-0">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-2">
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
             <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
             {breadcrumbs.map(crumb => (
@@ -600,7 +600,7 @@ export default function CdnPage() {
             ))}
           </h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {selectedAssets.size > 0 ? (
               <>
                 <button
