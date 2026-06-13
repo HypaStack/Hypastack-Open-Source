@@ -169,7 +169,7 @@ export function HypaNotifProvider() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 z-[9999] flex flex-col items-center sm:items-end gap-3 pointer-events-none">
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none max-sm:bottom-4 max-sm:left-4 max-sm:right-4">
       <AnimatePresence>
         {notifs.map((notif) => (
           <motion.div
