@@ -2,9 +2,26 @@ import { NextResponse } from "next/server"
 import { getClient } from "@/lib/db"
 import { generateFileId, putObjectByKey } from "@/lib/r2"
 import { API_ERRORS } from "@/constants"
+import { getCurrentUser } from "@/lib/auth"
+import { getUserTier } from "@/lib/user-model"
+import { checkUploadRateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
   try {
+    const currentUser = await getCurrentUser(req)
+    if (!currentUser) {
+      console.error(`[API Error] 401 Unauthorized: Authentication required to create pastes`);
+      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+    }
+
+    const userTier = await getUserTier(currentUser.userId)
+    const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
+    
+    if (!rateLimit.allowed) {
+      console.error(`[API Error] 429 Too Many Requests: Rate limit reached`);
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+    }
+
     const body = await req.json()
     const content = body.content
 
