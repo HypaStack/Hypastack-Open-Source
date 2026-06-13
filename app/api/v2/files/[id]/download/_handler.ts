@@ -16,6 +16,11 @@ import {
 } from "@/constants"
 
 const executeBurnDeletion = async (id: string, r2Key: string) => {
+  // Wait for the presigned download URL to expire before deleting the object.
+  // This prevents R2 from removing the file while a slow client is still
+  // streaming bytes from the presigned URL.
+  await new Promise(resolve => setTimeout(resolve, BURN_DELETE_DELAY_MS));
+
   let attempts = 0;
   const maxAttempts = 5; // 1 initial + 4 retries
   const retryIntervalMs = 7500;
