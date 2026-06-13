@@ -144,8 +144,10 @@ export async function proxy(request: NextRequest) {
   // the /avatar endpoint is loaded as an <img src> — browsers can't send custom headers for image requests.
   // It has its own JWT auth via getCurrentUser, so the proxy key is not needed.
   const isAvatar = pathname === '/api/v2/avatar'
+  // the /files/[id] endpoint provides public metadata for downloads/OG images (requires random ID, heavily rate limited)
+  const isPublicFileMeta = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+$/.test(pathname)
 
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
     const origin = request.headers.get('origin')
