@@ -61,7 +61,7 @@ export default function CoppaGdpr() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Submitting a Privacy Request</h2>
               <p className="mb-4">
-                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact our Data Protection Officer at <strong>privacy@hypastack.com</strong>.
+                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact our Data Protection Officer via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
               </p>
               <p>
                 Please note that because of our zero-knowledge architecture, if you request an export of "your data", we can only provide you with the encrypted ciphertext blocks stored on our servers. We cannot provide you with a decrypted version of your files, nor can we recover your lost keys, as we do not possess them.
