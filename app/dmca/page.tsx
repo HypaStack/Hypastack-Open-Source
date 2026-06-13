@@ -31,7 +31,7 @@ export default function DmcaPolicy() {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">How to File a Takedown</h2>
               <p className="mb-4">
-                Send an email to <strong>dmca@hypastack.com</strong> with:
+                Send a message via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>The URL of the infringing content on Hypastack</li>
@@ -60,7 +60,7 @@ export default function DmcaPolicy() {
               <h2 className="text-xl font-semibold text-foreground mb-4">Counter-Notification</h2>
               <p className="mb-4">
                 If your content was removed and you believe it was not infringing, you may submit 
-                a counter-notification to <strong>dmca@hypastack.com</strong> with:
+                a counter-notification via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Your contact information</li>
@@ -83,7 +83,7 @@ export default function DmcaPolicy() {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">Contact</h2>
               <p>
-                Email: <strong>dmca@hypastack.com</strong>
+                Telegram: <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>
               </p>
             </section>
           </div>
