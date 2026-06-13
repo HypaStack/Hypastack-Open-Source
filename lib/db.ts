@@ -22,9 +22,7 @@ export function getPool(): Pool {
       })
     } else {
       console.log('[DB] Creating PostgreSQL pool via individual env vars')
-      console.log('[DB] Host:', process.env.DB_HOST || 'localhost')
-      console.log('[DB] User:', process.env.DB_USER)
-      console.log('[DB] Database:', process.env.DB_NAME)
+
 
       globalThis.__basedropDbPool = new Pool({
         host: process.env.DB_HOST || 'localhost',
