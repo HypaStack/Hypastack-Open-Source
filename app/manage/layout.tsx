@@ -172,15 +172,18 @@ function ManageLayoutInner({
   const { resolvedTheme } = useTheme()
 
   const currentSection = sectionTitle(pathname)
-  const [tuple, setTuple] = useState<[number, string]>([1, currentSection])
   
-  if (tuple[1] !== currentSection) {
-    const prevIndex = SECTION_ORDER[tuple[1]] ?? 0
+  const prevSectionRef = useRef(currentSection)
+  const directionRef = useRef(1)
+
+  if (prevSectionRef.current !== currentSection) {
+    const prevIndex = SECTION_ORDER[prevSectionRef.current] ?? 0
     const newIndex = SECTION_ORDER[currentSection] ?? 0
-    setTuple([newIndex > prevIndex ? 1 : -1, currentSection])
+    directionRef.current = newIndex > prevIndex ? 1 : -1
+    prevSectionRef.current = currentSection
   }
-  
-  const direction = tuple[0]
+
+  const direction = directionRef.current
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
