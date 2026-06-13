@@ -13,6 +13,8 @@ export default async function Image({ params }: Props) {
 
   let fileName = "Unknown file"
   let fileSize = ""
+  let ext = "FILE"
+  let burnOnRead = false
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/v2/files/${id}`, {
@@ -22,6 +24,7 @@ export default async function Image({ params }: Props) {
       const data = await res.json()
       if (data.file) {
         fileName = data.file.customFilename || data.file.name || "Unknown file"
+        burnOnRead = !!data.file.burnOnRead
         const bytes = data.file.size || 0
         if (bytes > 0) {
           const k = 1024
@@ -29,10 +32,12 @@ export default async function Image({ params }: Props) {
           const i = Math.floor(Math.log(bytes) / Math.log(k))
           fileSize = parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
         }
+        ext = fileName.includes(".") ? (fileName.split(".").pop()?.toUpperCase() || "FILE") : "FILE"
       }
     }
-  } catch {
-  }  const displayName = fileName.length > 40 ? fileName.slice(0, 37) + "..." : fileName
+  } catch {}
+
+  const displayName = fileName.length > 36 ? fileName.slice(0, 33) + "..." : fileName
 
   return new ImageResponse(
     (
@@ -44,75 +49,199 @@ export default async function Image({ params }: Props) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#000000",
-          color: "#e8e8e8",
-          fontFamily: "'Satoshi', sans-serif",
+          backgroundColor: "#ffffff",
+          fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
+        {/* Logo */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "16px",
-            marginBottom: "32px",
+            gap: "14px",
+            marginBottom: "40px",
           }}
         >
-          <div
-            style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "12px",
-              backgroundColor: "#0A84FF",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-          </div>
-          <span style={{ fontSize: "36px", fontWeight: 700 }}>Hypastack</span>
+          <img
+            src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+            width="44"
+            height="44"
+            style={{ borderRadius: 10 }}
+          />
+          <span style={{ fontSize: "32px", fontWeight: 700, color: "#111111", letterSpacing: "-0.02em" }}>Hypastack</span>
         </div>
 
+        {/* Card */}
         <div
           style={{
-            backgroundColor: "#111111",
-            borderRadius: "32px",
-            padding: "40px 56px",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            gap: "12px",
+            width: "480px",
+            backgroundColor: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e5e5e5",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+            overflow: "hidden",
           }}
         >
+          {/* File info */}
           <div
             style={{
-              width: "64px",
-              height: "64px",
-              borderRadius: "16px",
-              backgroundColor: "#1a1a1a",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              flexDirection: "column",
+              padding: "24px 28px 20px",
             }}
           >
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-              <polyline points="14 2 14 8 20 8"/>
-            </svg>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 600,
+                color: "#111111",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.3,
+                marginBottom: "10px",
+                display: "flex",
+              }}
+            >
+              {displayName}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  letterSpacing: "0.05em",
+                  textTransform: "uppercase" as const,
+                  color: "#888888",
+                  backgroundColor: "#f0f0f0",
+                  border: "1px solid #e5e5e5",
+                  padding: "3px 8px",
+                  borderRadius: "5px",
+                }}
+              >
+                {ext}
+              </div>
+              {fileSize && (
+                <span style={{ fontSize: "14px", color: "#888888" }}>{fileSize}</span>
+              )}
+            </div>
           </div>
-          <span style={{ fontSize: "28px", fontWeight: 600, color: "#e8e8e8" }}>
-            {displayName}
-          </span>
-          {fileSize && (
-            <span style={{ fontSize: "18px", color: "#888" }}>{fileSize}</span>
-          )}
-          <span style={{ fontSize: "16px", color: "#666", marginTop: "8px" }}>
-            Click to download on hypastack.com
-          </span>
+
+          {/* Info rows */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              margin: "0 16px 16px",
+              borderRadius: "8px",
+              backgroundColor: "#f9f9f9",
+              border: "1px solid #ebebeb",
+              padding: "4px",
+            }}
+          >
+            {/* Encryption row */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                height: "40px",
+                padding: "0 14px",
+              }}
+            >
+              <span style={{ fontSize: "14px", color: "#888888", display: "flex", alignItems: "center", gap: "8px" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbbbbb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Encryption
+              </span>
+              <span style={{ fontSize: "14px", fontWeight: 600, color: "#111111" }}>End-to-end</span>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: "1px", margin: "0 10px", backgroundColor: "#ebebeb" }} />
+
+            {/* Burn row - only if burn is active */}
+            {burnOnRead ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  height: "40px",
+                  padding: "0 14px",
+                }}
+              >
+                <span style={{ fontSize: "14px", color: "#888888", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbbbbb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22c-4.97 0-9-2.686-9-6v-.002C3 8.17 7.03 2 12 2s9 6.17 9 13.998V16c0 3.314-4.03 6-9 6z"/>
+                  </svg>
+                  Burn on read
+                </span>
+                <span style={{ fontSize: "14px", fontWeight: 600, color: "#f59e0b" }}>Active</span>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  height: "40px",
+                  padding: "0 14px",
+                }}
+              >
+                <span style={{ fontSize: "14px", color: "#888888", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbbbbb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22c-4.97 0-9-2.686-9-6v-.002C3 8.17 7.03 2 12 2s9 6.17 9 13.998V16c0 3.314-4.03 6-9 6z"/>
+                  </svg>
+                  Privacy
+                </span>
+                <span style={{ fontSize: "14px", fontWeight: 600, color: "#111111" }}>Zero-knowledge</span>
+              </div>
+            )}
+          </div>
+
+          {/* Download button */}
+          <div style={{ padding: "0 16px 16px", display: "flex" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                width: "100%",
+                height: "44px",
+                borderRadius: "8px",
+                backgroundColor: "#030303",
+                color: "#ffffff",
+                fontSize: "15px",
+                fontWeight: 600,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download
+            </div>
+          </div>
+        </div>
+
+        {/* Footer text */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            marginTop: "24px",
+            fontSize: "14px",
+            color: "#bbbbbb",
+          }}
+        >
+          hypastack.com · Encrypted file sharing
         </div>
       </div>
     ),
