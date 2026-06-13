@@ -74,8 +74,8 @@ export default async function Image({ params }: Props) {
         >
           {logoSrc && <img
             src={logoSrc}
-            width="52"
-            height="52"
+            width={52}
+            height={52}
             style={{ borderRadius: 12 }}
           />}
         </div>
