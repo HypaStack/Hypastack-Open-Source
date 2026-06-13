@@ -119,6 +119,21 @@ export async function handleHotSwapComplete(request: NextRequest) {
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
+    // Authoritative quota check using the ACTUAL uploaded size from R2 — the
+    // init-time check used client-reported fileSize which can be falsified.
+    const [userTier, currentStorage] = await Promise.all([
+      getUserTier(currentUser.userId),
+      getTotalStorageUsed(currentUser.userId),
+    ])
+    const tier = getTierLimits(userTier)
+    const actualDelta = head.size - asset.file_size
+    if (actualDelta > 0 && currentStorage + actualDelta > tier.maxCdnStorage) {
+      const remaining = Math.max(0, tier.maxCdnStorage - currentStorage)
+      const remainingMB = Math.floor(remaining / (1024 * 1024))
+      console.error(`[API Error] 413 Payload Too Large: Uploaded file exceeds storage quota. You have ${remainingMB}MB remaining.`)
+      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+    }
+
     // Update DB record with new size and content type
     const updated = await updateCdnAssetAfterSwap(asset.id, currentUser.userId, {
       file_size: head.size,
