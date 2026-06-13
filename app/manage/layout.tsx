@@ -276,7 +276,7 @@ function ManageLayoutInner({
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#111111] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
         <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
-          <PageLogo size={32} borderRadius={8} disableLayoutAnimation={true} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
+          <PageLogo size={32} borderRadius={8} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
         </Link>
 
         <div className="flex flex-col items-center gap-2 mt-8 flex-1">
