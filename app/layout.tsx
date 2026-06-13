@@ -321,7 +321,7 @@ export default function RootLayout({
         />
         {/* Atlas Grotesk fonts loaded via @font-face in globals.css */}
         {/* Tauri detection for pure black background */}
-        <Script id="tauri-detect" strategy="beforeInteractive">{`
+        <Script id="tauri-detect" strategy="afterInteractive">{`
           if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');
           if (window.location.pathname.startsWith('/manage')) document.documentElement.classList.add('is-dashboard');
           else document.documentElement.classList.add('is-public');

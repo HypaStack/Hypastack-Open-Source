@@ -1,8 +1,6 @@
 "use client"
 
 import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react"
-
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -13,7 +11,6 @@ import { MIcon } from "@/components/ui/material-icon"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
-
 import { useTheme } from "@/hooks/useTheme"
 import { PageLogo } from "@/components/page-logo"
 import {
@@ -26,6 +23,8 @@ import {
   SIDEBAR_WIDTH,
   STORAGE_KEY_DONATION_NOTICE,
 } from "@/constants"
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 function getSubNav(pathname: string): NavItem[] {
   if (pathname.startsWith("/manage/files")) return DRIVE_SUBNAV
