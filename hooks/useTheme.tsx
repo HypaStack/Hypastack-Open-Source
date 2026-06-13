@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { STORAGE_KEY_THEME } from "@/constants"
+import { usePathname } from "next/navigation"
 
 export type ThemePreference = "system" | "light" | "dark"
 export type ResolvedTheme = "light" | "dark"
@@ -35,6 +36,8 @@ function resolveTheme(pref: ThemePreference): ResolvedTheme {
 export function useTheme() {
   const [theme, setThemeState] = useState<ThemePreference>(() => readStored())
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => resolveTheme(readStored()))
+  
+  const pathname = usePathname() || ""
 
   // Resolve "system" against OS, react to changes
   useEffect(() => {
@@ -49,30 +52,30 @@ export function useTheme() {
       return () => mq.removeEventListener("change", compute)
     }
   }, [theme])
-
+  
   // Sync .dark class to <html> so Tailwind dark: variants work globally
   // and sync theme-color for iOS safe areas
   useEffect(() => {
     if (typeof document === "undefined") return
     const root = document.documentElement
     
-    let metaTheme = document.querySelector('meta[name="theme-color"]')
-    if (!metaTheme) {
-      metaTheme = document.createElement('meta')
-      metaTheme.setAttribute('name', 'theme-color')
-      document.head.appendChild(metaTheme)
-    }
+    // Remove any server-rendered theme-color tags to avoid conflicts
+    document.querySelectorAll('meta[name="theme-color"]').forEach(el => el.remove())
     
-    const isDashboard = window.location.pathname.startsWith('/manage')
+    let metaTheme = document.createElement('meta')
+    metaTheme.setAttribute('name', 'theme-color')
+    document.head.appendChild(metaTheme)
+    
+    const isDashboard = pathname.startsWith('/manage')
 
     if (resolvedTheme === "dark") {
       root.classList.add("dark")
-      metaTheme.setAttribute('content', isDashboard ? '#111111' : '#111111')
+      metaTheme.setAttribute('content', '#111111')
     } else {
       root.classList.remove("dark")
-      metaTheme.setAttribute('content', isDashboard ? '#f0f0f0' : '#ffffff')
+      metaTheme.setAttribute('content', isDashboard ? '#f4f1f2' : '#ffffff')
     }
-  }, [resolvedTheme])
+  }, [resolvedTheme, pathname])
 
   const setTheme = useCallback((next: ThemePreference) => {
     if (typeof window !== "undefined") {
