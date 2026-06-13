@@ -25,11 +25,6 @@ export const UploadRequestSchema = z.object({
     .positive("File size must be positive")
     .max(MAX_FILE_SIZE, `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`),
   contentType: z.string().min(1, "Content type is required"),
-  pin: z
-    .string()
-    .regex(/^\d{6}$/, "PIN must be exactly 6 digits")
-    .nullable()
-    .optional(),
   burnOnRead: z.boolean().default(false),
   customFilename: z
     .string()
