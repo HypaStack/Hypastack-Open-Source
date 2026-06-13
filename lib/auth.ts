@@ -47,7 +47,12 @@ export function verifyPassword(password: string, storedHash: string): boolean {
   const [salt] = storedHash.split(":")
   if (!salt) return false
   const { hash } = hashPassword(password, salt)
-  return hash === storedHash
+  
+  const hashBuf = Buffer.from(hash)
+  const storedBuf = Buffer.from(storedHash)
+  if (hashBuf.length !== storedBuf.length) return false
+  
+  return crypto.timingSafeEqual(hashBuf, storedBuf)
 }
 
 export function generateAccessKey(userId?: string): string {
