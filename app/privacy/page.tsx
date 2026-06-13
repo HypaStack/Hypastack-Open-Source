@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Hypastack's zero-knowledge privacy policy. No emails, no passwords, no IP logging, no tracking cookies. Your data never leaves your browser unencrypted.",
+  description: "Hypastack's zero-knowledge privacy policy. No emails, cryptographically hashed passwords, no IP logging, and no tracking cookies. Your data never leaves your browser unencrypted.",
 }
 
 export default function PrivacyPolicy() {
@@ -19,8 +19,8 @@ export default function PrivacyPolicy() {
           </h1>
           
           <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
-            <p>Effective Date: May 7, 2026</p>
-            <p>Last Updated: May 25, 2026</p>
+            <p>Effective Date: June 14, 2026</p>
+            <p>Last Updated: June 14, 2026</p>
           </div>
           
           <div className="space-y-12 text-[15px] leading-relaxed text-muted-foreground">
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
                 Hypastack operates on a strict zero-knowledge paradigm. This means we design our systems under the assumption that our own servers cannot be trusted with your unencrypted data.
               </p>
               <p className="mb-4">
-                Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption for its Secure File Sharing pipeline. All files uploaded through this pipeline are encrypted locally on your device using AES-GCM (256-bit) before transmission. (Note: Our Permanent CDN Hosting pipeline is designed for public assets and is intentionally unencrypted, as detailed below).
+                Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption for its Secure File Sharing pipeline. All files uploaded through this pipeline are encrypted locally on your device using AES-GCM (256-bit) before transmission. Note that our Permanent CDN Hosting pipeline is designed for public assets and is intentionally unencrypted, as detailed below.
               </p>
               <p>
                 The encryption key (found in the URL fragment <code className="text-primary font-medium">#key=...</code>) is processed only by your local browser environment. Because web browsers are architecturally designed to never transmit the URL fragment to the server during a request, it is mathematically impossible for our infrastructure to intercept, record, or utilize your decryption keys. We have no "master key", no backdoor, and no ability to decrypt your files.
@@ -40,12 +40,12 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">2. Information We Collect</h2>
               <p className="mb-4">
-                Because of our cryptographic design, the amount of data we can collect is fundamentally limited. What we do collect is strictly necessary for operational stability, billing (where applicable), and abuse prevention.
+                Because of our cryptographic design, the amount of data we can collect is fundamentally limited. What we do collect is strictly necessary for operational stability, billing, and abuse prevention.
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Encrypted Ciphertext & Public Assets:</strong> For Secure File Sharing, we store the raw encrypted binary data. This data is entirely opaque to us. For Permanent CDN Hosting, we store the unencrypted assets as they are intended for public distribution via direct links.</li>
                 <li><strong className="text-foreground">Metadata:</strong> We collect non-identifying metadata necessary for routing and storage, including the total size of the file, expiration timestamps, and cryptographic parameters required by your browser to reassemble encrypted files. For encrypted shares, filenames and custom notes are also encrypted using a distinct server-side key wrapper to prevent passive metadata leakage.</li>
-                <li><strong className="text-foreground">Account Identifiers:</strong> To maintain quotas, we use one-way cryptographic hashes to uniquely identify sessions or accounts without requiring personally identifiable information (PII).</li>
+                <li><strong className="text-foreground">Account Identifiers:</strong> To maintain quotas, we use usernames, and your passwords are securely hashed before being stored in our database. We do not collect email addresses or other personally identifiable information.</li>
                 <li><strong className="text-foreground">Bandwidth Telemetry:</strong> We monitor aggregated egress traffic at the edge node level to prevent DDoS attacks and enforce service limits. This data is anonymized and cannot be traced back to individual unencrypted file contents.</li>
               </ul>
             </section>
@@ -57,6 +57,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Decryption Keys:</strong> Never transmitted, never stored.</li>
+                <li><strong className="text-foreground">Plaintext Passwords:</strong> We do not store or transmit your password in plaintext at any point.</li>
                 <li><strong className="text-foreground">Unencrypted Private File Contents:</strong> For files uploaded via the Secure File Sharing pipeline, the unencrypted content is never transmitted to our servers. We cannot scan for keywords, viruses, or copyrighted material using traditional deep-packet or at-rest inspection tools on these encrypted files.</li>
                 <li><strong className="text-foreground">IP Addresses:</strong> We do not store, log, or maintain records of your IP address in our databases or application logs. Any necessary IP-based abuse prevention or rate limiting happens ephemerally at the network edge via Cloudflare and is never stored by Hypastack.</li>
               </ul>
@@ -85,7 +86,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">6. Security and Breaches</h2>
               <p>
-                In the unlikely event of a catastrophic breach of our infrastructure, the structural integrity of your privacy remains intact. Because the files are encrypted client-side, any data exfiltrated by an attacker would be entirely unreadable. The only risk in such a scenario is service disruption (availability), not data exposure (confidentiality).
+                In the unlikely event of a catastrophic breach of our infrastructure, the structural integrity of your privacy remains intact. Because the files are encrypted client-side, any data exfiltrated by an attacker would be entirely unreadable. The only risk in such a scenario is service disruption, not data exposure.
               </p>
             </section>
           </div>

@@ -19,8 +19,8 @@ export default function CoppaGdpr() {
           </h1>
           
           <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
-            <p>Effective Date: May 7, 2026</p>
-            <p>Last Updated: May 25, 2026</p>
+            <p>Effective Date: June 14, 2026</p>
+            <p>Last Updated: June 14, 2026</p>
           </div>
           
           <div className="space-y-12 text-[15px] leading-relaxed text-muted-foreground">
@@ -30,7 +30,7 @@ export default function CoppaGdpr() {
                 Regulatory frameworks like the General Data Protection Regulation (GDPR) and the Children's Online Privacy Protection Act (COPPA) are primarily designed to govern the collection, processing, and sale of Personally Identifiable Information (PII).
               </p>
               <p>
-                Hypastack approaches these regulations from a unique architectural standpoint: by eliminating the collection of plaintext data altogether. Because our infrastructure relies exclusively on client-side AES-GCM encryption, we are technically and mathematically incapable of processing, identifying, or analyzing the contents of the files uploaded to our network.
+                Hypastack approaches these regulations from a unique architectural standpoint by eliminating the collection of plaintext data altogether. Because our infrastructure relies exclusively on client-side AES-GCM encryption, we are technically and mathematically incapable of processing, identifying, or analyzing the contents of the files uploaded to our network.
               </p>
             </section>
 
@@ -41,7 +41,7 @@ export default function CoppaGdpr() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Right to be Forgotten (Erasure):</strong> You have the absolute right to delete your data. Because you control the decryption keys, you can unilaterally render the data unreadable at any time by simply destroying your URL. Furthermore, you can actively trigger a deletion of the ciphertext from our edge nodes at any time using our platform tools, fulfilling the right to erasure instantly.</li>
-                <li><strong className="text-foreground">Data Minimization:</strong> We practice absolute data minimization. We collect zero PII. There is no account registration with email — users authenticate with a cryptographic access key generated locally on their device. We do not run analytics on your encrypted files.</li>
+                <li><strong className="text-foreground">Data Minimization:</strong> We practice absolute data minimization. We collect zero PII. There is no account registration with email, and users authenticate with a username and a cryptographically hashed password. We do not run analytics on your encrypted files.</li>
                 <li><strong className="text-foreground">Data Processing:</strong> Because the server never possesses the decryption keys, we do not "process" your personal data in the traditional sense. We merely route indistinguishable blocks of ciphertext. Any PII contained within your files remains entirely obfuscated from our servers.</li>
               </ul>
             </section>
@@ -61,10 +61,10 @@ export default function CoppaGdpr() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Submitting a Privacy Request</h2>
               <p className="mb-4">
-                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent/guardian seeking COPPA remediation, please contact our Data Protection Officer at <strong>privacy@hypastack.com</strong>.
+                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact our Data Protection Officer at <strong>privacy@hypastack.com</strong>.
               </p>
               <p>
-                Please note that because of our zero-knowledge architecture, if you request an export of "your data," we can only provide you with the encrypted ciphertext blocks stored on our servers. We cannot provide you with a decrypted version of your files, nor can we recover your lost keys, as we do not possess them.
+                Please note that because of our zero-knowledge architecture, if you request an export of "your data", we can only provide you with the encrypted ciphertext blocks stored on our servers. We cannot provide you with a decrypted version of your files, nor can we recover your lost keys, as we do not possess them.
               </p>
             </section>
           </div>

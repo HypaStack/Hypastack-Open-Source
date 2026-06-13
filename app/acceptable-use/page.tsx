@@ -19,8 +19,8 @@ export default function AcceptableUse() {
           </h1>
           
           <div className="text-sm text-muted-foreground mb-12 border-b border-white/5 pb-6">
-            <p>Effective Date: May 7, 2026</p>
-            <p>Last Updated: May 25, 2026</p>
+            <p>Effective Date: June 14, 2026</p>
+            <p>Last Updated: June 14, 2026</p>
           </div>
           
           <div className="space-y-12 text-[15px] leading-relaxed text-muted-foreground">
@@ -41,7 +41,7 @@ export default function AcceptableUse() {
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-foreground">Child Sexual Abuse Material (CSAM):</strong> Any material depicting or promoting the abuse or sexual exploitation of minors. All instances are reported immediately to the National Center for Missing & Exploited Children (NCMEC) and relevant authorities.</li>
                 <li><strong className="text-foreground">Terrorism and Violent Extremism:</strong> Content that promotes, encourages, or provides instructional material for terrorist acts or mass violence.</li>
-                <li><strong className="text-foreground">Non-Consensual Intimate Imagery (NCII):</strong> Often referred to as "revenge porn," distributing intimate media without the explicit consent of the subjects involved is strictly forbidden.</li>
+                <li><strong className="text-foreground">Non-Consensual Intimate Imagery (NCII):</strong> Often referred to as "revenge porn", distributing intimate media without the explicit consent of the subjects involved is strictly forbidden.</li>
                 <li><strong className="text-foreground">Malicious Payloads:</strong> Malware, ransomware, trojans, worms, or any code expressly designed to disrupt, damage, or gain unauthorized access to computer systems.</li>
                 <li><strong className="text-foreground">Phishing and Fraud:</strong> Hosting phishing pages, credential-harvesting kits, or materials designed to defraud individuals or organizations.</li>
               </ul>
@@ -69,7 +69,7 @@ export default function AcceptableUse() {
                 Consequently, our enforcement mechanisms rely on:
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">User Reports:</strong> We actively process abuse reports sent to <strong>abuse@hypastack.com</strong>. A valid report must include the complete URL (including the decryption key fragment) so that our abuse team can verify the violation in a localized environment.</li>
+                <li><strong className="text-foreground">User Reports:</strong> We actively process abuse reports sent to <strong>abuse@hypastack.com</strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
                 <li><strong className="text-foreground">Traffic Analysis:</strong> We monitor anomalous traffic patterns, bandwidth spikes, and request origins to detect automated abuse or malware distribution networks.</li>
                 <li><strong className="text-foreground">Metadata Heuristics:</strong> We utilize unencrypted metadata (file size ratios, upload patterns) to identify coordinated abuse campaigns.</li>
               </ul>
@@ -77,7 +77,7 @@ export default function AcceptableUse() {
                 When a valid violation is confirmed, the offending ciphertext is permanently deleted from the R2 edge storage, and the associated uploader's session or account may be terminated.
               </p>
               <p className="mt-4">
-                <strong className="text-foreground">CDN Assets are different.</strong> Files uploaded through the Permanent CDN Hosting pipeline are <em>not</em> encrypted — they are publicly accessible by design. This means CDN assets are not subject to the zero-knowledge constraint above. We plan to introduce client-side scanning for CDN uploads in a future update, which will flag prohibited content before it is ever transmitted to our servers. Until that is in place, CDN asset uploads remain subject to the same user-report and traffic-analysis mechanisms above, and prohibited content will be removed upon discovery.
+                <strong className="text-foreground">CDN Assets are different.</strong> Files uploaded through the Permanent CDN Hosting pipeline are not encrypted, and they are publicly accessible by design. This means CDN assets are not subject to the zero-knowledge constraint above. We plan to introduce client-side scanning for CDN uploads in a future update, which will flag prohibited content before it is ever transmitted to our servers. Until that is in place, CDN asset uploads remain subject to the same user-report and traffic-analysis mechanisms above, and prohibited content will be removed upon discovery.
               </p>
             </section>
 
@@ -87,7 +87,7 @@ export default function AcceptableUse() {
                 If you encounter content hosted on Hypastack that violates this policy, send a report to <strong>abuse@hypastack.com</strong> with the file link and a brief description of the violation.
               </p>
               <p className="mb-4">
-                <strong className="text-foreground">Do not include the decryption key fragment.</strong> We will not ask for it, and you should not send it. Receiving the key would require us to actively decrypt and view potentially illegal content — including CSAM — which creates direct legal liability for us under laws governing possession and viewing of such material. We are not equipped or willing to act as a human review queue for illegal content.
+                <strong className="text-foreground">Do not include the decryption key fragment.</strong> We will not ask for it, and you should not send it. Receiving the key would require us to actively decrypt and view potentially illegal content, including CSAM, which creates direct legal liability for us under laws governing possession and viewing of such material. We are not equipped or willing to act as a human review queue for illegal content.
               </p>
               <p className="mb-4">
                 Instead, include:
