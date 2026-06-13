@@ -214,7 +214,7 @@ export default function RootLayout({
                   ],
                   contactPoint: {
                     "@type": "ContactPoint",
-                    email: "legal@hypastack.com",
+                    url: "https://t.me/t_usekiko",
                     contactType: "customer support",
                     availableLanguage: ["English"],
                   },
