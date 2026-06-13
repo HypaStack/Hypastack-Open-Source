@@ -60,7 +60,7 @@ export async function GET(
 
     const headers = new Headers(response.headers)
     // Instruct the browser and edge to cache this aggressively
-    headers.set("Cache-Control", "public, max-age=86400, immutable")
+    headers.set("Cache-Control", "private, max-age=86400, immutable")
     
     // We stream the body back to the client
     return new NextResponse(response.body, { headers })
