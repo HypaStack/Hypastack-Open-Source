@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import { getClient } from "@/lib/db"
 import { generateFileId, putObjectByKey } from "@/lib/r2"
 import { API_ERRORS } from "@/constants"
@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { getUserTier } from "@/lib/user-model"
 import { checkUploadRateLimit } from "@/lib/rate-limit"
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const currentUser = await getCurrentUser(req)
     if (!currentUser) {
