@@ -8,6 +8,7 @@ export interface HypaNotifOptions {
   description?: string
   items?: string[]
   confirmText?: string
+  confirmIcon?: string
   cancelText?: string
   destructive?: boolean
   isProgress?: boolean
@@ -133,6 +134,25 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
   )
 }
 
+/** Maps common confirmText values to a fitting Material icon name */
+function inferConfirmIcon(confirmText?: string, destructive?: boolean): string {
+  if (destructive) return "delete_forever"
+  const t = (confirmText ?? "").toLowerCase()
+  if (t.includes("wipe") || t.includes("delete") || t.includes("remove")) return "delete_forever"
+  if (t.includes("swap") || t.includes("replace")) return "swap_horiz"
+  if (t.includes("create") || t.includes("add") || t.includes("new")) return "add"
+  if (t.includes("save") || t.includes("update")) return "save"
+  if (t.includes("move")) return "drive_file_move"
+  if (t.includes("close") || t.includes("dismiss")) return "check"
+  if (t.includes("confirm") || t.includes("yes")) return "check"
+  if (t.includes("download")) return "download"
+  if (t.includes("upload")) return "upload"
+  if (t.includes("copy")) return "content_copy"
+  if (t.includes("rename")) return "edit"
+  if (t.includes("restore")) return "restore"
+  return "check"
+}
+
 export function HypaNotifProvider() {
   const [notifs, setNotifs] = useState<NotifState[]>([])
 
@@ -240,7 +260,12 @@ export function HypaNotifProvider() {
                   className={`w-full flex items-center gap-3 hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 ${notif.destructive ? 'text-[#ef4444]' : 'text-[#111] dark:text-[#f0f0f0]'}`}
                   style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 400 }}
                 >
-                  {notif.destructive && <MIcon name="delete_forever" size={15} style={{ color: '#ef4444' }} />}
+                  <MIcon
+                    name={notif.confirmIcon ?? inferConfirmIcon(notif.confirmText, notif.destructive)}
+                    size={15}
+                    style={{ color: notif.destructive ? '#ef4444' : undefined }}
+                    className={notif.destructive ? '' : 'text-[#999] dark:text-[#a1a1aa]'}
+                  />
                   {notif.confirmText || "Confirm"}
                 </button>
                 {!notif.confirmOnly && (
