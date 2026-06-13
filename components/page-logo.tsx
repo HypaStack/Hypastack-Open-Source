@@ -27,8 +27,9 @@ export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className
       height={size}
       priority
       unoptimized
+      suppressHydrationWarning
       style={{ borderRadius, display: "block", flexShrink: 0, userSelect: "none", WebkitUserDrag: "none" } as React.CSSProperties}
-      className={`pointer-events-none select-none${pulse ? " animate-pulse" : ""}${className ? ` ${className}` : ""}`}
+      className={`pointer-events-none${pulse ? " animate-pulse" : ""}${className ? ` ${className}` : ""}`}
       draggable={false}
     />
   )
