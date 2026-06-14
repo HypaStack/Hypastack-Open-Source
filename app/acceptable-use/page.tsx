@@ -29,7 +29,7 @@ export default function AcceptableUse() {
                 Hypastack is a zero-knowledge file sharing and CDN hosting platform designed to provide mathematical privacy to its users. However, privacy does not equate to lawlessness. 
               </p>
               <p>
-                This Acceptable Use Policy defines strictly what is not allowed on our infrastructure. If you violate this policy, your account, associated access keys, and all uploaded ciphertext will be terminated and permanently purged without warning. By utilizing our network, you explicitly agree to adhere to these constraints.
+                This Acceptable Use Policy defines strictly what is not allowed on my infrastructure. If you violate this policy, your account, associated access keys, and all uploaded ciphertext will be terminated and permanently purged without warning. By utilizing my network, you explicitly agree to adhere to these constraints.
               </p>
             </section>
 
@@ -63,21 +63,21 @@ export default function AcceptableUse() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">3. Enforcement Under Zero-Knowledge</h2>
               <p className="mb-4">
-                Because Hypastack employs client-side AES-GCM encryption, we are mathematically incapable of proactively scanning the unencrypted contents of the files uploaded to our servers. We cannot implement traditional hash-matching or keyword-scanning algorithms on ciphertext.
+                Because Hypastack employs client-side AES-GCM encryption, I am mathematically incapable of proactively scanning the unencrypted contents of the files uploaded to my servers. I cannot implement traditional hash-matching or keyword-scanning algorithms on ciphertext.
               </p>
               <p>
-                Consequently, our enforcement mechanisms rely on:
+                Consequently, my enforcement mechanisms rely on:
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">User Reports:</strong> We actively process abuse reports sent via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
-                <li><strong className="text-foreground">Traffic Analysis:</strong> We monitor anomalous traffic patterns, bandwidth spikes, and request origins to detect automated abuse or malware distribution networks.</li>
-                <li><strong className="text-foreground">Metadata Heuristics:</strong> We utilize unencrypted metadata (file size ratios, upload patterns) to identify coordinated abuse campaigns.</li>
+                <li><strong className="text-foreground">User Reports:</strong> I actively process abuse reports sent via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
+                <li><strong className="text-foreground">Traffic Analysis:</strong> I monitor anomalous traffic patterns, bandwidth spikes, and request origins to detect automated abuse or malware distribution networks.</li>
+                <li><strong className="text-foreground">Metadata Heuristics:</strong> I utilize unencrypted metadata (file size ratios, upload patterns) to identify coordinated abuse campaigns.</li>
               </ul>
               <p className="mt-4">
                 When a valid violation is confirmed, the offending ciphertext is permanently deleted from the R2 edge storage, and the associated uploader's session or account may be terminated.
               </p>
               <p className="mt-4">
-                <strong className="text-foreground">CDN Assets are different.</strong> Files uploaded through the Permanent CDN Hosting pipeline are not encrypted, and they are publicly accessible by design. This means CDN assets are not subject to the zero-knowledge constraint above. We plan to introduce client-side scanning for CDN uploads in a future update, which will flag prohibited content before it is ever transmitted to our servers. Until that is in place, CDN asset uploads remain subject to the same user-report and traffic-analysis mechanisms above, and prohibited content will be removed upon discovery.
+                <strong className="text-foreground">CDN Assets are different.</strong> Files uploaded through the Permanent CDN Hosting pipeline are not encrypted, and they are publicly accessible by design. This means CDN assets are not subject to the zero-knowledge constraint above. I plan to introduce client-side scanning for CDN uploads in a future update, which will flag prohibited content before it is ever transmitted to my servers. Until that is in place, CDN asset uploads remain subject to the same user-report and traffic-analysis mechanisms above, and prohibited content will be removed upon discovery.
               </p>
             </section>
 
@@ -87,18 +87,18 @@ export default function AcceptableUse() {
                 If you encounter content hosted on Hypastack that violates this policy, send a report to <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with the file link and a brief description of the violation.
               </p>
               <p className="mb-4">
-                <strong className="text-foreground">Do not include the decryption key fragment.</strong> We will not ask for it, and you should not send it. Receiving the key would require us to actively decrypt and view potentially illegal content, including CSAM, which creates direct legal liability for us under laws governing possession and viewing of such material. We are not equipped or willing to act as a human review queue for illegal content.
+                <strong className="text-foreground">Do not include the decryption key fragment.</strong> I will not ask for it, and you should not send it. Receiving the key would require me to actively decrypt and view potentially illegal content, including CSAM, which creates direct legal liability for me under laws governing possession and viewing of such material. I am not equipped or willing to act as a human review queue for illegal content.
               </p>
               <p className="mb-4">
                 Instead, include:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-2">
                 <li>The URL of the file (without the <code className="text-foreground font-medium">#key=...</code> fragment)</li>
-                <li>A screenshot, description, or any other contextual proof that does not require us to decrypt the content</li>
+                <li>A screenshot, description, or any other contextual proof that does not require me to decrypt the content</li>
                 <li>The nature of the violation (e.g. CSAM, malware, phishing)</li>
               </ul>
               <p className="mt-4">
-                For CSAM specifically: <strong className="text-foreground">do not screenshot or preserve the content.</strong> Report the URL directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a> and send us the file URL so we can remove it immediately. That is all we need.
+                For CSAM specifically: <strong className="text-foreground">do not screenshot or preserve the content.</strong> Report the URL directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a> and send me the file URL so I can remove it immediately. That is all I need.
               </p>
             </section>
           </div>
