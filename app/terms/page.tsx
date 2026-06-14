@@ -30,17 +30,17 @@ export default function TermsOfService() {
                 By accessing, browsing, or utilizing any portion of the Hypastack platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
               </p>
               <p>
-                If you do not agree with any part of these terms, you must immediately cease all use of the platform. These terms constitute a legally binding agreement between you, the User, and Hypastack, the Service Provider. We reserve the right, at our sole discretion, to modify or replace these Terms at any time. Your continued use of the platform following the posting of any changes to the Terms constitutes acceptance of those changes.
+                If you do not agree with any part of these terms, you must immediately cease all use of the platform. These terms constitute a legally binding agreement between you, the User, and me, the Service Provider. I reserve the right, at my sole discretion, to modify or replace these Terms at any time. Your continued use of the platform following the posting of any changes to the Terms constitutes acceptance of those changes.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">2. Service Description and Architecture</h2>
               <p className="mb-4">
-                Hypastack provides a globally distributed Content Delivery Network (CDN) and file-sharing utility designed around the principles of absolute mathematical privacy. The service operates strictly as a zero-knowledge transport and storage layer for secure file sharing, while also offering unencrypted permanent hosting for public assets via our CDN pipeline.
+                Hypastack provides a globally distributed Content Delivery Network (CDN) and file-sharing utility designed around the principles of absolute mathematical privacy. The service operates strictly as a zero-knowledge transport and storage layer for secure file sharing, while also offering unencrypted permanent hosting for public assets via my CDN pipeline.
               </p>
               <p>
-                <strong>Cryptographic Sovereignty:</strong> For secure sharing, we provide the infrastructure to transmit your encrypted data. You provide the cryptographic keys locally on your device. We do not generate, transmit, receive, or store the decryption keys necessary to convert your uploaded ciphertext back into readable plaintext. Consequently, Hypastack functions purely as a "dumb pipe" routing encrypted blobs of data across edge nodes.
+                <strong>Cryptographic Sovereignty:</strong> For secure sharing, I provide the infrastructure to transmit your encrypted data. You provide the cryptographic keys locally on your device. I do not generate, transmit, receive, or store the decryption keys necessary to convert your uploaded ciphertext back into readable plaintext. Consequently, Hypastack functions purely as a "dumb pipe" routing encrypted blobs of data across edge nodes.
               </p>
             </section>
 
@@ -50,8 +50,8 @@ export default function TermsOfService() {
                 Because Hypastack operates a zero-knowledge architecture, the sole responsibility for the contents, legality, and dissemination of the uploaded data rests entirely with the User. 
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">Data Loss:</strong> You are solely responsible for maintaining access to your decryption keys, which are embedded in the URL fragments. Hypastack cannot recover, reset, or bypass these cryptographic locks. If you lose your URL, your encrypted data is irretrievably lost. We hold no liability for data loss due to lost keys, accidental deletion, or service interruption.</li>
-                <li><strong className="text-foreground">Legality of Content:</strong> You agree not to use the platform to upload, transmit, or distribute any material that is unlawful, defamatory, obscene, or infringing upon the intellectual property rights of others. Please refer to our Acceptable Use Policy for an exhaustive list of prohibited behaviors.</li>
+                <li><strong className="text-foreground">Data Loss:</strong> You are solely responsible for maintaining access to your decryption keys, which are embedded in the URL fragments. Hypastack cannot recover, reset, or bypass these cryptographic locks. If you lose your URL, your encrypted data is irretrievably lost. I hold no liability for data loss due to lost keys, accidental deletion, or service interruption.</li>
+                <li><strong className="text-foreground">Legality of Content:</strong> You agree not to use the platform to upload, transmit, or distribute any material that is unlawful, defamatory, obscene, or infringing upon the intellectual property rights of others. Please refer to my Acceptable Use Policy for an exhaustive list of prohibited behaviors.</li>
                 <li><strong className="text-foreground">Indemnification:</strong> You agree to indemnify, defend, and hold harmless Hypastack, its affiliates, officers, directors, employees, and agents from and against any and all claims, damages, obligations, losses, liabilities, costs, and expenses arising from your violation of these Terms or your infringement of any third-party rights.</li>
               </ul>
             </section>
@@ -59,17 +59,17 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Service Availability and Modifications</h2>
               <p className="mb-4">
-                While we strive for high availability and rapid edge delivery, Hypastack is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either express or implied.
+                While I strive for high availability and rapid edge delivery, Hypastack is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either express or implied.
               </p>
               <p>
-                We reserve the right to modify, suspend, or discontinue, temporarily or permanently, the platform or any part thereof with or without notice. We shall not be liable to you or to any third party for any modification, suspension, or discontinuance of the service. We may also impose limits on certain features or restrict your access to parts or all of the platform without notice or liability.
+                I reserve the right to modify, suspend, or discontinue, temporarily or permanently, the platform or any part thereof with or without notice. I shall not be liable to you or to any third party for any modification, suspension, or discontinuance of the service. I may also impose limits on certain features or restrict your access to parts or all of the platform without notice or liability.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">5. Intellectual Property</h2>
               <p className="mb-4">
-                You retain all rights and ownership to the original plaintext data you encrypt and upload to the platform. By uploading the encrypted ciphertext to Hypastack, you grant us a worldwide, non-exclusive, royalty-free license strictly limited to hosting, copying, transmitting, and delivering that encrypted blob across our CDN architecture to facilitate your requested downloads.
+                You retain all rights and ownership to the original plaintext data you encrypt and upload to the platform. By uploading the encrypted ciphertext to Hypastack, you grant me a worldwide, non-exclusive, royalty-free license strictly limited to hosting, copying, transmitting, and delivering that encrypted blob across my CDN architecture to facilitate your requested downloads.
               </p>
               <p>
                 The Hypastack platform, including its original code, design, logos, and underlying infrastructure algorithms, is the exclusive property of Hypastack and is protected by international copyright and trademark laws.
@@ -79,7 +79,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">6. Termination</h2>
               <p>
-                We may terminate or suspend your access to the platform immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the platform will immediately cease, and any associated encrypted ciphertext hosted on our network may be asynchronously purged. All provisions of the Terms which by their nature should survive termination shall survive termination, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
+                I may terminate or suspend your access to the platform immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the platform will immediately cease, and any associated encrypted ciphertext hosted on my network may be asynchronously purged. All provisions of the Terms which by their nature should survive termination shall survive termination, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
               </p>
             </section>
           </div>
