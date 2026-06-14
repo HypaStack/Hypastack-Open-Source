@@ -24,7 +24,7 @@ export default function DmcaPolicy() {
           
           <div className="space-y-8 text-muted-foreground">
             <p className="text-foreground">
-              Hypastack respects copyright. If you believe content hosted on our platform 
+              Hypastack respects copyright. If you believe content hosted on my platform 
               infringes your copyright, you can submit a takedown request.
             </p>
 
@@ -44,15 +44,15 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">What We Do</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">What I Do</h2>
               <p className="mb-4">
-                When we receive a valid DMCA notice, we remove the content. Because of our 
-                zero-knowledge architecture, we cannot reliably notify the uploader — we do not 
+                When I receive a valid DMCA notice, I remove the content. Because of my 
+                zero-knowledge architecture, I cannot reliably notify the uploader — I do not 
                 have their email address or any contact information.
               </p>
               <p className="mb-4">
                 If the content was shared via a temporary link, it may have already expired 
-                and been automatically deleted before we process the request.
+                and been automatically deleted before I process the request.
               </p>
             </section>
 
@@ -74,8 +74,8 @@ export default function DmcaPolicy() {
             <section>
               <h2 className="text-xl font-semibold text-foreground mb-4">Repeat Infringers</h2>
               <p>
-                We will terminate accounts of repeat infringers when we can identify them. Given 
-                our zero-knowledge model, identification is limited to the hashed nickname and 
+                I will terminate accounts of repeat infringers when I can identify them. Given 
+                my zero-knowledge model, identification is limited to the hashed nickname and 
                 associated file records.
               </p>
             </section>
