@@ -30,7 +30,7 @@ export default function CoppaGdpr() {
                 Regulatory frameworks like the General Data Protection Regulation (GDPR) and the Children's Online Privacy Protection Act (COPPA) are primarily designed to govern the collection, processing, and sale of Personally Identifiable Information (PII).
               </p>
               <p>
-                Hypastack approaches these regulations from a unique architectural standpoint by eliminating the collection of plaintext data altogether. Because our infrastructure relies exclusively on client-side AES-GCM encryption, we are technically and mathematically incapable of processing, identifying, or analyzing the contents of the files uploaded to our network.
+                Hypastack approaches these regulations from a unique architectural standpoint by eliminating the collection of plaintext data altogether. Because my infrastructure relies exclusively on client-side AES-GCM encryption, I am technically and mathematically incapable of processing, identifying, or analyzing the contents of the files uploaded to my network.
               </p>
             </section>
 
@@ -40,9 +40,9 @@ export default function CoppaGdpr() {
                 The GDPR imposes strict rules on those who host and process the personal data of EU citizens. Hypastack acts strictly as a data transport and storage conduit for encrypted ciphertext.
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">Right to be Forgotten (Erasure):</strong> You have the absolute right to delete your data. Because you control the decryption keys, you can unilaterally render the data unreadable at any time by simply destroying your URL. Furthermore, you can actively trigger a deletion of the ciphertext from our edge nodes at any time using our platform tools, fulfilling the right to erasure instantly.</li>
-                <li><strong className="text-foreground">Data Minimization:</strong> We practice absolute data minimization. We collect zero PII. There is no account registration with email, and users authenticate with a username and a cryptographically hashed password. We do not run analytics on your encrypted files.</li>
-                <li><strong className="text-foreground">Data Processing:</strong> Because the server never possesses the decryption keys, we do not "process" your personal data in the traditional sense. We merely route indistinguishable blocks of ciphertext. Any PII contained within your files remains entirely obfuscated from our servers.</li>
+                <li><strong className="text-foreground">Right to be Forgotten (Erasure):</strong> You have the absolute right to delete your data. Because you control the decryption keys, you can unilaterally render the data unreadable at any time by simply destroying your URL. Furthermore, you can actively trigger a deletion of the ciphertext from my edge nodes at any time using my platform tools, fulfilling the right to erasure instantly.</li>
+                <li><strong className="text-foreground">Data Minimization:</strong> I practice absolute data minimization. I collect zero PII. There is no account registration with email, and users authenticate with a username and a cryptographically hashed password. I do not run analytics on your encrypted files.</li>
+                <li><strong className="text-foreground">Data Processing:</strong> Because the server never possesses the decryption keys, I do not "process" your personal data in the traditional sense. I merely route indistinguishable blocks of ciphertext. Any PII contained within your files remains entirely obfuscated from my servers.</li>
               </ul>
             </section>
 
@@ -52,19 +52,19 @@ export default function CoppaGdpr() {
                 COPPA regulates the online collection of personal information from children under the age of 13 in the United States.
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">Age Restrictions:</strong> Hypastack is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If you are under 13, you are strictly prohibited from using our services or creating an account.</li>
-                <li><strong className="text-foreground">No Intentional Collection:</strong> Because we operate a zero-knowledge architecture, we do not monitor or profile the age of our users based on their uploaded content. We rely on the assertion that users accessing our tools are of legal age to form a binding contract.</li>
-                <li><strong className="text-foreground">Remediation:</strong> If we obtain actual, verifiable knowledge that an account belongs to a child under the age of 13, we will immediately terminate the account and permanently purge all associated encrypted ciphertext from our network in compliance with COPPA.</li>
+                <li><strong className="text-foreground">Age Restrictions:</strong> Hypastack is not directed at children under the age of 13. I do not knowingly collect personal information from children under 13. If you are under 13, you are strictly prohibited from using my services or creating an account.</li>
+                <li><strong className="text-foreground">No Intentional Collection:</strong> Because I operate a zero-knowledge architecture, I do not monitor or profile the age of my users based on their uploaded content. I rely on the assertion that users accessing my tools are of legal age to form a binding contract.</li>
+                <li><strong className="text-foreground">Remediation:</strong> If I obtain actual, verifiable knowledge that an account belongs to a child under the age of 13, I will immediately terminate the account and permanently purge all associated encrypted ciphertext from my network in compliance with COPPA.</li>
               </ul>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-5">4. Submitting a Privacy Request</h2>
               <p className="mb-4">
-                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact our Data Protection Officer via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
+                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact me via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
               </p>
               <p>
-                Please note that because of our zero-knowledge architecture, if you request an export of "your data", we can only provide you with the encrypted ciphertext blocks stored on our servers. We cannot provide you with a decrypted version of your files, nor can we recover your lost keys, as we do not possess them.
+                Please note that because of my zero-knowledge architecture, if you request an export of "your data", I can only provide you with the encrypted ciphertext blocks stored on my servers. I cannot provide you with a decrypted version of your files, nor can I recover your lost keys, as I do not possess them.
               </p>
             </section>
           </div>
