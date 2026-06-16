@@ -90,11 +90,6 @@ export default function ForumNewPage() {
     e.preventDefault()
     if (!title.trim() || submitting) return
 
-    if (files.length === 0) {
-      setError("Add at least one file to your post")
-      return
-    }
-
     setSubmitting(true)
     setError(null)
 
@@ -306,7 +301,7 @@ export default function ForumNewPage() {
             {/* Files */}
             <div>
               <label className="block text-[12px] font-medium text-[#555]  mb-1.5">
-                Files <span className="text-[#ef4444]">*</span> (max 5)
+                Files (max 5)
               </label>
 
               {/* Drop zone */}
