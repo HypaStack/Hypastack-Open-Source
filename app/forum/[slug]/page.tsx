@@ -66,74 +66,22 @@ function timeAgo(dateStr: string): string {
   return `${months}mo ago`
 }
 
-function isImageType(ct: string) { return ct.startsWith("image/") }
-function isVideoType(ct: string) { return ct.startsWith("video/") }
-function isAudioType(ct: string) { return ct.startsWith("audio/") }
-
 function FilePreview({ file }: { file: ForumFile }) {
-  if (isImageType(file.content_type)) {
-    return (
-      <a href={file.public_url} target="_blank" rel="noopener noreferrer" className="block group">
-        <div className="relative rounded-lg overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#e8e8e8] dark:border-[#2a2a2a]">
-          <img
-            src={file.public_url}
-            alt={file.original_name}
-            className="w-full max-h-[500px] object-contain group-hover:scale-[1.01] transition-transform duration-200"
-            loading="lazy"
-          />
-        </div>
-        <p className="text-[12px] text-[#888] mt-1.5 flex items-center gap-1.5">
-          <MIcon name="image" size={12} />
-          {file.original_name} · {formatFileSize(file.file_size)}
-        </p>
-      </a>
-    )
-  }
-
-  if (isVideoType(file.content_type)) {
-    return (
-      <div>
-        <video
-          src={file.public_url}
-          controls
-          className="w-full max-h-[500px] rounded-lg bg-black"
-          preload="metadata"
-        />
-        <p className="text-[12px] text-[#888] mt-1.5 flex items-center gap-1.5">
-          <MIcon name="movie" size={12} />
-          {file.original_name} · {formatFileSize(file.file_size)}
-        </p>
-      </div>
-    )
-  }
-
-  if (isAudioType(file.content_type)) {
-    return (
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] rounded-lg border border-[#e8e8e8] dark:border-[#2a2a2a] p-4">
-        <audio src={file.public_url} controls className="w-full" preload="metadata" />
-        <p className="text-[12px] text-[#888] mt-2 flex items-center gap-1.5">
-          <MIcon name="music_note" size={12} />
-          {file.original_name} · {formatFileSize(file.file_size)}
-        </p>
-      </div>
-    )
-  }
-
-  // Generic file download
+  // Generic file row for everything
   return (
     <a
       href={file.public_url}
       download={file.original_name}
-      className="flex items-center gap-3 bg-[#f5f5f5] dark:bg-[#1a1a1a] rounded-lg border border-[#e8e8e8] dark:border-[#2a2a2a] p-3.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] transition-colors group"
+      className="flex items-center gap-3 border-b border-[#e8e8e8] dark:border-[#2a2a2a] py-3 hover:bg-[#f9f9f9] dark:hover:bg-[#1a1a1a] transition-colors group px-2 -mx-2"
     >
-      <div className="w-10 h-10 rounded-lg bg-[#e5e5e5] dark:bg-[#2a2a2a] flex items-center justify-center flex-shrink-0">
-        <MIcon name="description" size={18} className="text-[#888] dark:text-[#777]" />
+      <div className="w-8 h-8 rounded bg-[#f0f0f0] dark:bg-[#252525] flex items-center justify-center flex-shrink-0">
+        <MIcon name="description" size={16} className="text-[#888] dark:text-[#777]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-medium text-[#333] dark:text-[#ccc] truncate">{file.original_name}</p>
+        <p className="text-[13px] font-medium text-[#111] dark:text-[#f0f0f0] truncate group-hover:text-[#333] dark:group-hover:text-white transition-colors">{file.original_name}</p>
         <p className="text-[11px] text-[#999]">{formatFileSize(file.file_size)}</p>
       </div>
-      <MIcon name="download" size={16} className="text-[#999] group-hover:text-[#555] transition-colors flex-shrink-0" />
+      <MIcon name="download" size={16} className="text-[#999] group-hover:text-[#555] transition-colors flex-shrink-0 mr-2" />
     </a>
   )
 }
@@ -291,7 +239,10 @@ export default function ForumPostPage() {
 
   const fetchPost = useCallback(async () => {
     try {
-      const res = await fetch(`/api/v2/forum/${slug}`)
+      const viewParam = !sessionStorage.getItem(`viewed_post_${slug}`) ? "?view=1" : ""
+      if (viewParam) sessionStorage.setItem(`viewed_post_${slug}`, "1")
+      
+      const res = await fetch(`/api/v2/forum/${slug}${viewParam}`)
       if (res.ok) {
         const data = await res.json()
         setPost(data.post)
@@ -383,12 +334,8 @@ export default function ForumPostPage() {
       <main className="flex min-h-screen flex-col bg-[#fafafa] dark:bg-[#0f0f0f]">
         <Navbar />
         <section className="flex-1 pt-24 pb-20">
-          <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-[#f0f0f0] dark:bg-[#1a1a1a] rounded w-3/4" />
-              <div className="h-4 bg-[#f0f0f0] dark:bg-[#1a1a1a] rounded w-1/2" />
-              <div className="h-64 bg-[#f0f0f0] dark:bg-[#1a1a1a] rounded-xl" />
-            </div>
+          <div className="flex justify-center items-center py-20">
+            <MIcon name="refresh" size={24} className="text-[#666] dark:text-[#888] animate-spin" />
           </div>
         </section>
       </main>
@@ -463,7 +410,7 @@ export default function ForumPostPage() {
 
           {/* Description */}
           {post.description && (
-            <div className="bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e8e8e8] dark:border-[#2a2a2a] p-5 mb-6">
+            <div className="mb-8">
               <p className="text-[14px] text-[#333] dark:text-[#ccc] leading-relaxed whitespace-pre-wrap">
                 {post.description}
               </p>
@@ -471,7 +418,7 @@ export default function ForumPostPage() {
           )}
 
           {/* Files */}
-          <div className="space-y-4 mb-8">
+          <div className="flex flex-col border-t border-[#e8e8e8] dark:border-[#2a2a2a] mb-8">
             {post.files.map(file => (
               <FilePreview key={file.id} file={file} />
             ))}

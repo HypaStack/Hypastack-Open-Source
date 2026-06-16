@@ -27,8 +27,11 @@ export async function GET(
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
-    // Increment view count (fire and forget)
-    incrementViewCount(post.id).catch(() => {})
+    // Increment view count if requested (fire and forget)
+    const url = new URL(request.url)
+    if (url.searchParams.get("view") === "1") {
+      incrementViewCount(post.id).catch(() => {})
+    }
 
     return NextResponse.json({ post })
   } catch (error: any) {

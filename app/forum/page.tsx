@@ -314,21 +314,8 @@ export default function ForumPage() {
 
           {/* Post list */}
           {loading ? (
-            <div className="flex flex-col border-t border-[#e8e8e8] dark:border-[#2a2a2a]">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-[#1c1c1c] border-b border-[#e8e8e8] dark:border-[#2a2a2a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
-                  <div className="space-y-3 flex-1">
-                    <div className="h-5 bg-[#f0f0f0] dark:bg-[#252525] rounded w-1/3" />
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-1/2" />
-                  </div>
-                  <div className="flex gap-4 md:min-w-[300px] md:justify-end">
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-20" />
-                  </div>
-                </div>
-              ))}
+            <div className="flex justify-center items-center py-20 border-t border-[#e8e8e8] dark:border-[#2a2a2a]">
+              <MIcon name="refresh" size={24} className="text-[#666] dark:text-[#888] animate-spin" />
             </div>
           ) : posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
