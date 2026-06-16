@@ -289,6 +289,66 @@ export async function initDatabase(): Promise<void> {
     } catch {}
 
 
+    // ── Forum tables ──────────────────────────────────────────────────────
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS forum_posts (
+        id            VARCHAR(12)   PRIMARY KEY,
+        user_id       VARCHAR(36)   NOT NULL,
+        slug          VARCHAR(250)  NOT NULL UNIQUE,
+        title         VARCHAR(200)  NOT NULL,
+        description   TEXT,
+        tags          TEXT[]        DEFAULT '{}',
+        views         INTEGER       DEFAULT 0,
+        created_at    TIMESTAMPTZ   DEFAULT NOW(),
+        updated_at    TIMESTAMPTZ   DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_user_id    ON forum_posts(user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_created_at ON forum_posts(created_at DESC)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_slug       ON forum_posts(slug)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_tags       ON forum_posts USING GIN(tags)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_fts        ON forum_posts USING GIN(to_tsvector('english', coalesce(title,'') || ' ' || coalesce(description,'')))`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS forum_files (
+        id            VARCHAR(12)   PRIMARY KEY,
+        post_id       VARCHAR(12)   NOT NULL,
+        user_id       VARCHAR(36)   NOT NULL,
+        r2_key        VARCHAR(500)  NOT NULL,
+        original_name VARCHAR(500)  NOT NULL,
+        file_size     BIGINT        NOT NULL,
+        content_type  VARCHAR(200)  NOT NULL,
+        public_url    VARCHAR(500)  NOT NULL,
+        created_at    TIMESTAMPTZ   DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_files_post_id ON forum_files(post_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_files_user_id ON forum_files(user_id)`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS forum_comments (
+        id            SERIAL        PRIMARY KEY,
+        post_id       VARCHAR(12)   NOT NULL,
+        user_id       VARCHAR(36)   NOT NULL,
+        parent_id     INTEGER       DEFAULT NULL,
+        body          TEXT          NOT NULL,
+        created_at    TIMESTAMPTZ   DEFAULT NOW(),
+        updated_at    TIMESTAMPTZ   DEFAULT NOW(),
+        deleted       BOOLEAN       DEFAULT FALSE
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_comments_post_id   ON forum_comments(post_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_comments_parent_id ON forum_comments(parent_id)`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS forum_reports (
+        id          SERIAL        PRIMARY KEY,
+        post_id     VARCHAR(12)   NOT NULL,
+        reporter_ip TEXT,
+        reason      TEXT,
+        created_at  TIMESTAMPTZ   DEFAULT NOW()
+      )
+    `)
 
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')

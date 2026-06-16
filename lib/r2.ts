@@ -384,3 +384,22 @@ export async function getPresignedUploadUrlByKey(r2Key: string, contentType?: st
   return getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
 }
 
+export async function getPresignedForumUploadUrl(
+  postId: string,
+  fileId: string,
+  fileName: string,
+  contentType: string,
+): Promise<{ uploadUrl: string; r2Key: string }> {
+  const r2Key = `forums/${postId}/${fileId}/${fileName}`
+
+  const command = new PutObjectCommand({
+    Bucket: getBucketName(),
+    Key: r2Key,
+    ContentType: contentType,
+    CacheControl: "public, max-age=3600, s-maxage=3600",
+  })
+
+  const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
+  return { uploadUrl, r2Key }
+}
+

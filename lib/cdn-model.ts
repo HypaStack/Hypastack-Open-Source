@@ -195,7 +195,8 @@ export async function getTotalStorageUsed(userId: string): Promise<number> {
   const result = await pool.query(
     `SELECT
       COALESCE((SELECT SUM(file_size) FROM basedrop_files WHERE user_id = $1), 0) +
-      COALESCE((SELECT SUM(file_size) FROM cdn_assets WHERE user_id = $1), 0) as total_storage`,
+      COALESCE((SELECT SUM(file_size) FROM cdn_assets WHERE user_id = $1), 0) +
+      COALESCE((SELECT SUM(file_size) FROM forum_files WHERE user_id = $1), 0) as total_storage`,
     [userId]
   )
 
