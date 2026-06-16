@@ -4,6 +4,7 @@ export const FOOTER_COLUMNS = [
     links: [
       { label: "Upload a file", href: "/new" },
       { label: "CDN Hosting", href: "/manage/cdn" },
+      { label: "Forum", href: "/forum" },
       { label: "Dashboard", href: "/manage" },
       { label: "System status", href: "https://status.hypastack.com" },
       { label: "Desktop app", href: "https://hypastack.com/d/987vw0zy#key=9OU2rAIyA3j3Eye90DrxYoimxWbNCcycuyT6LNn7_BA" },
