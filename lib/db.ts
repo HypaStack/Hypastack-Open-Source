@@ -297,16 +297,25 @@ export async function initDatabase(): Promise<void> {
         slug          VARCHAR(250)  NOT NULL UNIQUE,
         title         VARCHAR(200)  NOT NULL,
         description   TEXT,
-        tags          TEXT[]        DEFAULT '{}',
+        tags          JSONB         DEFAULT '[]'::jsonb,
         views         INTEGER       DEFAULT 0,
         created_at    TIMESTAMPTZ   DEFAULT NOW(),
         updated_at    TIMESTAMPTZ   DEFAULT NOW()
       )
     `)
+    try {
+      await client.query(`ALTER TABLE forum_posts ALTER COLUMN tags TYPE JSONB USING to_jsonb(tags)`)
+      await client.query(`ALTER TABLE forum_posts ALTER COLUMN tags SET DEFAULT '[]'::jsonb`)
+    } catch {}
+
     await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_user_id    ON forum_posts(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_created_at ON forum_posts(created_at DESC)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_slug       ON forum_posts(slug)`)
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_tags       ON forum_posts USING GIN(tags)`)
+    
+    // Drop the old text array index if it exists, before creating the JSONB one
+    try { await client.query(`DROP INDEX IF EXISTS idx_forum_posts_tags`) } catch {}
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_tags       ON forum_posts USING GIN(tags jsonb_path_ops)`)
+    
     await client.query(`CREATE INDEX IF NOT EXISTS idx_forum_posts_fts        ON forum_posts USING GIN(to_tsvector('english', coalesce(title,'') || ' ' || coalesce(description,'')))`)
 
     await client.query(`

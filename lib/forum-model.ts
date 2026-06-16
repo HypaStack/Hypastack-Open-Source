@@ -115,7 +115,7 @@ export async function createForumPost(input: {
     `INSERT INTO forum_posts (id, user_id, slug, title, description, tags)
      VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [id, input.userId, slug, input.title.slice(0, 200), input.description ?? null, tags]
+    [id, input.userId, slug, input.title.slice(0, 200), input.description ?? null, JSON.stringify(tags)]
   )
 
   return mapPostRow(result.rows[0])
@@ -139,8 +139,8 @@ export async function getForumPosts(opts: {
   let paramIdx = 1
 
   if (opts.tag) {
-    conditions.push(`$${paramIdx} = ANY(fp.tags)`)
-    params.push(opts.tag.toLowerCase())
+    conditions.push(`fp.tags @> $${paramIdx}::jsonb`)
+    params.push(JSON.stringify([opts.tag.toLowerCase()]))
     paramIdx++
   }
 
