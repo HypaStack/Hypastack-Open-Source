@@ -146,8 +146,10 @@ export async function proxy(request: NextRequest) {
   const isAvatar = pathname === '/api/v2/avatar'
   // the /files/[id] endpoint provides public metadata for downloads/OG images (requires random ID, heavily rate limited)
   const isPublicFileMeta = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+$/.test(pathname)
+  // the /forum endpoints are publicly readable (GET only) — posting/uploading still requires auth + proxy key
+  const isPublicForum = request.method === 'GET' && pathname.startsWith('/api/v2/forum')
 
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta && !isPublicForum) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
     const origin = request.headers.get('origin')
