@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
 
@@ -52,56 +51,30 @@ function timeAgo(dateStr: string): string {
   return `${months}mo ago`
 }
 
-function isImageType(contentType: string): boolean {
-  return contentType.startsWith("image/")
-}
-
 function ForumCard({ post }: { post: ForumPost }) {
-  const firstImage = post.files.find(f => isImageType(f.content_type))
   const totalSize = post.files.reduce((sum, f) => sum + f.file_size, 0)
 
   return (
     <Link
       href={`/forum/${post.slug}`}
-      className="group block bg-white dark:bg-[#1c1c1c] rounded-xl overflow-hidden border border-[#e8e8e8] dark:border-[#2a2a2a] hover:border-[#d0d0d0] dark:hover:border-[#3a3a3a] transition-all duration-200 hover:shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
+      className="group block bg-white dark:bg-[#1c1c1c] border-b border-[#e8e8e8] dark:border-[#2a2a2a] hover:bg-[#f9f9f9] dark:hover:bg-[#222] transition-colors p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 first:border-t"
     >
-      {/* Thumbnail */}
-      <div className="relative w-full aspect-[16/10] bg-[#f5f5f5] dark:bg-[#141414] overflow-hidden">
-        {firstImage ? (
-          <img
-            src={firstImage.public_url}
-            alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <MIcon name="folder_open" size={32} className="text-[#ccc] dark:text-[#444]" />
-          </div>
-        )}
-        {/* File count badge */}
-        <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-sm text-white text-[11px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1">
-          <MIcon name="attach_file" size={11} />
-          {post.files.length}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        <h3 className="text-[14px] font-semibold text-[#111] dark:text-[#f0f0f0] leading-snug line-clamp-2 mb-1.5 group-hover:text-[#333] dark:group-hover:text-white transition-colors">
+      {/* Left side: Content */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-[16px] font-semibold text-[#111] dark:text-[#f0f0f0] leading-snug truncate mb-1 group-hover:text-[#333] dark:group-hover:text-white transition-colors">
           {post.title}
         </h3>
 
         {post.description && (
-          <p className="text-[12px] text-[#888] dark:text-[#777] line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-[13px] text-[#888] dark:text-[#777] line-clamp-1 mb-2">
             {post.description}
           </p>
         )}
 
         {/* Tags */}
         {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {post.tags.slice(0, 4).map(tag => (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {post.tags.slice(0, 6).map(tag => (
               <span
                 key={tag}
                 className="text-[11px] font-medium text-[#666] dark:text-[#999] bg-[#f0f0f0] dark:bg-[#252525] px-2 py-0.5 rounded-full"
@@ -109,28 +82,32 @@ function ForumCard({ post }: { post: ForumPost }) {
                 {tag}
               </span>
             ))}
-            {post.tags.length > 4 && (
-              <span className="text-[11px] text-[#999]">+{post.tags.length - 4}</span>
+            {post.tags.length > 6 && (
+              <span className="text-[11px] text-[#999]">+{post.tags.length - 6}</span>
             )}
           </div>
         )}
+      </div>
 
-        {/* Meta row */}
-        <div className="flex items-center gap-3 text-[11px] text-[#999] dark:text-[#666]">
-          <span className="flex items-center gap-1">
-            <MIcon name="visibility" size={12} />
-            {post.views}
-          </span>
-          <span className="flex items-center gap-1">
-            <MIcon name="comment" size={12} />
-            {post.comment_count}
-          </span>
-          <span className="flex items-center gap-1">
-            <MIcon name="storage" size={12} />
-            {formatFileSize(totalSize)}
-          </span>
-          <span className="ml-auto">{timeAgo(post.created_at)}</span>
-        </div>
+      {/* Right side: Meta */}
+      <div className="flex items-center gap-4 text-[12px] text-[#999] dark:text-[#666] md:min-w-[300px] md:justify-end shrink-0">
+        <span className="flex items-center gap-1 w-12 justify-end" title="Views">
+          <MIcon name="visibility" size={14} />
+          {post.views}
+        </span>
+        <span className="flex items-center gap-1 w-12 justify-end" title="Comments">
+          <MIcon name="comment" size={14} />
+          {post.comment_count}
+        </span>
+        <span className="flex items-center gap-1 w-12 justify-end" title="Files">
+          <MIcon name="attach_file" size={14} />
+          {post.files.length}
+        </span>
+        <span className="flex items-center gap-1 w-20 justify-end" title="Total Size">
+          <MIcon name="storage" size={14} />
+          {formatFileSize(totalSize)}
+        </span>
+        <span className="w-20 text-right">{timeAgo(post.created_at)}</span>
       </div>
     </Link>
   )
@@ -266,7 +243,7 @@ export default function ForumPage() {
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
-        <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
@@ -335,15 +312,20 @@ export default function ForumPage() {
             </p>
           )}
 
-          {/* Post grid */}
+          {/* Post list */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-col border-t border-[#e8e8e8] dark:border-[#2a2a2a]">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-[#1c1c1c] rounded-xl border border-[#e8e8e8] dark:border-[#2a2a2a] overflow-hidden animate-pulse">
-                  <div className="w-full aspect-[16/10] bg-[#f0f0f0] dark:bg-[#1a1a1a]" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-3/4" />
-                    <div className="h-3 bg-[#f0f0f0] dark:bg-[#252525] rounded w-1/2" />
+                <div key={i} className="bg-white dark:bg-[#1c1c1c] border-b border-[#e8e8e8] dark:border-[#2a2a2a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+                  <div className="space-y-3 flex-1">
+                    <div className="h-5 bg-[#f0f0f0] dark:bg-[#252525] rounded w-1/3" />
+                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-1/2" />
+                  </div>
+                  <div className="flex gap-4 md:min-w-[300px] md:justify-end">
+                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
+                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
+                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-12" />
+                    <div className="h-4 bg-[#f0f0f0] dark:bg-[#252525] rounded w-20" />
                   </div>
                 </div>
               ))}
@@ -360,7 +342,7 @@ export default function ForumPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="flex flex-col">
                 {posts.map(post => (
                   <ForumCard key={post.id} post={post} />
                 ))}
@@ -370,8 +352,6 @@ export default function ForumPage() {
           )}
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }

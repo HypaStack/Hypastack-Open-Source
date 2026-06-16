@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/fetch"
@@ -384,7 +383,7 @@ export default function ForumPostPage() {
       <main className="flex min-h-screen flex-col bg-[#fafafa] dark:bg-[#0f0f0f]">
         <Navbar />
         <section className="flex-1 pt-24 pb-20">
-          <div className="mx-auto max-w-[800px] px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-4">
               <div className="h-8 bg-[#f0f0f0] dark:bg-[#1a1a1a] rounded w-3/4" />
               <div className="h-4 bg-[#f0f0f0] dark:bg-[#1a1a1a] rounded w-1/2" />
@@ -416,7 +415,7 @@ export default function ForumPostPage() {
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
-        <div className="mx-auto max-w-[800px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           {/* Back link */}
           <Link
             href="/forum"
@@ -558,8 +557,6 @@ export default function ForumPostPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }

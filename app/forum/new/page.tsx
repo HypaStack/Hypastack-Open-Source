@@ -4,7 +4,6 @@ import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/fetch"
@@ -229,7 +228,7 @@ export default function ForumNewPage() {
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
-        <div className="mx-auto max-w-[640px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <Link
             href="/forum"
             className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#555] dark:hover:text-[#ccc] transition-colors mb-6"
@@ -411,8 +410,6 @@ export default function ForumNewPage() {
           </form>
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }
