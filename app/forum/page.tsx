@@ -57,16 +57,16 @@ function ForumCard({ post }: { post: ForumPost }) {
   return (
     <Link
       href={`/forum/${post.slug}`}
-      className="group block bg-white dark:bg-[#1c1c1c] border-b border-[#e8e8e8] dark:border-[#2a2a2a] hover:bg-[#f9f9f9] dark:hover:bg-[#222] transition-colors p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 first:border-t"
+      className="group block bg-white  border-b border-[#e8e8e8]  hover:bg-[#f9f9f9]  transition-colors p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 first:border-t"
     >
       {/* Left side: Content */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-[16px] font-semibold text-[#111] dark:text-[#f0f0f0] leading-snug truncate mb-1 group-hover:text-[#333] dark:group-hover:text-white transition-colors">
+        <h3 className="text-[16px] font-semibold text-[#111]  leading-snug truncate mb-1 group-hover:text-[#333]  transition-colors">
           {post.title}
         </h3>
 
         {post.description && (
-          <p className="text-[13px] text-[#888] dark:text-[#777] line-clamp-1 mb-2">
+          <p className="text-[13px] text-[#888]  line-clamp-1 mb-2">
             {post.description}
           </p>
         )}
@@ -77,7 +77,7 @@ function ForumCard({ post }: { post: ForumPost }) {
             {post.tags.slice(0, 6).map(tag => (
               <span
                 key={tag}
-                className="text-[11px] font-medium text-[#666] dark:text-[#999] bg-[#f0f0f0] dark:bg-[#252525] px-2 py-0.5 rounded-full"
+                className="text-[11px] font-medium text-[#666]  bg-[#f0f0f0]  px-2 py-0.5 rounded-full"
               >
                 {tag}
               </span>
@@ -90,7 +90,7 @@ function ForumCard({ post }: { post: ForumPost }) {
       </div>
 
       {/* Right side: Meta */}
-      <div className="flex items-center gap-4 text-[12px] text-[#999] dark:text-[#666] md:min-w-[300px] md:justify-end shrink-0">
+      <div className="flex items-center gap-4 text-[12px] text-[#999]  md:min-w-[300px] md:justify-end shrink-0">
         <span className="flex items-center gap-1 w-12 justify-end" title="Views">
           <MIcon name="visibility" size={14} />
           {post.views}
@@ -119,8 +119,8 @@ function TagPill({ tag, active, onClick }: { tag: string; active: boolean; onCli
       onClick={onClick}
       className={`text-[12px] font-medium px-3 py-1.5 rounded-full transition-all duration-150 ${
         active
-          ? "bg-[#111] dark:bg-[#f0f0f0] text-white dark:text-[#111]"
-          : "bg-[#f0f0f0] dark:bg-[#252525] text-[#555] dark:text-[#999] hover:bg-[#e5e5e5] dark:hover:bg-[#333]"
+          ? "bg-[#111]  text-white "
+          : "bg-[#f0f0f0]  text-[#555]  hover:bg-[#e5e5e5] "
       }`}
     >
       {tag}
@@ -145,7 +145,7 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#666] dark:text-[#999] hover:bg-[#f0f0f0] dark:hover:bg-[#252525] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#666]  hover:bg-[#f0f0f0]  disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <MIcon name="chevron_left" size={16} />
       </button>
@@ -158,8 +158,8 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
             onClick={() => onPageChange(p)}
             className={`w-8 h-8 rounded-lg text-[13px] font-medium transition-all duration-150 ${
               p === page
-                ? "bg-[#111] dark:bg-[#f0f0f0] text-white dark:text-[#111]"
-                : "text-[#555] dark:text-[#999] hover:bg-[#f0f0f0] dark:hover:bg-[#252525]"
+                ? "bg-[#111]  text-white "
+                : "text-[#555]  hover:bg-[#f0f0f0] "
             }`}
           >
             {p}
@@ -169,7 +169,7 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#666] dark:text-[#999] hover:bg-[#f0f0f0] dark:hover:bg-[#252525] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#666]  hover:bg-[#f0f0f0]  disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <MIcon name="chevron_right" size={16} />
       </button>
@@ -239,7 +239,7 @@ export default function ForumPage() {
   const allTags = [...new Set(posts.flatMap(p => p.tags))].slice(0, 12)
 
   return (
-    <main className="flex min-h-screen flex-col bg-[#fafafa] dark:bg-[#0f0f0f]">
+    <main className="flex min-h-screen flex-col bg-white ">
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
@@ -247,16 +247,16 @@ export default function ForumPage() {
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
-              <h1 className="text-[28px] font-bold text-[#111] dark:text-[#f0f0f0] tracking-tight">
+              <h1 className="text-[28px] font-bold text-[#111]  tracking-tight">
                 Forum
               </h1>
-              <p className="text-[14px] text-[#888] dark:text-[#777] mt-1">
+              <p className="text-[14px] text-[#888]  mt-1">
                 Browse and download publicly shared files
               </p>
             </div>
             <Link
               href={isAuthenticated ? "/forum/new" : "/signin?redirect=/forum/new"}
-              className="inline-flex items-center gap-2 px-4 h-9 rounded-full bg-[#111] dark:bg-[#f0f0f0] text-white dark:text-[#111] text-[13px] font-semibold hover:bg-[#222] dark:hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75"
+              className="inline-flex items-center gap-2 px-4 h-9 rounded-full bg-[#111]  text-white  text-[13px] font-semibold hover:bg-[#222]  active:scale-[0.97] transition-all duration-75"
             >
               <MIcon name="add" size={15} />
               New post
@@ -269,14 +269,14 @@ export default function ForumPage() {
               <MIcon
                 name="search"
                 size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#bbb] dark:text-[#555] pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#bbb]  pointer-events-none"
               />
               <input
                 type="text"
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
                 placeholder="Search posts..."
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-white dark:bg-[#1c1c1c] border border-[#e8e8e8] dark:border-[#2a2a2a] text-[13px] text-[#111] dark:text-[#f0f0f0] placeholder:text-[#bbb] dark:placeholder:text-[#555] focus:outline-none focus:border-[#ccc] dark:focus:border-[#444] transition-colors"
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-white  border border-[#e8e8e8]  text-[13px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none focus:border-[#ccc]  transition-colors"
               />
             </div>
           </form>
@@ -305,7 +305,7 @@ export default function ForumPage() {
 
           {/* Results info */}
           {!loading && (
-            <p className="text-[12px] text-[#999] dark:text-[#666] mb-4">
+            <p className="text-[12px] text-[#999]  mb-4">
               {total} post{total !== 1 ? "s" : ""}
               {search ? ` matching "${search}"` : ""}
               {activeTag ? ` tagged #${activeTag}` : ""}
@@ -314,16 +314,19 @@ export default function ForumPage() {
 
           {/* Post list */}
           {loading ? (
-            <div className="flex justify-center items-center py-20 border-t border-[#e8e8e8] dark:border-[#2a2a2a]">
-              <MIcon name="refresh" size={24} className="text-[#666] dark:text-[#888] animate-spin" />
+            <div className="flex justify-center items-center py-20 border-t border-[#e8e8e8] ">
+              <svg className="animate-spin h-8 w-8 text-[#ccc]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
             </div>
           ) : posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <MIcon name="forum" size={48} className="text-[#ddd] dark:text-[#333] mb-4" />
-              <h3 className="text-[16px] font-semibold text-[#555] dark:text-[#888] mb-1">
+              <MIcon name="forum" size={48} className="text-[#ddd]  mb-4" />
+              <h3 className="text-[16px] font-semibold text-[#555]  mb-1">
                 {search || activeTag ? "No posts found" : "No posts yet"}
               </h3>
-              <p className="text-[13px] text-[#999] dark:text-[#666]">
+              <p className="text-[13px] text-[#999] ">
                 {search || activeTag ? "Try a different search or tag" : "Be the first to share something!"}
               </p>
             </div>
