@@ -87,6 +87,15 @@ const nextConfig = {
         ],
       },
       {
+        source: "/manage/:path*",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
+          },
+        ],
+      },
+      {
         // Dynamic pages should not be indexed
         source: "/d/:path*",
         headers: [
