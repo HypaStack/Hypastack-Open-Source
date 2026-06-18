@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { withRouteCache } from "@/lib/route-cache"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById } from "@/lib/user-model"
 import { getFilesByUserId } from "@/lib/file-model"
@@ -10,7 +11,7 @@ import { normalizeTier, isPaidTier, getTierLimits } from "@/constants/tier-limit
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 
-export async function GET(request: NextRequest) {
+export const GET = withRouteCache(async (request: NextRequest) => {
   try {
     const currentUser = await getCurrentUser(request)
 
@@ -127,4 +128,4 @@ export async function GET(request: NextRequest) {
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to get user"}`);
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
-}
+}, { ttl: 60, baseKey: 'auth:me' })
