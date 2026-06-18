@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { withRouteCache } from "@/lib/route-cache"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
 import { createForumPost, getForumPosts, normalizeTags } from "@/lib/forum-model"
@@ -7,7 +8,7 @@ import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 
 // GET /api/v2/forum — public listing/search
-export async function GET(request: NextRequest) {
+export const GET = withRouteCache(async (request: NextRequest) => {
   try {
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get("page") ?? "1", 10)
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     console.error("[Forum] GET error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
-}
+}, { ttl: 30, baseKey: 'forum:listing', requireAuth: false })
 
 // POST /api/v2/forum — create a new post (auth required)
 export async function POST(request: NextRequest) {
