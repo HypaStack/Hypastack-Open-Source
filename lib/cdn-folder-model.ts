@@ -2,6 +2,7 @@ import { getPool, ensureDatabase } from './db'
 import { randomUUID } from 'node:crypto'
 import { deleteObjectsBatch } from './r2'
 import { deleteCdnAssetsByIds } from './cdn-model'
+import { cached, bustCache } from './cache'
 
 export interface CdnFolder {
   id: string
@@ -20,20 +21,22 @@ export interface CdnFolderResponse {
 }
 
 export async function getCdnFoldersByUserId(userId: string): Promise<CdnFolderResponse[]> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:cdn-folders`, 300, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT * FROM cdn_folders WHERE user_id = $1 ORDER BY created_at ASC`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT * FROM cdn_folders WHERE user_id = $1 ORDER BY created_at ASC`,
+      [userId]
+    )
 
-  return result.rows.map(row => ({
-    id: row.id,
-    name: row.name,
-    parentId: row.parent_id,
-    createdAt: row.created_at,
-  }))
+    return result.rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      parentId: row.parent_id,
+      createdAt: row.created_at,
+    }))
+  })
 }
 
 export async function createCdnFolder(userId: string, name: string, parentId: string | null): Promise<CdnFolderResponse> {
@@ -47,6 +50,8 @@ export async function createCdnFolder(userId: string, name: string, parentId: st
      VALUES ($1, $2, $3, $4)`,
     [id, userId, name, parentId]
   )
+
+  await bustCache(`user:${userId}:cdn-folders`)
 
   return {
     id,
@@ -121,6 +126,8 @@ export async function deleteCdnFolderRecursively(
       [...folderIds, userId]
     )
   }
+
+  await bustCache(`user:${userId}:cdn-folders`, `user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
 
   const deletedAssets = assets.filter(a => !failedR2Keys.has(a.r2_key))
   return { deletedAssets, folderIds }

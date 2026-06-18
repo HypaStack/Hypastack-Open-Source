@@ -1,4 +1,5 @@
 import { getPool, ensureDatabase, getClient } from './db'
+import { cached, bustCache } from './cache'
 import { randomUUID, webcrypto } from 'node:crypto'
 
 export interface FileRecord {
@@ -135,6 +136,8 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
     )
 
     await client.query('COMMIT')
+    const uid = staging.user_id
+    if (uid) await bustCache(`user:${uid}:files`, `user:${uid}:file-stats`, `user:${uid}:storage`)
     return true
 
   } catch (error) {
@@ -197,6 +200,7 @@ export async function createFileRecord(input: CreateFileInput): Promise<void> {
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE, $9, $10, $11, $12, $13)`,
     [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read ? 1 : 0, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_iv || null, input.encryption_auth_tag || null]
   )
+  if (input.user_id) await bustCache(`user:${input.user_id}:files`, `user:${input.user_id}:file-stats`, `user:${input.user_id}:storage`)
 }
 
 export async function getFileById(id: string, retries = 2): Promise<FileRecord | null> {
@@ -380,35 +384,37 @@ export async function getFileHash(fileId: string): Promise<string | null> {
 }
 
 export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:files`, 120, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
-            pin, burn_on_read, upload_completed, upload_started_at,
-            custom_filename, note, starred, folder_id
-     FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
+              pin, burn_on_read, upload_completed, upload_started_at,
+              custom_filename, note, starred, folder_id
+       FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
+      [userId]
+    )
 
-  return result.rows.map(row => ({
-    id: row.id,
-    r2_key: '',
-    original_name: row.original_name,
-    file_size: Number(row.file_size),
-    content_type: row.content_type,
-    upload_date: row.upload_date,
-    expires_at: row.expires_at,
-    pin: row.pin,
-    burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
-    upload_completed: row.upload_completed,
-    upload_started_at: row.upload_started_at,
-    file_hash: null,
-    custom_filename: row.custom_filename,
-    note: row.note,
-    starred: row.starred,
-    folder_id: row.folder_id,
-  }))
+    return result.rows.map(row => ({
+      id: row.id,
+      r2_key: '',
+      original_name: row.original_name,
+      file_size: Number(row.file_size),
+      content_type: row.content_type,
+      upload_date: row.upload_date,
+      expires_at: row.expires_at,
+      pin: row.pin,
+      burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
+      upload_completed: row.upload_completed,
+      upload_started_at: row.upload_started_at,
+      file_hash: null,
+      custom_filename: row.custom_filename,
+      note: row.note,
+      starred: row.starred,
+      folder_id: row.folder_id,
+    }))
+  })
 }
 
 export async function toggleFileStarred(fileId: string, userId: string, starred: boolean): Promise<boolean> {
@@ -420,6 +426,7 @@ export async function toggleFileStarred(fileId: string, userId: string, starred:
     [starred, fileId, userId]
   )
 
+  await bustCache(`user:${userId}:files`)
   return (result.rowCount ?? 0) > 0
 }
 
@@ -429,25 +436,27 @@ export async function getUserFileStats(userId: string): Promise<{
   totalDownloads: number
   storageUsed: number
 }> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:file-stats`, 120, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT
-      COUNT(*) as total_uploads,
-      COUNT(*) FILTER (WHERE expires_at > NOW()) as active_files,
-      COALESCE(SUM(file_size), 0) as storage_used
-     FROM basedrop_files WHERE user_id = $1`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT
+        COUNT(*) as total_uploads,
+        COUNT(*) FILTER (WHERE expires_at > NOW()) as active_files,
+        COALESCE(SUM(file_size), 0) as storage_used
+       FROM basedrop_files WHERE user_id = $1`,
+      [userId]
+    )
 
-  const row = result.rows[0]
-  return {
-    totalUploads: Number(row.total_uploads),
-    activeFiles: Number(row.active_files),
-    totalDownloads: 0,
-    storageUsed: Number(row.storage_used),
-  }
+    const row = result.rows[0]
+    return {
+      totalUploads: Number(row.total_uploads),
+      activeFiles: Number(row.active_files),
+      totalDownloads: 0,
+      storageUsed: Number(row.storage_used),
+    }
+  })
 }
 
 export async function deleteFileById(fileId: string, userId: string): Promise<boolean> {
@@ -459,6 +468,7 @@ export async function deleteFileById(fileId: string, userId: string): Promise<bo
     [fileId, userId]
   )
 
+  await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
   return (result.rowCount ?? 0) > 0
 }
 
@@ -507,6 +517,7 @@ export async function deleteFilesByIds(ids: string[], userId: string): Promise<n
     [ids, userId]
   )
 
+  await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
   return result.rowCount ?? 0
 }
 

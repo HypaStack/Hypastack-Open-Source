@@ -1,4 +1,5 @@
 import { getPool, ensureDatabase } from './db'
+import { cached, bustCache, bustCachePattern } from './cache'
 import crypto from 'crypto'
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -117,7 +118,7 @@ export async function createForumPost(input: {
      RETURNING *`,
     [id, input.userId, slug, input.title.slice(0, 200), input.description ?? null, JSON.stringify(tags)]
   )
-
+  await bustCachePattern('forum:listing:*')
   return mapPostRow(result.rows[0])
 }
 
@@ -127,118 +128,126 @@ export async function getForumPosts(opts: {
   tag?: string
   q?: string
 }): Promise<{ posts: ForumPostWithFiles[]; total: number; page: number; totalPages: number }> {
-  await ensureDatabase()
-  const pool = getPool()
-
   const page = Math.max(1, opts.page ?? 1)
   const limit = Math.min(100, Math.max(1, opts.limit ?? 30))
-  const offset = (page - 1) * limit
+  const tag = opts.tag?.toLowerCase() || ''
+  const q = opts.q?.trim() || ''
+  const cacheKey = `forum:listing:p${page}:l${limit}:t${tag}:q${q}`
 
-  const conditions: string[] = []
-  const params: unknown[] = []
-  let paramIdx = 1
+  return cached(cacheKey, 30, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  if (opts.tag) {
-    conditions.push(`fp.tags @> $${paramIdx}::jsonb`)
-    params.push(JSON.stringify([opts.tag.toLowerCase()]))
-    paramIdx++
-  }
+    const offset = (page - 1) * limit
 
-  if (opts.q && opts.q.trim()) {
-    conditions.push(`to_tsvector('english', coalesce(fp.title,'') || ' ' || coalesce(fp.description,'')) @@ plainto_tsquery('english', $${paramIdx})`)
-    params.push(opts.q.trim())
-    paramIdx++
-  }
+    const conditions: string[] = []
+    const params: unknown[] = []
+    let paramIdx = 1
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-
-  // Count
-  const countResult = await pool.query(
-    `SELECT COUNT(*) as total FROM forum_posts fp ${where}`,
-    params
-  )
-  const total = Number(countResult.rows[0].total)
-  const totalPages = Math.ceil(total / limit)
-
-  // Fetch posts with author info
-  const postsResult = await pool.query(
-    `SELECT fp.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
-     FROM forum_posts fp
-     LEFT JOIN users u ON u.id = fp.user_id
-     ${where}
-     ORDER BY fp.created_at DESC
-     LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
-    [...params, limit, offset]
-  )
-
-  // Fetch files and comment counts for these posts in batch
-  const postIds = postsResult.rows.map((r: any) => r.id)
-
-  let filesMap: Record<string, ForumFile[]> = {}
-  let commentCountMap: Record<string, number> = {}
-
-  if (postIds.length > 0) {
-    const filesResult = await pool.query(
-      `SELECT * FROM forum_files WHERE post_id = ANY($1) ORDER BY created_at ASC`,
-      [postIds]
-    )
-    for (const row of filesResult.rows) {
-      const f = mapFileRow(row)
-      if (!filesMap[f.post_id]) filesMap[f.post_id] = []
-      filesMap[f.post_id].push(f)
+    if (tag) {
+      conditions.push(`fp.tags @> $${paramIdx}::jsonb`)
+      params.push(JSON.stringify([tag]))
+      paramIdx++
     }
 
-    const commentsResult = await pool.query(
-      `SELECT post_id, COUNT(*) as cnt FROM forum_comments WHERE post_id = ANY($1) AND deleted = FALSE GROUP BY post_id`,
-      [postIds]
-    )
-    for (const row of commentsResult.rows) {
-      commentCountMap[row.post_id] = Number(row.cnt)
+    if (q) {
+      conditions.push(`to_tsvector('english', coalesce(fp.title,'') || ' ' || coalesce(fp.description,'')) @@ plainto_tsquery('english', $${paramIdx})`)
+      params.push(q)
+      paramIdx++
     }
-  }
 
-  const posts: ForumPostWithFiles[] = postsResult.rows.map((row: any) => ({
-    ...mapPostRow(row),
-    files: filesMap[row.id] ?? [],
-    comment_count: commentCountMap[row.id] ?? 0,
-    author_nickname_encrypted: row.author_nickname_encrypted,
-    author_avatar_url: row.author_avatar_url,
-  }))
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
-  return { posts, total, page, totalPages }
+    // Count
+    const countResult = await pool.query(
+      `SELECT COUNT(*) as total FROM forum_posts fp ${where}`,
+      params
+    )
+    const total = Number(countResult.rows[0].total)
+    const totalPages = Math.ceil(total / limit)
+
+    // Fetch posts with author info
+    const postsResult = await pool.query(
+      `SELECT fp.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
+       FROM forum_posts fp
+       LEFT JOIN users u ON u.id = fp.user_id
+       ${where}
+       ORDER BY fp.created_at DESC
+       LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
+      [...params, limit, offset]
+    )
+
+    // Fetch files and comment counts for these posts in batch
+    const postIds = postsResult.rows.map((r: any) => r.id)
+
+    let filesMap: Record<string, ForumFile[]> = {}
+    let commentCountMap: Record<string, number> = {}
+
+    if (postIds.length > 0) {
+      const filesResult = await pool.query(
+        `SELECT * FROM forum_files WHERE post_id = ANY($1) ORDER BY created_at ASC`,
+        [postIds]
+      )
+      for (const row of filesResult.rows) {
+        const f = mapFileRow(row)
+        if (!filesMap[f.post_id]) filesMap[f.post_id] = []
+        filesMap[f.post_id].push(f)
+      }
+
+      const commentsResult = await pool.query(
+        `SELECT post_id, COUNT(*) as cnt FROM forum_comments WHERE post_id = ANY($1) AND deleted = FALSE GROUP BY post_id`,
+        [postIds]
+      )
+      for (const row of commentsResult.rows) {
+        commentCountMap[row.post_id] = Number(row.cnt)
+      }
+    }
+
+    const posts: ForumPostWithFiles[] = postsResult.rows.map((row: any) => ({
+      ...mapPostRow(row),
+      files: filesMap[row.id] ?? [],
+      comment_count: commentCountMap[row.id] ?? 0,
+      author_nickname_encrypted: row.author_nickname_encrypted,
+      author_avatar_url: row.author_avatar_url,
+    }))
+
+    return { posts, total, page, totalPages }
+  })
 }
 
 export async function getForumPostBySlug(slug: string): Promise<ForumPostWithFiles | null> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`forum:post:${slug}`, 60, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT fp.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
-     FROM forum_posts fp
-     LEFT JOIN users u ON u.id = fp.user_id
-     WHERE fp.slug = $1`,
-    [slug]
-  )
+    const result = await pool.query(
+      `SELECT fp.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
+       FROM forum_posts fp
+       LEFT JOIN users u ON u.id = fp.user_id
+       WHERE fp.slug = $1`,
+      [slug]
+    )
 
-  if (result.rows.length === 0) return null
+    if (result.rows.length === 0) return null
 
-  const row = result.rows[0]
-  const filesResult = await pool.query(
-    `SELECT * FROM forum_files WHERE post_id = $1 ORDER BY created_at ASC`,
-    [row.id]
-  )
-  const commentCountResult = await pool.query(
-    `SELECT COUNT(*) as cnt FROM forum_comments WHERE post_id = $1 AND deleted = FALSE`,
-    [row.id]
-  )
+    const row = result.rows[0]
+    const filesResult = await pool.query(
+      `SELECT * FROM forum_files WHERE post_id = $1 ORDER BY created_at ASC`,
+      [row.id]
+    )
+    const commentCountResult = await pool.query(
+      `SELECT COUNT(*) as cnt FROM forum_comments WHERE post_id = $1 AND deleted = FALSE`,
+      [row.id]
+    )
 
-  return {
-    ...mapPostRow(row),
-    files: filesResult.rows.map(mapFileRow),
-    comment_count: Number(commentCountResult.rows[0].cnt),
-    author_nickname_encrypted: row.author_nickname_encrypted,
-    author_avatar_url: row.author_avatar_url,
-  }
+    return {
+      ...mapPostRow(row),
+      files: filesResult.rows.map(mapFileRow),
+      comment_count: Number(commentCountResult.rows[0].cnt),
+      author_nickname_encrypted: row.author_nickname_encrypted,
+      author_avatar_url: row.author_avatar_url,
+    }
+  })
 }
 
 export async function getForumPostById(id: string): Promise<ForumPost | null> {
@@ -268,6 +277,9 @@ export async function deleteForumPost(id: string, userId: string): Promise<boole
   await pool.query('DELETE FROM forum_files WHERE post_id = $1', [id])
   await pool.query('DELETE FROM forum_comments WHERE post_id = $1', [id])
   await pool.query('DELETE FROM forum_reports WHERE post_id = $1', [id])
+  await bustCachePattern('forum:listing:*')
+  await bustCachePattern(`forum:post:*`)
+  await bustCache(`forum:comments:${id}`)
 
   return true
 }
@@ -294,6 +306,9 @@ export async function addForumFile(input: {
     [input.id, input.postId, input.userId, input.r2Key, input.originalName, input.fileSize, input.contentType, input.publicUrl]
   )
 
+  await bustCachePattern(`forum:post:*`)
+  await bustCachePattern('forum:listing:*')
+  await bustCache(`user:${input.userId}:storage`)
   return mapFileRow(result.rows[0])
 }
 
@@ -380,37 +395,41 @@ export async function addComment(input: {
     [input.postId, input.userId, input.parentId ?? null, input.body.slice(0, 2000)]
   )
 
+  await bustCache(`forum:comments:${input.postId}`)
+  await bustCachePattern('forum:post:*')
   return mapCommentRow(result.rows[0])
 }
 
 export async function getCommentsByPostId(postId: string): Promise<ForumComment[]> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`forum:comments:${postId}`, 30, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT fc.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
-     FROM forum_comments fc
-     LEFT JOIN users u ON u.id = fc.user_id
-     WHERE fc.post_id = $1
-     ORDER BY fc.created_at ASC`,
-    [postId]
-  )
+    const result = await pool.query(
+      `SELECT fc.*, u.nickname_encrypted as author_nickname_encrypted, u.avatar_url as author_avatar_url
+       FROM forum_comments fc
+       LEFT JOIN users u ON u.id = fc.user_id
+       WHERE fc.post_id = $1
+       ORDER BY fc.created_at ASC`,
+      [postId]
+    )
 
-  const all = result.rows.map((row: any) => ({
-    ...mapCommentRow(row),
-    author_nickname_encrypted: row.author_nickname_encrypted,
-    author_avatar_url: row.author_avatar_url,
-  }))
+    const all = result.rows.map((row: any) => ({
+      ...mapCommentRow(row),
+      author_nickname_encrypted: row.author_nickname_encrypted,
+      author_avatar_url: row.author_avatar_url,
+    }))
 
-  // Build threaded structure (1 level deep)
-  const topLevel = all.filter(c => !c.parent_id)
-  const replies = all.filter(c => c.parent_id)
+    // Build threaded structure (1 level deep)
+    const topLevel = all.filter(c => !c.parent_id)
+    const replies = all.filter(c => c.parent_id)
 
-  for (const parent of topLevel) {
-    parent.replies = replies.filter(r => r.parent_id === parent.id)
-  }
+    for (const parent of topLevel) {
+      parent.replies = replies.filter(r => r.parent_id === parent.id)
+    }
 
-  return topLevel
+    return topLevel
+  })
 }
 
 export async function deleteComment(id: number, userId: string): Promise<boolean> {
@@ -420,6 +439,7 @@ export async function deleteComment(id: number, userId: string): Promise<boolean
     'UPDATE forum_comments SET deleted = TRUE, body = \'[deleted]\', updated_at = NOW() WHERE id = $1 AND user_id = $2 AND deleted = FALSE',
     [id, userId]
   )
+  await bustCachePattern('forum:post:*')
   return (result.rowCount ?? 0) > 0
 }
 

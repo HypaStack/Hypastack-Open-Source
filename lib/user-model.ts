@@ -1,6 +1,7 @@
 import { getPool, ensureDatabase } from './db'
 import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { cached, bustCache } from './cache'
 
 
 export interface User {
@@ -41,6 +42,7 @@ export async function acknowledgeUserTier(userId: string): Promise<void> {
     `UPDATE users SET last_acknowledged_tier = tier, updated_at = NOW() WHERE id = $1`,
     [userId]
   )
+  await bustCache(`user:${userId}:profile`)
 }
 
 
@@ -66,32 +68,34 @@ export async function nicknameExists(nickname: string): Promise<boolean> {
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${id}:profile`, 300, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT * FROM users WHERE id = $1`,
-    [id]
-  )
+    const result = await pool.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [id]
+    )
 
-  if (result.rows.length === 0) return null
-  const row = result.rows[0]
+    if (result.rows.length === 0) return null
+    const row = result.rows[0]
 
-  return {
-    id: row.id,
-    nickname_encrypted: row.nickname_encrypted,
-    password_hash: row.password_hash,
-    avatar_url: row.avatar_url,
-    premium: isPaidTier(normalizeTier(row.tier)),
-    tier: normalizeTier(row.tier),
-    last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
-    inactivity_purge_days: row.inactivity_purge_days ?? 7,
-    is_insider: row.is_insider ?? 0,
+    return {
+      id: row.id,
+      nickname_encrypted: row.nickname_encrypted,
+      password_hash: row.password_hash,
+      avatar_url: row.avatar_url,
+      premium: isPaidTier(normalizeTier(row.tier)),
+      tier: normalizeTier(row.tier),
+      last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
+      inactivity_purge_days: row.inactivity_purge_days ?? 7,
+      is_insider: row.is_insider ?? 0,
 
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    last_login: row.last_login,
-  }
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      last_login: row.last_login,
+    }
+  })
 }
 
 
@@ -127,6 +131,7 @@ export async function updateNickname(userId: string, nickname_encrypted: string)
     `UPDATE users SET nickname_encrypted = $1, updated_at = NOW() WHERE id = $2`,
     [nickname_encrypted, userId]
   )
+  await bustCache(`user:${userId}:profile`)
 }
 
 export async function updateAvatarUrl(userId: string, avatarUrl: string | null): Promise<void> {
@@ -137,6 +142,7 @@ export async function updateAvatarUrl(userId: string, avatarUrl: string | null):
     `UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2`,
     [avatarUrl, userId]
   )
+  await bustCache(`user:${userId}:profile`)
 }
 
 

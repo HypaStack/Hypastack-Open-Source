@@ -5,6 +5,7 @@ import { getFilesByUserId, deleteFileRecord } from './file-model'
 import { deleteFileFromR2 } from './r2'
 import { getUserTier } from './user-model'
 import { getTierDelayMs } from '@/constants/tier-limits'
+import { cached, bustCache } from './cache'
 
 export interface FolderRecord {
   id: string
@@ -23,20 +24,22 @@ export interface DecryptedFolder {
 }
 
 export async function getFoldersByUserId(userId: string): Promise<DecryptedFolder[]> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:folders`, 300, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT * FROM basedrop_folders WHERE user_id = $1 ORDER BY created_at ASC`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT * FROM basedrop_folders WHERE user_id = $1 ORDER BY created_at ASC`,
+      [userId]
+    )
 
-  return result.rows.map(row => ({
-    id: row.id,
-    name: decryptFilename(row.name_encrypted),
-    parentId: row.parent_id,
-    createdAt: row.created_at,
-  }))
+    return result.rows.map(row => ({
+      id: row.id,
+      name: decryptFilename(row.name_encrypted),
+      parentId: row.parent_id,
+      createdAt: row.created_at,
+    }))
+  })
 }
 
 export async function createFolder(userId: string, plaintextName: string, parentId: string | null): Promise<DecryptedFolder> {
@@ -51,6 +54,8 @@ export async function createFolder(userId: string, plaintextName: string, parent
      VALUES ($1, $2, $3, $4)`,
     [id, userId, nameEncrypted, parentId]
   )
+
+  await bustCache(`user:${userId}:folders`)
 
   return {
     id,
@@ -132,4 +137,6 @@ export async function deleteFolderRecursively(userId: string, folderId: string):
       [...ids, userId]
     )
   }
+
+  await bustCache(`user:${userId}:folders`, `user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
 }

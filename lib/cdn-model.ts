@@ -1,4 +1,5 @@
 import { getPool, ensureDatabase } from './db'
+import { cached, bustCache } from './cache'
 import crypto from 'crypto'
 
 export interface CdnAsset {
@@ -41,6 +42,7 @@ export async function createCdnAsset(input: CreateCdnAssetInput): Promise<void> 
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [input.id, input.user_id, input.r2_key, input.original_name, input.file_size, input.content_type, input.cdn_url, input.folder_id || null]
   )
+  await bustCache(`user:${input.user_id}:cdn-assets`, `user:${input.user_id}:cdn-stats`, `user:${input.user_id}:storage`)
 }
 
 export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promise<void> {
@@ -71,28 +73,32 @@ export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promi
      VALUES ${placeholders}`,
     values
   )
+  const userId = inputs[0].user_id
+  await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
 }
 
 export async function getCdnAssetsByUserId(userId: string): Promise<CdnAsset[]> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:cdn-assets`, 120, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT * FROM cdn_assets WHERE user_id = $1 ORDER BY created_at DESC`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT * FROM cdn_assets WHERE user_id = $1 ORDER BY created_at DESC`,
+      [userId]
+    )
 
-  return result.rows.map(row => ({
-    id: row.id,
-    user_id: row.user_id,
-    r2_key: row.r2_key,
-    original_name: row.original_name,
-    file_size: Number(row.file_size),
-    content_type: row.content_type,
-    cdn_url: row.cdn_url,
-    folder_id: row.folder_id || null,
-    created_at: row.created_at,
-  }))
+    return result.rows.map(row => ({
+      id: row.id,
+      user_id: row.user_id,
+      r2_key: row.r2_key,
+      original_name: row.original_name,
+      file_size: Number(row.file_size),
+      content_type: row.content_type,
+      cdn_url: row.cdn_url,
+      folder_id: row.folder_id || null,
+      created_at: row.created_at,
+    }))
+  })
 }
 
 export async function getCdnAssetById(id: string): Promise<CdnAsset | null> {
@@ -165,6 +171,8 @@ export async function deleteCdnAssetsByIds(ids: string[], userId: string): Promi
     [ids, userId]
   )
 
+  await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
+
   return result.rowCount ?? 0
 }
 
@@ -172,35 +180,39 @@ export async function getUserCdnStats(userId: string): Promise<{
   totalAssets: number
   totalSize: number
 }> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:cdn-stats`, 120, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT COUNT(*) as total_assets, COALESCE(SUM(file_size), 0) as total_size
-     FROM cdn_assets WHERE user_id = $1`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT COUNT(*) as total_assets, COALESCE(SUM(file_size), 0) as total_size
+       FROM cdn_assets WHERE user_id = $1`,
+      [userId]
+    )
 
-  const row = result.rows[0]
-  return {
-    totalAssets: Number(row.total_assets),
-    totalSize: Number(row.total_size),
-  }
+    const row = result.rows[0]
+    return {
+      totalAssets: Number(row.total_assets),
+      totalSize: Number(row.total_size),
+    }
+  })
 }
 
 export async function getTotalStorageUsed(userId: string): Promise<number> {
-  await ensureDatabase()
-  const pool = getPool()
+  return cached(`user:${userId}:storage`, 60, async () => {
+    await ensureDatabase()
+    const pool = getPool()
 
-  const result = await pool.query(
-    `SELECT
-      COALESCE((SELECT SUM(file_size) FROM basedrop_files WHERE user_id = $1), 0) +
-      COALESCE((SELECT SUM(file_size) FROM cdn_assets WHERE user_id = $1), 0) +
-      COALESCE((SELECT SUM(file_size) FROM forum_files WHERE user_id = $1), 0) as total_storage`,
-    [userId]
-  )
+    const result = await pool.query(
+      `SELECT
+        COALESCE((SELECT SUM(file_size) FROM basedrop_files WHERE user_id = $1), 0) +
+        COALESCE((SELECT SUM(file_size) FROM cdn_assets WHERE user_id = $1), 0) +
+        COALESCE((SELECT SUM(file_size) FROM forum_files WHERE user_id = $1), 0) as total_storage`,
+      [userId]
+    )
 
-  return Number(result.rows[0]?.total_storage || 0)
+    return Number(result.rows[0]?.total_storage || 0)
+  })
 }
 
 export async function updateCdnAssetAfterSwap(
@@ -215,6 +227,8 @@ export async function updateCdnAssetAfterSwap(
     `UPDATE cdn_assets SET file_size = $1, content_type = $2 WHERE id = $3 AND user_id = $4`,
     [updates.file_size, updates.content_type, id, userId]
   )
+
+  await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
 
   return (result.rowCount ?? 0) > 0
 }

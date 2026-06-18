@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "dompurify": "^3.3.3",
     "file-type": "^22.0.1",
+    "ioredis": "^5.11.1",
     "jsdom": "^29.0.1",
     "jszip": "^3.10.1",
     "material-symbols": "^0.45.1",
