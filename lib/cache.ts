@@ -11,8 +11,11 @@ function prefixed(key: string): string {
   return `${PREFIX}${key}`
 }
 
+const inflight = new Map<string, Promise<any>>()
+
 /**
  * Cache-aside: check Redis first, fall through to fetcher on miss/error.
+ * Uses Promise deduplication to prevent Cache Stampedes.
  * 
  * @param key   - Cache key (will be auto-prefixed with `hs:`)
  * @param ttl   - Time-to-live in seconds
@@ -23,33 +26,48 @@ export async function cached<T>(
   ttl: number,
   fetcher: () => Promise<T>,
 ): Promise<T> {
-  const redis = getRedis()
+  const prefixedKey = prefixed(key)
 
-  // 1. Try cache hit
-  if (redis) {
-    try {
-      const raw = await redis.get(prefixed(key))
-      if (raw !== null) {
-        return JSON.parse(raw) as T
+  if (inflight.has(prefixedKey)) {
+    return inflight.get(prefixedKey)
+  }
+
+  const promise = (async () => {
+    const redis = getRedis()
+
+    // 1. Try cache hit
+    if (redis) {
+      try {
+        const raw = await redis.get(prefixedKey)
+        if (raw !== null) {
+          return JSON.parse(raw) as T
+        }
+      } catch (err) {
+        console.warn(`[Cache] GET failed for "${key}":`, (err as Error).message)
       }
-    } catch (err) {
-      console.warn(`[Cache] GET failed for "${key}":`, (err as Error).message)
     }
-  }
 
-  // 2. Cache miss (or Redis unavailable) → query Postgres
-  const data = await fetcher()
+    // 2. Cache miss (or Redis unavailable) → query Postgres
+    const data = await fetcher()
 
-  // 3. Populate cache (fire-and-forget, never block the response)
-  if (redis) {
-    try {
-      await redis.set(prefixed(key), JSON.stringify(data), 'EX', ttl)
-    } catch (err) {
-      console.warn(`[Cache] SET failed for "${key}":`, (err as Error).message)
+    // 3. Populate cache (fire-and-forget, never block the response)
+    if (redis) {
+      try {
+        await redis.set(prefixedKey, JSON.stringify(data), 'EX', ttl)
+      } catch (err) {
+        console.warn(`[Cache] SET failed for "${key}":`, (err as Error).message)
+      }
     }
-  }
 
-  return data
+    return data
+  })()
+
+  inflight.set(prefixedKey, promise)
+  try {
+    return await promise
+  } finally {
+    inflight.delete(prefixedKey)
+  }
 }
 
 /**
