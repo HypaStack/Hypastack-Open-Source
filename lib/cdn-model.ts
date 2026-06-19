@@ -76,6 +76,7 @@ export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promi
   )
   const userId = inputs[0].user_id
   await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
+  await bustRouteCache(userId, 'cdn:assets')
 }
 
 export async function getCdnAssetsByUserId(userId: string): Promise<CdnAsset[]> {

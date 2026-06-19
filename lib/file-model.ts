@@ -172,7 +172,10 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
 
     await client.query('COMMIT')
     const uid = staging.user_id
-    if (uid) await bustCache(`user:${uid}:files`, `user:${uid}:file-stats`, `user:${uid}:storage`)
+    if (uid) {
+      await bustCache(`user:${uid}:files`, `user:${uid}:file-stats`, `user:${uid}:storage`)
+      await bustRouteCache(uid, 'files:list')
+    }
     return true
 
   } catch (error) {
