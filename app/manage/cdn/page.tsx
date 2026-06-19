@@ -559,11 +559,17 @@ export default function CdnPage() {
   }
 
   const handleSelectAll = () => {
-    if (allInFolderSelected) {
-      setSelectedAssets(new Set())
-    } else {
-      setSelectedAssets(new Set(filteredAssets.map(a => a.id)))
-    }
+    if (filteredAssets.length === 0) return
+    
+    setSelectedAssets((prev) => {
+      const next = new Set(prev)
+      if (allInFolderSelected) {
+        filteredAssets.forEach((a) => next.delete(a.id))
+      } else {
+        filteredAssets.forEach((a) => next.add(a.id))
+      }
+      return next
+    })
   }
 
   const ITEMS_PER_PAGE = 16
