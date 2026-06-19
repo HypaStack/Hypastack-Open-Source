@@ -1,5 +1,6 @@
 import { getPool, ensureDatabase, getClient } from './db'
 import { cached, bustCache } from './cache'
+import { bustRouteCache } from './route-cache'
 import { randomUUID, webcrypto } from 'node:crypto'
 
 export interface FileRecord {
@@ -499,6 +500,7 @@ export async function deleteFileById(fileId: string, userId: string): Promise<bo
   )
 
   await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
+  await bustRouteCache(userId, 'files:list')
   return (result.rowCount ?? 0) > 0
 }
 
@@ -548,6 +550,7 @@ export async function deleteFilesByIds(ids: string[], userId: string): Promise<n
   )
 
   await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
+  await bustRouteCache(userId, 'files:list')
   return result.rowCount ?? 0
 }
 
