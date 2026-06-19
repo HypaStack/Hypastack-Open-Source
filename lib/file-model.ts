@@ -62,15 +62,45 @@ export interface StagingInput {
   folder_id?: string | null
 }
 
-export async function createStagingRecord(input: StagingInput): Promise<void> {
+/**
+ * Creates a staging record for an upload.
+ * When `maxFileLinks` is provided the INSERT is wrapped in a CTE that
+ * atomically counts both committed files AND in-flight staging rows for
+ * this user. If the combined count already equals or exceeds the limit the
+ * INSERT is skipped and the function returns `false` — eliminating the
+ * TOCTOU race that allowed concurrent upload inits to exceed quota.
+ */
+export async function createStagingRecord(
+  input: StagingInput,
+  maxFileLinks?: number
+): Promise<boolean> {
   await ensureDatabase()
   const pool = getPool()
+
+  if (input.user_id && maxFileLinks !== undefined) {
+    // Atomic quota-guarded insert: only proceeds if current count < limit
+    const result = await pool.query(
+      `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
+       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+       WHERE (
+         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $12 AND expires_at > NOW())
+         +
+         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $12 AND created_at > NOW() - INTERVAL '2 hours')
+       ) < $16`,
+      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, maxFileLinks]
+    )
+    return (result.rowCount ?? 0) > 0
+  }
+
+  // No quota guard needed (anonymous upload or no limit)
   await pool.query(
     `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
     [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null]
   )
+  return true
 }
+
 
 export async function getStagingRecord(id: string): Promise<StagingInput | null> {
   await ensureDatabase()
