@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getForumPostById, reportPost } from "@/lib/forum-model"
+import { checkForumReportRateLimit } from "@/lib/rate-limit"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -19,7 +20,12 @@ export async function POST(
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous"
+
+    const rateLimit = await checkForumReportRateLimit(ip)
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+    }
 
     await reportPost(postId, ip, reason)
 
