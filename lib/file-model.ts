@@ -79,16 +79,20 @@ export async function createStagingRecord(
   const pool = getPool()
 
   if (input.user_id && maxFileLinks !== undefined) {
-    // Atomic quota-guarded insert: only proceeds if current count < limit
+    // Atomic quota-guarded insert: only proceeds if current count < limit.
+    // $12 is user_id in the INSERT values; $17 is the SAME value but used
+    // separately in WHERE subqueries to avoid Postgres type-inference conflict
+    // (42P08) when the two user_id columns have different declared types
+    // (e.g. text vs character varying).
     const result = await pool.query(
       `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
        SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
        WHERE (
-         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $12 AND expires_at > NOW())
+         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $17 AND expires_at > NOW())
          +
-         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $12 AND created_at > NOW() - INTERVAL '2 hours')
+         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $17 AND created_at > NOW() - INTERVAL '2 hours')
        ) < $16`,
-      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, maxFileLinks]
+      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, maxFileLinks, input.user_id]
     )
     return (result.rowCount ?? 0) > 0
   }
