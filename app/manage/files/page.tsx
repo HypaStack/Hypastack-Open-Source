@@ -437,17 +437,24 @@ function FilesPageInner() {
   }
 
   const toggleSelectAll = () => {
-    if (selectedFiles.size === files.length && files.length > 0) {
-      setSelectedFiles(new Set())
-    } else {
-      setSelectedFiles(new Set(files.map((f) => f.id)))
-    }
+    if (filteredFiles.length === 0) return
+    const allFilteredSelected = filteredFiles.every((f) => selectedFiles.has(f.id))
+
+    setSelectedFiles((prev) => {
+      const next = new Set(prev)
+      if (allFilteredSelected) {
+        filteredFiles.forEach((f) => next.delete(f.id))
+      } else {
+        filteredFiles.forEach((f) => next.add(f.id))
+      }
+      return next
+    })
   }
 
   if (!user) return null
 
   const isEmpty = filteredFiles.length === 0 && filteredFolders.length === 0
-  const allSelected = files.length > 0 && selectedFiles.size === files.length
+  const allSelected = filteredFiles.length > 0 && filteredFiles.every((f) => selectedFiles.has(f.id))
 
   return (
     <div className="flex-1 flex flex-col">
