@@ -1,5 +1,6 @@
 import { getPool, ensureDatabase } from './db'
 import { cached, bustCache } from './cache'
+import { bustRouteCache } from './route-cache'
 import crypto from 'crypto'
 
 export interface CdnAsset {
@@ -172,6 +173,7 @@ export async function deleteCdnAssetsByIds(ids: string[], userId: string): Promi
   )
 
   await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
+  await bustRouteCache(userId, 'cdn:assets')
 
   return result.rowCount ?? 0
 }
@@ -229,6 +231,7 @@ export async function updateCdnAssetAfterSwap(
   )
 
   await bustCache(`user:${userId}:cdn-assets`, `user:${userId}:cdn-stats`, `user:${userId}:storage`)
+  await bustRouteCache(userId, 'cdn:assets')
 
   return (result.rowCount ?? 0) > 0
 }
