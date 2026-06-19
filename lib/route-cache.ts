@@ -59,7 +59,7 @@ export function withRouteCache(
           // Reconstruct the response with cached headers (except set-cookie)
           const newHeaders = new Headers(headers)
           newHeaders.set('x-cache', 'HIT')
-          newHeaders.set('Cache-Control', `public, max-age=${opts.ttl}, stale-while-revalidate=${opts.ttl * 2}`)
+          newHeaders.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
           
           return new NextResponse(body, { 
             status, 
@@ -92,7 +92,7 @@ export function withRouteCache(
         }), 'EX', opts.ttl)
         
         response.headers.set('x-cache', 'MISS')
-        response.headers.set('Cache-Control', `public, max-age=${opts.ttl}, stale-while-revalidate=${opts.ttl * 2}`)
+        response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
       } catch (err) {
         console.warn('[RouteCache] SET failed:', (err as Error).message)
       }
