@@ -47,11 +47,6 @@ export async function handleUploadPost(request: NextRequest) {
       return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
     }
 
-    if (fileStats.activeFiles >= tier.maxFileLinks) {
-        console.error(`[API Error] 403 Forbidden: ${`You have reached your limit of ${tier.maxFileLinks} active file links on your current plan. Please delete a link or wait for one to expire to upload new ones.`}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
-    }
-
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
@@ -87,8 +82,6 @@ export async function handleUploadPost(request: NextRequest) {
     const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
     const uploadUrl = await getPresignedUploadUrlByKey(r2Key, contentType)
 
-
-
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
@@ -117,7 +110,8 @@ export async function handleUploadPost(request: NextRequest) {
 
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
 
-    await createStagingRecord({
+    // Atomically check quota + create staging record in one query (fixes TOCTOU race)
+    const staged = await createStagingRecord({
       id: fileId,
       r2_key: r2Key,
       original_name: encryptedOriginalName,
@@ -133,10 +127,14 @@ export async function handleUploadPost(request: NextRequest) {
       encryption_total_parts: 1,
       encryption_chunk_size: null,
       folder_id: finalFolderId,
-    })
+    }, tier.maxFileLinks)
+
+    if (!staged) {
+        console.error(`[API Error] 403 Forbidden: ${`You have reached your limit of ${tier.maxFileLinks} active file links on your current plan.`}`);
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+    }
 
     const proxyToken = generateProxyToken(fileId)
-
 
     return NextResponse.json({
       success: true,
