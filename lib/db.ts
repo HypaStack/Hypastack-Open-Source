@@ -15,7 +15,7 @@ export function getPool(): Pool {
       globalThis.__basedropDbPool = new Pool({
         connectionString: cleanUrl,
         ssl: { rejectUnauthorized: false },
-        max: 10,
+        max: 40,
         min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
@@ -30,7 +30,7 @@ export function getPool(): Pool {
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        max: 10,
+        max: 40,
         min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
