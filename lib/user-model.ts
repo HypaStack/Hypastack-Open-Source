@@ -159,28 +159,25 @@ export async function createUserSession(userId: string, refreshTokenHash: string
   return id
 }
 
-export async function getSessionByRefreshToken(
-  refreshTokenHash: string
+/**
+ * Atomically validate + rotate a refresh token in a single CAS query.
+ * Returns the session on success, null if the token was already used/revoked
+ * (prevents race conditions where two concurrent requests read the same token).
+ */
+export async function atomicRotateRefreshToken(
+  oldRefreshTokenHash: string,
+  newRefreshTokenHash: string
 ): Promise<{ id: string; user_id: string } | null> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query<{ id: string; user_id: string }>(
-    `SELECT id, user_id FROM user_sessions WHERE refresh_token_hash = $1 AND revoked = FALSE`,
-    [refreshTokenHash]
+    `UPDATE user_sessions
+     SET refresh_token_hash = $1, updated_at = NOW()
+     WHERE refresh_token_hash = $2 AND revoked = FALSE
+     RETURNING id, user_id`,
+    [newRefreshTokenHash, oldRefreshTokenHash]
   )
   return result.rows[0] ?? null
-}
-
-export async function rotateRefreshToken(
-  sessionId: string,
-  newRefreshTokenHash: string
-): Promise<void> {
-  await ensureDatabase()
-  const pool = getPool()
-  await pool.query(
-    `UPDATE user_sessions SET refresh_token_hash = $1, updated_at = NOW() WHERE id = $2`,
-    [newRefreshTokenHash, sessionId]
-  )
 }
 
 export async function revokeSession(sessionId: string): Promise<void> {

@@ -6,19 +6,11 @@ import { API_ERRORS } from "@/constants"
 
 export async function POST(request: NextRequest) {
   try {
-    // Revoke the session in DB so the token is dead immediately even if stolen
+    // Revoke the session in DB so the token is dead immediately even if stolen.
+    // This also invalidates the refresh token since it is scoped to the session.
     const currentUser = await getCurrentUser(request)
     if (currentUser?.sessionId) {
       await revokeSession(currentUser.sessionId)
-    }
-
-    // Also revoke by refresh token if present
-    const refreshToken = request.cookies.get("refresh_token")?.value
-    if (refreshToken) {
-      const { getSessionByRefreshToken, revokeSession: revokeBySession } = await import("@/lib/user-model")
-      const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
-      const session = await getSessionByRefreshToken(refreshTokenHash)
-      if (session) await revokeBySession(session.id)
     }
 
     await clearAuthCookie()
