@@ -1,4 +1,5 @@
 import { getPool } from './db'
+import { getRedis } from './redis'
 import { WINDOW_MINUTES, MAX_ATTEMPTS } from '@/constants'
 
 type TierKey = 'free' | 'essential' | 'premium' | 'ultimate'
@@ -19,8 +20,36 @@ async function checkRateLimit(
   windowMinutes: number,
   maxAttempts: number
 ): Promise<RateLimitResult> {
-  const pool = getPool()
   const windowSeconds = windowMinutes * 60
+  const redis = getRedis()
+
+  if (redis) {
+    try {
+      const key = `hs:ratelimit:${action}:${accountId}`
+      const current = await redis.incr(key)
+      if (current === 1) {
+        await redis.expire(key, windowSeconds)
+      }
+      
+      const ttl = await redis.ttl(key)
+      const resetInSeconds = Math.max(0, ttl)
+
+      if (current > maxAttempts) {
+        console.error(`[RateLimit] ${action} blocked for account ${accountId.substring(0, 8)}. Count: ${current}, Reset in: ${resetInSeconds}s`)
+        return { allowed: false, remaining: 0, resetInSeconds }
+      }
+
+      return {
+        allowed: true,
+        remaining: Math.max(0, maxAttempts - current),
+        resetInSeconds
+      }
+    } catch (err) {
+      console.warn('[RateLimit] Redis error, falling back to PostgreSQL:', (err as Error).message)
+    }
+  }
+
+  const pool = getPool()
 
   try {
     await pool.query(
@@ -91,9 +120,29 @@ export async function checkDownloadRateLimit(accountId: string, tier: string = '
 }
 
 export async function verifyDownloadRateLimit(accountId: string, tier: string = 'free'): Promise<RateLimitResult> {
-  const pool = getPool()
   const maxAttempts = getTierAttempts(MAX_ATTEMPTS.download, tier)
   const windowSeconds = WINDOW_MINUTES.download * 60
+  const redis = getRedis()
+
+  if (redis) {
+    try {
+      const key = `hs:ratelimit:download:${accountId}`
+      const currentRaw = await redis.get(key)
+      const current = currentRaw ? parseInt(currentRaw, 10) : 0
+      const ttl = await redis.ttl(key)
+      const resetInSeconds = Math.max(0, ttl)
+
+      if (current >= maxAttempts) {
+        return { allowed: false, remaining: 0, resetInSeconds }
+      }
+
+      return { allowed: true, remaining: Math.max(0, maxAttempts - current), resetInSeconds }
+    } catch (err) {
+      console.warn('[RateLimit] Redis error in verifyDownloadRateLimit, falling back to PostgreSQL:', (err as Error).message)
+    }
+  }
+
+  const pool = getPool()
 
   try {
     await pool.query(
