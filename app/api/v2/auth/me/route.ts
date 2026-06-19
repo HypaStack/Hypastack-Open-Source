@@ -11,7 +11,7 @@ import { normalizeTier, isPaidTier, getTierLimits } from "@/constants/tier-limit
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 
-export const GET = withRouteCache(async (request: NextRequest) => {
+export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
 
@@ -128,4 +128,4 @@ export const GET = withRouteCache(async (request: NextRequest) => {
     console.error(`[API Error] 500 Internal Server Error: ${"Failed to get user"}`);
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
-}, { ttl: 60, baseKey: 'auth:me' })
+}
