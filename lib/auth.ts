@@ -2,6 +2,7 @@ import crypto from "crypto"
 import { cookies } from "next/headers"
 import { NextRequest } from "next/server"
 import { getPool, ensureDatabase } from "@/lib/db"
+import { cached } from "@/lib/cache"
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
@@ -151,13 +152,17 @@ export async function getCurrentUser(request: NextRequest): Promise<{ userId: st
 
   // #4: Verify the session is still active in the DB (catches revoked/stolen tokens)
   try {
-    await ensureDatabase()
-    const pool = getPool()
-    const result = await pool.query<{ revoked: boolean }>(
-      `SELECT revoked FROM user_sessions WHERE id = $1 AND user_id = $2`,
-      [payload.sessionId, payload.userId]
-    )
-    if (result.rows.length === 0 || result.rows[0].revoked) return null
+    const isRevoked = await cached(`session:${payload.sessionId}:revoked`, 60, async () => {
+      await ensureDatabase()
+      const pool = getPool()
+      const result = await pool.query<{ revoked: boolean }>(
+        `SELECT revoked FROM user_sessions WHERE id = $1 AND user_id = $2`,
+        [payload.sessionId, payload.userId]
+      )
+      return result.rows.length === 0 || result.rows[0].revoked
+    })
+    
+    if (isRevoked) return null
   } catch {
     // Fail closed: If DB is unreachable, we must assume the session might be revoked
     // to prevent stolen/revoked tokens from bypassing security during an outage.
