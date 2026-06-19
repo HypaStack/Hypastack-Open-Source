@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { getCdnAssetsByUserId, getUserCdnStats } from '@/lib/cdn-model'
 import { API_ERRORS } from "@/constants"
 
-export async function GET(request: NextRequest) {
+export const GET = withRouteCache(async (request: NextRequest) => {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
@@ -31,4 +31,4 @@ export async function GET(request: NextRequest) {
     console.error(`[API Error] 500 Internal Server Error: ${'Failed to load assets'}`);
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
-}
+}, { ttl: 60, baseKey: 'cdn:assets' })
