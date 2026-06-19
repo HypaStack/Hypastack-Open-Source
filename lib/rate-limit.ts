@@ -26,10 +26,15 @@ async function checkRateLimit(
   if (redis) {
     try {
       const key = `hs:ratelimit:${action}:${accountId}`
-      const current = await redis.incr(key)
-      if (current === 1) {
-        await redis.expire(key, windowSeconds)
-      }
+      const lua = `
+        local current = redis.call('INCR', KEYS[1])
+        if current == 1 then
+          redis.call('EXPIRE', KEYS[1], ARGV[1])
+        end
+        return current
+      `
+      const currentRaw = await redis.eval(lua, 1, key, windowSeconds)
+      const current = Number(currentRaw)
       
       const ttl = await redis.ttl(key)
       const resetInSeconds = Math.max(0, ttl)
