@@ -101,3 +101,29 @@ export function withRouteCache(
     return response
   }
 }
+
+/**
+ * Invalidate all route-level cache entries for a given user + route baseKey.
+ * Call this after any mutation (delete, update) that would stale the cached response.
+ *
+ * @param userId  - The user whose cache to bust
+ * @param baseKey - Must match the `baseKey` used in the corresponding withRouteCache call
+ */
+export async function bustRouteCache(userId: string, baseKey: string): Promise<void> {
+  const redis = getRedis()
+  if (!redis) return
+
+  try {
+    const pattern = `hs:route:${userId}:${baseKey}:*`
+    let cursor = '0'
+    do {
+      const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100)
+      cursor = nextCursor
+      if (keys.length > 0) {
+        await redis.del(...keys)
+      }
+    } while (cursor !== '0')
+  } catch (err) {
+    console.warn(`[RouteCache] bust failed for ${userId}/${baseKey}:`, (err as Error).message)
+  }
+}
