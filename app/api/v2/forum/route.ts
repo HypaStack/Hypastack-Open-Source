@@ -3,6 +3,7 @@ import { withRouteCache } from "@/lib/route-cache"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
 import { createForumPost, getForumPosts, normalizeTags } from "@/lib/forum-model"
+import { checkApiRateLimit } from "@/lib/rate-limit"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -30,6 +31,11 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
       return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+    }
+
+    const rateLimit = await checkApiRateLimit(currentUser.userId)
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
     }
 
     const body = await request.json()
