@@ -46,7 +46,7 @@ export function Hero() {
             className="text-left text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
-            The frictionless way to distribute sensitive assets to anyone, anywhere.
+            The frictionless way <span className="text-[#898e97]">to distribute sensitive assets to anyone, anywhere.</span>
           </h1>
           <p className="mt-4 text-[14px] sm:text-[16px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-full sm:whitespace-nowrap">
             The simplest way to host, share, and deliver files without the extra overhead
