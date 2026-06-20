@@ -79,12 +79,12 @@ export function HowItWorks() {
             className="max-w-xl relative z-10"
           >
             <h2
-              className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#000] pb-1 font-medium"
+              className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
               A simple way to share files.
             </h2>
-            <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#525252]">
+            <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#898e97]">
               Get an encrypted link for whatever you're sending. You don't need to sign up, and the person on the other end just needs the link.
             </p>
             <Button href="/new" variant="primary" size="lg" className="mt-8">
@@ -108,12 +108,12 @@ export function HowItWorks() {
               className="max-w-xl relative z-10"
             >
               <h2
-                className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#000] pb-1 font-medium"
+                className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
                 style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
               >
                 Trust the code not the company.
               </h2>
-              <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#525252]">
+              <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#898e97]">
                 Every line of our code is public. Inspect our architecture, audit our security, or host it yourself. We believe trust is earned through complete transparency.
               </p>
               <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="primary" size="lg" className="mt-8">
@@ -134,12 +134,10 @@ export function HowItWorks() {
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">
               <div className="text-left flex-1">
                 <h2
-                  className="text-[clamp(20px,2.8vw,32px)] leading-[1.4] tracking-[-0.02em] text-transparent bg-clip-text"
+                  className="text-[clamp(20px,2.8vw,32px)] leading-[1.4] tracking-[-0.02em] text-[#f7f8f8]"
                   style={{
                     fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif",
                     fontWeight: 500,
-                    backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)',
-                    backgroundSize: '100% 100%'
                   }}
                 >
                   "Hypastack's encrypted delivery network is flawlessly reliable, we've been routing our core assets through their permanent CDN, pushing massive payloads with zero tracking and near-instant request speeds."
@@ -148,14 +146,13 @@ export function HowItWorks() {
               <div className="hidden sm:flex flex-col items-end text-right shrink-0">
                 <div className="flex flex-col gap-0.5 mb-3">
                   <span
-                    className="text-[17px] font-semibold text-transparent bg-clip-text"
-                    style={{ backgroundImage: 'linear-gradient(to bottom, #737373 0%, #000000 100%)' }}
+                    className="text-[17px] font-semibold text-[#f7f8f8]"
                   >
                     Someone
                   </span>
-                  <span className="text-[#000000] text-[14px] font-medium">User</span>
+                  <span className="text-[#898e97] text-[14px] font-medium">User</span>
                 </div>
-                <div className="w-[32px] h-[32px] rounded-full overflow-hidden border border-[rgba(0,0,0,0.08)] shadow-sm bg-white">
+                <div className="w-[32px] h-[32px] rounded-full overflow-hidden border border-[rgba(0,0,0,0.08)] shadow-sm bg-[#08090a]">
                   <img src="/user/no-profile.png" alt="Someone" className="w-full h-full object-cover" />
                 </div>
               </div>
