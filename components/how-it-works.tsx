@@ -69,16 +69,31 @@ export function HowItWorks() {
               transition={{ duration: 0.6 }}
               className="w-full relative z-10"
             >
-              <h2
-                className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
-                style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
-              >
-                Trust the code <span className="text-[#898e97]">not the company.</span>
-              </h2>
-              <div className="mt-12 sm:mt-16">
-                <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-16">
+                <h2
+                  className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
+                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+                >
+                  Trust the code <span className="text-[#898e97]">not the company.</span>
+                </h2>
+                <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="shrink-0">
                   Source code
                 </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
+                <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Hidden Telemetry</h3>
+                  <p className="text-[15px] leading-relaxed text-[#898e97]">Proprietary platforms routinely inject analytics and tracking into your workflows, silently mapping your usage data without consent.</p>
+                </div>
+                <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Data Harvesting</h3>
+                  <p className="text-[15px] leading-relaxed text-[#898e97]">If you can't verify the source code, you can never be entirely certain your sensitive assets aren't being scanned or monetized.</p>
+                </div>
+                <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Vendor Lock-in</h3>
+                  <p className="text-[15px] leading-relaxed text-[#898e97]">Closed systems are intentionally designed to trap you. When a company abruptly pivots or shuts down, your infrastructure is paralyzed.</p>
+                </div>
               </div>
             </motion.div>
           </div>
