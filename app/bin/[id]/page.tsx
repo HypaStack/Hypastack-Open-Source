@@ -53,13 +53,13 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
   const retentionDays = createdAt ? 180 - Math.floor((Date.now() - new Date(createdAt).getTime()) / 864e5) : 180
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-white">
+    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-[#08090a]">
       <div className="relative w-full max-w-[440px]">
         <div className="flex justify-center mb-8">
           <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
             <img 
-              src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp" 
-              className="select-none h-14 w-14 rounded-md" 
+              src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
+              className="select-none h-14 w-14 rounded-md object-contain" 
               alt="Hypastack" 
               draggable={false} 
             />
@@ -68,7 +68,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24">
-            <svg className="animate-spin h-8 w-8 text-[#ccc]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-8 w-8 text-[#898e97]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -105,59 +105,57 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {content !== null && !error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 6, overflow: 'hidden', border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
-              <div style={{ padding: '20px 20px 16px' }}>
-                <h1 className="text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 text-[#111]">
+            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] overflow-hidden">
+              <div className="p-5 pb-4">
+                <h1 className="text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 text-[#f7f8f8]">
                   {id}.txt
                 </h1>
                 <div className="flex items-center gap-2">
-                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#888', backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', padding: '2px 6px', borderRadius: 5 }}>TXT</span>
-                  <span style={{ fontSize: 13, color: '#888' }}>
+                  <span className="text-[10px] font-semibold tracking-wider uppercase text-[#898e97] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded-[5px]">TXT</span>
+                  <span className="text-[13px] text-[#898e97]">
                     {fmtBytes(new Blob([content]).size)}
                   </span>
                 </div>
               </div>
 
-              <div style={{ margin: '0 12px 12px', borderRadius: 6, backgroundColor: '#f9f9f9', border: '1px solid #ebebeb', padding: 4 }}>
+              <div className="mx-3 mb-3 rounded-[6px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] p-1">
                 <div
-                  className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
-                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
+                  className="flex items-center justify-between hover:bg-[rgba(255,255,255,0.04)] transition-all duration-150 h-[38px] px-3 rounded-[6px]"
                 >
-                  <span className="flex items-center gap-2.5" style={{ fontSize: 13, color: '#888' }}>
-                    <MIcon name="schedule" size={14} style={{ color: '#bbb' }} />Retention
+                  <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
+                    <MIcon name="schedule" size={14} className="opacity-70" />Retention
                   </span>
-                  <span className="text-[13px] font-medium text-[#333]">~{Math.max(0, retentionDays)} days</span>
+                  <span className="text-[13px] font-medium text-[#f7f8f8]">~{Math.max(0, retentionDays)} days</span>
                 </div>
-                <div style={{ height: 1, margin: '0 8px', backgroundColor: '#ebebeb' }} />
+                <div className="h-[1px] mx-2 bg-[rgba(255,255,255,0.04)]" />
                 <div
-                  className="flex items-center justify-between hover:bg-[#f0f0f0] transition-all duration-75"
-                  style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
+                  className="flex items-center justify-between hover:bg-[rgba(255,255,255,0.04)] transition-all duration-150 h-[38px] px-3 rounded-[6px]"
                 >
-                  <span className="flex items-center gap-2.5" style={{ fontSize: 13, color: '#888' }}>
-                    <MIcon name="visibility_off" size={14} style={{ color: '#bbb' }} />Privacy
+                  <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
+                    <MIcon name="visibility_off" size={14} className="opacity-70" />Privacy
                   </span>
-                  <span className="text-[13px] font-medium text-[#333]">Anonymous</span>
+                  <span className="text-[13px] font-medium text-[#f7f8f8]">Anonymous</span>
                 </div>
               </div>
 
-              <div style={{ padding: '0 12px 12px' }}>
+              <div className="px-3 pb-3">
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     onClick={copyToClipboard}
-                    className="flex-1 flex items-center justify-center gap-2 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
-                    style={{ height: 42, borderRadius: 6, fontSize: 14, fontWeight: 600, color: '#fff', backgroundColor: '#030303' }}
+                    variant="landing-primary"
+                    className="flex-1 flex items-center justify-center gap-2"
                   >
                     <MIcon name={copied ? "check" : "content_copy"} size={16} />
                     {copied ? "Copied" : "Copy to Clipboard"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleRaw}
-                    className="flex items-center justify-center hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75"
-                    style={{ width: 42, height: 42, borderRadius: 6, backgroundColor: '#f0f0f0', border: '1px solid #e5e5e5', color: '#111' }}
+                    variant="landing-secondary"
+                    className="w-[42px] px-0 flex items-center justify-center shrink-0"
                     title="View Raw"
                   >
                     <MIcon name="code" size={18} />
-                  </button>
+                  </Button>
                 </div>
               </div>
 

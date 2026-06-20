@@ -223,9 +223,9 @@ export default function CreateAccountPage() {
             )}
 
             {error && (
-              <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] p-3 rounded-[8px] mb-5">
-                <MIcon name="error" size={15} className="shrink-0 mt-0.5" />
-                <span>{error}</span>
+              <div className="flex items-center gap-2.5 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] px-4 py-3 rounded-full mb-5">
+                <MIcon name="error" size={15} className="shrink-0" />
+                <span className="font-medium">{error}</span>
               </div>
             )}
 
