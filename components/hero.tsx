@@ -48,11 +48,7 @@ export function Hero() {
           >
             The frictionless way <span className="text-[#898e97]">to distribute sensitive assets to anyone, anywhere.</span>
           </h1>
-          <p className="mt-8 sm:mt-12 text-[14px] sm:text-[16px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-full sm:whitespace-nowrap">
-            The simplest way to host, share, and deliver files without the extra overhead
-          </p>
-
-          <div className="w-full mt-8 sm:mt-12">
+          <div className="w-full mt-16 sm:mt-24 lg:mt-32">
             <img 
               src="https://r2.hypastack.com/cdn/byhhdj097uf6/hero.jpg" 
               alt="Hypastack Platform Preview" 
