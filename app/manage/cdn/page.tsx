@@ -866,7 +866,7 @@ export default function CdnPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]" style={{ borderRadius: 6, padding: '8px 12px', marginTop: 8 }}>
+        <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '8px 12px', marginTop: 8 }}>
           <p className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
@@ -981,13 +981,13 @@ function CdnAssetTile({
             onToggleSelect()
           }
         }}
-        className={`relative w-full aspect-square overflow-hidden bg-[#f5f5f5] dark:bg-[#1a1a1a] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] ${
+        className={`relative w-full aspect-square overflow-hidden bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] ${
           selected ? "" : "hover:opacity-90"
         }`}
-        style={{ borderRadius: 6 }}
+        style={{ borderRadius: 12 }}
       >
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5] dark:bg-[#0e0f10]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)]">
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
@@ -1028,7 +1028,7 @@ function CdnAssetTile({
             />
           </>
         ) : revealed && !showImage ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f5f5f5] dark:bg-[#1a1a1a]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)]">
             <MIcon name="preview_off" size={24} style={{ color: '#bbb' }} />
             <span className="text-[12px] font-medium text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]">No preview available</span>
           </div>
