@@ -620,7 +620,6 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             </div>
           </button>
         </div>
-        </div>
       </div>
 
       <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
