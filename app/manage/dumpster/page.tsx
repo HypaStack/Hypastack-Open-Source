@@ -64,23 +64,29 @@ export default function DumpsterPage() {
             type="button"
             onClick={() => setContent("")}
             disabled={saving || !content}
-            className="inline-flex items-center gap-2 px-5 py-[11px] rounded-full bg-white dark:bg-[rgba(255,255,255,0.04)] text-[#171717] dark:text-[#f7f8f8] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors leading-none disabled:opacity-50 active:scale-[0.98]"
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
           >
-            <MIcon name="clear_all" size={17} className="shrink-0" />
-            <span className="hidden sm:inline">Clear</span>
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full h-[38px] px-5 flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+              <MIcon name="clear_all" size={17} className="shrink-0" />
+              <span className="hidden sm:inline">Clear</span>
+            </div>
           </button>
           <button
             type="button"
             onClick={handleSave}
             disabled={saving || !content.trim()}
-            className="inline-flex items-center gap-2 px-6 py-[11px] rounded-full bg-[#171717] dark:bg-[#f7f8f8] text-white dark:text-[#08090a] font-semibold text-[15px] hover:bg-[#333] dark:hover:bg-white transition-colors leading-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? (
-              <div className="w-[15px] h-[15px] border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin shrink-0" />
-            ) : (
-              <MIcon name="save" size={15} className="shrink-0" />
-            )}
-            <span>Save Paste</span>
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.25)] group-hover:to-[rgba(255,255,255,0.35)] transition-colors duration-300" />
+            <div className="relative bg-[#f7f8f8] rounded-full h-[38px] px-6 flex items-center justify-center gap-2 text-[#111111] text-[14px] font-medium">
+              {saving ? (
+                <div className="w-[15px] h-[15px] border-2 border-black/30 border-t-black rounded-full animate-spin shrink-0" />
+              ) : (
+                <MIcon name="save" size={15} className="shrink-0" />
+              )}
+              <span>Save Paste</span>
+            </div>
           </button>
         </div>
       </div>
@@ -92,7 +98,7 @@ export default function DumpsterPage() {
         </div>
       )}
 
-      <div className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.03)] rounded-[16px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.02)] rounded-[16px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] overflow-hidden flex flex-col">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
