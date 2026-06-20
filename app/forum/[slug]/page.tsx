@@ -72,16 +72,16 @@ function FilePreview({ file }: { file: ForumFile }) {
     <a
       href={file.public_url}
       download={file.original_name}
-      className="flex items-center gap-3 border-b border-[#e8e8e8]  py-3 hover:bg-[#f9f9f9]  transition-colors group px-2 -mx-2"
+      className="flex items-center gap-3 border-b border-[rgba(255,255,255,0.08)]  py-3 hover:bg-[rgba(255,255,255,0.02)]  transition-colors group px-2 -mx-2"
     >
-      <div className="w-8 h-8 rounded bg-[#f0f0f0]  flex items-center justify-center flex-shrink-0">
-        <MIcon name="description" size={16} className="text-[#888] " />
+      <div className="w-8 h-8 rounded bg-[rgba(255,255,255,0.04)]  flex items-center justify-center flex-shrink-0">
+        <MIcon name="description" size={16} className="text-[#898e97] " />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-medium text-[#111]  truncate group-hover:text-[#333]  transition-colors">{file.original_name}</p>
+        <p className="text-[13px] font-medium text-[#f7f8f8]  truncate group-hover:text-[#e3e3e3]  transition-colors">{file.original_name}</p>
         <p className="text-[11px] text-[#999]">{formatFileSize(file.file_size)}</p>
       </div>
-      <MIcon name="download" size={16} className="text-[#999] group-hover:text-[#555] transition-colors flex-shrink-0 mr-2" />
+      <MIcon name="download" size={16} className="text-[#898e97] group-hover:text-[#444] transition-colors flex-shrink-0 mr-2" />
     </a>
   )
 }
@@ -144,22 +144,22 @@ function CommentComponent({
   }
 
   return (
-    <div className={depth > 0 ? "ml-8 border-l-2 border-[#e8e8e8]  pl-4" : ""}>
+    <div className={depth > 0 ? "ml-8 border-l-2 border-[rgba(255,255,255,0.08)]  pl-4" : ""}>
       <div className="py-3">
         <div className="flex items-center gap-2 mb-1">
           {comment.author_avatar_url ? (
             <img src={comment.author_avatar_url} alt="" className="w-5 h-5 rounded-full" />
           ) : (
-            <div className="w-5 h-5 rounded-full bg-[#e5e5e5]  flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[rgba(255,255,255,0.08)]  flex items-center justify-center">
               <MIcon name="person" size={10} className="text-[#999]" />
             </div>
           )}
-          <span className="text-[12px] font-medium text-[#555] ">
+          <span className="text-[12px] font-medium text-[#444] ">
             {comment.author_nickname_encrypted ? "User" : "Anonymous"}
           </span>
-          <span className="text-[11px] text-[#bbb] ">{timeAgo(comment.created_at)}</span>
+          <span className="text-[11px] text-[#555] ">{timeAgo(comment.created_at)}</span>
         </div>
-        <p className={`text-[13px] leading-relaxed ${comment.deleted ? "text-[#bbb]  italic" : "text-[#333] "}`}>
+        <p className={`text-[13px] leading-relaxed ${comment.deleted ? "text-[#555]  italic" : "text-[#e3e3e3] "}`}>
           {comment.body}
         </p>
         {!comment.deleted && (
@@ -167,7 +167,7 @@ function CommentComponent({
             {userId && depth === 0 && (
               <button
                 onClick={() => setReplying(!replying)}
-                className="text-[11px] text-[#999] hover:text-[#555]  transition-colors"
+                className="text-[11px] text-[#898e97] hover:text-[#444]  transition-colors"
               >
                 Reply
               </button>
@@ -175,7 +175,7 @@ function CommentComponent({
             {userId === comment.user_id && (
               <button
                 onClick={handleDelete}
-                className="text-[11px] text-[#999] hover:text-[#ef4444] transition-colors"
+                className="text-[11px] text-[#898e97] hover:text-[#ef4444] transition-colors"
               >
                 Delete
               </button>
@@ -191,13 +191,13 @@ function CommentComponent({
               value={replyBody}
               onChange={e => setReplyBody(e.target.value)}
               placeholder="Write a reply..."
-              className="flex-1 h-8 px-3 rounded-lg bg-[#f5f5f5]  border border-[#e8e8e8]  text-[12px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none"
+              className="flex-1 h-8 px-3 rounded-lg bg-[#f5f5f5]  border border-[rgba(255,255,255,0.08)]  text-[12px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none"
               maxLength={2000}
             />
             <button
               type="submit"
               disabled={!replyBody.trim() || submitting}
-              className="h-8 px-3 rounded-lg bg-[#111]  text-white  text-[12px] font-medium disabled:opacity-40 hover:bg-[#222]  transition-colors"
+              className="h-8 px-3 rounded-lg bg-[#f7f8f8]  text-[#08090a]  text-[12px] font-medium disabled:opacity-40 hover:bg-[#e3e3e3]  transition-colors"
             >
               Reply
             </button>
@@ -331,11 +331,11 @@ export default function ForumPostPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen flex-col bg-white ">
+      <main className="flex min-h-screen flex-col bg-[#08090a] ">
         <Navbar />
         <section className="flex-1 pt-24 pb-20">
           <div className="flex justify-center items-center py-20">
-            <svg className="animate-spin h-8 w-8 text-[#ccc]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-8 w-8 text-[#444]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -347,12 +347,12 @@ export default function ForumPostPage() {
 
   if (!post) {
     return (
-      <main className="flex min-h-screen flex-col bg-white ">
+      <main className="flex min-h-screen flex-col bg-[#08090a] ">
         <Navbar />
         <section className="flex-1 pt-24 pb-20 flex flex-col items-center justify-center">
-          <MIcon name="error" size={48} className="text-[#ddd]  mb-4" />
-          <h2 className="text-[18px] font-semibold text-[#555]  mb-2">Post not found</h2>
-          <Link href="/forum" className="text-[13px] text-[#999] hover:text-[#555] transition-colors">
+          <MIcon name="error" size={48} className="text-[#333]  mb-4" />
+          <h2 className="text-[18px] font-semibold text-[#444]  mb-2">Post not found</h2>
+          <Link href="/forum" className="text-[13px] text-[#898e97] hover:text-[#444] transition-colors">
             Back to forum
           </Link>
         </section>
@@ -361,7 +361,7 @@ export default function ForumPostPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-white ">
+    <main className="flex min-h-screen flex-col bg-[#08090a] ">
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
@@ -369,19 +369,19 @@ export default function ForumPostPage() {
           {/* Back link */}
           <Link
             href="/forum"
-            className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#555]  transition-colors mb-6"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#898e97] hover:text-[#444]  transition-colors mb-6"
           >
             <MIcon name="arrow_back" size={14} />
             Back to forum
           </Link>
 
           {/* Title */}
-          <h1 className="text-[24px] font-bold text-[#111]  tracking-tight mb-2">
+          <h1 className="text-[24px] font-bold text-[#f7f8f8]  tracking-tight mb-2">
             {post.title}
           </h1>
 
           {/* Meta row */}
-          <div className="flex items-center gap-4 text-[12px] text-[#999]  mb-2">
+          <div className="flex items-center gap-4 text-[12px] text-[#898e97]  mb-2">
             <span className="flex items-center gap-1">
               <MIcon name="visibility" size={13} />
               {post.views} views
@@ -403,7 +403,7 @@ export default function ForumPostPage() {
                 <Link
                   key={tag}
                   href={`/forum?tag=${encodeURIComponent(tag)}`}
-                  className="text-[11px] font-medium text-[#666]  bg-[#f0f0f0]  px-2.5 py-1 rounded-full hover:bg-[#e5e5e5]  transition-colors"
+                  className="text-[11px] font-medium text-[#a1a1aa]  bg-[rgba(255,255,255,0.04)]  px-2.5 py-1 rounded-full hover:bg-[rgba(255,255,255,0.08)]  transition-colors"
                 >
                   #{tag}
                 </Link>
@@ -414,24 +414,24 @@ export default function ForumPostPage() {
           {/* Description */}
           {post.description && (
             <div className="mb-8">
-              <p className="text-[14px] text-[#333]  leading-relaxed whitespace-pre-wrap">
+              <p className="text-[14px] text-[#e3e3e3]  leading-relaxed whitespace-pre-wrap">
                 {post.description}
               </p>
             </div>
           )}
 
           {/* Files */}
-          <div className="flex flex-col border-t border-[#e8e8e8]  mb-8">
+          <div className="flex flex-col border-t border-[rgba(255,255,255,0.08)]  mb-8">
             {post.files.map(file => (
               <FilePreview key={file.id} file={file} />
             ))}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 mb-10 pb-8 border-b border-[#e8e8e8] ">
+          <div className="flex items-center gap-3 mb-10 pb-8 border-b border-[rgba(255,255,255,0.08)] ">
             <button
               onClick={handleReport}
-              className="flex items-center gap-1.5 text-[12px] text-[#999] hover:text-[#ef4444] transition-colors"
+              className="flex items-center gap-1.5 text-[12px] text-[#898e97] hover:text-[#ef4444] transition-colors"
             >
               <MIcon name="flag" size={13} />
               Report
@@ -450,7 +450,7 @@ export default function ForumPostPage() {
 
           {/* Comments section */}
           <div>
-            <h2 className="text-[16px] font-semibold text-[#111]  mb-4">
+            <h2 className="text-[16px] font-semibold text-[#f7f8f8]  mb-4">
               Comments ({comments.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0)})
             </h2>
 
@@ -463,13 +463,13 @@ export default function ForumPostPage() {
                   placeholder="Write a comment..."
                   rows={3}
                   maxLength={2000}
-                  className="w-full px-4 py-3 rounded-xl bg-white  border border-[#e8e8e8]  text-[13px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none focus:border-[#ccc]  transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors resize-none"
                 />
                 <div className="flex justify-end mt-2">
                   <button
                     type="submit"
                     disabled={!commentBody.trim() || submitting}
-                    className="h-8 px-4 rounded-lg bg-[#111]  text-white  text-[12px] font-semibold disabled:opacity-40 hover:bg-[#222]  active:scale-[0.97] transition-all duration-75"
+                    className="h-8 px-4 rounded-lg bg-[#f7f8f8]  text-[#08090a]  text-[12px] font-semibold disabled:opacity-40 hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75"
                   >
                     {submitting ? "Posting..." : "Post comment"}
                   </button>
@@ -477,8 +477,8 @@ export default function ForumPostPage() {
               </form>
             ) : (
               <div className="bg-[#f5f5f5]  rounded-xl p-4 mb-6 text-center">
-                <p className="text-[13px] text-[#888] ">
-                  <Link href="/signin?redirect=/forum" className="text-[#111]  font-medium hover:underline">
+                <p className="text-[13px] text-[#898e97] ">
+                  <Link href="/signin?redirect=/forum" className="text-[#f7f8f8]  font-medium hover:underline">
                     Sign in
                   </Link>
                   {" "}to leave a comment
@@ -488,7 +488,7 @@ export default function ForumPostPage() {
 
             {/* Comment list */}
             {comments.length === 0 ? (
-              <p className="text-[13px] text-[#999]  text-center py-8">
+              <p className="text-[13px] text-[#898e97]  text-center py-8">
                 No comments yet. Be the first!
               </p>
             ) : (

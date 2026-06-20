@@ -47,8 +47,8 @@ function FooterPopover({ category }: { category: typeof columns[0] }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-            className="absolute bottom-[calc(100%+8px)] right-0 w-[240px] z-[100] bg-white rounded-md border border-[#e5e5e5] py-2"
-            style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+            className="absolute bottom-[calc(100%+8px)] right-0 w-[240px] z-[100] bg-[#0a0b0c] rounded-[12px] border border-[rgba(255,255,255,0.08)] py-2"
+            style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
           >
             <div className="px-1.5 space-y-0.5">
               {category.links.map((link) => (
@@ -58,7 +58,7 @@ function FooterPopover({ category }: { category: typeof columns[0] }) {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-[14px] font-medium text-[#a3a3a3] hover:bg-[rgba(255,255,255,0.06)] hover:text-white transition-colors"
                   >
                     {link.label}
                   </a>
@@ -66,7 +66,7 @@ function FooterPopover({ category }: { category: typeof columns[0] }) {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-[14px] font-medium text-[#a3a3a3] hover:bg-[rgba(255,255,255,0.06)] hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>

@@ -185,29 +185,29 @@ export default function ForumNewPage() {
   // Warning screen
   if (!warningDismissed) {
     return (
-      <main className="flex min-h-screen flex-col bg-white ">
+      <main className="flex min-h-screen flex-col bg-[#08090a] ">
         <Navbar />
         <section className="flex-1 pt-24 pb-20 flex items-center justify-center">
           <div className="max-w-[480px] mx-auto px-4 text-center">
             <div className="w-14 h-14 rounded-2xl bg-[#FFF3E0]  flex items-center justify-center mx-auto mb-5">
               <MIcon name="warning" size={28} className="text-[#F57C00]" />
             </div>
-            <h2 className="text-[20px] font-bold text-[#111]  mb-3">
+            <h2 className="text-[20px] font-bold text-[#f7f8f8]  mb-3">
               Public upload notice
             </h2>
-            <p className="text-[14px] text-[#666]  leading-relaxed mb-6">
-              Files uploaded to the forum are <strong className="text-[#111] ">not encrypted</strong> and will be <strong className="text-[#111] ">publicly visible and freely downloadable</strong> by anyone. Do not upload private, sensitive, or confidential files here.
+            <p className="text-[14px] text-[#a1a1aa]  leading-relaxed mb-6">
+              Files uploaded to the forum are <strong className="text-[#f7f8f8] ">not encrypted</strong> and will be <strong className="text-[#f7f8f8] ">publicly visible and freely downloadable</strong> by anyone. Do not upload private, sensitive, or confidential files here.
             </p>
             <div className="flex gap-3 justify-center">
               <Link
                 href="/forum"
-                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-medium text-[#666]  bg-[#f0f0f0]  hover:bg-[#e5e5e5]  transition-colors"
+                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-medium text-[#a1a1aa]  bg-[rgba(255,255,255,0.04)]  hover:bg-[rgba(255,255,255,0.08)]  transition-colors"
               >
                 Go back
               </Link>
               <button
                 onClick={() => setWarningDismissed(true)}
-                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-semibold text-white bg-[#111]   hover:bg-[#222]  active:scale-[0.97] transition-all duration-75"
+                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-semibold text-[#08090a] bg-[#f7f8f8]   hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75"
               >
                 I understand, continue
               </button>
@@ -219,27 +219,27 @@ export default function ForumNewPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-white ">
+    <main className="flex min-h-screen flex-col bg-[#08090a] ">
       <Navbar />
 
       <section className="flex-1 pt-24 pb-20">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <Link
             href="/forum"
-            className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#555]  transition-colors mb-6"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#898e97] hover:text-[#444]  transition-colors mb-6"
           >
             <MIcon name="arrow_back" size={14} />
             Back to forum
           </Link>
 
-          <h1 className="text-[24px] font-bold text-[#111]  tracking-tight mb-6">
+          <h1 className="text-[24px] font-bold text-[#f7f8f8]  tracking-tight mb-6">
             New post
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Title */}
             <div>
-              <label className="block text-[12px] font-medium text-[#555]  mb-1.5">
+              <label className="block text-[12px] font-medium text-[#444]  mb-1.5">
                 Title <span className="text-[#ef4444]">*</span>
               </label>
               <input
@@ -249,13 +249,13 @@ export default function ForumNewPage() {
                 placeholder="e.g. 5 files you need for your project"
                 maxLength={200}
                 required
-                className="w-full h-10 px-4 rounded-xl bg-white  border border-[#e8e8e8]  text-[13px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none focus:border-[#ccc]  transition-colors"
+                className="w-full h-10 px-4 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-[12px] font-medium text-[#555]  mb-1.5">
+              <label className="block text-[12px] font-medium text-[#444]  mb-1.5">
                 Description
               </label>
               <textarea
@@ -264,20 +264,20 @@ export default function ForumNewPage() {
                 placeholder="Describe what you're sharing..."
                 rows={4}
                 maxLength={5000}
-                className="w-full px-4 py-3 rounded-xl bg-white  border border-[#e8e8e8]  text-[13px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none focus:border-[#ccc]  transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors resize-none"
               />
             </div>
 
             {/* Tags */}
             <div>
-              <label className="block text-[12px] font-medium text-[#555]  mb-1.5">
+              <label className="block text-[12px] font-medium text-[#444]  mb-1.5">
                 Tags (press Enter to add, max 10)
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {tags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[#555]  bg-[#f0f0f0]  px-2.5 py-1 rounded-full"
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[#444]  bg-[rgba(255,255,255,0.04)]  px-2.5 py-1 rounded-full"
                   >
                     {tag}
                     <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:text-[#ef4444] transition-colors">
@@ -293,14 +293,14 @@ export default function ForumNewPage() {
                   onChange={e => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
                   placeholder="Add a tag..."
-                  className="w-full h-9 px-4 rounded-xl bg-white  border border-[#e8e8e8]  text-[12px] text-[#111]  placeholder:text-[#bbb]  focus:outline-none focus:border-[#ccc]  transition-colors"
+                  className="w-full h-9 px-4 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[12px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors"
                 />
               )}
             </div>
 
             {/* Files */}
             <div>
-              <label className="block text-[12px] font-medium text-[#555]  mb-1.5">
+              <label className="block text-[12px] font-medium text-[#444]  mb-1.5">
                 Files (max 5)
               </label>
 
@@ -309,13 +309,13 @@ export default function ForumNewPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-8 rounded-xl border-2 border-dashed border-[#e0e0e0]  hover:border-[#ccc]  bg-white  transition-colors flex flex-col items-center justify-center gap-2"
+                  className="w-full py-8 rounded-xl border-2 border-dashed border-[rgba(255,255,255,0.12)]  hover:border-[rgba(255,255,255,0.15)]  bg-[#08090a]  transition-colors flex flex-col items-center justify-center gap-2"
                 >
-                  <MIcon name="cloud_upload" size={28} className="text-[#ccc] " />
-                  <span className="text-[13px] text-[#999] ">
+                  <MIcon name="cloud_upload" size={28} className="text-[#444] " />
+                  <span className="text-[13px] text-[#898e97] ">
                     Click to select files
                   </span>
-                  <span className="text-[11px] text-[#bbb] ">
+                  <span className="text-[11px] text-[#555] ">
                     {5 - files.length} slot{5 - files.length !== 1 ? "s" : ""} remaining
                   </span>
                 </button>
@@ -334,9 +334,9 @@ export default function ForumNewPage() {
                   {files.map((pf, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 bg-white  rounded-lg border border-[#e8e8e8]  p-3"
+                      className="flex items-center gap-3 bg-[#08090a]  rounded-lg border border-[rgba(255,255,255,0.08)]  p-3"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-[#f0f0f0]  flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.04)]  flex items-center justify-center flex-shrink-0">
                         <MIcon
                           name={
                             pf.status === "done" ? "check_circle" :
@@ -354,7 +354,7 @@ export default function ForumNewPage() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-medium text-[#333]  truncate">{pf.file.name}</p>
+                        <p className="text-[12px] font-medium text-[#e3e3e3]  truncate">{pf.file.name}</p>
                         <p className="text-[11px] text-[#999]">
                           {formatFileSize(pf.file.size)}
                           {pf.error && <span className="text-red-500 ml-2">{pf.error}</span>}
@@ -364,7 +364,7 @@ export default function ForumNewPage() {
                         <button
                           type="button"
                           onClick={() => handleRemoveFile(i)}
-                          className="text-[#999] hover:text-[#ef4444] transition-colors flex-shrink-0"
+                          className="text-[#898e97] hover:text-[#ef4444] transition-colors flex-shrink-0"
                         >
                           <MIcon name="close" size={14} />
                         </button>
@@ -388,7 +388,7 @@ export default function ForumNewPage() {
               <button
                 type="submit"
                 disabled={!title.trim() || files.length === 0 || submitting}
-                className="h-10 px-6 rounded-full bg-[#111]  text-white  text-[13px] font-semibold disabled:opacity-40 hover:bg-[#222]  active:scale-[0.97] transition-all duration-75 flex items-center gap-2"
+                className="h-10 px-6 rounded-full bg-[#f7f8f8]  text-[#08090a]  text-[13px] font-semibold disabled:opacity-40 hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75 flex items-center gap-2"
               >
                 {submitting ? (
                   <>
