@@ -104,7 +104,7 @@ export function Hero() {
             <span>Join our Telegram channel</span>
           </a>
           <h1
-            className="text-center text-[clamp(24px,4vw,46px)] leading-[1.1] tracking-[-0.03em] whitespace-nowrap text-[#000] pb-1 font-medium"
+            className="text-center text-[clamp(24px,4vw,46px)] leading-[1.1] tracking-[-0.03em] whitespace-nowrap text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             Private sharing made simple
