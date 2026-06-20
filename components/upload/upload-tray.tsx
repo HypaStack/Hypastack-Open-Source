@@ -223,100 +223,100 @@ export function UploadTray({
                       )}
                   
                   {state === "selected" && uploadType !== "cdn" && (
-                    <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ margin: "0 12px 8px", borderRadius: 6 }}>
+                    <div className="bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ margin: "0 12px 12px", borderRadius: 12 }}>
                       <div
-                        className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] dark:hover:bg-[#222] transition-all duration-75"
-                        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
+                        className="flex items-center justify-between cursor-pointer hover:bg-black/5 dark:hover:bg-[rgba(255,255,255,0.03)] transition-all duration-150"
+                        style={{ height: 44, paddingLeft: 14, paddingRight: 14, borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
                         onClick={() => setBurnOnRead(!burnOnRead)}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <MIcon name="local_fire_department" size={16} className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-                          <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]" style={{ fontSize: 13 }}>Burn after download</span>
+                        <div className="flex items-center gap-3">
+                          <MIcon name="local_fire_department" size={18} className="text-[#888] dark:text-[#898e97]" />
+                          <span className="text-[#333] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Burn after download</span>
                         </div>
                         <div
-                          className="relative shrink-0 transition-colors"
-                          style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: burnOnRead ? "#555" : "#ddd", border: burnOnRead ? "none" : "1px solid #ccc" }}
+                          className="relative shrink-0 transition-colors duration-200"
+                          style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: burnOnRead ? "#f7f8f8" : "rgba(255,255,255,0.08)", border: burnOnRead ? "none" : "1px solid rgba(255,255,255,0.1)" }}
                         >
                           <div
-                            className="absolute top-[3px] transition-transform bg-white"
-                            style={{ width: 14, height: 14, borderRadius: 7, left: burnOnRead ? 17 : 3 }}
+                            className="absolute top-[2px] transition-transform duration-200"
+                            style={{ width: 14, height: 14, borderRadius: 7, left: burnOnRead ? 19 : 3, backgroundColor: burnOnRead ? "#0e0f10" : "#898e97" }}
                           />
                         </div>
                       </div>
 
-                      <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
+                      <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
 
                       {isMultiFile ? (
                         <>
                           <div
-                            className="flex items-center justify-between cursor-pointer hover:bg-[#ebebeb] dark:hover:bg-[#222] transition-all duration-75"
-                            style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
+                            className="flex items-center justify-between cursor-pointer hover:bg-black/5 dark:hover:bg-[rgba(255,255,255,0.03)] transition-all duration-150"
+                            style={{ height: 44, paddingLeft: 14, paddingRight: 14 }}
                             onClick={() => setZipMultipleFiles(!zipMultipleFiles)}
                           >
-                            <div className="flex items-center gap-2.5">
-                              <MIcon name="folder_zip" size={16} className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-                              <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]" style={{ fontSize: 13 }}>Zip the files</span>
+                            <div className="flex items-center gap-3">
+                              <MIcon name="folder_zip" size={18} className="text-[#888] dark:text-[#898e97]" />
+                              <span className="text-[#333] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Zip the files</span>
                             </div>
                             <div
-                              className="relative shrink-0 transition-colors"
-                              style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: zipMultipleFiles ? "#555" : "#ddd", border: zipMultipleFiles ? "none" : "1px solid #ccc" }}
+                              className="relative shrink-0 transition-colors duration-200"
+                              style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: zipMultipleFiles ? "#f7f8f8" : "rgba(255,255,255,0.08)", border: zipMultipleFiles ? "none" : "1px solid rgba(255,255,255,0.1)" }}
                             >
                               <div
-                                className="absolute top-[3px] transition-transform bg-white"
-                                style={{ width: 14, height: 14, borderRadius: 7, left: zipMultipleFiles ? 17 : 3 }}
+                                className="absolute top-[2px] transition-transform duration-200"
+                                style={{ width: 14, height: 14, borderRadius: 7, left: zipMultipleFiles ? 19 : 3, backgroundColor: zipMultipleFiles ? "#0e0f10" : "#898e97" }}
                               />
                             </div>
                           </div>
-                          <div style={{ padding: "0 12px 6px" }}>
-                            <p style={{ fontSize: 11, color: "#888", lineHeight: 1.4 }}>
-                              Uploading multiple files in a ZIP counts as 1 file, uploading multiple files without ZIP&apos;ing, will count normally.
+                          <div style={{ padding: "0 14px 12px" }}>
+                            <p className="text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, lineHeight: 1.4 }}>
+                              Uploading multiple files in a ZIP counts as 1 file.
                             </p>
                           </div>
-                            <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
+                            <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
                             {zipMultipleFiles && (
                               <>
-                                <div style={{ padding: "6px 8px 4px" }}>
-                                  <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                                    <MIcon name="folder_zip" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-                                    <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Archive name</span>
+                                <div style={{ padding: "12px 14px 12px" }}>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <MIcon name="folder_zip" size={16} className="text-[#999] dark:text-[#898e97]" />
+                                    <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Archive name</span>
                                   </div>
                                   <input
                                     type="text"
                                     value={customFilename}
                                     onChange={(e) => setCustomFilename(e.target.value)}
                                     placeholder="hypastack-archive"
-                                    className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
-                                    style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                                    className="w-full placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none focus:border-[#888] dark:focus:border-[#f7f8f8] bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f7f8f8] transition-colors duration-150"
+                                    style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 8, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                                   />
                                 </div>
-                                <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
+                                <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
                             </>
                           )}
                         </>
                       ) : (
                         <>
-                          <div style={{ padding: "6px 8px 4px" }}>
-                            <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                              <MIcon name="edit" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-                              <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Rename file</span>
+                          <div style={{ padding: "12px 14px 12px" }}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <MIcon name="edit" size={16} className="text-[#999] dark:text-[#898e97]" />
+                              <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Rename file</span>
                             </div>
                             <input
                               type="text"
                               value={customFilename}
                               onChange={(e) => setCustomFilename(e.target.value)}
                               placeholder={files[0]?.file.name || "example.pdf"}
-                              className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
-                              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                              className="w-full placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none focus:border-[#888] dark:focus:border-[#f7f8f8] bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f7f8f8] transition-colors duration-150"
+                              style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 8, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                             />
                           </div>
-                          <div className="bg-black/5 dark:bg-white/5" style={{ height: 1, margin: "4px 8px" }} />
+                          <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
                         </>
                       )}
 
-                      <div style={{ padding: "6px 8px 6px" }}>
-                        <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                          <MIcon name="article" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-                          <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Note</span>
+                      <div style={{ padding: "12px 14px 14px" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <MIcon name="article" size={16} className="text-[#999] dark:text-[#898e97]" />
+                          <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Note</span>
                         </div>
                         <textarea
                           value={note}
@@ -324,8 +324,8 @@ export function UploadTray({
                           placeholder="Optional message..."
                           maxLength={100}
                           rows={2}
-                          className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] resize-none bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
-                          style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
+                          className="w-full placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none focus:border-[#888] dark:focus:border-[#f7f8f8] resize-none bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f7f8f8] transition-colors duration-150"
+                          style={{ paddingLeft: 12, paddingRight: 12, paddingTop: 10, paddingBottom: 10, borderRadius: 8, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                         />
                       </div>
                     </div>
