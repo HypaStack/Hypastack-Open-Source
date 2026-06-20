@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react"
 import { MIcon } from "@/components/ui/material-icon"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion } from "motion/react"
 import { apiFetch } from "@/lib/fetch"
@@ -76,27 +77,27 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 6, padding: 24, border: '1px solid #e5e5e5', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
+            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
               <div className="flex items-center gap-3 mb-3">
                 <MIcon name="error" className="text-red-500" size={28} />
-                <h2 className="text-[20px] font-semibold text-[#111] tracking-tight">
+                <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
                   Paste not found
                 </h2>
               </div>
-              <p className="text-[13px] text-[#888] mb-6 leading-relaxed">
+              <p className="text-[13px] text-[#898e97] mb-6 leading-relaxed">
                 {error || "The paste you're looking for doesn't exist or has expired."}
               </p>
               <div className="flex gap-2">
-                <Link
+                <Button
                   href="/manage/dumpster"
-                  className="hover:bg-[#111] active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#ffffff', backgroundColor: '#030303' }}
-                >New Paste</Link>
-                <Link
+                  variant="landing-primary"
+                  className="flex-1"
+                >New Paste</Button>
+                <Button
                   href="/"
-                  className="hover:bg-[#f0f0f0] active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#333', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5' }}
-                >Home</Link>
+                  variant="landing-secondary"
+                  className="flex-1"
+                >Home</Button>
               </div>
             </div>
           </motion.div>

@@ -86,9 +86,9 @@ export default function DumpsterPage() {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 rounded-md bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-[14px] font-medium flex items-center gap-2 border border-red-100 dark:border-red-500/20">
-          <MIcon name="error" size={18} />
-          {error}
+        <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] p-3 rounded-[8px] mb-6">
+          <MIcon name="error" size={15} className="shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
       )}
 

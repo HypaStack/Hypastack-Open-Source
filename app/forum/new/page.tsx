@@ -377,8 +377,9 @@ export default function ForumNewPage() {
 
             {/* Error */}
             {error && (
-              <div className="bg-red-50  border border-red-200  rounded-xl p-3 text-[13px] text-red-600 ">
-                {error}
+              <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] p-3 rounded-[8px]">
+                <MIcon name="error" size={15} className="shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 

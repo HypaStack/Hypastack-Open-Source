@@ -305,9 +305,9 @@ export default function DownloadPage() {
 
               <div style={{ padding: '0 12px 12px' }}>
                 {(rateLimitError || downloadCooldown > 0) && (
-                  <div className="mb-3 text-center" style={{ borderRadius: 6, backgroundColor: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', padding: '10px 14px' }}>
-                    <p className="text-[12px] font-medium text-amber-600">{rateLimitError?.message || "Too many downloads."}</p>
-                    <p className="text-[11px] text-amber-500/60 mt-0.5">Try again in {downloadCooldown}s</p>
+                  <div className="mb-3 text-center flex flex-col items-center gap-1 text-[13px] text-[#f59e0b] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.15)] p-3 rounded-[8px]">
+                    <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
+                    <span className="text-[11px] opacity-70">Try again in {downloadCooldown}s</span>
                   </div>
                 )}
                 {downloaded ? (
