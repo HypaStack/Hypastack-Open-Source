@@ -31,7 +31,7 @@ export function Hero() {
   }
   return (
     <section className="relative min-h-screen pb-32">
-      <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#ffffff] border-b border-[rgba(0,0,0,0.1)]">
+      <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#08090a] border-b border-[rgba(255,255,255,0.05)]">
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
           <defs>
             <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
