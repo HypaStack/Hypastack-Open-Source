@@ -42,7 +42,7 @@ export function Hero() {
           className="flex flex-col items-start px-6 sm:px-16 w-full max-w-[1440px] relative z-10 pt-16 sm:pt-24"
         >
           <h1
-            className="text-left text-[clamp(32px,5.5vw,68px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
+            className="text-left text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             The frictionless way to distribute sensitive assets to anyone, anywhere.
