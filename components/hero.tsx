@@ -30,8 +30,9 @@ export function Hero() {
     router.push(isAuthenticated ? "/manage/files" : "/signin");
   }
   return (
-    <section className="relative min-h-screen pb-32">
-      <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#08090a]">
+    <section className="relative w-full">
+      <link rel="preload" as="image" href="https://r2.hypastack.com/cdn/byhhdj097uf6/hero.jpg" fetchPriority="high" />
+      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[10vh] sm:pt-[15vh]">
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
         </svg>
 
@@ -50,8 +51,17 @@ export function Hero() {
           <p className="mt-4 text-[14px] sm:text-[16px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-full sm:whitespace-nowrap">
             The simplest way to host, share, and deliver files without the extra overhead
           </p>
+
+          <div className="w-full mt-16 sm:mt-24">
+            <img 
+              src="https://r2.hypastack.com/cdn/byhhdj097uf6/hero.jpg" 
+              alt="Hypastack Platform Preview" 
+              fetchPriority="high"
+              loading="eager"
+              className="w-full h-auto object-contain rounded-2xl sm:rounded-3xl lg:rounded-[32px]"
+            />
+          </div>
         </motion.div>
-        
         
       </div>
     </section>
