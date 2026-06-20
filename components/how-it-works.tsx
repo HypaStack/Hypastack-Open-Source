@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="relative flex flex-col items-center">
-      <div className="mt-0 relative w-full max-w-[1440px] flex flex-col bg-[#08090a] z-[60]">
+      <div className="mt-[100px] sm:mt-[150px] lg:mt-[200px] relative w-full max-w-[1440px] flex flex-col bg-[#08090a] z-[60]">
         <div className="w-full px-6 sm:px-16 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
