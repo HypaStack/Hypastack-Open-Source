@@ -67,20 +67,19 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="max-w-xl relative z-10"
+              className="w-full relative z-10"
             >
               <h2
-                className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
+                className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
                 style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
               >
-                Trust the code not the company.
+                Trust the code <span className="text-[#898e97]">not the company.</span>
               </h2>
-              <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#898e97]">
-                Every line of our code is public. Inspect our architecture, audit our security, or host it yourself. We believe trust is earned through complete transparency.
-              </p>
-              <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="mt-8">
-                Source code
-              </Button>
+              <div className="mt-12 sm:mt-16">
+                <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg">
+                  Source code
+                </Button>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -89,15 +88,15 @@ export function HowItWorks() {
         <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
           <div className="w-full px-6 sm:px-16 py-12 sm:py-20 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">
-              <div className="text-left flex-1">
+              <div className="text-left flex-1 w-full max-w-none">
                 <h2
-                  className="text-[clamp(20px,2.8vw,32px)] leading-[1.4] tracking-[-0.02em] text-[#f7f8f8]"
+                  className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8]"
                   style={{
                     fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif",
                     fontWeight: 500,
                   }}
                 >
-                  "We switched to Hypastack for hosting our files and haven't looked back. It delivers huge files near-instantly with zero overhead and absolute privacy."
+                  "We switched to Hypastack for hosting our files and haven't looked back. <span className="text-[#898e97]">It delivers huge files near-instantly with zero overhead and absolute privacy."</span>
                 </h2>
               </div>
               <div className="hidden sm:flex flex-col items-end text-right shrink-0">
