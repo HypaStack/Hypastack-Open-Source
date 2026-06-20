@@ -236,7 +236,7 @@ export default function CreateAccountPage() {
                 <div
                   className="flex items-center border border-[rgba(255,255,255,0.08)] bg-[#0a0b0c] focus-within:border-[rgba(255,255,255,0.2)] transition-colors rounded-full"
                 >
-                  <span className="pl-4 text-[#898e97]"><MIcon name="person" size={15} /></span>
+                  <div className="pl-4 flex items-center justify-center text-[#898e97] h-full"><MIcon name="person" size={16} /></div>
                   <input
                     type="text"
                     value={nickname}

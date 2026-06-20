@@ -95,7 +95,7 @@ export default function SignInPage() {
                   <div
                     className="flex items-center border border-[rgba(255,255,255,0.08)] bg-[#0a0b0c] focus-within:border-[rgba(255,255,255,0.2)] transition-colors rounded-full"
                   >
-                    <span className="pl-4 text-[#898e97]"><MIcon name="key" size={15} /></span>
+                    <div className="pl-4 flex items-center justify-center text-[#898e97] h-full"><MIcon name="key" size={16} /></div>
                     <input
                       type={showKey ? "text" : "password"}
                       value={accessKey}
@@ -113,10 +113,10 @@ export default function SignInPage() {
                     <button
                       type="button"
                       onClick={() => setShowKey(!showKey)}
-                      className="pr-4 text-[#898e97] hover:text-[#f7f8f8] transition-colors outline-none"
+                      className="pr-4 flex items-center justify-center text-[#898e97] hover:text-[#f7f8f8] transition-colors outline-none h-full"
                       aria-label={showKey ? "Hide" : "Show"}
                     >
-                      {showKey ? <MIcon name="visibility_off" size={17} /> : <MIcon name="visibility" size={17} />}
+                      {showKey ? <MIcon name="visibility_off" size={18} /> : <MIcon name="visibility" size={18} />}
                     </button>
                   </div>
                 </div>
