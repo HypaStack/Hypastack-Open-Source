@@ -46,38 +46,38 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-white">
+    <main className="flex min-h-screen flex-col bg-[#08090a]">
 
       <section className="flex-1 pt-28 pb-40">
         <div className="mx-auto max-w-[1200px] px-8 sm:px-16">
 
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 text-[13px] text-[#999] hover:text-[#111] transition-colors mb-12 group"
+            className="inline-flex items-center gap-1.5 text-[13px] text-[#898e97] hover:text-[#f7f8f8] transition-colors mb-12 group"
           >
             <MIcon name="arrow_back" size={15} className="group-hover:-translate-x-0.5 transition-transform" />
             All posts
           </Link>
 
           <header className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#111] tracking-tight leading-tight mb-5">
+            <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold text-[#f7f8f8] tracking-tight leading-[1.05] -ml-0.5 mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
               {post.title}
             </h1>
-            <p className="text-[17px] text-[#666] leading-relaxed">
+            <p className="text-[17px] text-[#898e97] leading-relaxed">
               {post.summary}
             </p>
           </header>
 
-          <div className="w-full h-px bg-[#ebebeb] mb-12" />
+          <div className="w-full h-px bg-[rgba(255,255,255,0.08)] mb-12" />
 
           <article className="blog-prose">
             <MDXRemote source={source} />
           </article>
 
-          <div className="mt-20 pt-10 border-t border-[#ebebeb]">
+          <div className="mt-20 pt-10 border-t border-[rgba(255,255,255,0.08)]">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 text-[14px] text-[#999] hover:text-[#111] transition-colors group"
+              className="inline-flex items-center gap-1.5 text-[14px] text-[#898e97] hover:text-[#f7f8f8] transition-colors group"
             >
               <MIcon name="arrow_back" size={15} className="group-hover:-translate-x-0.5 transition-transform" />
               Back to all posts
