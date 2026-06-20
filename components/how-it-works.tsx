@@ -32,7 +32,7 @@ export function HowItWorks() {
         </div>
       </div>
 
-      <div className="relative w-full max-w-[1440px] mt-32 sm:mt-64">
+      <div className="relative w-full max-w-[1440px] mt-[150px] sm:mt-[250px] lg:mt-[350px]">
         <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
 
           <div className="w-full px-6 sm:px-16 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
@@ -59,7 +59,7 @@ export function HowItWorks() {
           </div>
         </div>
       </div>
-      <div className="relative w-full max-w-[1440px] mt-32 sm:mt-64">
+      <div className="relative w-full max-w-[1440px] mt-[150px] sm:mt-[250px] lg:mt-[350px]">
         <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
           <div className="w-full px-6 sm:px-16 py-12 sm:py-20 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">

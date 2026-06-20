@@ -32,7 +32,7 @@ export function Faq() {
   return (
     <section id="faq" className="relative flex flex-col items-center overflow-visible">
 
-      <div className="relative w-full max-w-[1440px] mt-16 sm:mt-24">
+      <div className="relative w-full max-w-[1440px] mt-0">
       <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
