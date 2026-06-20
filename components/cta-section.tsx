@@ -68,6 +68,7 @@ export function CtaSection() {
           </motion.div>
         </div>
       </div>
+      </div>
     </section>
   );
 }
