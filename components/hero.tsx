@@ -39,7 +39,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 30, filter: "blur(16px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-start px-6 sm:px-16 w-full max-w-[1200px] relative z-10"
+          className="flex flex-col items-start px-6 sm:px-16 w-full max-w-[1440px] relative z-10"
         >
           <a
             href="https://t.me/hypastack"
@@ -67,7 +67,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
-          className="absolute left-0 right-0 flex flex-wrap justify-start items-center gap-2 z-20 px-6 sm:px-16 w-full max-w-[1200px] mx-auto bottom-6 md:bottom-auto md:top-[calc(100%+2px)]"
+          className="absolute left-0 right-0 flex flex-wrap justify-start items-center gap-2 z-20 px-6 sm:px-16 w-full max-w-[1440px] mx-auto bottom-6 md:bottom-auto md:top-[calc(100%+2px)]"
         >
           <a
             href="https://github.com/HypaStack/Hypastack-Open-Source"

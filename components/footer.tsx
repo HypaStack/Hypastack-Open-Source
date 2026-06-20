@@ -83,7 +83,7 @@ function FooterPopover({ category }: { category: typeof columns[0] }) {
 export function Footer() {
   return (
     <>
-      <div className="w-full max-w-[1200px] mx-auto flex flex-col relative z-[60]">
+      <div className="w-full max-w-[1440px] mx-auto flex flex-col relative z-[60]">
         <footer className="w-full bg-[#08090a] text-[#a3a3a3] pt-6 pb-8 px-8 md:px-16 lg:px-20 font-sans relative">
           <div className="w-full mx-auto relative z-20">
             <div className="flex items-start justify-between mb-4 mt-2">

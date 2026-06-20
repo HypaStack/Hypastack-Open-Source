@@ -38,7 +38,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1200px] bg-[rgba(8,9,10,0.85)] backdrop-blur-2xl rounded-b-2xl py-2 px-4 sm:px-6">
+    <header className="fixed z-[9999] top-0 left-0 right-0 mx-auto w-full max-w-[1440px] bg-[rgba(8,9,10,0.85)] backdrop-blur-2xl rounded-b-2xl py-2 px-4 sm:px-6">
       <div className="w-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
           <PageLogo size={32} borderRadius={8} />

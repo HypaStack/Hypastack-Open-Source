@@ -11,7 +11,7 @@ export function CtaSection() {
   return (
     <section className="mt-32 sm:mt-48 lg:mt-64 relative flex flex-col items-center overflow-visible">
 
-      <div className="relative w-full max-w-[1200px]">
+      <div className="relative w-full max-w-[1440px]">
       <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
         <div className="w-full px-8 sm:px-16 pt-16 pb-16 text-left relative z-10">
           <motion.div
