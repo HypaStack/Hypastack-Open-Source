@@ -410,15 +410,14 @@ function AvatarCropperModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[420px] flex flex-col bg-[#ebebeb] dark:bg-[#333]"
+        className="relative w-full max-w-[420px] flex flex-col bg-[#f0f0f0] dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] sm:rounded-[20px]"
         style={{
-          borderRadius: 6,
-          boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.12)',
-          padding: 3,
+          boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
+          padding: 4,
         }}
       >
-        <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 6 }}>
-        <div className="relative w-full overflow-hidden" style={{ height: 400, borderRadius: 6 }}>
+        <div className="relative w-full flex flex-col bg-white dark:bg-[#08090a] rounded-[16px] overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ height: 400 }}>
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -433,20 +432,24 @@ function AvatarCropperModal({
           />
         </div>
 
-        <div className="flex gap-1" style={{ marginTop: 4 }}>
+        <div className="flex gap-3 px-4 py-4">
           <button 
             onClick={onClose} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 400, color: '#666' }}
+            className="flex-1 relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
           >
-            Cancel
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+              Cancel
+            </div>
           </button>
           <button 
             onClick={handleUpload} 
-            className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 500, color: '#111' }}
+            className="flex-1 relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
           >
-            Save
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.25)] group-hover:to-[rgba(255,255,255,0.35)] transition-colors duration-300" />
+            <div className="relative bg-[#f7f8f8] rounded-full w-full h-[40px] flex items-center justify-center text-[#111111] text-[14px] font-medium">
+              Save
+            </div>
           </button>
         </div>
         </div>
