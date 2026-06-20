@@ -259,12 +259,15 @@ export default function CreateAccountPage() {
               )}
 
               <label className="flex items-start gap-3 cursor-pointer select-none pt-2">
-                <input
-                  type="checkbox"
-                  checked={ageConfirmed}
-                  onChange={(e) => setAgeConfirmed(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-[#f7f8f8] shrink-0"
-                />
+                <div className="relative flex items-center justify-center shrink-0 mt-[3px] h-[16px] w-[16px]">
+                  <input
+                    type="checkbox"
+                    checked={ageConfirmed}
+                    onChange={(e) => setAgeConfirmed(e.target.checked)}
+                    className="peer appearance-none h-full w-full border border-[rgba(255,255,255,0.2)] bg-[#0a0b0c] rounded-[4px] checked:bg-[#f7f8f8] checked:border-[#f7f8f8] transition-all cursor-pointer focus:outline-none"
+                  />
+                  <MIcon name="check" size={13} className="absolute pointer-events-none text-[#08090a] opacity-0 peer-checked:opacity-100 transition-opacity" />
+                </div>
                 <span className="text-[12px] text-[#898e97] leading-relaxed">
                   I am at least 18 years old and accept the{" "}
                   <Link href="/terms" className="text-[#f7f8f8] font-semibold hover:underline">Terms</Link>
