@@ -80,8 +80,8 @@ export function ContextMenuItem({
   accent?: "danger" | "success" | "warning"
   disabled?: boolean
 }) {
-  let colorClass = "text-[#333] dark:text-[#ccc]"
-  let hoverBg = "hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a]"
+  let colorClass = "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"
+  let hoverBg = "hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.06)]"
   
   if (accent === "danger") {
     colorClass = "text-red-500"
@@ -130,7 +130,7 @@ export function ContextMenuLink({
       href={href}
       onClick={onClick}
       target={target}
-      className="w-full flex items-center gap-2.5 px-3 py-2 text-left text-[13px] font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] active:scale-[0.98] transition-colors"
+      className="w-full flex items-center gap-2.5 px-3 py-2 text-left text-[13px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.98] transition-colors"
       style={{ borderRadius: 6 }}
     >
       <MIcon name={icon} size={16} />

@@ -71,7 +71,7 @@ function NavRow({
       onClick={onNavigate}
       className={`group relative flex items-center gap-3 rounded-md text-sm font-medium transition-colors duration-150 cursor-pointer ${
         active
-          ? 'bg-[#007AFF]/10 text-[#007AFF]'
+          ? 'bg-[#171717] dark:bg-[#f7f8f8]/10 text-[#007AFF]'
           : 'text-[#666] dark:text-[#888] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] hover:text-[#171717] dark:hover:text-[#e3e3e3]'
       }`}
       style={{
@@ -83,7 +83,7 @@ function NavRow({
       <MIcon 
         name={item.icon} 
         size={18} 
-        className={`shrink-0 transition-colors ${active ? 'text-[#007AFF]' : 'text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:group-hover:text-[#e3e3e3]'}`} 
+        className={`shrink-0 transition-colors ${active ? 'text-[#171717] dark:text-[#f7f8f8]' : 'text-[#666] dark:text-[#898e97] group-hover:text-[#171717] dark:group-hover:text-[#f7f8f8]'}`} 
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
         <span className="truncate">{item.label}</span>
@@ -273,7 +273,7 @@ function ManageLayoutInner({
 
   return (
     <>
-    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#111111] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
+    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#08090a] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
         <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
           <PageLogo size={32} borderRadius={8} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
@@ -286,8 +286,8 @@ function ManageLayoutInner({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative flex items-center justify-center h-12 w-12 rounded-md transition-colors shrink-0 ${
-                  active ? 'bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]' : 'text-[#666] dark:text-[#888] hover:bg-white dark:hover:bg-[#2a2a2a] hover:text-[#171717] dark:hover:text-[#e3e3e3]'
+                className={`relative flex items-center justify-center h-12 w-12 rounded-[14px] transition-colors shrink-0 ${
+                  active ? 'bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]' : 'text-[#666] dark:text-[#898e97] hover:bg-white dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#171717] dark:hover:text-[#f7f8f8]'
                 }`}
                 aria-label={item.label}
               >
@@ -301,7 +301,7 @@ function ManageLayoutInner({
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`relative flex items-center justify-center h-12 w-12 rounded-md hover:bg-white dark:hover:bg-[#2a2a2a] transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white dark:bg-[#2a2a2a]' : ''}`}
+            className={`relative flex items-center justify-center h-12 w-12 rounded-[14px] hover:bg-white dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white dark:bg-[rgba(255,255,255,0.08)]' : ''}`}
             aria-label="Account menu"
           >
             <div className="h-7 w-7">
@@ -329,7 +329,7 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white dark:bg-[#1c1c1c] rounded-md border border-[#e5e5e5] dark:border-transparent py-2"
+                className="fixed z-[100] bg-white dark:bg-[#0a0b0c] rounded-[12px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
                 style={{ 
                   bottom: '68px', 
                   left: '8px', 
@@ -348,36 +348,36 @@ function ManageLayoutInner({
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); openPreferences("account"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="person" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="person" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
                     <span>Account settings</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); openPreferences("general"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="settings" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="settings" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
                     <span>Workspace settings</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="card_giftcard" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="card_giftcard" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
                     <span>Refer and earn</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); logout(); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#007AFF]/10 hover:text-[#007AFF] transition-colors cursor-pointer"
+                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="logout" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#007AFF] transition-colors" />
+                    <MIcon name="logout" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
                     <span>Log out</span>
                   </button>
                 </div>
@@ -388,8 +388,8 @@ function ManageLayoutInner({
       </aside>
 
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-md bg-white dark:bg-[#1a1a1a] overflow-hidden relative"
-        style={{ width: SIDEBAR_WIDTH, borderRight: 'none', boxShadow: '0 0 0 1px rgba(0,0,0,0.06)' }}
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[12px] bg-white dark:bg-[#0a0b0c] overflow-hidden relative"
+        style={{ width: SIDEBAR_WIDTH, border: 'none', boxShadow: 'none' }}
       >
         <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden w-full">
           <AnimatePresence initial={false} custom={direction}>
@@ -402,7 +402,7 @@ function ManageLayoutInner({
               exit="exit"
               transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
               style={{ willChange: 'transform', width: '100%', height: '100%' }}
-              className="flex flex-col bg-white dark:bg-[#1a1a1a]"
+              className="flex flex-col bg-white dark:bg-[#0a0b0c]"
             >
               <SidebarNavContent 
                 section={currentSection} 
@@ -430,7 +430,7 @@ function ManageLayoutInner({
               </div>
               <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
                 <div 
-                  className="h-full rounded-full bg-[#007AFF]" 
+                  className="h-full rounded-full bg-[#171717] dark:bg-[#f7f8f8]" 
                   style={{ width: `${usedPct}%` }} 
                 />
               </div>
@@ -439,7 +439,7 @@ function ManageLayoutInner({
           
           <button
             type="button"
-            className="w-full h-9 bg-black text-white text-sm font-medium rounded-md hover:bg-[#333] transition-colors cursor-pointer mt-4"
+            className="w-full h-[44px] bg-[#030303] text-[#ffffff] text-[15px] font-semibold rounded-full hover:bg-[#1a1a1a] hover:ring-[4px] hover:ring-[rgba(0,0,0,0.15)] dark:bg-[linear-gradient(to_top_right,#242526,#242526,#666c73)] dark:text-[#f7f8f8] dark:hover:bg-[linear-gradient(to_top_right,#242526,#242526,#888f98)] dark:hover:ring-0 transition-all duration-200 mt-4 active:scale-[0.97]"
           >
             Upgrade plan
           </button>
@@ -470,7 +470,7 @@ function ManageLayoutInner({
             className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden pointer-events-auto"
             style={{
               height: '90vh',
-              backgroundColor: resolvedTheme === 'dark' ? '#1a1a1a' : '#f5f5f5',
+              backgroundColor: resolvedTheme === 'dark' ? '#0a0b0c' : '#f5f5f5',
               borderRadius: '18px 18px 0 0',
               willChange: 'transform',
             }}
@@ -580,10 +580,10 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-md bg-white dark:bg-[#171717] overflow-hidden relative">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#0a0b0c] overflow-hidden relative" style={{ border: 'none', boxShadow: 'none' }}>
         <header
-          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#171717] lg:hidden safe-area-top relative z-10"
-          style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid #2a2a2a' : '1px solid #f0f0f0' }}
+          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#0a0b0c] lg:hidden safe-area-top relative z-10"
+          style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
           <button
             type="button"
@@ -637,7 +637,7 @@ function ManageLayoutInner({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-6 right-6 z-[9999] max-w-sm w-full bg-white dark:bg-[#1c1c1c]"
+          className="fixed bottom-6 right-6 z-[9999] max-w-sm w-full bg-white dark:bg-[#0a0b0c]"
           style={{ borderRadius: 6, padding: 20, boxShadow: '0 0 0 1px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.08)' }}
         >
           <div className="flex flex-col">

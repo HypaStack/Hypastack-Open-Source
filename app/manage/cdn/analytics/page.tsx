@@ -4,8 +4,8 @@ import { MIcon } from "@/components/ui/material-icon"
 
 export default function CdnAnalyticsPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-full text-[#666] dark:text-[#888]">
-      <MIcon name="bar_chart" size={48} className="mb-4 text-[#ccc] dark:text-[#888]" />
+    <div className="flex flex-col items-center justify-center h-full text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]">
+      <MIcon name="bar_chart" size={48} className="mb-4 text-[#ccc] dark:text-[#888] dark:text-[#898e97]" />
       <h2 className="text-lg font-semibold text-[#171717] dark:text-[#e3e3e3] mb-1">Analytics</h2>
       <p className="text-sm">CDN analytics coming soon.</p>
     </div>

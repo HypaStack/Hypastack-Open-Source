@@ -111,29 +111,29 @@ export default function ManageLandingPage() {
           transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           className="grid grid-cols-1 sm:grid-cols-2 gap-6"
         >
-          <div className="flex flex-col h-full" style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '20px', border: '1px solid #e5e5e5' }}>
+          <div className="flex flex-col h-full bg-white dark:bg-[#0a0b0c] p-5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent">
             <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2 text-[#333]">
-                <MIcon name="database" size={18} className="text-[#999]" />
+              <div className="flex items-center gap-2 text-[#333] dark:text-[#f7f8f8]">
+                <MIcon name="database" size={18} className="text-[#999] dark:text-[#898e97]" />
                 <span className="text-[15px] font-medium">Storage</span>
               </div>
-              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#f5f5f5] text-[#171717]">
+              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.06)] text-[#171717]">
                 {tier}
               </span>
             </div>
-            <div className="h-1.5 rounded-full bg-[#f5f5f5] mb-3 overflow-hidden">
+            <div className="h-1.5 rounded-full bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.06)] mb-3 overflow-hidden">
               <div className="h-full rounded-full transition-all duration-500 ease-out" style={{ width: `${Math.min(usedPct, 100)}%`, backgroundColor: barColor }} />
             </div>
-            <div className="text-[13px] text-[#333]">
+            <div className="text-[13px] text-[#333] dark:text-[#f7f8f8]">
               <span className="font-medium">{formatStorage(usedBytes)}</span>
-              <span className="text-[#999] mx-1.5">of</span>
+              <span className="text-[#999] dark:text-[#898e97] mx-1.5">of</span>
               {formatStorage(maxBytes)}
             </div>
           </div>
 
-          <div className="flex flex-col h-full" style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '20px', border: '1px solid #e5e5e5' }}>
-            <div className="flex items-center gap-2 mb-5 text-[#333]">
-              <MIcon name="bar_chart" size={18} className="text-[#999]" />
+          <div className="flex flex-col h-full bg-white dark:bg-[#0a0b0c] p-5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent">
+            <div className="flex items-center gap-2 mb-5 text-[#333] dark:text-[#f7f8f8]">
+              <MIcon name="bar_chart" size={18} className="text-[#999] dark:text-[#898e97]" />
               <span className="text-[15px] font-medium">Overview</span>
             </div>
             <div className="flex flex-col gap-3.5">
@@ -143,11 +143,11 @@ export default function ManageLandingPage() {
                 { label: "CDN Assets", value: cdnAssets.length, icon: "cloud" },
               ].map(s => (
                 <div key={s.label} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5 text-[#333]">
-                    <MIcon name={s.icon} size={15} className="text-[#999]" />
+                  <div className="flex items-center gap-2.5 text-[#333] dark:text-[#f7f8f8]">
+                    <MIcon name={s.icon} size={15} className="text-[#999] dark:text-[#898e97]" />
                     <span className="text-[13px]">{s.label}</span>
                   </div>
-                  <span className="text-[14px] font-semibold text-[#111]">{s.value}</span>
+                  <span className="text-[14px] font-semibold text-[#111] dark:text-white">{s.value}</span>
                 </div>
               ))}
             </div>
@@ -158,8 +158,7 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col gap-0.5" 
-          style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '6px', border: '1px solid #e5e5e5' }}
+          className="flex flex-col gap-0.5 bg-white dark:bg-[#0a0b0c] p-1.5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent"
         >
           {[
             { icon: "hard_drive", label: "Drive", desc: "Manage your encrypted files", href: "/manage/files" },
@@ -168,12 +167,12 @@ export default function ManageLandingPage() {
             <Link
               key={action.label}
               href={action.href}
-              className="flex items-center gap-3.5 hover:bg-[#f5f5f5] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-md group"
+              className="flex items-center gap-3.5 hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.04)] dark:bg-[rgba(255,255,255,0.06)] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-md group"
             >
-              <MIcon name={action.icon} size={18} className="text-[#999] shrink-0" />
-              <span className="text-[14px] text-[#333] flex-1 font-medium">{action.label}</span>
-              <span className="text-[13px] text-[#999] hidden sm:block">{action.desc}</span>
-              <MIcon name="chevron_right" size={16} className="text-[#999] shrink-0" />
+              <MIcon name={action.icon} size={18} className="text-[#999] dark:text-[#898e97] shrink-0" />
+              <span className="text-[14px] text-[#333] dark:text-[#f7f8f8] flex-1 font-medium">{action.label}</span>
+              <span className="text-[13px] text-[#999] dark:text-[#898e97] hidden sm:block">{action.desc}</span>
+              <MIcon name="chevron_right" size={16} className="text-[#999] dark:text-[#898e97] shrink-0" />
             </Link>
           ))}
         </motion.div>
@@ -185,27 +184,27 @@ export default function ManageLandingPage() {
             transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="flex items-center justify-between mb-3 px-1">
-              <span className="text-[13px] font-medium text-[#888]">Recent files</span>
-              <Link href="/manage/files" className="flex items-center gap-1 text-[13px] text-[#888] hover:text-[#111] transition-colors">
+              <span className="text-[13px] font-medium text-[#888] dark:text-[#898e97]">Recent files</span>
+              <Link href="/manage/files" className="flex items-center gap-1 text-[13px] text-[#888] dark:text-[#898e97] hover:text-[#111] dark:text-white transition-colors">
                 View all <MIcon name="arrow_forward" size={12} />
               </Link>
             </div>
-            <div className="flex flex-col gap-0.5" style={{ borderRadius: 6, backgroundColor: '#ffffff', padding: '6px', border: '1px solid #e5e5e5' }}>
+            <div className="flex flex-col gap-0.5 bg-white dark:bg-[#0a0b0c] p-1.5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent">
               {recentFiles.map((file) => (
                 <Link
                    key={file.id}
                    href={`/d/${file.id}`}
-                   className="flex items-center gap-3.5 hover:bg-[#f5f5f5] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-md group"
+                   className="flex items-center gap-3.5 hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.04)] dark:bg-[rgba(255,255,255,0.06)] active:scale-[0.98] transition-all duration-75 px-4 py-3 rounded-md group"
                 >
-                  <span className="text-[10px] font-bold tracking-wider text-[#666] bg-[#f0f0f0] border border-[#e5e5e5] px-2 py-0.5 rounded-md shrink-0">
+                  <span className="text-[10px] font-bold tracking-wider text-[#666] dark:text-[#a1a1aa] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.08)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] px-2 py-0.5 rounded-md shrink-0">
                      {getFileExt(file.name)}
                    </span>
-                  <span className="text-[14px] text-[#333] flex-1 min-w-0 truncate font-medium">
+                  <span className="text-[14px] text-[#333] dark:text-[#f7f8f8] flex-1 min-w-0 truncate font-medium">
                     {file.name}
                   </span>
                   <div className="flex items-center gap-2 shrink-0">
                     {file.starred && <MIcon name="star" size={14} className="text-yellow-500" />}
-                    <span className="text-[13px] text-[#999] hidden sm:block">
+                    <span className="text-[13px] text-[#999] dark:text-[#898e97] hidden sm:block">
                       {new Date(file.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
                   </div>
@@ -222,11 +221,10 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-start gap-3 w-full"
-          style={{ borderRadius: 6, padding: '20px', backgroundColor: '#ffffff', border: '1px solid #e5e5e5' }}
+          className="flex items-start gap-3 w-full bg-white dark:bg-[#0a0b0c] p-5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent"
         >
-          <MIcon name={tip.icon} size={18} className="text-[#888] shrink-0 mt-0.5" />
-          <p className="text-[14px] text-[#333] leading-relaxed font-medium">{tip.text}</p>
+          <MIcon name={tip.icon} size={18} className="text-[#888] dark:text-[#898e97] shrink-0 mt-0.5" />
+          <p className="text-[14px] text-[#333] dark:text-[#f7f8f8] leading-relaxed font-medium">{tip.text}</p>
         </motion.div>
 
 
@@ -235,14 +233,13 @@ export default function ManageLandingPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="flex-1 flex flex-col"
-          style={{ borderRadius: 6, padding: '20px', backgroundColor: '#ffffff', border: '1px solid #e5e5e5', minHeight: '240px' }}
+          className="flex-1 flex flex-col bg-white dark:bg-[#0a0b0c] p-5 rounded-[16px] border border-[#e5e5e5] dark:border-transparent min-h-[240px]"
         >
-          <div className="flex items-center gap-2 mb-2 text-[#111]">
-            <MIcon name="mail" size={18} className="text-[#888]" />
+          <div className="flex items-center gap-2 mb-2 text-[#111] dark:text-white">
+            <MIcon name="mail" size={18} className="text-[#888] dark:text-[#898e97]" />
             <span className="text-[15px] font-medium">Send Feedback</span>
           </div>
-          <p className="text-[13px] text-[#666] mb-4 leading-relaxed">
+          <p className="text-[13px] text-[#666] dark:text-[#a1a1aa] mb-4 leading-relaxed">
             Anonymous. We read every message.
           </p>
           <textarea
@@ -252,15 +249,15 @@ export default function ManageLandingPage() {
             placeholder="What's on your mind?"
             maxLength={1000}
             disabled={feedbackState === "sending" || feedbackState === "sent"}
-            className="flex-1 w-full resize-none outline-none placeholder:text-[#999] transition-colors focus:bg-[#fafafa] bg-[#f5f5f5] border border-[#e5e5e5] rounded-md p-3 text-[14px] text-[#111] mb-4 min-h-[80px]"
+            className="flex-1 w-full resize-none outline-none placeholder:text-[#999] transition-colors focus:bg-[#fafafa] dark:focus:bg-[rgba(255,255,255,0.08)] bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] rounded-[14px] p-4 text-[14px] text-[#111] dark:text-[#f7f8f8] mb-4 min-h-[80px]"
           />
           <div className="flex items-center justify-between">
-            <span className="text-[12px] text-[#999] font-medium">{feedback.length}/1000</span>
+            <span className="text-[12px] text-[#999] dark:text-[#898e97] font-medium">{feedback.length}/1000</span>
             <button
               onClick={sendFeedback}
               disabled={!feedback.trim() || feedbackState === "sending" || feedbackState === "sent"}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-all duration-75 bg-[#f0f0f0] active:scale-[0.97] border border-[#e5e5e5]
-                ${feedbackState === "sent" ? "text-emerald-600" : feedbackState === "error" ? "text-red-500" : !feedback.trim() ? "text-[#999] cursor-not-allowed" : "text-[#333] hover:bg-[#e5e5e5]"}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[14px] font-medium transition-all duration-75 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.08)] active:scale-[0.97] border border-[#e5e5e5] dark:border-transparent
+                ${feedbackState === "sent" ? "text-emerald-600 dark:text-emerald-400" : feedbackState === "error" ? "text-red-500" : !feedback.trim() ? "text-[#999] dark:text-[#666] cursor-not-allowed" : "text-[#333] dark:text-[#f7f8f8] hover:bg-[#e5e5e5] dark:hover:bg-[rgba(255,255,255,0.12)]"}
               `}
             >
               <MIcon

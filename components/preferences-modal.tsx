@@ -100,9 +100,9 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[#222] pt-3 pb-1 rounded-md flex flex-col">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] pt-3 pb-1 rounded-md flex flex-col">
                 <div className="flex items-center justify-between px-4 pb-3 pt-1">
-                  <span className="text-[17px] font-semibold text-[#111] dark:text-[#f0f0f0]">Settings</span>
+                  <span className="text-[17px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">Settings</span>
                   <button
                     onClick={onClose}
                     className="flex items-center justify-center w-8 h-8 bg-[#ebebeb] dark:bg-[#333] active:bg-[#e5e5e5] dark:active:bg-[#444] rounded-full text-[#555] dark:text-[#ccc] transition-colors"
@@ -120,7 +120,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] dark:bg-[#222] rounded-md px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] rounded-md px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -158,7 +158,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 ${
         active
           ? "text-[#111111] dark:text-[#f0f0f0] font-medium"
-          : "text-[#888] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
+          : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:text-[#f7f8f8] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
       }`}
       style={{
         height: 34,
@@ -171,7 +171,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       {active && (
         <motion.div
           layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-white dark:bg-[#1c1c1c] rounded-md"
+          className="absolute inset-0 bg-white dark:bg-[#0a0b0c] rounded-md"
           style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
@@ -189,7 +189,7 @@ function GeneralTab() {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
-        <p className="text-[12px] font-medium text-[#888] dark:text-[#a1a1aa] mb-3">Appearance</p>
+        <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3">Appearance</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
           <ThemeTile variant="light" label="Light" active={theme === "light"} onClick={() => setTheme("light")} />
@@ -202,9 +202,9 @@ function GeneralTab() {
         style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
         onClick={() => setLangOpen((o) => !o)}
       >
-        <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Language</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111] dark:text-[#f0f0f0]">
-          {language.label} <span className="text-[#999] dark:text-[#a1a1aa]">({language.native})</span>
+        <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Language</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">
+          {language.label} <span className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]">({language.native})</span>
           <MIcon
             name="expand_more"
             size={15}
@@ -216,7 +216,7 @@ function GeneralTab() {
         <>
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
-            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: 4, borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
           >
             {languages.map((l) => {
@@ -231,8 +231,8 @@ function GeneralTab() {
                   }}
                   className={`flex w-full items-center justify-between text-left transition-all duration-75 ${
                     selected
-                      ? "text-[#111] dark:text-[#f0f0f0] font-medium bg-[#f0f0f0] dark:bg-[#2a2a2a]"
-                      : "text-[#333] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97]"
+                      ? "text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium bg-[#f0f0f0] dark:bg-[#2a2a2a]"
+                      : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97]"
                   }`}
                   style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, border: 'none', cursor: 'pointer' }}
                 >
@@ -252,8 +252,8 @@ function GeneralTab() {
         className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
         style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
       >
-        <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Support</span>
-        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#ccc]">t.me/hypastack <MIcon name="open_in_new" size={14} /></span>
+        <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Support</span>
+        <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]">t.me/hypastack <MIcon name="open_in_new" size={14} /></span>
       </a>
     </div>
   )
@@ -290,7 +290,7 @@ function ThemeTile({
         {variant === "light" && <ThemeMock dark={false} />}
         {variant === "dark" && <ThemeMock dark />}
       </button>
-      <span className={`text-[13px] ${active ? "font-medium text-[#111] dark:text-[#f0f0f0]" : "font-normal text-[#888] dark:text-[#a1a1aa]"}`}>
+      <span className={`text-[13px] ${active ? "font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]" : "font-normal text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]"}`}>
         {label}
       </span>
     </div>
@@ -563,7 +563,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent flex items-center justify-center text-[#555] hover:text-[#111] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#0a0b0c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -589,7 +589,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-[17px] font-medium text-[#111] dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
+            <p className="text-[17px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
             {user.is_insider === 1 && (
               <MIcon name="verified" size={17} style={{ color: '#eab308' }} className="shrink-0" />
             )}
@@ -601,7 +601,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               setCopiedId(true)
               setTimeout(() => setCopiedId(false), 2000)
             }}
-            className="flex items-center gap-1.5 hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors active:scale-[0.97] mb-2 mt-0.5"
+            className="flex items-center gap-1.5 hover:text-[#111] dark:text-white dark:hover:text-[#f0f0f0] transition-colors active:scale-[0.97] mb-2 mt-0.5"
             style={{ fontSize: 12, fontWeight: 500, color: copiedId ? '#16a34a' : '#aaa' }}
           >
             <MIcon name={copiedId ? "check" : "content_copy"} size={13} /> 
@@ -610,7 +610,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
             style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 6, fontSize: 12, fontWeight: 500 }}
           >
             <MIcon name="edit" size={13} />
@@ -622,16 +622,16 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.totalStorage) : "Loading"}
             </p>
-            <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Space used ({Math.round(usedPct)}%)</p>
+            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Space used ({Math.round(usedPct)}%)</p>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-6">
+            <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.maxStorage) : "Loading"}
             </p>
-            <p className="text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">Total space</p>
+            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Total space</p>
           </div>
         </div>
         <div className="mt-4 h-1.5 w-full rounded-full bg-[#e5e5e5] dark:bg-[#333] overflow-hidden">
@@ -640,7 +640,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             style={{ width: `${Math.min(100, usedPct)}%` }}
           />
         </div>
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#a1a1aa] font-normal">
+        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#111]" /> Drive
           </span>
@@ -650,24 +650,24 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       {!user.premium && (
         <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
           <div>
-            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
-            <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
+            <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
+            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
-              className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] bg-[#111] dark:bg-[#fff]"
+              className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] dark:text-white bg-[#111] dark:bg-[#fff]"
               style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
             >
               Upgrade
             </button>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-transparent pt-4 sm:pt-0 sm:pl-4">
-            <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
-            <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
+          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-4">
+            <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
+            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
             <button
               type="button"
               onClick={handleEmptyTrash}
               disabled={trashLoading || files.length === 0}
-              className="inline-flex items-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent"
+              className="inline-flex items-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
               style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
             >
               {trashLoading ? "Deleting..." : "Empty trash"}
@@ -682,7 +682,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
         >
           <div>
-            <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Delete account</span>
+            <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Delete account</span>
           </div>
           <button
             type="button"
@@ -801,13 +801,13 @@ function EditProfileDialog({
             <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 6 }}>
               <div className="p-5 space-y-3">
                 <div>
-                  <p className="text-[12px] font-medium text-[#888] dark:text-[#a1a1aa] mb-1.5">Username</p>
+                  <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-1.5">Username</p>
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     autoFocus
-                    className="w-full focus:outline-none bg-[#f5f5f5] dark:bg-[#111] border border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
+                    className="w-full focus:outline-none bg-[#f5f5f5] dark:bg-[#111] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
                     style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                   />
                 </div>
@@ -823,7 +823,7 @@ function EditProfileDialog({
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#666] dark:text-[#888]"
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]"
                 style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 400 }}
               >
                 Cancel
@@ -832,7 +832,7 @@ function EditProfileDialog({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !nickname.trim()}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#111] dark:text-[#f0f0f0]"
+                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#111] dark:text-white dark:text-[#f0f0f0]"
                 style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
               >
                 {saving ? "Saving..." : "Save"}
@@ -862,12 +862,12 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
   return (
     <div>
       <div className="flex items-center justify-center mb-5">
-        <div className="inline-flex rounded-md p-1 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent">
+        <div className="inline-flex rounded-md p-1 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]">
           <button
             type="button"
             onClick={() => setBilling("monthly")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#a1a1aa] font-normal"
+              billing === "monthly" ? "bg-white dark:bg-[#0a0b0c] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Monthly
@@ -876,7 +876,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("annual")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "annual" ? "bg-white dark:bg-[#1c1c1c] text-[#111] dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#a1a1aa] font-normal"
+              billing === "annual" ? "bg-white dark:bg-[#0a0b0c] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Annual
@@ -901,21 +901,21 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
 
         <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: 16 }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[22px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
+            <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
             {isSelectedCurrent && (
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333] dark:text-[#ccc]">
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]">
                 Current
               </span>
             )}
           </div>
-          <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mb-4 font-normal">
+          <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-4 font-normal">
             {selectedPlan.key === "free"
               ? "Free forever"
               : isSelectedCurrent
                 ? "Thanks for supporting Hypastack."
                 : `Billed ${billing === "annual" ? "annually" : "once"}.`}
           </p>
-          <p className="text-[14px] font-medium text-[#111] dark:text-[#f0f0f0] mb-2">Plan details</p>
+          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-2">Plan details</p>
           <ul className="space-y-1.5 text-[14px] text-[#444] font-normal mb-5">
             {selectedPlan.details.map((d) => (
               <li key={d} className="flex items-start gap-2">
@@ -936,7 +936,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key === "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-md text-[14px] font-medium transition-colors cursor-pointer bg-[#ebebeb] dark:bg-[#222] text-[#555] dark:text-[#888] border border-[#e5e5e5] dark:border-transparent"
+              className="block w-full text-center px-4 py-2.5 rounded-md text-[14px] font-medium transition-colors cursor-pointer bg-[#ebebeb] dark:bg-[#222] text-[#555] dark:text-[#888] dark:text-[#898e97] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
             >
               Downgrade to Free
             </button>
@@ -968,12 +968,12 @@ function PlanCard({
       onClick={onClick}
       className={`w-full text-left rounded-md p-4 transition-all ${
         selected
-          ? "bg-white dark:bg-[#1c1c1c] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
-          : "bg-[#f5f5f5] dark:bg-[#222] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] border border-[#ebebeb] dark:border-transparent"
+          ? "bg-white dark:bg-[#0a0b0c] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
+          : "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] border border-[#ebebeb] dark:border-transparent"
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] dark:text-[#ccc] text-[10px] font-semibold tracking-wide">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] text-[10px] font-semibold tracking-wide">
           {tier}
         </span>
         {current && (
@@ -982,8 +982,8 @@ function PlanCard({
           </span>
         )}
       </div>
-      <p className="text-[22px] font-medium text-[#111] dark:text-[#f0f0f0] tracking-tight">{size}</p>
-      <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
+      <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{size}</p>
+      <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
     </button>
   )
 }
@@ -992,8 +992,8 @@ function BillingTab({ } : { user: PreferencesUser }) {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 16px' }}>
-        <p className="text-[15px] font-normal text-[#111] dark:text-[#f0f0f0] mb-1.5">We're working on it.</p>
-        <p className="text-[13px] font-normal text-[#888] dark:text-[#a1a1aa] leading-relaxed max-w-md">
+        <p className="text-[15px] font-normal text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">We're working on it.</p>
+        <p className="text-[13px] font-normal text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed max-w-md">
           Billing not expected until next month, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
           <br /><br />
           All donations appreciated, this project is self funded.
@@ -1007,8 +1007,8 @@ function IntegrationsTab() {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
-        <p className="text-[13px] text-[#333] dark:text-[#ccc] font-medium mb-1">Let's see..</p>
-        <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] leading-relaxed">
+        <p className="text-[13px] text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] font-medium mb-1">Let's see..</p>
+        <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
           I'm currently playing with ideas for integrations, If you actually want Discord webhooks or something else, let me know, i'd rather build stuff you'll actually use
         </p>
       </div>
@@ -1062,11 +1062,11 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
   return (
     <div className="space-y-4">
       <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
-        <p className="text-[13px] text-[#666] dark:text-[#888] leading-relaxed">
-          Hypastack stores <span className="text-[#111] dark:text-[#f0f0f0] font-medium">hashed usernames</span>,{" "}
-          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">hashed access keys</span>,{" "}
-          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">encrypted files with random filenames</span>, and{" "}
-          <span className="text-[#111] dark:text-[#f0f0f0] font-medium">metadata-stripped assets</span>.{" "}
+        <p className="text-[13px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] leading-relaxed">
+          Hypastack stores <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">hashed usernames</span>,{" "}
+          <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">hashed access keys</span>,{" "}
+          <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">encrypted files with random filenames</span>, and{" "}
+          <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">metadata-stripped assets</span>.{" "}
           If you want me to change something up, lmk, i can think of something.
         </p>
       </div>
@@ -1076,7 +1076,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
           className="flex items-center justify-between"
           style={{ height: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
         >
-          <span className="text-[13px] text-[#888] dark:text-[#a1a1aa]">Inactivity purge</span>
+          <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Inactivity purge</span>
           <div className="flex items-center gap-2">
             <div className="relative">
               <input
@@ -1090,7 +1090,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                   setPurgeSaved(false)
                 }}
                 disabled={!isPaid}
-                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
                 style={{ height: 28, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                 placeholder="7"
               />
@@ -1099,7 +1099,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
             <button
               onClick={handlePurgeSave}
               disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-              className={`hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed border ${purgeSaved ? "text-[#16a34a] bg-[rgba(22,163,74,0.08)] border-transparent" : "text-[#333] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border-[#e5e5e5] dark:border-transparent"}`}
+              className={`hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed border ${purgeSaved ? "text-[#16a34a] bg-[rgba(22,163,74,0.08)] border-transparent" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"}`}
               style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
             >
               {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
@@ -1113,7 +1113,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
       {!isPaid && (
         <p className="text-[11px] text-[#aaa] px-1">
-          Fixed at <span className="text-[#888] dark:text-[#a1a1aa] font-medium">7 days</span> for free accounts, Upgrade to customize.
+          Fixed at <span className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-medium">7 days</span> for free accounts, Upgrade to customize.
         </p>
       )}
     </div>

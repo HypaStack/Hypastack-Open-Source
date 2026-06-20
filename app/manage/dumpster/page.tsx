@@ -41,10 +41,10 @@ export default function DumpsterPage() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <div>
-          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex flex-wrap items-center gap-3">
+          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#f7f8f8] flex flex-wrap items-center gap-3">
             <span>New Paste</span>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#007AFF]/10 text-[#007AFF] text-[12px] font-medium tracking-normal">
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8] text-[12px] font-medium tracking-normal">
                 <MIcon name="visibility_off" size={14} />
                 Not linked to your account
               </span>
@@ -54,7 +54,7 @@ export default function DumpsterPage() {
               </span>
             </div>
           </h1>
-          <p className="text-[13px] text-[#666] dark:text-[#888] mt-2">
+          <p className="text-[13px] text-[#666] dark:text-[#898e97] mt-2">
             Anonymous text pastes. Destroyed after 180 days of inactivity.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function DumpsterPage() {
             type="button"
             onClick={() => setContent("")}
             disabled={saving || !content}
-            className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[#222] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-transparent font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-[11px] rounded-full bg-white dark:bg-[rgba(255,255,255,0.04)] text-[#171717] dark:text-[#f7f8f8] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors leading-none disabled:opacity-50 active:scale-[0.98]"
           >
             <MIcon name="clear_all" size={17} className="shrink-0" />
             <span className="hidden sm:inline">Clear</span>
@@ -73,7 +73,7 @@ export default function DumpsterPage() {
             type="button"
             onClick={handleSave}
             disabled={saving || !content.trim()}
-            className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-6 py-[11px] rounded-full bg-[#171717] dark:bg-[#f7f8f8] text-white dark:text-[#08090a] font-semibold text-[15px] hover:bg-[#333] dark:hover:bg-white transition-colors leading-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
           >
             {saving ? (
               <div className="w-[15px] h-[15px] border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin shrink-0" />
@@ -86,18 +86,18 @@ export default function DumpsterPage() {
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] p-3 rounded-[8px] mb-6">
-          <MIcon name="error" size={15} className="shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] px-4 py-3 rounded-full mb-6 items-center">
+          <MIcon name="error" size={15} className="shrink-0" />
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
-      <div className="flex-1 bg-white dark:bg-[#111] rounded-md border border-black/5 dark:border-white/5 overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.03)] rounded-[16px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden flex flex-col">
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Type or paste your text here..."
-          className="w-full h-full p-3 bg-transparent border-none focus:outline-none resize-none text-[14px] font-sans leading-relaxed text-[#171717] dark:text-[#e3e3e3] custom-scrollbar flex-1"
+          className="w-full h-full p-5 bg-transparent border-none focus:outline-none resize-none text-[14px] font-sans leading-relaxed text-[#171717] dark:text-[#f7f8f8] custom-scrollbar flex-1"
           spellCheck={false}
         />
       </div>

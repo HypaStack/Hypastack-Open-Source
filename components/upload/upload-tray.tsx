@@ -65,7 +65,7 @@ export function UploadTray({
             <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
               <div className="flex items-center justify-between">
                 <h3
-                  className="text-[17px] font-semibold text-[#111] dark:text-[#f0f0f0] tracking-tight"
+                  className="text-[17px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight"
                   style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                 >
                   Uploads
@@ -74,7 +74,7 @@ export function UploadTray({
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#666] dark:text-[#888]"
+                    className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]"
                     style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                   >
                     Clear
@@ -82,7 +82,7 @@ export function UploadTray({
                   <button
                     type="button"
                     onClick={() => setTrayCollapsed((v) => !v)}
-                    className="p-1 rounded-md text-[#999] dark:text-[#a1a1aa] hover:text-[#555] dark:hover:text-[#aaa] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
+                    className="p-1 rounded-md text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa] hover:text-[#555] dark:hover:text-[#aaa] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
                     aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
                   >
                     {trayCollapsed ? <MIcon name="expand_less" size={18} /> : <MIcon name="expand_more" size={18} />}
@@ -90,13 +90,13 @@ export function UploadTray({
                 </div>
               </div>
 
-              <p className="text-[13px] text-[#888] dark:text-[#a1a1aa] font-normal">
-                Uploading to <span className="text-[#333] dark:text-[#ccc] font-medium">{uploadType === "cdn" ? "CDN" : "Files"}</span>
+              <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">
+                Uploading to <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] font-medium">{uploadType === "cdn" ? "CDN" : "Files"}</span>
               </p>
               {normalizeTier(user?.tier) !== "ultimate" && (
-                <p className="text-[12px] text-[#999] font-normal">
+                <p className="text-[12px] text-[#999] dark:text-[#898e97] font-normal">
                   For higher upload and deletion speeds,{" "}
-                  <a href="/pricing" className="text-[#555] underline hover:text-[#111] transition-colors">
+                  <a href="/pricing" className="text-[#555] underline hover:text-[#111] dark:text-white transition-colors">
                     upgrade your plan
                   </a>
                   .
@@ -136,12 +136,12 @@ export function UploadTray({
                         <div className="relative flex items-center gap-3 group" style={{ padding: "10px 16px" }}>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{zippedFile.name}</p>
-                              <span className="shrink-0 bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
+                              <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] truncate leading-tight">{zippedFile.name}</p>
+                              <span className="shrink-0 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.08)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
                                 ZIP
                               </span>
                             </div>
-                            <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
+                            <span className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
                               {state === "done"
                                 ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
                                 : state === "error"
@@ -156,7 +156,7 @@ export function UploadTray({
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleCopy() }}
-                                className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
+                                className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
                                 style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                               >
                                 {copied ? "Copied" : "Copy link"}
@@ -174,12 +174,12 @@ export function UploadTray({
                           <div key={f.id} className="relative flex items-center gap-3 group" style={{ padding: "10px 16px" }}>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2 mb-0.5">
-                                <p className="text-[15px] font-medium text-[#111] dark:text-[#f0f0f0] truncate leading-tight">{f.path || f.file.name}</p>
-                                <span className="shrink-0 bg-[#f0f0f0] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#666] dark:text-[#888]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
+                                <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] truncate leading-tight">{f.path || f.file.name}</p>
+                                <span className="shrink-0 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.08)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", borderStyle: "solid", borderWidth: 1, padding: "2px 6px", borderRadius: 5 }}>
                                   {f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
                                 </span>
                               </div>
-                              <span className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
+                              <span className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
                                 {state === "done"
                                   ? "Uploaded"
                                   : state === "error"
@@ -202,7 +202,7 @@ export function UploadTray({
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); handleCopy() }}
-                                  className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
+                                  className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
                                   style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                                 >
                                   {copied ? "Copied" : "Copy link"}
@@ -231,8 +231,8 @@ export function UploadTray({
                         onClick={() => setBurnOnRead(!burnOnRead)}
                       >
                         <div className="flex items-center gap-2.5">
-                          <MIcon name="local_fire_department" size={16} className="text-[#888] dark:text-[#a1a1aa]" />
-                          <span className="text-[#333] dark:text-[#ccc]" style={{ fontSize: 13 }}>Burn after download</span>
+                          <MIcon name="local_fire_department" size={16} className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+                          <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]" style={{ fontSize: 13 }}>Burn after download</span>
                         </div>
                         <div
                           className="relative shrink-0 transition-colors"
@@ -255,8 +255,8 @@ export function UploadTray({
                             onClick={() => setZipMultipleFiles(!zipMultipleFiles)}
                           >
                             <div className="flex items-center gap-2.5">
-                              <MIcon name="folder_zip" size={16} className="text-[#888] dark:text-[#a1a1aa]" />
-                              <span className="text-[#333] dark:text-[#ccc]" style={{ fontSize: 13 }}>Zip the files</span>
+                              <MIcon name="folder_zip" size={16} className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+                              <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]" style={{ fontSize: 13 }}>Zip the files</span>
                             </div>
                             <div
                               className="relative shrink-0 transition-colors"
@@ -278,15 +278,15 @@ export function UploadTray({
                               <>
                                 <div style={{ padding: "6px 8px 4px" }}>
                                   <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                                    <MIcon name="folder_zip" size={15} className="text-[#999] dark:text-[#a1a1aa]" />
-                                    <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 12, fontWeight: 500 }}>Archive name</span>
+                                    <MIcon name="folder_zip" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+                                    <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Archive name</span>
                                   </div>
                                   <input
                                     type="text"
                                     value={customFilename}
                                     onChange={(e) => setCustomFilename(e.target.value)}
                                     placeholder="hypastack-archive"
-                                    className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
+                                    className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
                                     style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                                   />
                                 </div>
@@ -298,15 +298,15 @@ export function UploadTray({
                         <>
                           <div style={{ padding: "6px 8px 4px" }}>
                             <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                              <MIcon name="edit" size={15} className="text-[#999] dark:text-[#a1a1aa]" />
-                              <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 12, fontWeight: 500 }}>Rename file</span>
+                              <MIcon name="edit" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+                              <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Rename file</span>
                             </div>
                             <input
                               type="text"
                               value={customFilename}
                               onChange={(e) => setCustomFilename(e.target.value)}
                               placeholder={files[0]?.file.name || "example.pdf"}
-                              className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
+                              className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
                               style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                             />
                           </div>
@@ -316,8 +316,8 @@ export function UploadTray({
 
                       <div style={{ padding: "6px 8px 6px" }}>
                         <div className="flex items-center gap-2 mb-2" style={{ paddingLeft: 4 }}>
-                          <MIcon name="article" size={15} className="text-[#999] dark:text-[#a1a1aa]" />
-                          <span className="text-[#666] dark:text-[#888]" style={{ fontSize: 12, fontWeight: 500 }}>Note</span>
+                          <MIcon name="article" size={15} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+                          <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, fontWeight: 500 }}>Note</span>
                         </div>
                         <textarea
                           value={note}
@@ -325,7 +325,7 @@ export function UploadTray({
                           placeholder="Optional message..."
                           maxLength={100}
                           rows={2}
-                          className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] resize-none bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-transparent text-[#111] dark:text-[#f0f0f0]"
+                          className="w-full placeholder:text-[#bbb] focus:outline-none focus:border-[#ccc] resize-none bg-[#ffffff] dark:bg-[#111] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
                           style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 8, paddingBottom: 8, borderRadius: 6, borderStyle: "solid", borderWidth: 1, fontSize: 13 }}
                         />
                       </div>
@@ -353,10 +353,10 @@ export function UploadTray({
                       <MIcon
                         name="cloud_upload"
                         size={22}
-                        className="shrink-0 text-[#888]"
+                        className="shrink-0 text-[#888] dark:text-[#898e97]"
                       />
                       <div className="flex flex-col">
-                        <span className="text-[15px] font-semibold text-[#111] dark:text-[#f0f0f0]">
+                        <span className="text-[15px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">
                           {state === "done"
                             ? "Upload complete"
                             : state === "uploading"
@@ -365,7 +365,7 @@ export function UploadTray({
                             ? "Upload failed"
                             : `Ready to upload ${files.length} item${files.length !== 1 ? "s" : ""}`}
                         </span>
-                        <span className="text-[13px] text-[#666] dark:text-[#888]">
+                        <span className="text-[13px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]">
                           {state === "done"
                             ? "All files uploaded"
                             : state === "uploading"
@@ -382,7 +382,7 @@ export function UploadTray({
                         <button
                           type="button"
                           onClick={handleReset}
-                          className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#a1a1aa]"
+                          className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]"
                           style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                         >
                           Cancel
@@ -391,7 +391,7 @@ export function UploadTray({
                           type="button"
                           onClick={handleUpload}
                           disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
-                          className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
+                          className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
                           style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
                         >
                           Start
@@ -401,7 +401,7 @@ export function UploadTray({
                       <button
                         type="button"
                         onClick={handleCopy}
-                        className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-transparent"
+                        className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
                         style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
                       >
                         {copied ? "Copied All" : "Copy All Links"}
