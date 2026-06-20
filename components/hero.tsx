@@ -47,7 +47,7 @@ export function Hero() {
           >
             The frictionless way to distribute sensitive assets to anyone, anywhere.
           </h1>
-          <p className="mt-4 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-2xl">
+          <p className="mt-4 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-full sm:whitespace-nowrap">
             The simplest way to host, share, and deliver files without the extra overhead
           </p>
         </motion.div>
