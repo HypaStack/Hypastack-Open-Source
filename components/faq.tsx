@@ -33,7 +33,7 @@ export function Faq() {
     <section id="faq" className="relative flex flex-col items-center overflow-visible">
 
       <div className="relative w-full max-w-[1200px] mt-16 sm:mt-24">
-      <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
+      <div className="relative w-full flex flex-col bg-[#08090a] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
         <div className="hidden md:block">
           <div className="absolute top-[-1px] left-[-50vw] right-[100%] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
           <div className="absolute top-[-1px] left-[100%] right-[-50vw] h-[1px] bg-[rgba(0,0,0,0.08)] pointer-events-none" />
@@ -49,12 +49,12 @@ export function Faq() {
           className="w-full px-8 sm:px-16 pt-16 pb-14 relative z-10 pointer-events-none"
         >
           <h2
-            className="text-[clamp(28px,3.5vw,40px)] tracking-[-0.03em] leading-[1.1] text-[#000] pb-1 font-medium"
+            className="text-[clamp(28px,3.5vw,40px)] tracking-[-0.03em] leading-[1.1] text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             Frequently Asked Questions
           </h2>
-          <p className="mt-3 text-[16px] sm:text-[17px] leading-relaxed text-[#525252] max-w-lg">
+          <p className="mt-3 text-[16px] sm:text-[17px] leading-relaxed text-[#898e97] max-w-lg">
             We can't see your files, your passwords, or your data But we can foresee your questions. Here’s what you need to know.
           </p>
         </motion.div>
@@ -73,11 +73,11 @@ export function Faq() {
               <button
                 type="button"
                 onClick={() => setOpen(isOpen ? null : i)}
-                className="w-full flex items-center justify-between gap-6 px-8 sm:px-16 py-6 text-left hover:bg-[#fafafa] transition-colors duration-150"
+                className="w-full flex items-center justify-between gap-6 px-8 sm:px-16 py-6 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors duration-150"
                 aria-expanded={isOpen}
               >
                 <span
-                  className="text-[15px] sm:text-[16px] text-[#171717] leading-[1.4]"
+                  className="text-[15px] sm:text-[16px] text-[#f7f8f8] leading-[1.4]"
                   style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 600 }}
                 >
                   {item.q}
@@ -104,7 +104,7 @@ export function Faq() {
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     style={{ overflow: "hidden" }}
                   >
-                    <p className="px-8 sm:px-16 pb-7 text-[14px] leading-relaxed text-[#525252] max-w-2xl">
+                    <p className="px-8 sm:px-16 pb-7 text-[14px] leading-relaxed text-[#898e97] max-w-2xl">
                       {item.a}
                     </p>
                   </motion.div>
@@ -114,10 +114,10 @@ export function Faq() {
           );
         })}
       </div>
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
-      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
+      <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
     </section>
   );
