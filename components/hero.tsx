@@ -109,7 +109,7 @@ export function Hero() {
           >
             Private sharing made simple
           </h1>
-          <p className="mt-3 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#525252] text-center">
+          <p className="mt-3 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#898e97] text-center">
             A secure CDN and file-sharing tool for when you need to get stuff from <br />point A to point B without any extra hoops to jump through.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
