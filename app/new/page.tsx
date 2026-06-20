@@ -310,15 +310,14 @@ export default function CreateAccountPage() {
                 Sign in
               </Link>
             </p>
+            {!isDesktop && (
+              <div className="mt-12 flex gap-5 text-[12px] text-[#898e97] pl-1">
+                <Link href="/terms" className="hover:text-[#f7f8f8] transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-[#f7f8f8] transition-colors">Privacy</Link>
+                <Link href="/help" className="hover:text-[#f7f8f8] transition-colors">Help</Link>
+              </div>
+            )}
           </div>
-
-          {!isDesktop && (
-            <div className="absolute bottom-6 left-8 flex gap-5 text-[12px] text-[#898e97]">
-              <Link href="/terms" className="hover:text-[#f7f8f8] transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-[#f7f8f8] transition-colors">Privacy</Link>
-              <Link href="/help" className="hover:text-[#f7f8f8] transition-colors">Help</Link>
-            </div>
-          )}
         </div>
 
         {!isDesktop && <RightPanel />}

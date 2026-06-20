@@ -147,25 +147,20 @@ export default function SignInPage() {
                 Signing in…
               </div>
             )}
-            {!isDesktop && (
-              <p className="mt-6 text-[12px] text-[#898e97] leading-relaxed pl-1">
-                If you lost your key, we cannot recover it.
-              </p>
-            )}
             <p className="mt-8 text-[13px] text-[#898e97] pl-1">
               No account?{" "}
               <Link href="/new" className="text-[#f7f8f8] font-semibold hover:underline">
                 Create one
               </Link>
             </p>
+            {!isDesktop && (
+              <div className="mt-12 flex gap-5 text-[12px] text-[#898e97] pl-1">
+                <Link href="/terms" className="hover:text-[#f7f8f8] transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-[#f7f8f8] transition-colors">Privacy</Link>
+                <Link href="/help" className="hover:text-[#f7f8f8] transition-colors">Help</Link>
+              </div>
+            )}
           </div>
-          {!isDesktop && (
-            <div className="absolute bottom-6 left-8 flex gap-5 text-[12px] text-[#898e97]">
-              <Link href="/terms" className="hover:text-[#f7f8f8] transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-[#f7f8f8] transition-colors">Privacy</Link>
-              <Link href="/help" className="hover:text-[#f7f8f8] transition-colors">Help</Link>
-            </div>
-          )}
         </div>
         {!isDesktop && (
           <div
