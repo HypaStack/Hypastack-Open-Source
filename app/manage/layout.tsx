@@ -71,8 +71,8 @@ function NavRow({
       onClick={onNavigate}
       className={`group relative flex items-center gap-3 rounded-md text-sm font-medium transition-colors duration-150 cursor-pointer ${
         active
-          ? 'bg-[#171717] dark:bg-[#f7f8f8]/10 text-[#007AFF]'
-          : 'text-[#666] dark:text-[#888] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] hover:text-[#171717] dark:hover:text-[#e3e3e3]'
+          ? 'bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]'
+          : 'text-[#666] dark:text-[#898e97] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#171717] dark:hover:text-[#f7f8f8]'
       }`}
       style={{
         height: 32,
