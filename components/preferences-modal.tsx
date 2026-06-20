@@ -99,7 +99,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] pt-3 pb-1 rounded-md flex flex-col">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] pt-3 pb-1 rounded-md flex flex-col">
                 <div className="flex items-center justify-between px-4 pb-3 pt-1">
                   <span className="text-[17px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">Settings</span>
                   <button
@@ -119,7 +119,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.03)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.02)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -154,23 +154,22 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
     <button
       type="button"
       onClick={onClick}
-      className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 ${
+      className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 rounded-full ${
         active
           ? "text-[#111111] dark:text-[#f0f0f0] font-medium"
-          : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] hover:text-[#333] dark:text-[#f7f8f8] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
+          : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
       }`}
       style={{
         height: 34,
         paddingLeft: 12,
         paddingRight: 12,
-        borderRadius: 6,
         fontSize: 14,
       }}
     >
       {active && (
         <motion.div
           layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-white dark:bg-[#08090a] rounded-md"
+          className="absolute inset-0 bg-white dark:bg-[rgba(255,255,255,0.1)] rounded-full"
           style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
@@ -198,7 +197,7 @@ function GeneralTab() {
 
       <div
         className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all duration-75 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 8 }}
+        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 12 }}
         onClick={() => setLangOpen((o) => !o)}
       >
         <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Language</span>
@@ -216,7 +215,7 @@ function GeneralTab() {
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
             className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#0e0f10] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-            style={{ padding: 4, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+            style={{ padding: 4, borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
           >
             {languages.map((l) => {
               const selected = l.code === language.code
@@ -249,7 +248,7 @@ function GeneralTab() {
       <a
         href="/help"
         className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all duration-75 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 8 }}
+        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 12 }}
       >
         <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Support</span>
         <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]">t.me/hypastack <MIcon name="open_in_new" size={14} /></span>
@@ -683,29 +682,26 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 6 }}>
-        <div
-          className="flex items-center justify-between"
-          style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
-        >
-          <div>
-            <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Delete account</span>
-          </div>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px', minHeight: 140 }}>
+        <div>
+          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Delete account</p>
+          <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">
+            All data will be permanently erased. This cannot be undone.
+          </p>
+        </div>
+        <div className="mt-auto pt-4">
           <button
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
+            className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.2)] to-[rgba(239,68,68,0.4)] group-hover:to-[rgba(239,68,68,0.6)] transition-colors duration-300" />
-            <div className="relative bg-[#1a0808] rounded-full h-[28px] px-4 flex items-center justify-center text-red-400 text-[13px] font-medium">
-              {deleteAccountLoading ? "Deleting..." : "Delete"}
+            <div className="relative bg-[#1a0808] rounded-full w-full h-[36px] px-4 flex items-center justify-center text-red-400 text-[13px] font-medium">
+              {deleteAccountLoading ? "Deleting..." : "Delete account"}
             </div>
           </button>
         </div>
-        <p className="text-[11px] text-[#aaa] px-3 pb-2.5">
-          All data will be permanently erased, This cannot be undone.
-        </p>
       </div>
     </div>
     <EditProfileDialog open={editing} user={user} onClose={() => setEditing(false)} />
@@ -912,7 +908,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           ))}
         </div>
 
-        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: 16 }}>
+        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: 16 }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
             {isSelectedCurrent && (
@@ -929,7 +925,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
                 : `Billed ${billing === "annual" ? "annually" : "once"}.`}
           </p>
           <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-2">Plan details</p>
-          <ul className="space-y-1.5 text-[14px] text-[#444] font-normal mb-5">
+          <ul className="space-y-1.5 text-[14px] text-[#444] dark:text-[#a1a1aa] font-normal mb-5">
             {selectedPlan.details.map((d) => (
               <li key={d} className="flex items-start gap-2">
                 <MIcon name="check" size={16} className="text-[#555] shrink-0 mt-0.5" />
@@ -938,28 +934,30 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             ))}
           </ul>
 
-          {!isSelectedCurrent && selectedPlan.key !== "free" && (
-            <button
-              onClick={() => onSwitchTab?.("billing")}
-              className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-            >
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-              <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
-                Switch to {selectedPlan.label}
-              </div>
-            </button>
-          )}
-          {!isSelectedCurrent && selectedPlan.key === "free" && (
-            <button
-              onClick={() => onSwitchTab?.("billing")}
-              className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-            >
-              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-              <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
-                Downgrade to Free
-              </div>
-            </button>
-          )}
+          <div className="mt-auto">
+            {!isSelectedCurrent && selectedPlan.key !== "free" && (
+              <button
+                onClick={() => onSwitchTab?.("billing")}
+                className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+                <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+                  Switch to {selectedPlan.label}
+                </div>
+              </button>
+            )}
+            {!isSelectedCurrent && selectedPlan.key === "free" && (
+              <button
+                onClick={() => onSwitchTab?.("billing")}
+                className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+                  Downgrade to Free
+                </div>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -1113,8 +1111,8 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                   setPurgeSaved(false)
                 }}
                 disabled={!isPaid}
-                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ height: 28, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                className={`w-[70px] text-right px-3 focus:outline-none bg-[#ffffff] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] rounded-full ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{ height: 28, fontSize: 13, fontWeight: 500 }}
                 placeholder="7"
               />
             </div>
@@ -1123,10 +1121,9 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
               onClick={handlePurgeSave}
               disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
               className={`relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed`}
-              style={{ height: 28, paddingLeft: 14, paddingRight: 14 }}
             >
               <div className={`absolute inset-0 transition-colors duration-300 ${purgeSaved ? "bg-[rgba(22,163,74,0.2)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
-              <div className={`relative bg-[#151616] rounded-full w-full h-full flex items-center justify-center text-[12px] font-medium ${purgeSaved ? "text-[#16a34a] bg-[#091a0e]" : "text-[#f7f8f8]"}`}>
+              <div className={`relative bg-[#151616] rounded-full h-[26px] px-4 flex items-center justify-center text-[12px] font-medium ${purgeSaved ? "text-[#16a34a] bg-[#091a0e]" : "text-[#f7f8f8]"}`}>
                 {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
               </div>
             </button>

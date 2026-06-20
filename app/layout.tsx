@@ -111,7 +111,11 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  colorScheme: "light",
+  colorScheme: "dark light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#000000" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
   viewportFit: "cover",
 }
 
@@ -121,7 +125,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning>
+    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning style={{ backgroundColor: '#000000' }}>
       <head>
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://hypastack.com" />
