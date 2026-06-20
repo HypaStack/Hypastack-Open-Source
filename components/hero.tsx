@@ -31,7 +31,7 @@ export function Hero() {
   }
   return (
     <section className="relative min-h-screen pb-32">
-      <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#08090a] border-b border-[rgba(255,255,255,0.05)]">
+      <div className="w-full h-[65vh] md:h-[60vh] relative overflow-visible flex flex-col items-center justify-center bg-[#08090a]">
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
         </svg>
 
@@ -39,7 +39,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 30, filter: "blur(16px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center px-4 relative z-10"
+          className="flex flex-col items-start px-6 sm:px-16 w-full max-w-[1200px] relative z-10"
         >
           <a
             href="https://t.me/hypastack"
@@ -53,29 +53,21 @@ export function Hero() {
             <span>Join our Telegram channel</span>
           </a>
           <h1
-            className="text-center text-[clamp(24px,4vw,46px)] leading-[1.1] tracking-[-0.03em] whitespace-nowrap text-[#f7f8f8] pb-1 font-medium"
+            className="text-left text-[clamp(40px,6vw,76px)] leading-[1.05] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             Private sharing made simple
           </h1>
-          <p className="mt-3 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#898e97] text-center">
-            A secure CDN and file-sharing tool for when you need to get stuff from <br />point A to point B without any extra hoops to jump through.
+          <p className="mt-4 text-[16px] sm:text-[20px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-2xl">
+            A secure CDN and file-sharing tool for when you need to get stuff from point A to point B without any extra hoops to jump through.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 mt-8 sm:mt-10 w-full sm:w-auto px-4 sm:px-0">
-            <Button href="/signin" onClick={handleLoginClick} variant="landing-primary" size="md" className="w-full sm:w-[140px]">
-              Start for free
-            </Button>
-            <Button href="#features" variant="landing-secondary" size="md" className="w-full sm:w-[140px]">
-              Learn more
-            </Button>
-          </div>
         </motion.div>
         
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
-          className="absolute left-0 right-0 flex flex-wrap justify-center items-center gap-2 z-20 px-4 bottom-6 md:bottom-auto md:top-[calc(100%+2px)]"
+          className="absolute left-0 right-0 flex flex-wrap justify-start items-center gap-2 z-20 px-6 sm:px-16 w-full max-w-[1200px] mx-auto bottom-6 md:bottom-auto md:top-[calc(100%+2px)]"
         >
           <a
             href="https://github.com/HypaStack/Hypastack-Open-Source"
