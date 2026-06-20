@@ -17,10 +17,10 @@ export function HowItWorks() {
             className="w-full relative z-10"
           >
             <h2
-              className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium max-w-4xl"
+              className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
-              A simple, secure network designed to host and share your files seamlessly.
+              A simple, secure network <span className="text-[#898e97]">designed to host and share your files seamlessly.</span>
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
