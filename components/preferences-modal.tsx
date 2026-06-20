@@ -99,7 +99,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
-              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] pt-3 pb-1 rounded-md flex flex-col">
+              <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-transparent dark:border-[rgba(255,255,255,0.06)] pt-3 pb-1 rounded-md flex flex-col">
                 <div className="flex items-center justify-between px-4 pb-3 pt-1">
                   <span className="text-[17px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">Settings</span>
                   <button
@@ -119,7 +119,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.02)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.02)] border border-transparent dark:border-[rgba(255,255,255,0.06)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -561,7 +561,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.1)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-[#555] dark:text-[#e3e3e3] hover:text-[#111] dark:hover:text-white hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -585,39 +585,41 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             />
           </label>
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col">
           <div className="flex items-center gap-1.5">
-            <p className="text-[17px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
+            <p className="text-[22px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
             {user.is_insider === 1 && (
-              <MIcon name="verified" size={17} style={{ color: '#eab308' }} className="shrink-0" />
+              <MIcon name="verified" size={20} style={{ color: '#eab308' }} className="shrink-0" />
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(user.id)
-              setCopiedId(true)
-              setTimeout(() => setCopiedId(false), 2000)
-            }}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-            <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
-              <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
-              {copiedId ? "Copied" : "Copy user ID"}
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-            <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
-              <MIcon name="edit" size={13} />
-              Edit
-            </div>
-          </button>
+          <div className="mt-auto pt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(user.id)
+                setCopiedId(true)
+                setTimeout(() => setCopiedId(false), 2000)
+              }}
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
+                <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
+                {copiedId ? "Copied" : "Copy user ID"}
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
+                <MIcon name="edit" size={13} />
+                Edit
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -689,15 +691,15 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             All data will be permanently erased. This cannot be undone.
           </p>
         </div>
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-4 flex justify-end">
           <button
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.2)] to-[rgba(239,68,68,0.4)] group-hover:to-[rgba(239,68,68,0.6)] transition-colors duration-300" />
-            <div className="relative bg-[#1a0808] rounded-full w-full h-[36px] px-4 flex items-center justify-center text-red-400 text-[13px] font-medium">
+            <div className="relative bg-[#1a0808] rounded-full h-[32px] px-5 flex items-center justify-center text-red-400 text-[13px] font-medium">
               {deleteAccountLoading ? "Deleting..." : "Delete account"}
             </div>
           </button>
@@ -1092,45 +1094,42 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
         </p>
       </div>
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12 }}>
-        <div
-          className="flex items-center justify-between"
-          style={{ height: 42, paddingLeft: 12, paddingRight: 8, borderRadius: 12 }}
-        >
-          <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Inactivity purge</span>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <input
-                type="number"
-                min={7}
-                max={365}
-                value={purgeInput}
-                onChange={(e) => {
-                  setPurgeInput(e.target.value)
-                  setPurgeError(null)
-                  setPurgeSaved(false)
-                }}
-                disabled={!isPaid}
-                className={`w-[70px] text-right px-3 focus:outline-none bg-[#ffffff] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] rounded-full ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{ height: 28, fontSize: 13, fontWeight: 500 }}
-                placeholder="7"
-              />
-            </div>
-            <span className="text-[12px] text-[#aaa]">days</span>
-            <button
-              onClick={handlePurgeSave}
-              disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-              className={`relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed`}
-            >
-              <div className={`absolute inset-0 transition-colors duration-300 ${purgeSaved ? "bg-[rgba(22,163,74,0.2)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
-              <div className={`relative bg-[#151616] rounded-full h-[26px] px-4 flex items-center justify-center text-[12px] font-medium ${purgeSaved ? "text-[#16a34a] bg-[#091a0e]" : "text-[#f7f8f8]"}`}>
-                {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
-              </div>
-            </button>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px' }}>
+        <div>
+          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-3">Inactivity purge</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <input
+              type="number"
+              min={7}
+              max={365}
+              value={purgeInput}
+              onChange={(e) => {
+                setPurgeInput(e.target.value)
+                setPurgeError(null)
+                setPurgeSaved(false)
+              }}
+              disabled={!isPaid}
+              className={`w-[70px] text-right px-3 focus:outline-none bg-[#ffffff] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] rounded-full ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
+              style={{ height: 28, fontSize: 13, fontWeight: 500 }}
+              placeholder="7"
+            />
           </div>
+          <span className="text-[12px] text-[#aaa] mr-2">days</span>
+          <button
+            onClick={handlePurgeSave}
+            disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
+            className={`relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed`}
+          >
+            <div className={`absolute inset-0 transition-colors duration-300 ${purgeSaved ? "bg-[rgba(22,163,74,0.2)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
+            <div className={`relative bg-[#151616] rounded-full h-[26px] px-4 flex items-center justify-center text-[12px] font-medium ${purgeSaved ? "text-[#16a34a] bg-[#091a0e]" : "text-[#f7f8f8]"}`}>
+              {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
+            </div>
+          </button>
         </div>
         {purgeError && (
-          <p className="text-[11px] text-red-500 px-3 pb-2">{purgeError}</p>
+          <p className="text-[11px] text-red-500 pt-3">{purgeError}</p>
         )}
       </div>
 
