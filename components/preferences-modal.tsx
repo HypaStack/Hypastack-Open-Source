@@ -171,7 +171,7 @@ function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean
       {active && (
         <motion.div
           layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-white dark:bg-[#0a0b0c] rounded-md"
+          className="absolute inset-0 bg-white dark:bg-[#08090a] rounded-md"
           style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
@@ -563,7 +563,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#0a0b0c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#08090a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -867,7 +867,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("monthly")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-white dark:bg-[#0a0b0c] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
+              billing === "monthly" ? "bg-white dark:bg-[#08090a] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Monthly
@@ -876,7 +876,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
             type="button"
             onClick={() => setBilling("annual")}
             className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "annual" ? "bg-white dark:bg-[#0a0b0c] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
+              billing === "annual" ? "bg-white dark:bg-[#08090a] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
           >
             Annual
@@ -968,7 +968,7 @@ function PlanCard({
       onClick={onClick}
       className={`w-full text-left rounded-md p-4 transition-all ${
         selected
-          ? "bg-white dark:bg-[#0a0b0c] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
+          ? "bg-white dark:bg-[#08090a] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
           : "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] border border-[#ebebeb] dark:border-transparent"
       }`}
     >
