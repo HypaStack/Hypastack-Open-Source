@@ -47,7 +47,7 @@ export default function Home() {
       <main className="relative min-h-screen bg-background text-foreground w-full overflow-hidden">
       <Hero />
 
-      <div className="relative bg-[#ffffff] mt-16 sm:mt-24 lg:mt-32">
+      <div className="relative bg-[#08090a] mt-16 sm:mt-24 lg:mt-32">
         <HowItWorks />
         <Faq />
         <CtaSection />
