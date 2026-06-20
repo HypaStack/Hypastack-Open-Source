@@ -439,9 +439,12 @@ function ManageLayoutInner({
           
           <button
             type="button"
-            className="w-full h-[40px] bg-[#171717] text-[#f7f8f8] text-[14px] font-medium rounded-full hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.08)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.12)] transition-all duration-200 mt-4 active:scale-[0.97]"
+            className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 mt-4"
           >
-            Upgrade plan
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+              Upgrade plan
+            </div>
           </button>
         </div>
       </aside>

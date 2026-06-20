@@ -734,9 +734,9 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
-          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] relative group pr-8" style={{ borderRadius: 6, padding: '6px 12px' }}>
-            <div className="flex items-center justify-center bg-white dark:bg-[#171717] rounded-[6px] px-1.5 py-0.5 text-[#555] dark:text-[#aaa] text-[11px] font-bold border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]">CTRL</div>
-            <span className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
+          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#0e0f10] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] relative group pr-8" style={{ borderRadius: 9999, padding: '6px 16px' }}>
+            <div className="flex items-center justify-center bg-white dark:bg-[rgba(255,255,255,0.06)] rounded-full px-2 py-0.5 text-[#555] dark:text-[#f7f8f8] text-[11px] font-bold border border-[rgba(0,0,0,0.08)] dark:border-transparent">CTRL</div>
+            <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
             <button 
@@ -987,12 +987,12 @@ function CdnAssetTile({
         style={{ borderRadius: 6 }}
       >
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5] dark:bg-[#1a1a1a]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f5f5f5] dark:bg-[#0e0f10]">
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
-            <p className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" style={{ fontSize: 12, marginBottom: 10 }}>
-              Preview <span className="text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]" style={{ fontWeight: 500 }}>.{ext}</span>
+            <p className="text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, marginBottom: 10 }}>
+              Preview <span className="text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>
             </p>
             <button
               type="button"
@@ -1000,10 +1000,12 @@ function CdnAssetTile({
                 e.stopPropagation()
                 setRevealed(true)
               }}
-              className="hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-              style={{ height: 26, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 12, fontWeight: 500 }}
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150"
             >
-              Reveal
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full px-3 h-[28px] flex items-center justify-center text-[#f7f8f8] text-[12px] font-medium">
+                Reveal
+              </div>
             </button>
           </div>
         )}
@@ -1011,8 +1013,8 @@ function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#171717]">
-                <svg className="animate-spin h-6 w-6 text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#0e0f10]">
+                <svg className="animate-spin h-6 w-6 text-[#999] dark:text-[#898e97]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}

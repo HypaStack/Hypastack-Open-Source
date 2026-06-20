@@ -58,10 +58,10 @@ export function UploadTray({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 500 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-[16px] bg-white dark:bg-[#141414] font-sans mb-8 sm:mb-0 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-[16px] bg-white dark:bg-[#08090a] font-sans mb-8 sm:mb-0 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
           style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)" }}
         >
-          <div className="w-full h-full bg-white dark:bg-[#141414] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
+          <div className="w-full h-full bg-white dark:bg-[#0e0f10] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
             <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
               <div className="flex items-center justify-between">
                 <h3
@@ -381,8 +381,8 @@ export function UploadTray({
                         <button
                           type="button"
                           onClick={handleReset}
-                          className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]"
-                          style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                          className="flex-1 sm:flex-none flex items-center justify-center rounded-full hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 text-[#898e97] text-[13px] font-medium"
+                          style={{ height: 34, paddingLeft: 12, paddingRight: 12 }}
                         >
                           Cancel
                         </button>
@@ -390,29 +390,38 @@ export function UploadTray({
                           type="button"
                           onClick={handleUpload}
                           disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
-                          className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-                          style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
+                          className="relative flex-1 sm:flex-none inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
+                          style={{ height: 34 }}
                         >
-                          Start
+                          <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+                          <div className="relative bg-[#151616] rounded-full px-4 w-full h-full flex items-center justify-center text-[#f7f8f8] text-[13px] font-semibold">
+                            Start
+                          </div>
                         </button>
                       </div>
                     ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
                       <button
                         type="button"
                         onClick={handleCopy}
-                        className="hover:bg-[#e2e2e8] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#0a0a0a] dark:text-[#e3e3e3] bg-[#ffffff] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 600 }}
+                        className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
+                        style={{ height: 34 }}
                       >
-                        {copied ? "Copied All" : "Copy All Links"}
+                        <div className={`absolute inset-0 transition-colors duration-300 ${copied ? "bg-gradient-to-tr from-[rgba(16,185,129,0.2)] to-[rgba(16,185,129,0.4)] group-hover:to-[rgba(16,185,129,0.6)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
+                        <div className={`relative bg-[#151616] rounded-full px-4 w-full h-full flex items-center justify-center text-[13px] font-semibold ${copied ? "bg-[#0a1a14] text-emerald-400" : "text-[#f7f8f8]"}`}>
+                          {copied ? "Copied All" : "Copy All Links"}
+                        </div>
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => inputRef.current?.click()}
-                        className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#555] dark:text-[#aaa]"
-                        style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                        className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+                        style={{ height: 34 }}
                       >
-                        Add more
+                        <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                        <div className="relative bg-[#151616] rounded-full px-4 w-full h-full flex items-center justify-center text-[#f7f8f8] text-[13px] font-semibold">
+                          Add more
+                        </div>
                       </button>
                     )}
                   </div>

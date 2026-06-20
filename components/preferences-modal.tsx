@@ -646,15 +646,18 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       </div>
 
       {!user.premium && (
-        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
+        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
           <div>
             <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
             <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
-              className="inline-flex items-center h-[36px] px-5 rounded-full text-[14px] font-semibold transition-all duration-200 active:scale-[0.97] bg-[#171717] text-[#f7f8f8] hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.1)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.15)]"
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
             >
-              Upgrade
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full h-[36px] px-5 flex items-center justify-center text-[#f7f8f8] text-[14px] font-semibold">
+                Upgrade
+              </div>
             </button>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-4">
@@ -664,9 +667,12 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               type="button"
               onClick={handleEmptyTrash}
               disabled={trashLoading || files.length === 0}
-              className="inline-flex items-center h-[36px] px-5 rounded-full text-[14px] font-medium transition-all duration-200 active:scale-[0.97] bg-white text-[#555] border border-[rgba(0,0,0,0.1)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {trashLoading ? "Deleting..." : "Empty trash"}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full h-[36px] px-5 flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+                {trashLoading ? "Deleting..." : "Empty trash"}
+              </div>
             </button>
           </div>
         </div>
@@ -684,9 +690,12 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="inline-flex items-center h-[28px] px-3 rounded-full text-[13px] font-medium transition-all duration-150 active:scale-[0.97] bg-[rgba(239,68,68,0.08)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)] dark:hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40"
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
           >
-            {deleteAccountLoading ? "Deleting..." : "Delete"}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.2)] to-[rgba(239,68,68,0.4)] group-hover:to-[rgba(239,68,68,0.6)] transition-colors duration-300" />
+            <div className="relative bg-[#1a0808] rounded-full h-[28px] px-4 flex items-center justify-center text-red-400 text-[13px] font-medium">
+              {deleteAccountLoading ? "Deleting..." : "Delete"}
+            </div>
           </button>
         </div>
         <p className="text-[11px] text-[#aaa] px-3 pb-2.5">
@@ -783,9 +792,9 @@ function EditProfileDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[420px] flex flex-col bg-white dark:bg-[#141414] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
+            className="relative w-full max-w-[420px] flex flex-col bg-white dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
             style={{
-              boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 4px 16px rgba(0,0,0,0.08)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)',
               padding: 6,
             }}
             onKeyDown={(e) => {
@@ -817,7 +826,7 @@ function EditProfileDialog({
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center rounded-full hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 disabled:opacity-50 text-[#666] dark:text-[#a1a1aa] text-[14px] font-medium"
+                className="flex-1 flex items-center justify-center rounded-full hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 disabled:opacity-50 text-[#898e97] text-[14px] font-medium"
                 style={{ height: 38 }}
               >
                 Cancel
@@ -826,10 +835,13 @@ function EditProfileDialog({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !nickname.trim()}
-                className="flex-1 flex items-center justify-center rounded-full bg-[#171717] dark:bg-[rgba(255,255,255,0.1)] hover:bg-[#2a2a2a] dark:hover:bg-[rgba(255,255,255,0.15)] active:scale-[0.97] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed text-[#f7f8f8] text-[14px] font-semibold"
+                className="relative flex-1 inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ height: 38 }}
               >
-                {saving ? "Saving..." : "Save"}
+                <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                <div className="relative bg-[#151616] rounded-full w-full h-full flex items-center justify-center text-[#f7f8f8] text-[14px] font-semibold">
+                  {saving ? "Saving..." : "Save"}
+                </div>
               </button>
             </div>
           </motion.div>
