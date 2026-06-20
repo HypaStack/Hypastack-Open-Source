@@ -83,20 +83,7 @@ function FooterPopover({ category }: { category: typeof columns[0] }) {
 export function Footer() {
   return (
     <>
-      <div className="w-full max-w-[1200px] mx-auto mt-48 md:mt-64 flex flex-col relative z-[60]">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1440 48"
-          preserveAspectRatio="none"
-          className="w-full h-[48px] block relative z-10 rounded-t-[24px]"
-          aria-hidden="true"
-        >
-          <path
-            d="M 0 0 L 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0 L 1440 0 L 1440 48 L 0 48 Z"
-            fill="#08090a"
-          />
-        </svg>
-
+      <div className="w-full max-w-[1200px] mx-auto flex flex-col relative z-[60]">
         <footer className="w-full bg-[#08090a] text-[#a3a3a3] pt-6 pb-8 px-8 md:px-16 lg:px-20 font-sans relative">
           <div className="w-full mx-auto relative z-20">
             <div className="flex items-start justify-between mb-4 mt-2">
