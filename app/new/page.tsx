@@ -25,7 +25,7 @@ export default function CreateAccountPage() {
   const [nickname, setNickname] = useState("")
   const [generatedKey, setGeneratedKey] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [confirmed, setConfirmed] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [ageConfirmed, setAgeConfirmed] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
@@ -149,32 +149,40 @@ export default function CreateAccountPage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-2.5 text-[12px] text-[#898e97] mb-6 leading-relaxed">
-              <MIcon name="warning" size={14} className="shrink-0 mt-0.5 text-[#ffaa00]" />
-              <span>
-                Hey! This key is the <span className="text-[#f7f8f8] font-semibold">ONLY way of logging in</span>, we don't store it, if you lose it your account is permanently inaccessible!
-              </span>
-            </div>
-
-            <label className="flex items-start gap-3 cursor-pointer select-none mb-6">
-              <input
-                type="checkbox"
-                checked={confirmed}
-                onChange={(e) => setConfirmed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-[#f7f8f8] shrink-0"
-              />
-              <span className="text-[13px] text-[#898e97]">I have saved my access key in a secure location.</span>
-            </label>
-
-            <Button
-              onClick={() => { window.location.href = "/signin" }}
-              disabled={!confirmed}
-              variant="landing-primary"
-              size="lg"
-              className="w-full"
-            >
-              Continue to sign in
-            </Button>
+            {!showConfirmation ? (
+              <Button
+                onClick={() => setShowConfirmation(true)}
+                variant="landing-primary"
+                size="lg"
+                className="w-full"
+              >
+                Continue
+              </Button>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <p className="text-[14px] text-[#f7f8f8] font-medium text-center leading-relaxed">
+                  Are you sure you copied it? It's the only way of logging in.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleCopy}
+                    variant="landing-secondary"
+                    size="lg"
+                    className="flex-1"
+                  >
+                    Copy again
+                  </Button>
+                  <Button
+                    onClick={() => { window.location.href = "/manage/files" }}
+                    variant="landing-primary"
+                    size="lg"
+                    className="flex-1"
+                  >
+                    Yes
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {!isDesktop && <RightPanel />}
