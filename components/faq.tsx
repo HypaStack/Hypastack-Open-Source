@@ -62,12 +62,12 @@ export function Faq() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: i * 0.04 }}
-                className="border border-[rgba(255,255,255,0.08)] rounded-md mb-3 bg-[#0a0b0c] relative z-10 overflow-hidden"
+                className="border border-[rgba(255,255,255,0.08)] rounded-md mb-3 bg-[#0a0b0c] hover:bg-[#0e0f10] transition-colors duration-150 relative z-10 overflow-hidden"
               >
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between gap-6 px-6 sm:px-8 py-5 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors duration-150"
+                  className="w-full flex items-center justify-between gap-6 px-6 sm:px-8 py-5 text-left"
                   aria-expanded={isOpen}
                 >
                   <span
