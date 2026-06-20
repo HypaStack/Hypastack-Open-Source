@@ -20,7 +20,7 @@ export default function BlogPage() {
     <main className="flex min-h-screen flex-col bg-[#08090a]">
 
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1200px] px-8 sm:px-16">
+        <div className="mx-auto max-w-[680px] px-8 sm:px-16">
 
           <div className="mb-16">
             <p className="text-[13px] font-medium text-[#898e97] uppercase tracking-widest mb-4">

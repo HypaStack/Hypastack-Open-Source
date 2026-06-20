@@ -13,7 +13,7 @@ export default function CoppaGdpr() {
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[680px] px-4 sm:px-6 lg:px-8">
           <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
             COPPA & GDPR Compliance
           </h1>
