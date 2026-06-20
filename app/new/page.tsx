@@ -114,7 +114,11 @@ export default function CreateAccountPage() {
           />
           <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
-              <PageLogo size={44} borderRadius={10} />
+              <img 
+                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
+                alt="Hypastack" 
+                className={`w-[44px] h-[44px] object-contain ${isLoading ? 'animate-pulse' : ''}`} 
+              />
             </div>
 
             <h1
@@ -125,19 +129,23 @@ export default function CreateAccountPage() {
             </h1>
             <p className="text-[14px] text-[#898e97] mb-8">Save your access key somewhere safe, it's the only way to sign in.</p>
 
-            <div className="border border-[rgba(255,255,255,0.08)] bg-[#0a0b0c] rounded-[8px] mb-5 overflow-hidden">
-              <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-[rgba(255,255,255,0.05)] bg-[#0f1011]">
-                <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Access Key</span>
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center gap-1.5 text-[12px] font-medium text-[#898e97] hover:text-[#f7f8f8] transition-colors"
-                >
-                  <MIcon name={copied ? "check" : "content_copy"} size={13} />
-                  {copied ? "Copied" : "Copy"}
-                </button>
-              </div>
-              <div className="px-4 py-4 text-[12.5px] text-[#f7f8f8] break-all leading-[1.7] select-all font-mono bg-[#0a0b0c]">
-                {generatedKey}
+            <div className="relative overflow-hidden rounded-[8px] p-[1px] mb-5">
+              <div className="absolute inset-0 bg-[rgba(255,255,255,0.08)] z-0" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_40%,rgba(247,248,248,0.1)_70%,rgba(247,248,248,0.6)_100%)] blur-md z-0" />
+              <div className="relative z-10 bg-[#0a0b0c] h-full w-full rounded-[7px] p-4 flex flex-col items-start overflow-hidden">
+                <div className="w-full flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Access Key</span>
+                  <button
+                    onClick={handleCopy}
+                    className="flex items-center gap-1.5 text-[12px] font-medium text-[#898e97] hover:text-[#f7f8f8] transition-colors"
+                  >
+                    <MIcon name={copied ? "check" : "content_copy"} size={13} />
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <div className="w-full text-[12.5px] text-[#f7f8f8] break-all leading-[1.7] font-mono blur-[5px] select-none pointer-events-none">
+                  {generatedKey}
+                </div>
               </div>
             </div>
 
@@ -189,7 +197,11 @@ export default function CreateAccountPage() {
 
           <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
-              <PageLogo size={44} borderRadius={10} pulse={isLoading} />
+              <img 
+                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
+                alt="Hypastack" 
+                className={`w-[44px] h-[44px] object-contain ${isLoading ? 'animate-pulse' : ''}`} 
+              />
             </div>
 
             <h1

@@ -69,7 +69,11 @@ export default function SignInPage() {
           />
           <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
-              <PageLogo size={44} borderRadius={10} pulse={isLoading} />
+              <img 
+                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
+                alt="Hypastack" 
+                className={`w-[44px] h-[44px] object-contain ${isLoading ? 'animate-pulse' : ''}`} 
+              />
             </div>
             <h1
               className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-1"
