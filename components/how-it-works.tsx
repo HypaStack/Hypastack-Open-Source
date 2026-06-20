@@ -26,7 +26,7 @@ export function HowItWorks() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
               <div className="relative overflow-hidden rounded-md p-[1px]">
                 <div className="absolute inset-0 bg-[rgba(255,255,255,0.08)] z-0" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_70%,rgba(247,248,248,0.5)_100%)] z-0" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_40%,rgba(247,248,248,0.1)_70%,rgba(247,248,248,0.6)_100%)] blur-md z-0" />
                 <div className="relative z-10 bg-[#0a0b0c] h-full w-full rounded-[5px] p-8 flex flex-col items-start">
                   <img src="https://r2.hypastack.com/cdn/s422hnlic6gc/feature-1.svg" alt="Built for purpose" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Built for purpose</h3>
@@ -36,7 +36,7 @@ export function HowItWorks() {
 
               <div className="relative overflow-hidden rounded-md p-[1px]">
                 <div className="absolute inset-0 bg-[rgba(255,255,255,0.08)] z-0" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_70%,rgba(247,248,248,0.5)_100%)] z-0" style={{ animationDelay: '-1.33s' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_40%,rgba(247,248,248,0.1)_70%,rgba(247,248,248,0.6)_100%)] blur-md z-0" style={{ animationDelay: '-1.33s' }} />
                 <div className="relative z-10 bg-[#0a0b0c] h-full w-full rounded-[5px] p-8 flex flex-col items-start">
                   <img src="https://r2.hypastack.com/cdn/5mjl7qamo25p/feature-2.svg" alt="Powered by Cloudflare" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Powered by Cloudflare</h3>
@@ -46,7 +46,7 @@ export function HowItWorks() {
 
               <div className="relative overflow-hidden rounded-md p-[1px]">
                 <div className="absolute inset-0 bg-[rgba(255,255,255,0.08)] z-0" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_70%,rgba(247,248,248,0.5)_100%)] z-0" style={{ animationDelay: '-2.66s' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_40%,rgba(247,248,248,0.1)_70%,rgba(247,248,248,0.6)_100%)] blur-md z-0" style={{ animationDelay: '-2.66s' }} />
                 <div className="relative z-10 bg-[#0a0b0c] h-full w-full rounded-[5px] p-8 flex flex-col items-start">
                   <img src="https://r2.hypastack.com/cdn/rid8jnqs5p6n/feature-3.svg" alt="Designed for speed" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Designed for speed</h3>
