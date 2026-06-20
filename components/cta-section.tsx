@@ -19,23 +19,20 @@ export function CtaSection() {
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-xl"
+            className="w-full"
           >
             {isAuthenticated ? (
               <>
                 <h2
-                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#f7f8f8] pb-1 flex items-center gap-3 sm:gap-4 font-medium"
+                  className="text-[clamp(28px,4.5vw,56px)] tracking-[-0.03em] leading-[1.1] text-[#f7f8f8] pb-1 flex items-center gap-3 sm:gap-4 font-medium"
                   style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                 >
                   <MIcon name="verified" size="1em" className="tracking-normal shrink-0 text-[#171717]" />
                   <div className="flex-1 min-w-0 truncate">
-                    <span>Welcome back!</span>
+                    <span>Welcome <span className="text-[#898e97]">back!</span></span>
                   </div>
                 </h2>
-                <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#898e97]">
-                  We kept everything exactly where you left it, Probably. You should probably click the Dashboard button to check.
-                </p>
-                <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/manage" variant="landing-primary" size="lg">
                     Go to Dashboard
                   </Button>
@@ -47,15 +44,12 @@ export function CtaSection() {
             ) : (
               <>
                 <h2
-                  className="text-[clamp(32px,5vw,52px)] tracking-[-0.03em] leading-[1.05] text-[#f7f8f8] pb-1 whitespace-nowrap font-medium"
+                  className="text-[clamp(28px,4.5vw,56px)] tracking-[-0.03em] leading-[1.1] text-[#f7f8f8] pb-1 whitespace-nowrap font-medium"
                   style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                 >
-                  Wanna check it out?
+                  Wanna check <span className="text-[#898e97]">it out?</span>
                 </h2>
-                <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#898e97]">
-                  Set up an account in seconds, Share files securely and host CDNs indefinitely.
-                </p>
-                <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/new" variant="landing-primary" size="lg">
                     Register
                   </Button>
