@@ -27,7 +27,7 @@ const faqs = [
 ];
 
 export function Faq() {
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="faq" className="relative flex flex-col items-center overflow-visible">
@@ -52,60 +52,62 @@ export function Faq() {
           </p>
         </motion.div>
 
-        {faqs.map((item, i) => {
-          const isOpen = open === i;
-          return (
-            <motion.div
-              key={item.q}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
-              className="border-t border-[rgba(0,0,0,0.08)] relative z-10"
-            >
-              <button
-                type="button"
-                onClick={() => setOpen(isOpen ? null : i)}
-                className="w-full flex items-center justify-between gap-6 px-8 sm:px-16 py-6 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors duration-150"
-                aria-expanded={isOpen}
+        <div className="w-full px-8 sm:px-16 pb-16">
+          {faqs.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <motion.div
+                key={item.q}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: i * 0.04 }}
+                className="border border-[rgba(255,255,255,0.08)] rounded-md mb-3 bg-[#0a0b0c] relative z-10 overflow-hidden"
               >
-                <span
-                  className="text-[15px] sm:text-[16px] text-[#f7f8f8] leading-[1.4]"
-                  style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 600 }}
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between gap-6 px-6 sm:px-8 py-5 text-left hover:bg-[rgba(255,255,255,0.02)] transition-colors duration-150"
+                  aria-expanded={isOpen}
                 >
-                  {item.q}
-                </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="shrink-0 text-[#aaaaaa] transition-transform duration-200"
-                  style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                >
-                  <path d="M3 6L8 11L13 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="answer"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                    style={{ overflow: "hidden" }}
+                  <span
+                    className="text-[15px] sm:text-[16px] text-[#f7f8f8] leading-[1.4]"
+                    style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif", fontWeight: 600 }}
                   >
-                    <p className="px-8 sm:px-16 pb-7 text-[14px] leading-relaxed text-[#898e97] max-w-2xl">
-                      {item.a}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
+                    {item.q}
+                  </span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="shrink-0 text-[#aaaaaa] transition-transform duration-200"
+                    style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    <path d="M3 6L8 11L13 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <p className="px-6 sm:px-8 pb-6 text-[14px] leading-relaxed text-[#898e97] max-w-3xl">
+                        {item.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
       </div>
     </section>
