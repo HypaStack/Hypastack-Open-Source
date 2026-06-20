@@ -14,20 +14,34 @@ export function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="max-w-xl relative z-10"
+            className="w-full relative z-10"
           >
             <h2
-              className="text-[clamp(24px,4vw,40px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
+              className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium max-w-4xl"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
-              A simple way to share files.
+              A simple, secure network designed to host and share your files seamlessly.
             </h2>
-            <p className="mt-4 text-[15px] sm:text-[17px] leading-relaxed text-[#898e97]">
-              Get an encrypted link for whatever you're sending. You don't need to sign up, and the person on the other end just needs the link.
-            </p>
-            <Button href="/new" variant="landing-primary" size="lg" className="mt-8">
-              Try it now
-            </Button>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
+              <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                <img src="https://r2.hypastack.com/cdn/s422hnlic6gc/feature-1.svg" alt="Built for purpose" className="w-12 h-12 mb-8" />
+                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Built for purpose</h3>
+                <p className="text-[15px] leading-relaxed text-[#898e97]">Built the way software should be. Shaped by the everyday needs of creators who just want tools that work instantly.</p>
+              </div>
+
+              <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                <img src="https://r2.hypastack.com/cdn/5mjl7qamo25p/feature-2.svg" alt="Powered by Cloudflare" className="w-12 h-12 mb-8" />
+                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Powered by Cloudflare</h3>
+                <p className="text-[15px] leading-relaxed text-[#898e97]">A secure workspace to pass encrypted files, paired with a blazing-fast CDN that strips tracking and metadata automatically.</p>
+              </div>
+
+              <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
+                <img src="https://r2.hypastack.com/cdn/rid8jnqs5p6n/feature-3.svg" alt="Designed for speed" className="w-12 h-12 mb-8" />
+                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Designed for speed</h3>
+                <p className="text-[15px] leading-relaxed text-[#898e97]">Built to move at your pace. A lightweight network that gets out of your way and serves files with near-instant request speeds.</p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
