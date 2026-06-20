@@ -475,7 +475,7 @@ function FilesPageInner() {
               type="button"
               onClick={handleBulkDelete}
               disabled={deleteLoading === "bulk"}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-red-500 text-[#fefeff] font-medium text-[15px] hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-[15px] transition-all duration-200 active:scale-[0.97] bg-red-500 text-[#ffffff] hover:bg-red-600 disabled:opacity-50"
             >
               <MIcon name="delete" size={18} />
               {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
@@ -485,7 +485,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={handleCreateFolder}
-                className="inline-flex items-center gap-2 px-4 py-[11px] rounded-md bg-white dark:bg-[rgba(255,255,255,0.04)] text-[#171717] dark:text-[#e3e3e3] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] font-medium text-[15px] hover:bg-[#eaeaea] dark:hover:bg-[#2a2a2a] transition-colors leading-none"
+                className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
               >
                 <MIcon name="create_new_folder" size={17} className="shrink-0" />
                 <span className="hidden sm:inline">New Folder</span>
@@ -493,7 +493,7 @@ function FilesPageInner() {
               <button
                 type="button"
                 onClick={triggerFilePicker}
-                className="inline-flex items-center gap-2 px-5 py-[11px] rounded-md bg-[#171717] dark:bg-[#e3e3e3] text-white dark:text-[#111] dark:text-white font-medium text-[15px] hover:bg-[#333] dark:hover:bg-[#ccc] transition-colors leading-none"
+                className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-semibold text-[14px] transition-all duration-200 active:scale-[0.97] bg-[#171717] text-[#f7f8f8] hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.1)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.15)]"
               >
                 <MIcon name="cloud_upload" size={15} className="shrink-0" />
                 <span>Upload files</span>

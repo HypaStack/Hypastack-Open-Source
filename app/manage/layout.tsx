@@ -439,7 +439,7 @@ function ManageLayoutInner({
           
           <button
             type="button"
-            className="w-full h-[44px] bg-[#030303] text-[#ffffff] text-[15px] font-semibold rounded-full hover:bg-[#1a1a1a] hover:ring-[4px] hover:ring-[rgba(0,0,0,0.15)] dark:bg-[linear-gradient(to_top_right,#242526,#242526,#666c73)] dark:text-[#f7f8f8] dark:hover:bg-[linear-gradient(to_top_right,#242526,#242526,#888f98)] dark:hover:ring-0 transition-all duration-200 mt-4 active:scale-[0.97]"
+            className="w-full h-[40px] bg-[#171717] text-[#f7f8f8] text-[14px] font-medium rounded-full hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.08)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.12)] transition-all duration-200 mt-4 active:scale-[0.97]"
           >
             Upgrade plan
           </button>
