@@ -69,21 +69,21 @@ export function HowItWorks() {
               transition={{ duration: 0.6 }}
               className="w-full relative z-10"
             >
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-16">
-                <div>
+              <div>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-16">
                   <h2
                     className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
                     style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                   >
                     Trust the code <span className="text-[#898e97]">not the company.</span>
                   </h2>
-                  <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#898e97]">
-                    And you may ask why... here's why.
-                  </p>
+                  <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="shrink-0">
+                    Source code
+                  </Button>
                 </div>
-                <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="shrink-0">
-                  Source code
-                </Button>
+                <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#898e97]">
+                  And you may ask why... here's why.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 sm:mt-12">
