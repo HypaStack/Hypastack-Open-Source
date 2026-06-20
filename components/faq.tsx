@@ -42,14 +42,11 @@ export function Faq() {
           className="w-full px-8 sm:px-16 pt-16 pb-14 relative z-10 pointer-events-none"
         >
           <h2
-            className="text-[clamp(28px,3.5vw,40px)] tracking-[-0.03em] leading-[1.1] text-[#f7f8f8] pb-1 font-medium"
+            className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
-            Frequently Asked Questions
+            Frequently Asked <span className="text-[#898e97]">Questions</span>
           </h2>
-          <p className="mt-3 text-[16px] sm:text-[17px] leading-relaxed text-[#898e97] max-w-lg">
-            We can't see your files, your passwords, or your data But we can foresee your questions. Here’s what you need to know.
-          </p>
         </motion.div>
 
         <div className="w-full px-8 sm:px-16 pb-16">
