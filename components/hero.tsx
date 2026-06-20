@@ -131,7 +131,7 @@ export function Hero() {
         >
           <path
             d="M 0 0 L 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0 L 1440 0 Z"
-            fill="#ffffff"
+            fill="#08090a"
           />
           <path
             d="M 480 0 C 495 0 512 44 528 44 L 912 44 C 928 44 945 0 960 0"
