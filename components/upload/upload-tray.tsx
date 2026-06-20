@@ -95,7 +95,7 @@ export function UploadTray({
               {normalizeTier(user?.tier) !== "ultimate" && (
                 <p className="text-[12px] text-[#999] dark:text-[#898e97] font-normal">
                   For higher upload and deletion speeds,{" "}
-                  <a href="/pricing" className="text-[#555] underline hover:text-[#111] dark:text-white transition-colors">
+                  <a href="/pricing" className="text-[#555] dark:text-[#a1a1aa] underline hover:text-[#111] dark:hover:text-white transition-colors">
                     upgrade your plan
                   </a>
                   .
