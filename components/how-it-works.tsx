@@ -52,7 +52,7 @@ function BlockLinesBottom() {
 
 // all 4 corners
 function CornerDots() {
-  const s = { width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
+  const s = { width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 200, position: 'absolute' as const };
   const base = "hidden md:block pointer-events-none";
   return (
     <>
@@ -122,10 +122,10 @@ export function HowItWorks() {
             </motion.div>
           </div>
         </div>
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
-        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, top: -5, right: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, left: -5 }} />
+        <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#08090a', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
       <div className="relative w-full max-w-[1200px] mt-12 sm:mt-24">
         <div className="relative w-full flex flex-col bg-[#08090a] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
