@@ -67,7 +67,7 @@ function CornerDots() {
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="relative flex flex-col items-center">
-      <div className="mt-0 relative w-full max-w-[1200px] flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
+      <div className="mt-0 relative w-full max-w-[1200px] flex flex-col bg-[#08090a] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
         <BlockLinesTop />
         <CornerDots />
         <div className="w-full px-6 sm:px-16 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
@@ -95,7 +95,7 @@ export function HowItWorks() {
       </div>
 
       <div className="relative w-full max-w-[1200px] mt-12 sm:mt-24">
-        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
+        <div className="relative w-full flex flex-col bg-[#08090a] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
           <BlockLinesTop />
           <BlockLinesBottom />
 
@@ -128,7 +128,7 @@ export function HowItWorks() {
         <div className="hidden md:block pointer-events-none" style={{ position: 'absolute', width: 10, height: 10, backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 2, zIndex: 300, bottom: -5, right: -5 }} />
       </div>
       <div className="relative w-full max-w-[1200px] mt-12 sm:mt-24">
-        <div className="relative w-full flex flex-col bg-[#ffffff] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
+        <div className="relative w-full flex flex-col bg-[#08090a] z-[60] border-y border-r border-[rgba(0,0,0,0.08)]">
           <StaticDots />
           <div className="w-full px-6 sm:px-16 py-12 sm:py-20 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">
