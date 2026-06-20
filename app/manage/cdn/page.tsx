@@ -805,7 +805,7 @@ export default function CdnPage() {
 
 
             {currentFolderId && filteredAssets.length === 0 && currentFolders.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="flex flex-col items-center justify-center text-center min-h-[60vh] h-full">
                 <MIcon name="folder_open" size={40} style={{ color: '#555', marginBottom: 12 }} />
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
                 <button
