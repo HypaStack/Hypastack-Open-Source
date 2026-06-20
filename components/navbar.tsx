@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { PageLogo } from "@/components/page-logo";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const [, setScrolled] = useState(false);
@@ -44,19 +45,21 @@ export function Navbar() {
           <img src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[32px] h-[32px] object-contain" />
         </Link>
         <div className="flex items-center gap-2">
-          <a
+          <Button
             href="/signin"
             onClick={handleLoginClick}
-            className="inline-flex items-center justify-center hover:bg-[rgba(255,255,255,0.04)] active:scale-[0.97] transition-all duration-75 px-4 h-9 rounded-full text-[14px] font-medium text-[#f7f8f8] bg-transparent cursor-pointer"
+            variant="landing-secondary"
+            size="sm"
           >
             Log in
-          </a>
-          <Link
+          </Button>
+          <Button
             href="#features"
-            className="inline-flex items-center justify-center hover:bg-[#e0e0e0] active:scale-[0.97] transition-all duration-75 px-4 sm:px-5 h-9 sm:h-10 rounded-full text-[13px] sm:text-[14px] font-semibold text-[#08090a] bg-[#f7f8f8]"
+            variant="landing-primary"
+            size="sm"
           >
             Learn more
-          </Link>
+          </Button>
         </div>
       </div>
     </header>
