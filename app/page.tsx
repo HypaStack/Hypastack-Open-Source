@@ -44,15 +44,14 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen bg-background text-foreground w-full overflow-hidden">
-      <Hero />
-
-      <div className="relative bg-[#08090a] mt-16 sm:mt-24 lg:mt-32">
-        <HowItWorks />
-        <Faq />
-        <CtaSection />
-        <Footer />
-      </div>
+      <main className="relative min-h-screen bg-[#08090a] text-foreground w-full overflow-hidden">
+        <Hero />
+        <div className="flex flex-col gap-16 sm:gap-24 lg:gap-32 pb-32">
+          <HowItWorks />
+          <Faq />
+          <CtaSection />
+          <Footer />
+        </div>
       </main>
     </>
   );
