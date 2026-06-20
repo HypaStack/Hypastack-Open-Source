@@ -610,8 +610,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-            style={{ height: 26, paddingLeft: 8, paddingRight: 8, borderRadius: 6, fontSize: 12, fontWeight: 500 }}
+            className="inline-flex items-center gap-1.5 h-[26px] px-3 rounded-full text-[12px] font-medium transition-all duration-150 active:scale-[0.97] bg-[#f4f4f4] text-[#555] hover:bg-[#ebebeb] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.1)] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
           >
             <MIcon name="edit" size={13} />
             Edit
@@ -654,8 +653,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
             <button
               onClick={() => onSwitchTab?.("plans")}
-              className="inline-flex items-center hover:bg-[#333] dark:hover:bg-[#e3e3e3] active:scale-[0.97] transition-all duration-75 text-[#fff] dark:text-[#111] dark:text-white bg-[#111] dark:bg-[#fff]"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
+              className="inline-flex items-center h-[36px] px-5 rounded-full text-[14px] font-semibold transition-all duration-200 active:scale-[0.97] bg-[#171717] text-[#f7f8f8] hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.1)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.15)]"
             >
               Upgrade
             </button>
@@ -667,8 +665,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               type="button"
               onClick={handleEmptyTrash}
               disabled={trashLoading || files.length === 0}
-              className="inline-flex items-center hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-              style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
+              className="inline-flex items-center h-[36px] px-5 rounded-full text-[14px] font-medium transition-all duration-200 active:scale-[0.97] bg-white text-[#555] border border-[rgba(0,0,0,0.1)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {trashLoading ? "Deleting..." : "Empty trash"}
             </button>
@@ -688,8 +685,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             type="button"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            className="hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-[0.97] transition-all duration-75 disabled:opacity-40 text-[#ef4444] bg-[rgba(239,68,68,0.08)]"
-            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500, marginTop: 5, marginBottom: 5 }}
+            className="inline-flex items-center h-[28px] px-3 rounded-full text-[13px] font-medium transition-all duration-150 active:scale-[0.97] bg-[rgba(239,68,68,0.08)] text-[#ef4444] hover:bg-[rgba(239,68,68,0.15)] dark:hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-40"
           >
             {deleteAccountLoading ? "Deleting..." : "Delete"}
           </button>
@@ -788,17 +784,16 @@ function EditProfileDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[420px] flex flex-col bg-[#ebebeb] dark:bg-[#333]"
+            className="relative w-full max-w-[420px] flex flex-col bg-white dark:bg-[#141414] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
             style={{
-              borderRadius: 6,
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.10)',
-              padding: 3,
+              boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 4px 16px rgba(0,0,0,0.08)',
+              padding: 6,
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !saving) handleSave()
             }}
           >
-            <div className="relative w-full flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c]" style={{ borderRadius: 6 }}>
+            <div className="relative w-full flex flex-col bg-[#f8f8f8] dark:bg-[rgba(255,255,255,0.04)] rounded-[12px]">
               <div className="p-5 space-y-3">
                 <div>
                   <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-1.5">Username</p>
@@ -807,8 +802,8 @@ function EditProfileDialog({
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     autoFocus
-                    className="w-full focus:outline-none bg-[#f5f5f5] dark:bg-[#111] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0]"
-                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                    className="w-full focus:outline-none bg-white dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f0f0f0] rounded-[8px]"
+                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontSize: 13, fontWeight: 500 }}
                   />
                 </div>
 
@@ -818,13 +813,13 @@ function EditProfileDialog({
               </div>
             </div>
 
-            <div className="flex gap-1" style={{ marginTop: 4 }}>
+            <div className="flex gap-1.5" style={{ marginTop: 6 }}>
               <button
                 type="button"
                 onClick={onClose}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-50 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]"
-                style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 400 }}
+                className="flex-1 flex items-center justify-center rounded-full hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 disabled:opacity-50 text-[#666] dark:text-[#a1a1aa] text-[14px] font-medium"
+                style={{ height: 38 }}
               >
                 Cancel
               </button>
@@ -832,8 +827,8 @@ function EditProfileDialog({
                 type="button"
                 onClick={handleSave}
                 disabled={saving || !nickname.trim()}
-                className="flex-1 flex items-center justify-center gap-1.5 hover:bg-[#e0e0e0] dark:hover:bg-[#444] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed text-[#111] dark:text-white dark:text-[#f0f0f0]"
-                style={{ height: 34, borderRadius: 6, fontSize: 14, fontWeight: 500 }}
+                className="flex-1 flex items-center justify-center rounded-full bg-[#171717] dark:bg-[rgba(255,255,255,0.1)] hover:bg-[#2a2a2a] dark:hover:bg-[rgba(255,255,255,0.15)] active:scale-[0.97] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed text-[#f7f8f8] text-[14px] font-semibold"
+                style={{ height: 38 }}
               >
                 {saving ? "Saving..." : "Save"}
               </button>

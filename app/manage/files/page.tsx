@@ -887,7 +887,7 @@ function ListView({
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   return (
-    <div className="bg-[#ebebeb] dark:bg-[#222] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]" style={{ borderRadius: 6, padding: 1, boxShadow: 'none' }}>
+    <div className="bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.04)] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-[14px]" style={{ padding: 1, boxShadow: 'none' }}>
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
         <input
           type="checkbox"
@@ -905,7 +905,7 @@ function ListView({
         <span />
       </div>
 
-      <div className="bg-white dark:bg-[#171717]" style={{ borderRadius: 6, overflow: 'hidden' }}>
+      <div className="bg-white dark:bg-[#0e0f10]" style={{ borderRadius: 12, overflow: 'hidden' }}>
         {files.map((file) => {
           const isSelected = selectedFiles.has(file.id)
           const Icon = getFileIconForType(file.contentType, file.name)
