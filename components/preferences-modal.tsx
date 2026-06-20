@@ -187,7 +187,7 @@ function GeneralTab() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '14px 16px' }}>
         <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3">Appearance</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-[520px]">
           <ThemeTile variant="system" label="System" active={theme === "system"} onClick={() => setTheme("system")} />
@@ -197,8 +197,8 @@ function GeneralTab() {
       </div>
 
       <div
-        className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 6 }}
+        className="flex items-center justify-between cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all duration-75 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 10, borderRadius: 8 }}
         onClick={() => setLangOpen((o) => !o)}
       >
         <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Language</span>
@@ -215,8 +215,8 @@ function GeneralTab() {
         <>
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
-            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
-            style={{ padding: 4, borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#0e0f10] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
+            style={{ padding: 4, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
           >
             {languages.map((l) => {
               const selected = l.code === language.code
@@ -230,8 +230,8 @@ function GeneralTab() {
                   }}
                   className={`flex w-full items-center justify-between text-left transition-all duration-75 ${
                     selected
-                      ? "text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium bg-[#f0f0f0] dark:bg-[#2a2a2a]"
-                      : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#222] active:scale-[0.97]"
+                      ? "text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)]"
+                      : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.04)] active:scale-[0.97]"
                   }`}
                   style={{ height: 34, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 13, border: 'none', cursor: 'pointer' }}
                 >
@@ -248,8 +248,8 @@ function GeneralTab() {
 
       <a
         href="/help"
-        className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-all duration-75 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent"
-        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 6 }}
+        className="flex items-center justify-between hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.04)] transition-all duration-75 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
+        style={{ height: 38, paddingLeft: 12, paddingRight: 12, borderRadius: 8 }}
       >
         <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Support</span>
         <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]">t.me/hypastack <MIcon name="open_in_new" size={14} /></span>
@@ -274,10 +274,10 @@ function ThemeTile({
       <button
         type="button"
         onClick={onClick}
-        className={`relative w-full aspect-[5/3] rounded-md overflow-hidden transition-all ${
+        className={`relative w-full aspect-[5/3] rounded-[8px] overflow-hidden transition-all ${
           active
             ? "ring-2 ring-[#111] dark:ring-[#e3e3e3] ring-offset-0"
-            : "ring-1 ring-[#e5e5e5] dark:ring-transparent hover:ring-[#ccc] dark:hover:ring-[#555]"
+            : "border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] hover:border-[#ccc] dark:hover:border-[rgba(255,255,255,0.15)]"
         }`}
       >
         {variant === "system" && (
@@ -297,8 +297,8 @@ function ThemeTile({
 }
 
 function ThemeMock({ dark }: { dark: boolean }) {
-  const bg = dark ? "#18181b" : "#f5f5f5"
-  const sidebar = dark ? "#0a0a0a" : "#e8e8e8"
+  const bg = dark ? "#08090a" : "#f5f5f5"
+  const sidebar = dark ? "#151616" : "#e8e8e8"
   const block = dark ? "#2c2c30" : "#dcdcdc"
   return (
     <div className="h-full w-full flex" style={{ backgroundColor: bg }}>
@@ -537,7 +537,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     )}
     <div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 20px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
             {avatarSrc ? (
@@ -562,7 +562,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#08090a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.1)] flex items-center justify-center text-[#555] hover:text-[#111] dark:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
@@ -600,24 +600,30 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               setCopiedId(true)
               setTimeout(() => setCopiedId(false), 2000)
             }}
-            className="flex items-center gap-1.5 hover:text-[#111] dark:text-white dark:hover:text-[#f0f0f0] transition-colors active:scale-[0.97] mb-2 mt-0.5"
-            style={{ fontSize: 12, fontWeight: 500, color: copiedId ? '#16a34a' : '#aaa' }}
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
           >
-            <MIcon name={copiedId ? "check" : "content_copy"} size={13} /> 
-            {copiedId ? "Copied!" : "Copy user ID"}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
+              <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
+              {copiedId ? "Copied" : "Copy user ID"}
+            </div>
           </button>
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 h-[26px] px-3 rounded-full text-[12px] font-medium transition-all duration-150 active:scale-[0.97] bg-[#f4f4f4] text-[#555] hover:bg-[#ebebeb] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.1)] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
           >
-            <MIcon name="edit" size={13} />
-            Edit
+            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full h-[26px] px-3 flex items-center gap-1.5 text-[#f7f8f8] text-[12px] font-medium">
+              <MIcon name="edit" size={13} />
+              Edit
+            </div>
           </button>
+        </div>
         </div>
       </div>
 
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px', marginBottom: 16 }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
@@ -646,7 +652,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       </div>
 
       {!user.premium && (
-        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
           <div>
             <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
             <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
@@ -678,7 +684,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6 }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 6 }}>
         <div
           className="flex items-center justify-between"
           style={{ minHeight: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
@@ -868,22 +874,24 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
   return (
     <div>
       <div className="flex items-center justify-center mb-5">
-        <div className="inline-flex rounded-md p-1 bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]">
+        <div className="inline-flex p-1 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12 }}>
           <button
             type="button"
             onClick={() => setBilling("monthly")}
-            className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "monthly" ? "bg-white dark:bg-[#08090a] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
+            className={`px-4 py-1.5 text-[14px] transition-colors ${
+              billing === "monthly" ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f7f8f8] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
+            style={{ borderRadius: 8 }}
           >
             Monthly
           </button>
           <button
             type="button"
             onClick={() => setBilling("annual")}
-            className={`px-4 py-1.5 rounded-md text-[14px] transition-colors ${
-              billing === "annual" ? "bg-white dark:bg-[#08090a] text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
+            className={`px-4 py-1.5 text-[14px] transition-colors ${
+              billing === "annual" ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f7f8f8] font-medium shadow-sm" : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal"
             }`}
+            style={{ borderRadius: 8 }}
           >
             Annual
           </button>
@@ -905,7 +913,7 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           ))}
         </div>
 
-        <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: 16 }}>
+        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: 16 }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
             {isSelectedCurrent && (
@@ -934,17 +942,23 @@ function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: 
           {!isSelectedCurrent && selectedPlan.key !== "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-md bg-[#111] text-white dark:text-white text-[14px] font-medium hover:bg-[#333] transition-colors cursor-pointer"
+              className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
             >
-              Switch to {selectedPlan.label}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+                Switch to {selectedPlan.label}
+              </div>
             </button>
           )}
           {!isSelectedCurrent && selectedPlan.key === "free" && (
             <button
               onClick={() => onSwitchTab?.("billing")}
-              className="block w-full text-center px-4 py-2.5 rounded-md text-[14px] font-medium transition-colors cursor-pointer bg-[#ebebeb] dark:bg-[#222] text-[#555] dark:text-[#888] dark:text-[#898e97] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
+              className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
             >
-              Downgrade to Free
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+              <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
+                Downgrade to Free
+              </div>
             </button>
           )}
         </div>
@@ -972,12 +986,16 @@ function PlanCard({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left rounded-md p-4 transition-all ${
+      className={`w-full text-left p-4 transition-all relative border overflow-hidden ${
         selected
-          ? "bg-white dark:bg-[#08090a] ring-2 ring-[#111] dark:ring-[#e3e3e3]"
-          : "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] border border-[#ebebeb] dark:border-transparent"
+          ? "bg-white dark:bg-[rgba(255,255,255,0.04)] border-[#111] dark:border-[rgba(255,255,255,0.25)]"
+          : "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
       }`}
+      style={{ borderRadius: 12 }}
     >
+      {selected && (
+        <div className="absolute inset-0 pointer-events-none rounded-[12px] ring-1 ring-inset ring-[rgba(255,255,255,0.1)] dark:ring-[rgba(255,255,255,0.1)]" />
+      )}
       <div className="flex items-center justify-between mb-2">
         <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] text-[10px] font-semibold tracking-wide">
           {tier}
@@ -997,7 +1015,7 @@ function PlanCard({
 function BillingTab({ } : { user: PreferencesUser }) {
   return (
     <div className="space-y-4">
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '16px 16px' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 16px' }}>
         <p className="text-[15px] font-normal text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">We're working on it.</p>
         <p className="text-[13px] font-normal text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed max-w-md">
           Billing not expected until next month, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
@@ -1012,7 +1030,7 @@ function BillingTab({ } : { user: PreferencesUser }) {
 function IntegrationsTab() {
   return (
     <div className="space-y-4">
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '14px 16px' }}>
         <p className="text-[13px] text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] font-medium mb-1">Let's see..</p>
         <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
           I'm currently playing with ideas for integrations, If you actually want Discord webhooks or something else, let me know, i'd rather build stuff you'll actually use
@@ -1067,7 +1085,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6, padding: '14px 16px' }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '14px 16px' }}>
         <p className="text-[13px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] leading-relaxed">
           Hypastack stores <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">hashed usernames</span>,{" "}
           <span className="text-[#111] dark:text-white dark:text-[#f0f0f0] font-medium">hashed access keys</span>,{" "}
@@ -1077,10 +1095,10 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
         </p>
       </div>
 
-      <div className="bg-[#f5f5f5] dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-transparent" style={{ borderRadius: 6 }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12 }}>
         <div
           className="flex items-center justify-between"
-          style={{ height: 38, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
+          style={{ height: 42, paddingLeft: 12, paddingRight: 8, borderRadius: 12 }}
         >
           <span className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">Inactivity purge</span>
           <div className="flex items-center gap-2">
@@ -1096,7 +1114,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                   setPurgeSaved(false)
                 }}
                 disabled={!isPaid}
-                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-[70px] text-center focus:outline-none bg-[#ffffff] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-white dark:text-[#f0f0f0] ${!isPaid ? 'opacity-50 cursor-not-allowed' : ''}`}
                 style={{ height: 28, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
                 placeholder="7"
               />
@@ -1105,10 +1123,13 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
             <button
               onClick={handlePurgeSave}
               disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-              className={`hover:bg-[#ebebeb] dark:hover:bg-[#222] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed border ${purgeSaved ? "text-[#16a34a] bg-[rgba(22,163,74,0.08)] border-transparent" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] bg-[#ffffff] dark:bg-[#1c1c1c] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"}`}
-              style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+              className={`relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed`}
+              style={{ height: 28, paddingLeft: 14, paddingRight: 14 }}
             >
-              {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
+              <div className={`absolute inset-0 transition-colors duration-300 ${purgeSaved ? "bg-[rgba(22,163,74,0.2)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
+              <div className={`relative bg-[#151616] rounded-full w-full h-full flex items-center justify-center text-[12px] font-medium ${purgeSaved ? "text-[#16a34a] bg-[#091a0e]" : "text-[#f7f8f8]"}`}>
+                {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
+              </div>
             </button>
           </div>
         </div>
