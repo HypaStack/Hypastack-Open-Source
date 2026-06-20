@@ -81,20 +81,20 @@ export function Hero() {
             href="https://github.com/HypaStack/Hypastack-Open-Source"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 hover:bg-[#f0f1f5] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#ffffff', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
+            className="inline-flex items-center gap-1.5 hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#f7f8f8', backgroundColor: '#1a1a1a', border: '1px solid #333', boxShadow: '0 2px 6px rgba(0,0,0,0.5)' }}
           >
-            <img src="https://r2.hypastack.com/cdn/tniuzl9r383i/GitHub_Invertocat_Black.svg" alt="" className="w-[14px] h-[14px] select-none" draggable={false} />
+            <img src="https://r2.hypastack.com/cdn/tniuzl9r383i/GitHub_Invertocat_Black.svg" alt="" className="w-[14px] h-[14px] select-none" draggable={false} style={{ filter: 'brightness(0) invert(1)' }} />
             <span>We're open source</span>
           </a>
           <a
             href="https://hypastack.com/d/987vw0zy#key=9OU2rAIyA3j3Eye90DrxYoimxWbNCcycuyT6LNn7_BA"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 hover:bg-[#e8e9ee] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#171717', backgroundColor: '#f5f5f5', border: '1px solid #e5e5e5', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
+            className="inline-flex items-center gap-1.5 hover:bg-[#1a1a1a] active:scale-[0.97] transition-all duration-75"
+            style={{ height: 32, paddingLeft: 11, paddingRight: 11, borderRadius: 9, fontSize: 13, fontWeight: 500, color: '#f7f8f8', backgroundColor: '#0a0b0c', border: '1px solid #333', boxShadow: '0 2px 6px rgba(0,0,0,0.5)' }}
           >
-            <MIcon name="desktop_windows" size={13} style={{ color: '#171717' }} />
+            <MIcon name="desktop_windows" size={13} style={{ color: '#f7f8f8' }} />
             <span>Download for Windows</span>
           </a>
         </motion.div>
