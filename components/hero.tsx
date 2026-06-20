@@ -58,7 +58,7 @@ export function Hero() {
               alt="Hypastack Platform Preview" 
               fetchPriority="high"
               loading="eager"
-              className="w-full h-auto object-contain rounded-2xl sm:rounded-3xl lg:rounded-[32px]"
+              className="w-full h-auto object-contain rounded-md"
             />
           </div>
         </motion.div>
