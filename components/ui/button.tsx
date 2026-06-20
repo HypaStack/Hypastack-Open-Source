@@ -3,7 +3,7 @@ import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "landing-primary" | "landing-secondary";
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
   className?: string;
@@ -27,7 +27,11 @@ export function Button({
   
   const variantClasses = variant === "primary"
     ? "bg-[#030303] text-[#ffffff] font-semibold hover:bg-[#1a1a1a] hover:ring-[4px] hover:ring-[rgba(0,0,0,0.15)]"
-    : "bg-[#ffffff] text-[#171717] font-medium hover:bg-[#f0f1f5] hover:ring-[4px] hover:ring-[rgba(0,0,0,0.05)] border border-[rgba(0,0,0,0.15)]";
+    : variant === "secondary"
+    ? "bg-[#ffffff] text-[#171717] font-medium hover:bg-[#f0f1f5] hover:ring-[4px] hover:ring-[rgba(0,0,0,0.05)] border border-[rgba(0,0,0,0.15)]"
+    : variant === "landing-primary"
+    ? "bg-[#f7f8f8] text-[#08090a] font-semibold hover:bg-[#e0e0e0] hover:ring-[4px] hover:ring-[rgba(255,255,255,0.15)]"
+    : "bg-[#08090a] text-[#f7f8f8] font-medium hover:bg-[#111111] hover:ring-[4px] hover:ring-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.15)]";
 
   const sizeClasses = size === "sm"
     ? "h-9 px-4 rounded-full text-[13px]"
