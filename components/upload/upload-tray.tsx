@@ -58,10 +58,10 @@ export function UploadTray({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 500 }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-md bg-[#ffffff] dark:bg-[#1a1a1a] font-sans mb-8 sm:mb-0 border border-transparent dark:border-transparent"
-          style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10)" }}
+          className="fixed bottom-0 left-0 right-0 z-40 sm:bottom-4 sm:right-4 sm:left-auto w-full sm:w-[480px] sm:max-w-[calc(100vw-2rem)] rounded-t-[16px] sm:rounded-[16px] bg-white dark:bg-[#141414] font-sans mb-8 sm:mb-0 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)" }}
         >
-          <div className="w-full h-full bg-[#ffffff] dark:bg-[#1a1a1a] overflow-hidden flex flex-col sm:rounded-md rounded-t-[16px]">
+          <div className="w-full h-full bg-white dark:bg-[#141414] overflow-hidden flex flex-col sm:rounded-[16px] rounded-t-[16px]">
             <div className="flex flex-col gap-2 px-5 pt-5 pb-3">
               <div className="flex items-center justify-between">
                 <h3
@@ -74,15 +74,14 @@ export function UploadTray({
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]"
-                    style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                    className="h-[28px] px-3 rounded-full text-[13px] font-medium transition-all duration-150 active:scale-[0.97] text-[#666] dark:text-[#898e97] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#333] dark:hover:text-[#f7f8f8]"
                   >
                     Clear
                   </button>
                   <button
                     type="button"
                     onClick={() => setTrayCollapsed((v) => !v)}
-                    className="p-1 rounded-md text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa] hover:text-[#555] dark:hover:text-[#aaa] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
+                    className="p-1 rounded-full text-[#999] dark:text-[#898e97] hover:text-[#555] dark:hover:text-[#f7f8f8] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
                     aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
                   >
                     {trayCollapsed ? <MIcon name="expand_less" size={18} /> : <MIcon name="expand_more" size={18} />}

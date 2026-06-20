@@ -92,11 +92,10 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#ebebeb] dark:bg-[#333]"
+              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#f0f0f0] dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-none sm:rounded-[20px]"
               style={{
-                borderRadius: 6,
-                boxShadow: '0 0 0 1px rgba(0,0,0,0.06), 0 24px 48px rgba(0,0,0,0.12)',
-                padding: 3,
+                boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
+                padding: 4,
               }}
             >
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
@@ -120,7 +119,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.04)] rounded-md px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.03)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
@@ -131,7 +130,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-[#ffffff] dark:bg-[#1c1c1c] rounded-md overflow-hidden">
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-white dark:bg-[#0e0f10] rounded-[16px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
                   {active === "general" && <GeneralTab />}
                   {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}

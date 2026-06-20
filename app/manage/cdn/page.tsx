@@ -607,38 +607,43 @@ export default function CdnPage() {
           </h1>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            {selectedAssets.size > 0 ? (
+          {selectedAssets.size > 0 ? (
               <>
                 <button
                   type="button"
                   onClick={handleSelectAll}
-                  className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                 >
-                  <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
-                  <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                    <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
+                    <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
+                  </div>
                 </button>
                 {/* Copy — all selected */}
                 <button
                   type="button"
                   onClick={handleCopySelected}
-                  className={`inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] ${
-                    copiedSelection
-                      ? "bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-[rgba(16,185,129,0.15)] dark:text-emerald-400 dark:border-transparent"
-                      : "bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
-                  }`}
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                 >
-                  <MIcon name={copiedSelection ? "check" : "content_copy"} size={16} className="shrink-0" />
-                  <span className="hidden sm:inline">{copiedSelection ? "Copied!" : `Copy${selectedAssets.size > 1 ? ` (${selectedAssets.size})` : ""}`}</span>
+                  <div className={`absolute inset-0 transition-colors duration-300 ${copiedSelection ? "bg-gradient-to-tr from-[rgba(16,185,129,0.2)] to-[rgba(16,185,129,0.4)] group-hover:to-[rgba(16,185,129,0.6)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
+                  <div className={`relative rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[14px] font-medium ${copiedSelection ? "bg-[#0a1a14] text-emerald-400" : "bg-[#151616] text-[#f7f8f8]"}`}>
+                    <MIcon name={copiedSelection ? "check" : "content_copy"} size={16} className="shrink-0" />
+                    <span className="hidden sm:inline">{copiedSelection ? "Copied!" : `Copy${selectedAssets.size > 1 ? ` (${selectedAssets.size})` : ""}`}</span>
+                  </div>
                 </button>
                 {/* View — single selection only */}
                 {selectedAssets.size === 1 && (
                   <button
                     type="button"
                     onClick={handleViewSelected}
-                    className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
+                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                   >
-                    <MIcon name="open_in_new" size={16} className="shrink-0" />
-                    <span className="hidden sm:inline">View</span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                    <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                      <MIcon name="open_in_new" size={16} className="shrink-0" />
+                      <span className="hidden sm:inline">View</span>
+                    </div>
                   </button>
                 )}
                 {/* Hot Swap — single selection only */}
@@ -647,10 +652,13 @@ export default function CdnPage() {
                     type="button"
                     onClick={handleHotSwapClick}
                     disabled={swapLoading !== null}
-                    className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-amber-50 text-[#d97706] border border-[rgba(217,119,6,0.25)] hover:bg-amber-100 dark:bg-[rgba(217,119,6,0.1)] dark:text-[#f59e0b] dark:border-[rgba(217,119,6,0.2)] dark:hover:bg-[rgba(217,119,6,0.18)] disabled:opacity-50"
+                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
                   >
-                    <MIcon name="swap_horiz" size={17} className="shrink-0" />
-                    <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(217,119,6,0.2)] to-[rgba(217,119,6,0.4)] group-hover:to-[rgba(217,119,6,0.6)] transition-colors duration-300" />
+                    <div className="relative bg-[#1a1200] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-amber-400 text-[14px] font-medium">
+                      <MIcon name="swap_horiz" size={17} className="shrink-0" />
+                      <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
+                    </div>
                   </button>
                 )}
                 {/* Delete */}
@@ -658,10 +666,13 @@ export default function CdnPage() {
                   type="button"
                   onClick={handleBulkDelete}
                   disabled={deleteLoading === "bulk"}
-                  className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-red-50 text-red-600 border border-[rgba(239,68,68,0.25)] hover:bg-red-100 dark:bg-[rgba(239,68,68,0.1)] dark:text-red-400 dark:border-[rgba(239,68,68,0.2)] dark:hover:bg-[rgba(239,68,68,0.18)] disabled:opacity-50"
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
                 >
-                  <MIcon name="delete" size={18} />
-                  {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.3)] to-[rgba(239,68,68,0.6)] group-hover:to-[rgba(239,68,68,0.8)] transition-colors duration-300" />
+                  <div className="relative bg-[#1a0808] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-red-400 text-[14px] font-medium">
+                    <MIcon name="delete" size={18} />
+                    {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
+                  </div>
                 </button>
               </>
             ) : (
@@ -670,27 +681,36 @@ export default function CdnPage() {
                   <button
                     type="button"
                     onClick={handleSelectAll}
-                    className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
+                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                   >
-                    <MIcon name="select_all" size={17} className="shrink-0" />
-                    <span className="hidden sm:inline">Select all</span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                    <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                      <MIcon name="select_all" size={17} className="shrink-0" />
+                      <span className="hidden sm:inline">Select all</span>
+                    </div>
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={handleCreateFolder}
-                  className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                 >
-                  <MIcon name="create_new_folder" size={17} className="shrink-0" />
-                  <span className="hidden sm:inline">New Folder</span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                    <MIcon name="create_new_folder" size={17} className="shrink-0" />
+                    <span className="hidden sm:inline">New Folder</span>
+                  </div>
                 </button>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-semibold text-[14px] transition-all duration-200 active:scale-[0.97] bg-[#171717] text-[#f7f8f8] hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.1)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.15)]"
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                 >
-                  <MIcon name="cloud_upload" size={15} className="shrink-0" />
-                  <span>Upload files</span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                    <MIcon name="cloud_upload" size={15} className="shrink-0" />
+                    <span>Upload files</span>
+                  </div>
                 </button>
               </>
             )}
@@ -761,20 +781,22 @@ export default function CdnPage() {
                     <div
                       key={folder.id}
                       onClick={() => setCurrentFolderId(folder.id)}
-                      className="group flex items-center gap-3 bg-[#ebebeb] dark:bg-[#1a1a1a] hover:bg-[#e5e5e5] dark:hover:bg-[#222] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-                      style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
+                      className="relative flex items-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150 cursor-pointer"
                     >
-                      <MIcon name="folder" size={16} className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] shrink-0" />
-                      <span className="text-[#111] dark:text-white dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
-                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa] hover:text-red-400"
-                        style={{ height: 28, width: 28, borderRadius: 6 }}
-                        aria-label="Delete folder"
-                      >
-                        <MIcon name="delete" size={14} />
-                      </button>
+                      <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                      <div className="relative bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
+                        <MIcon name="folder" size={16} className="text-[#898e97] shrink-0" />
+                        <span className="text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
+                          className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#898e97] hover:text-red-400"
+                          style={{ height: 26, width: 26 }}
+                          aria-label="Delete folder"
+                        >
+                          <MIcon name="delete" size={13} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -788,11 +810,13 @@ export default function CdnPage() {
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
                 <button
                   onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
-                  className="inline-flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#222] text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] hover:bg-[#ebebeb] dark:hover:bg-[#2a2a2a] active:scale-[0.97] transition-all duration-75"
-                  style={{ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 6, fontSize: 13, fontWeight: 500 }}
+                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
                 >
-                  <MIcon name="arrow_back" size={14} />
-                  Go back
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                    <MIcon name="arrow_back" size={14} />
+                    Go back
+                  </div>
                 </button>
               </div>
             )}

@@ -475,28 +475,37 @@ function FilesPageInner() {
               type="button"
               onClick={handleBulkDelete}
               disabled={deleteLoading === "bulk"}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-[15px] transition-all duration-200 active:scale-[0.97] bg-red-500 text-[#ffffff] hover:bg-red-600 disabled:opacity-50"
+              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
             >
-              <MIcon name="delete" size={18} />
-              {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.3)] to-[rgba(239,68,68,0.6)] group-hover:to-[rgba(239,68,68,0.8)] transition-colors duration-300" />
+              <div className="relative bg-[#1a0808] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-red-400 text-[14px] font-medium">
+                <MIcon name="delete" size={18} />
+                {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
+              </div>
             </button>
           ) : (
             <>
               <button
                 type="button"
                 onClick={handleCreateFolder}
-                className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-medium text-[14px] transition-all duration-200 active:scale-[0.97] bg-white text-[#171717] border border-[rgba(0,0,0,0.12)] hover:bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.06)] dark:text-[#f7f8f8] dark:border-[rgba(255,255,255,0.08)] dark:hover:bg-[rgba(255,255,255,0.1)]"
+                className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
               >
-                <MIcon name="create_new_folder" size={17} className="shrink-0" />
-                <span className="hidden sm:inline">New Folder</span>
+                <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                  <MIcon name="create_new_folder" size={17} className="shrink-0" />
+                  <span className="hidden sm:inline">New Folder</span>
+                </div>
               </button>
               <button
                 type="button"
                 onClick={triggerFilePicker}
-                className="inline-flex items-center justify-center gap-2 h-[40px] px-5 rounded-full font-semibold text-[14px] transition-all duration-200 active:scale-[0.97] bg-[#171717] text-[#f7f8f8] hover:bg-[#2a2a2a] dark:bg-[rgba(255,255,255,0.1)] dark:text-[#f7f8f8] dark:hover:bg-[rgba(255,255,255,0.15)]"
+                className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
               >
-                <MIcon name="cloud_upload" size={15} className="shrink-0" />
-                <span>Upload files</span>
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+                <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+                  <MIcon name="cloud_upload" size={15} className="shrink-0" />
+                  <span>Upload files</span>
+                </div>
               </button>
             </>
           )}
@@ -524,22 +533,24 @@ function FilesPageInner() {
               <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {filteredFolders.map(folder => (
-                  <div 
-                    key={folder.id} 
+                  <div
+                    key={folder.id}
                     onClick={() => setCurrentFolderId(folder.id)}
-                    className="group flex items-center gap-3 bg-[#ebebeb] dark:bg-[#1a1a1a] hover:bg-[#e5e5e5] dark:hover:bg-[#222] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] active:scale-[0.97] transition-all duration-75 cursor-pointer"
-                    style={{ height: 42, paddingLeft: 12, paddingRight: 6, borderRadius: 6 }}
+                    className="relative flex items-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150 cursor-pointer"
                   >
-                    <MIcon name="folder" size={16} className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] shrink-0" />
-                    <span className="text-[#111] dark:text-white dark:text-[#e3e3e3] min-w-0 truncate flex-1" style={{ fontSize: 14, fontWeight: 400 }}>{folder.name}</span>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
-                      className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 hover:bg-red-500/15 text-[#999] dark:text-[#898e97] hover:text-red-400"
-                      style={{ height: 28, width: 28, borderRadius: 6 }}
-                      aria-label="Delete folder"
-                    >
-                      <MIcon name="delete" size={14} />
-                    </button>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                    <div className="relative bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
+                      <MIcon name="folder" size={16} className="text-[#898e97] shrink-0" />
+                      <span className="text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#898e97] hover:text-red-400"
+                        style={{ height: 26, width: 26 }}
+                        aria-label="Delete folder"
+                      >
+                        <MIcon name="delete" size={13} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
