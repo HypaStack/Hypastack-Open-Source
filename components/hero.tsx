@@ -48,7 +48,7 @@ export function Hero() {
             The frictionless way to distribute sensitive assets to anyone, anywhere.
           </h1>
           <p className="mt-4 text-[15px] sm:text-[18px] font-light tracking-wide leading-relaxed text-[#898e97] text-left max-w-2xl">
-            A secure CDN and file-sharing tool for when you need to get stuff from point A to point B without any extra hoops to jump through.
+            The simplest way to host, share, and deliver files without the extra overhead
           </p>
         </motion.div>
         
