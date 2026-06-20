@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { blogPosts } from "@/lib/blog-posts"
+import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -52,12 +53,13 @@ export default function BlogPage() {
                 </p>
 
                 <div className="mt-4">
-                  <Link
+                  <Button
                     href={`/blog/${post.slug}`}
-                    className="inline-flex items-center justify-center bg-[#f7f8f8] text-[#08090a] hover:bg-white active:scale-[0.98] transition-all duration-150 rounded-full font-semibold px-6 py-2.5 text-[14px]"
+                    variant="landing-primary"
+                    size="sm"
                   >
                     Read post
-                  </Link>
+                  </Button>
                 </div>
               </div>
             ))}

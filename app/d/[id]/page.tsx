@@ -7,6 +7,7 @@ import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/multipart";
 import { motion } from "motion/react";
 import { apiFetch } from "@/lib/fetch"
+import { Button } from "@/components/ui/button"
 
 interface FileInfo {
   id: string; name: string; size: number; contentType: string; expiresAt: string;
@@ -225,16 +226,16 @@ export default function DownloadPage() {
                 {error === "File has expired" ? "This file has been permanently deleted from our servers." : "The file you're looking for doesn't exist or has been removed."}
               </p>
               <div className="flex gap-2">
-                <Link
-                  href="/manage/files"
-                  className="bg-[#f7f8f8] text-[#08090a] hover:bg-white active:scale-[0.98] transition-all duration-150 rounded-full font-semibold flex items-center justify-center text-[13px]"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16 }}
-                >Upload a file</Link>
-                <Link
-                  href="/"
-                  className="bg-transparent border border-[rgba(255,255,255,0.15)] text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.04)] active:scale-[0.98] transition-all duration-150 rounded-full font-medium flex items-center justify-center text-[13px]"
-                  style={{ height: 38, paddingLeft: 16, paddingRight: 16 }}
-                >Home</Link>
+                <Button
+                  variant="landing-primary"
+                  onClick={() => { window.location.href = "/manage/files" }}
+                  className="flex-1"
+                >Upload a file</Button>
+                <Button
+                  variant="landing-secondary"
+                  onClick={() => { window.location.href = "/" }}
+                  className="flex-1"
+                >Home</Button>
               </div>
             </div>
           </motion.div>
@@ -311,10 +312,11 @@ export default function DownloadPage() {
                 )}
                 {downloaded ? (
                   <div className="space-y-2">
-                    <button
+                    <Button
                       onClick={!burned ? handleDownload : undefined}
                       disabled={burned || downloadCooldown > 0}
-                      className={`w-full h-[42px] rounded-full text-[14px] font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-150 ${burned ? 'bg-[rgba(255,255,255,0.04)] text-[#898e97] cursor-default border border-[rgba(255,255,255,0.08)]' : 'bg-transparent border border-[rgba(255,255,255,0.15)] text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.04)] disabled:opacity-40'}`}
+                      variant="landing-secondary"
+                      className="w-full flex items-center justify-center gap-2"
                     >
                       {burned ? (
                         <><MIcon name="local_fire_department" className="text-red-400" size={16} />File burned</>
@@ -323,14 +325,15 @@ export default function DownloadPage() {
                       ) : (
                         <><MIcon name="download" size={16} />Download again</>
                       )}
-                    </button>
-                    {burned && <p className="text-[12px] text-[#898e97] text-center">This file has been permanently deleted after download.</p>}
+                    </Button>
+                    {burned && <p className="text-[12px] text-[#898e97] text-center mt-2">This file has been permanently deleted after download.</p>}
                   </div>
                 ) : (
-                  <button
+                  <Button
                     onClick={handleDownload}
                     disabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
-                    className="w-full h-[42px] rounded-full text-[14px] font-semibold flex items-center justify-center gap-2 bg-[#f7f8f8] text-[#08090a] hover:bg-white active:scale-[0.98] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+                    variant="landing-primary"
+                    className="w-full flex items-center justify-center gap-2"
                   >
                     {downloading && !forceLocked ? (
                       <><svg className="animate-spin h-4 w-4 text-[#898e97]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Downloading…</>
@@ -341,7 +344,7 @@ export default function DownloadPage() {
                     ) : (
                       <><MIcon name="download" size={16} />Download</>
                     )}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
