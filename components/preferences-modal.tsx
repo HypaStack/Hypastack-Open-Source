@@ -464,7 +464,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [avatarKey, setAvatarKey] = useState(0)
-  const avatarSrc = user.avatarUrl ? `/api/v2/avatar?t=${avatarKey}` : null
+  const avatarSrc = user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}?t=${avatarKey}` : null
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = storage?.storagePercent ?? 0
 

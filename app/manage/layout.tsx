@@ -307,7 +307,7 @@ function ManageLayoutInner({
             <div className="h-7 w-7">
               {user.avatarUrl ? (
                 <img
-                  src="/api/v2/avatar"
+                  src={`https://r2.hypastack.com/${user.avatarUrl}`}
                   alt={user.nickname}
                   className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"
                   style={{ borderRadius: '50%' }}
@@ -550,7 +550,7 @@ function ManageLayoutInner({
               <div className="flex items-center gap-3" style={{ padding: '16px 16px 60px' }}>
                 <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 6, backgroundColor: '#e5e5e5' }}>
                   {user.avatarUrl ? (
-                    <Image src="/api/v2/avatar" alt={user.nickname} fill sizes="40px" className="object-cover select-none pointer-events-none" draggable={false} unoptimized />
+                    <Image src={`https://r2.hypastack.com/${user.avatarUrl}`} alt={user.nickname} fill sizes="40px" className="object-cover select-none pointer-events-none" draggable={false} unoptimized />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center bg-[#ccc] text-white text-sm font-bold">
                       {initials}
