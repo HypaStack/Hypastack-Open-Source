@@ -25,19 +25,19 @@ export function HowItWorks() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 sm:mt-24">
               <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
-                <img src="https://r2.hypastack.com/cdn/s422hnlic6gc/feature-1.svg" alt="Built for purpose" className="w-12 h-12 mb-8" />
+                <img src="https://r2.hypastack.com/cdn/s422hnlic6gc/feature-1.svg" alt="Built for purpose" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Built for purpose</h3>
                 <p className="text-[15px] leading-relaxed text-[#898e97]">Built the way software should be. Shaped by the everyday needs of creators who just want tools that work instantly.</p>
               </div>
 
               <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
-                <img src="https://r2.hypastack.com/cdn/5mjl7qamo25p/feature-2.svg" alt="Powered by Cloudflare" className="w-12 h-12 mb-8" />
+                <img src="https://r2.hypastack.com/cdn/5mjl7qamo25p/feature-2.svg" alt="Powered by Cloudflare" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Powered by Cloudflare</h3>
                 <p className="text-[15px] leading-relaxed text-[#898e97]">A secure workspace to pass encrypted files, paired with a blazing-fast CDN that strips tracking and metadata automatically.</p>
               </div>
 
               <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-md p-8 flex flex-col items-start">
-                <img src="https://r2.hypastack.com/cdn/rid8jnqs5p6n/feature-3.svg" alt="Designed for speed" className="w-12 h-12 mb-8" />
+                <img src="https://r2.hypastack.com/cdn/rid8jnqs5p6n/feature-3.svg" alt="Designed for speed" className="w-16 h-16 sm:w-20 sm:h-20 mb-8" />
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Designed for speed</h3>
                 <p className="text-[15px] leading-relaxed text-[#898e97]">Built to move at your pace. A lightweight network that gets out of your way and serves files with near-instant request speeds.</p>
               </div>
