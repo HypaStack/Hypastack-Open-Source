@@ -9,24 +9,24 @@ export const metadata: Metadata = {
 
 export default function TermsOfService() {
   return (
-    <main className="flex min-h-screen flex-col bg-background">
+    <main className="flex min-h-screen flex-col bg-[#08090a]">
       <Navbar />
       
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
             Terms of Service
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-12 border-b border-border pb-6">
+          <div className="text-sm text-[#898e97] mb-12 border-b border-[rgba(255,255,255,0.08)] pb-6">
             <p>Effective Date: June 14, 2026</p>
             <p>Last Updated: June 14, 2026</p>
           </div>
           
-          <div className="space-y-12 text-[15px] leading-relaxed text-muted-foreground">
+          <div className="space-y-16 text-[15px] leading-relaxed text-[#898e97]">
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">1. Acceptance of Terms</h2>
-              <p className="mb-4 text-foreground font-medium">
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>1. Acceptance of Terms</h2>
+              <p className="mb-4 text-[#f7f8f8] font-medium">
                 By accessing, browsing, or utilizing any portion of the Hypastack platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
               </p>
               <p>
@@ -35,7 +35,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">2. Service Description and Architecture</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>2. Service Description and Architecture</h2>
               <p className="mb-4">
                 Hypastack provides a globally distributed Content Delivery Network (CDN) and file-sharing utility designed around the principles of absolute mathematical privacy. The service operates strictly as a zero-knowledge transport and storage layer for secure file sharing, while also offering unencrypted permanent hosting for public assets via my CDN pipeline.
               </p>
@@ -45,19 +45,19 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">3. User Responsibilities and Liability</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>3. User Responsibilities and Liability</h2>
               <p className="mb-4">
                 Because Hypastack operates a zero-knowledge architecture, the sole responsibility for the contents, legality, and dissemination of the uploaded data rests entirely with the User. 
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
-                <li><strong className="text-foreground">Data Loss:</strong> You are solely responsible for maintaining access to your decryption keys, which are embedded in the URL fragments. Hypastack cannot recover, reset, or bypass these cryptographic locks. If you lose your URL, your encrypted data is irretrievably lost. I hold no liability for data loss due to lost keys, accidental deletion, or service interruption.</li>
-                <li><strong className="text-foreground">Legality of Content:</strong> You agree not to use the platform to upload, transmit, or distribute any material that is unlawful, defamatory, obscene, or infringing upon the intellectual property rights of others. Please refer to my Acceptable Use Policy for an exhaustive list of prohibited behaviors.</li>
-                <li><strong className="text-foreground">Indemnification:</strong> You agree to indemnify, defend, and hold harmless Hypastack, its affiliates, officers, directors, employees, and agents from and against any and all claims, damages, obligations, losses, liabilities, costs, and expenses arising from your violation of these Terms or your infringement of any third-party rights.</li>
+                <li><strong className="text-[#f7f8f8]">Data Loss:</strong> You are solely responsible for maintaining access to your decryption keys, which are embedded in the URL fragments. Hypastack cannot recover, reset, or bypass these cryptographic locks. If you lose your URL, your encrypted data is irretrievably lost. I hold no liability for data loss due to lost keys, accidental deletion, or service interruption.</li>
+                <li><strong className="text-[#f7f8f8]">Legality of Content:</strong> You agree not to use the platform to upload, transmit, or distribute any material that is unlawful, defamatory, obscene, or infringing upon the intellectual property rights of others. Please refer to my Acceptable Use Policy for an exhaustive list of prohibited behaviors.</li>
+                <li><strong className="text-[#f7f8f8]">Indemnification:</strong> You agree to indemnify, defend, and hold harmless Hypastack, its affiliates, officers, directors, employees, and agents from and against any and all claims, damages, obligations, losses, liabilities, costs, and expenses arising from your violation of these Terms or your infringement of any third-party rights.</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">4. Service Availability and Modifications</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>4. Service Availability and Modifications</h2>
               <p className="mb-4">
                 While I strive for high availability and rapid edge delivery, Hypastack is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either express or implied.
               </p>
@@ -67,7 +67,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">5. Intellectual Property</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>5. Intellectual Property</h2>
               <p className="mb-4">
                 You retain all rights and ownership to the original plaintext data you encrypt and upload to the platform. By uploading the encrypted ciphertext to Hypastack, you grant me a worldwide, non-exclusive, royalty-free license strictly limited to hosting, copying, transmitting, and delivering that encrypted blob across my CDN architecture to facilitate your requested downloads.
               </p>
@@ -77,7 +77,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-5">6. Termination</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>6. Termination</h2>
               <p>
                 I may terminate or suspend your access to the platform immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the platform will immediately cease, and any associated encrypted ciphertext hosted on my network may be asynchronously purged. All provisions of the Terms which by their nature should survive termination shall survive termination, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
               </p>

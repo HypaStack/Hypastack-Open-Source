@@ -9,27 +9,27 @@ export const metadata: Metadata = {
 
 export default function DmcaPolicy() {
   return (
-    <main className="flex min-h-screen flex-col bg-background">
+    <main className="flex min-h-screen flex-col bg-[#08090a]">
       <Navbar />
       
       <section className="flex-1 pt-32 pb-20">
         <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
             DMCA Policy
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-8">
+          <div className="text-sm text-[#898e97] mb-8">
             <p>Effective: May 7, 2026</p>
           </div>
           
-          <div className="space-y-8 text-muted-foreground">
-            <p className="text-foreground">
+          <div className="space-y-8 text-[#898e97]">
+            <p className="text-[#f7f8f8]">
               Hypastack respects copyright. If you believe content hosted on my platform 
               infringes your copyright, you can submit a takedown request.
             </p>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">How to File a Takedown</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>How to File a Takedown</h2>
               <p className="mb-4">
                 Send a message via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
               </p>
@@ -44,7 +44,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">What I Do</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Do</h2>
               <p className="mb-4">
                 When I receive a valid DMCA notice, I remove the content. Because of my 
                 zero-knowledge architecture, I cannot reliably notify the uploader — I do not 
@@ -57,7 +57,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Counter-Notification</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Counter-Notification</h2>
               <p className="mb-4">
                 If your content was removed and you believe it was not infringing, you may submit 
                 a counter-notification via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
@@ -72,7 +72,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Repeat Infringers</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Repeat Infringers</h2>
               <p>
                 I will terminate accounts of repeat infringers when I can identify them. Given 
                 my zero-knowledge model, identification is limited to the hashed nickname and 
@@ -81,7 +81,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Contact</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Contact</h2>
               <p>
                 Telegram: <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>
               </p>

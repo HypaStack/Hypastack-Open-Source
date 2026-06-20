@@ -9,27 +9,27 @@ export const metadata: Metadata = {
 
 export default function ChildSafety() {
   return (
-    <main className="flex min-h-screen flex-col bg-background">
+    <main className="flex min-h-screen flex-col bg-[#08090a]">
       <Navbar />
       
       <section className="flex-1 pt-32 pb-20">
         <div className="mx-auto max-w-[860px] px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
             Child Safety Policy
           </h1>
           
-          <div className="text-sm text-muted-foreground mb-8">
+          <div className="text-sm text-[#898e97] mb-8">
             <p>Effective: May 7, 2026</p>
           </div>
           
-          <div className="space-y-8 text-muted-foreground">
-            <p className="text-foreground">
+          <div className="space-y-8 text-[#898e97]">
+            <p className="text-[#f7f8f8]">
               Hypastack has zero tolerance for child sexual abuse material (CSAM). 
               This is not negotiable.
             </p>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">My Position</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>My Position</h2>
               <p className="mb-4">
                 Any content that sexually exploits or endangers children will be removed immediately 
                 upon discovery or report. The associated account will be terminated. All available 
@@ -39,7 +39,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">What I Can Provide to Authorities</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Can Provide to Authorities</h2>
               <p className="mb-4">
                 Due to my zero-knowledge architecture, the data I can provide is limited to:
               </p>
@@ -59,7 +59,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Prevention Measures</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Prevention Measures</h2>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Dangerous file types (executables, scripts) are strictly blocked for CDN uploads</li>
                 <li>File type verification checks magic bytes, not just extensions</li>
@@ -74,7 +74,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Age Requirements</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Age Requirements</h2>
               <p className="mb-4">
                 Minimum age to use Hypastack: 18. 
                 I cannot verify age because I do not collect identity information. 
@@ -83,15 +83,15 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-foreground mb-4">Reporting</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Reporting</h2>
               <p className="mb-4">
                 If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="font-medium">#key=...</code> fragment) via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. I will act within 24 hours.
               </p>
               <p className="mb-4">
-                <strong className="text-foreground">Do not send me the decryption key.</strong> I will not ask for it. Receiving and decrypting content to verify a CSAM report creates direct legal liability for me. I do not and will not do this.
+                <strong className="text-[#f7f8f8]">Do not send me the decryption key.</strong> I will not ask for it. Receiving and decrypting content to verify a CSAM report creates direct legal liability for me. I do not and will not do this.
               </p>
               <p className="mb-4">
-                <strong className="text-foreground">Do not screenshot or preserve CSAM.</strong> Simply send me the URL so I can delete the file immediately, and report it directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a>. That is all I need from you.
+                <strong className="text-[#f7f8f8]">Do not screenshot or preserve CSAM.</strong> Simply send me the URL so I can delete the file immediately, and report it directly to the <a href="https://www.missingkids.org/gethelpnow/cybertipline" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">NCMEC CyberTipline</a>. That is all I need from you.
               </p>
             </section>
           </div>
