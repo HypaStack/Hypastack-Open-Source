@@ -71,7 +71,7 @@ export function HowItWorks() {
                     fontWeight: 500,
                   }}
                 >
-                  "Hypastack's encrypted delivery network is flawlessly reliable, we've been routing our core assets through their permanent CDN, pushing massive payloads with zero tracking and near-instant request speeds."
+                  "We switched to Hypastack for hosting our files and haven't looked back. It delivers huge files near-instantly with zero overhead and absolute privacy."
                 </h2>
               </div>
               <div className="hidden sm:flex flex-col items-end text-right shrink-0">
