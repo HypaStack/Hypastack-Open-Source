@@ -89,7 +89,7 @@ export function Footer() {
             <div className="flex items-start justify-between mb-4 mt-2">
               {/* Left Column: Image and Text */}
               <div className="flex flex-col gap-6">
-                <img src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[52px] h-auto object-contain" />
+                <img src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[52px] h-auto object-contain select-none pointer-events-none" draggable={false} />
                 
                 <div className="flex items-center gap-3">
                   <span className="text-[13px] font-normal text-[#888888]">Wanna reach out to us?</span>

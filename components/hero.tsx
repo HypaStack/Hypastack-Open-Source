@@ -54,7 +54,8 @@ export function Hero() {
               alt="Hypastack Platform Preview" 
               fetchPriority="high"
               loading="eager"
-              className="w-full h-auto object-contain rounded-md"
+              className="w-full h-auto object-contain rounded-md select-none pointer-events-none"
+              draggable={false}
             />
           </div>
         </motion.div>
