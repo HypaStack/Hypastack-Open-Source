@@ -99,12 +99,6 @@ export function Footer() {
                     </svg>
                   </a>
                 </div>
-
-                <div className="mt-1">
-                  <a href="https://saasbrowser.com/en/saas/1508544/hypastack" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
-                    <img src="/saas-browser-badge.svg" alt="Hypastack - software database" width="160" className="select-none pointer-events-none" draggable={false} />
-                  </a>
-                </div>
               </div>
 
               {/* Right Column: Popover Buttons */}
