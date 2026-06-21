@@ -102,7 +102,7 @@ export function Footer() {
 
                 <div className="mt-1">
                   <a href="https://saasbrowser.com/en/saas/1508544/hypastack" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
-                    <img src="/saas-browser-badge.svg" alt="Hypastack - software database" width="160" className="select-none pointer-events-none" draggable={false} />
+                    <img src="https://r2.hypastack.com/cdn/62c8tkg1mw51/saas-browser-badge.svg" alt="Hypastack - software database" width="160" className="select-none pointer-events-none" draggable={false} />
                   </a>
                 </div>
               </div>
