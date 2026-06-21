@@ -464,7 +464,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [avatarKey, setAvatarKey] = useState(0)
-  const avatarSrc = user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}?t=${avatarKey}` : null
+  const avatarSrc = user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}?t=${avatarKey}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = storage?.storagePercent ?? 0
 
@@ -542,21 +542,13 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
-            {avatarSrc ? (
-              <Image
-                src={avatarSrc}
-                alt={user.nickname}
-                fill
-                sizes="84px"
-                className="object-cover rounded-full select-none pointer-events-none"
-                draggable={false}
-                unoptimized
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center bg-[#333] text-white text-[24px] font-semibold rounded-full">
-                {initials}
-              </div>
-            )}
+            <img
+              src={avatarSrc}
+              alt={user.nickname}
+              className="absolute inset-0 w-full h-full object-cover rounded-full select-none pointer-events-none"
+              draggable={false}
+              onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+            />
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

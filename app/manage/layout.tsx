@@ -305,19 +305,14 @@ function ManageLayoutInner({
             aria-label="Account menu"
           >
             <div className="h-7 w-7">
-              {user.avatarUrl ? (
-                <img
-                  src={`https://r2.hypastack.com/${user.avatarUrl}`}
-                  alt={user.nickname}
-                  className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"
-                  style={{ borderRadius: '50%' }}
-                  draggable={false}
-                />
-              ) : (
-                <div className="h-7 w-7 flex items-center justify-center bg-[#ccc] text-white text-[11px] font-bold rounded-full">
-                  {initials}
-                </div>
-              )}
+              <img
+                src={user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                alt={user.nickname}
+                className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"
+                style={{ borderRadius: '50%' }}
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+              />
             </div>
           </button>
 
@@ -548,14 +543,14 @@ function ManageLayoutInner({
 
               <div style={{ height: 1, margin: '4px 12px', backgroundColor: 'rgba(0,0,0,0.06)' }} />
               <div className="flex items-center gap-3" style={{ padding: '16px 16px 60px' }}>
-                <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 6, backgroundColor: '#e5e5e5' }}>
-                  {user.avatarUrl ? (
-                    <Image src={`https://r2.hypastack.com/${user.avatarUrl}`} alt={user.nickname} fill sizes="40px" className="object-cover select-none pointer-events-none" draggable={false} unoptimized />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-[#ccc] text-white text-sm font-bold">
-                      {initials}
-                    </div>
-                  )}
+                <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 6 }}>
+                  <img
+                    src={user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                    alt={user.nickname}
+                    className="w-full h-full object-cover select-none pointer-events-none"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                  />
                 </div>
                 <span className="text-[15px] font-medium text-[#171717] dark:text-[#e3e3e3] truncate flex-1">{user.nickname}</span>
                 <button
