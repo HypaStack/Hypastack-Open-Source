@@ -306,7 +306,7 @@ function ManageLayoutInner({
           >
             <div className="h-7 w-7">
               <img
-                src={user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                src={user.avatarUrl ? `/api/v2/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
                 alt={user.nickname}
                 className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"
                 style={{ borderRadius: '50%' }}
@@ -545,7 +545,7 @@ function ManageLayoutInner({
               <div className="flex items-center gap-3" style={{ padding: '16px 16px 60px' }}>
                 <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 6 }}>
                   <img
-                    src={user.avatarUrl ? `https://r2.hypastack.com/${user.avatarUrl}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                    src={user.avatarUrl ? `/api/v2/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
                     alt={user.nickname}
                     className="w-full h-full object-cover select-none pointer-events-none"
                     draggable={false}
