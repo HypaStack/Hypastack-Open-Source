@@ -75,7 +75,7 @@ export function HowItWorks() {
                     className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
                     style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                   >
-                    Trust the code <span className="text-[#898e97]">not the company.</span>
+                    Privacy is a fundamental human right, <span className="text-[#898e97]">not a confession.</span>
                   </h2>
                 <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="shrink-0">
                   <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current text-[#f7f8f8]">
