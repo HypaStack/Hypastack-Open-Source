@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Hypastack's zero-knowledge privacy policy. No emails, cryptographically hashed passwords, no IP logging, and no tracking cookies. Your data never leaves your browser unencrypted.",
+  description: "Hypastack's privacy policy. No personal data collected, no tracking or logs, no IP logging, and no advertising. Your files stay private.",
 }
 
 export default function PrivacyPolicy() {

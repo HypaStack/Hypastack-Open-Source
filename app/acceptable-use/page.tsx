@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Acceptable Use Policy",
-  description: "Guidelines for responsible use of Hypastack's encrypted file sharing and CDN services.",
+  description: "Guidelines for responsible use of Hypastack's file sharing and CDN services.",
 }
 
 export default function AcceptableUse() {

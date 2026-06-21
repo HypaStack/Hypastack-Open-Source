@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Hypastack's encrypted file sharing platform and CDN hosting services.",
+  description: "Terms of Service for Hypastack — a free, open-source file sharing and CDN hosting platform based in the EU.",
 }
 
 export default function TermsOfService() {

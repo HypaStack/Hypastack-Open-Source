@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Our Mission",
-  description: "Hypastack exists to provide mathematically provable privacy through zero-knowledge encryption. Built by Kiko at usekiko.com.",
+  description: "Why Hypastack exists — a private, open-source alternative to Dropbox and WeTransfer. No ads, no data collection, EU-based servers, and free to use.",
 }
 
 export default function Goal() {
