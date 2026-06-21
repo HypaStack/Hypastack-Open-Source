@@ -49,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
     <main className="flex min-h-screen flex-col bg-[#08090a]">
 
       <section className="flex-1 pt-28 pb-40">
-        <div className="mx-auto max-w-[680px] px-8 sm:px-16">
+        <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
 
           <Link
             href="/blog"

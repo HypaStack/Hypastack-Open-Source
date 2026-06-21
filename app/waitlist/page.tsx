@@ -14,7 +14,7 @@ export default function WaitlistPage() {
       <Navbar />
       
       <section className="relative min-h-[90vh] sm:min-h-screen flex items-center pt-20 pb-32">
-        <div className="relative z-20 mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 mx-auto w-full max-w-[1440px] px-6 sm:px-16">
           
           <div className="flex flex-col items-start text-left max-w-3xl">
             <Link href="/" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors text-[14px] font-medium mb-10">
