@@ -768,7 +768,6 @@ Disallow: /*?*
 # SITEMAP
 # ============================================
 Sitemap: https://hypastack.com/sitemap.xml
-Sitemap: https://hypastack.com/sitemap-pages.xml
 
 # ============================================
 # HOST

@@ -17,12 +17,7 @@ module.exports = {
         priority: 1.0,
         lastmod: new Date().toISOString(),
       },
-      {
-        loc: '/transfer',
-        changefreq: 'weekly',
-        priority: 0.95,
-        lastmod: new Date().toISOString(),
-      },
+
       {
         loc: '/terms',
         changefreq: 'monthly',
@@ -74,6 +69,15 @@ module.exports = {
     '/_next/*',
     '/d/*', // Dynamic download pages
     '/policy', // Redirect page
+    '/manage',
+    '/manage/*',
+    '/maintenance',
+    '/experience',
+    '/desktop',
+    '/desktop/*',
+    '/transfer',
+    '/waitlist',
+    '/insider-program'
   ],
   
   // Transform function for additional customization
@@ -88,15 +92,7 @@ module.exports = {
       }
     }
     
-    if (path === '/transfer') {
-      return {
-        loc: path,
-        changefreq: 'weekly',
-        priority: 0.95,
-        lastmod: new Date().toISOString(),
-      }
-    }
-    
+
     return {
       loc: path,
       changefreq: config.changefreq,
