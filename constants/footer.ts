@@ -15,8 +15,6 @@ export const FOOTER_COLUMNS = [
     links: [
       { label: "About", href: "/about" },
       { label: "Our goal", href: "/goal" },
-      { label: "Insider program", href: "/insider-program" },
-      { label: "Waitlist", href: "/waitlist" },
     ],
   },
   {
