@@ -32,6 +32,16 @@ export async function POST(request: NextRequest) {
 
     const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
 
+    // The access key encodes the user id as hpsk_<uuid-no-hyphens>_<secret>,
+    // and login derives the account id from that embedded segment. Reject any
+    // registration whose declared userId disagrees with the key, so a client
+    // can't create an account whose id and key are inconsistent.
+    const embeddedId = accessKey.split("_")[1] || ""
+    if (embeddedId.toLowerCase() !== userId.replace(/-/g, "").toLowerCase()) {
+        console.error(`[API Error] 400 Bad Request: ${"Access key does not match account id"}`);
+      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+    }
+
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
         console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
