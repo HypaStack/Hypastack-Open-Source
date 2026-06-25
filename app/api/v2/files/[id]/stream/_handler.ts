@@ -4,6 +4,7 @@ import { isFileValid } from "@/lib/file-model"
 import { getR2Client, getBucketName, buildContentDisposition } from "@/lib/r2"
 import { verifyDownloadRateLimit } from "@/lib/rate-limit"
 import { createDecryptStream } from "@/lib/security/zero-trust"
+import { decryptFilename } from "@/lib/filename-crypto"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { Readable } from "stream"
 import { API_ERRORS } from "@/constants"
@@ -73,7 +74,7 @@ export async function handleStreamGet(
     return new NextResponse(webStream, {
       headers: {
         'Content-Type': record.content_type || 'application/octet-stream',
-        'Content-Disposition': buildContentDisposition(record.original_name),
+        'Content-Disposition': buildContentDisposition(decryptFilename(record.custom_filename || record.original_name)),
         'Content-Length': record.file_size.toString(),
         'Cache-Control': 'no-cache',
       },
