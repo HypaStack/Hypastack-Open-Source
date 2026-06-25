@@ -328,6 +328,7 @@ export function useUpload({
         fileSize: fileToUpload.size,
         contentType: fileToUpload.type || "application/octet-stream",
         burnOnRead,
+        turnstileToken,
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
         note: finalNote,

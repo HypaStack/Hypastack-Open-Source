@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 import { checkUploadRateLimit } from "@/lib/rate-limit"
 import { generateFileId, getExpirationDate } from "@/lib/r2"
 import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
@@ -30,6 +31,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
 
       burnOnRead,
       csrfToken,
+      turnstileToken,
       customFilename,
       chunkSize: clientChunkSize,
       path,
@@ -51,6 +53,14 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     if (!csrfValid) {
         console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
       return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+    }
+
+    if (process.env.NODE_ENV !== "development") {
+      const turnstileResult = await verifyTurnstileToken(turnstileToken)
+      if (!turnstileResult.success) {
+        console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification Failed"}`)
+        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      }
     }
 
     const [userTier, fileStats, cdnStats] = await Promise.all([
