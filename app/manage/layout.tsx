@@ -13,6 +13,7 @@ import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { PageLogo } from "@/components/page-logo"
+import { UploadZone } from "@/components/upload"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -649,6 +650,15 @@ function ManageLayoutInner({
         </motion.div>
       )}
     </AnimatePresence>
+
+    {/*
+      Persistent, always-mounted upload zone. It stays idle/hidden during normal
+      use, but on a fresh page load (after the browser was quit or the tab closed
+      mid-upload) its useUpload hook reads the interrupted session from
+      localStorage and surfaces the "Continue upload?" resume prompt — which the
+      on-demand upload modal could never do, since it isn't mounted on load.
+    */}
+    <UploadZone />
     </>
   )
 }
