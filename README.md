@@ -4,7 +4,7 @@ Hypastack is an open-source, privacy-first file sharing and CDN asset hosting pl
 
 Live at **[hypastack.com](https://hypastack.com)** — built by [Kiko](https://usekiko.com).
 
-![Dashboard](https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=1)
+![Dashboard](https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=2)
 
 ## Features
 
