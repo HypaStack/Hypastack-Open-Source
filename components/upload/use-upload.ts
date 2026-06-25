@@ -427,9 +427,6 @@ export function useUpload({
   }
 
   const handleCdnUpload = async (currentCsrfToken: string) => {
-    const totalBytes = files.reduce((acc, f) => acc + f.file.size, 0)
-    let uploadedBytes = 0
-
     const filesMeta = files.map(f => ({
       file: f.file,
       fileName: f.file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_"),
@@ -464,6 +461,7 @@ export function useUpload({
         await new Promise(resolve => setTimeout(resolve, uploadDelayMs))
       }
       setUploadingIndex(i)
+      setProgress(0)
 
       const { file } = files[i]
       const { cdnId, uploadUrl, sanitizedName, contentType } = initResults[i]
@@ -472,13 +470,12 @@ export function useUpload({
         const xhr = new XMLHttpRequest()
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) {
-            const pct = ((uploadedBytes + e.loaded) / totalBytes) * 100
-            setProgress(pct)
+            setProgress((e.loaded / e.total) * 100)
           }
         })
         xhr.addEventListener("load", () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            uploadedBytes += file.size
+            setProgress(100)
             resolve()
           } else {
             reject(new Error(`R2 upload failed (status ${xhr.status})`))
@@ -597,6 +594,7 @@ export function useUpload({
               await new Promise((resolve) => setTimeout(resolve, uploadDelayMs))
             }
             setUploadingIndex(i)
+            setProgress(0)
             const f = files[i]
             let url = ""
             try {
