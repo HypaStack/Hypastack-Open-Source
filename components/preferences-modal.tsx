@@ -52,6 +52,14 @@ function formatBytes(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
 }
 
+// Format a storage percentage to at most 1 decimal. Tiny non-zero usage floors
+// to 0.1% so it never reads as "0%" when some space is actually used.
+function formatStoragePct(pct: number): string {
+  if (pct <= 0) return "0"
+  if (pct < 0.1) return "0.1"
+  return String(Math.round(pct * 10) / 10)
+}
+
 export function PreferencesModal({ open, initialTab = "general", onClose, user, storage }: Props) {
   const [active, setActive] = useState<PreferencesTab>(initialTab)
 
@@ -620,7 +628,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
               {storage ? formatBytes(storage.totalStorage) : "Loading"}
             </p>
-            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Space used ({Math.round(usedPct)}%)</p>
+            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Space used ({formatStoragePct(usedPct)}%)</p>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-6">
             <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>

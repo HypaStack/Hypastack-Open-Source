@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
         cdnStorage: cdnStorageUsed,
         totalStorage,
         maxStorage: tierLimits.maxCdnStorage,
-        storagePercent: Math.min(100, Math.round((totalStorage / tierLimits.maxCdnStorage) * 100)),
+        storagePercent: Math.min(100, (totalStorage / tierLimits.maxCdnStorage) * 100),
         tierLabel: tierLimits.label,
       }
     }

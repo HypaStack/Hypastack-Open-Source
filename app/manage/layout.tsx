@@ -45,6 +45,14 @@ function formatStorageSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i]
 }
 
+// Format a storage percentage to at most 1 decimal. Tiny non-zero usage floors
+// to 0.1% so it never reads as "0%" when some space is actually used.
+function formatStoragePct(pct: number): string {
+  if (pct <= 0) return "0"
+  if (pct < 0.1) return "0.1"
+  return String(Math.round(pct * 10) / 10)
+}
+
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/cdn")) return "CDN"
@@ -411,7 +419,7 @@ function ManageLayoutInner({
                   <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
                   <span>Storage</span>
                 </div>
-                <span className="text-[#666] dark:text-[#888]">{usedPct}%</span>
+                <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
               </div>
               <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
                 <div 
