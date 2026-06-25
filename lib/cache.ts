@@ -43,7 +43,7 @@ export async function cached<T>(
           return JSON.parse(raw) as T
         }
       } catch (err) {
-        console.warn(`[Cache] GET failed for "${key}":`, (err as Error).message)
+        console.warn('[Cache] GET failed for "%s":', key, (err as Error).message)
       }
     }
 
@@ -55,7 +55,7 @@ export async function cached<T>(
       try {
         await redis.set(prefixedKey, JSON.stringify(data), 'EX', ttl)
       } catch (err) {
-        console.warn(`[Cache] SET failed for "${key}":`, (err as Error).message)
+        console.warn('[Cache] SET failed for "%s":', key, (err as Error).message)
       }
     }
 
@@ -105,6 +105,6 @@ export async function bustCachePattern(pattern: string): Promise<void> {
       }
     } while (cursor !== '0')
   } catch (err) {
-    console.warn(`[Cache] Pattern bust failed for "${pattern}":`, (err as Error).message)
+    console.warn('[Cache] Pattern bust failed for "%s":', pattern, (err as Error).message)
   }
 }
