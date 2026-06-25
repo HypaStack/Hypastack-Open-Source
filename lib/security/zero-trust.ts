@@ -116,15 +116,26 @@ export function sanitizeUrl(url: string | null | undefined): string | null {
 
     // Block localhost/internal IPs (SSRF)
     const host = parsed.hostname.toLowerCase()
+    // Strip IPv4-mapped IPv6 prefix (e.g. ::ffff:127.0.0.1) and brackets so the
+    // ranges below catch them too.
+    const bareHost = host.replace(/^\[/, "").replace(/\]$/, "").replace(/^::ffff:/i, "")
+    const PRIVATE_RANGES = [
+      /^127\./,                                   // loopback
+      /^10\./,                                    // RFC1918
+      /^192\.168\./,                              // RFC1918
+      /^172\.(1[6-9]|2\d|3[01])\./,               // RFC1918 172.16-31
+      /^169\.254\./,                              // link-local / cloud metadata
+      /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./, // CGNAT 100.64/10
+      /^0\./,                                     // "this network"
+    ]
     if (
       host === "localhost" ||
-      host === "127.0.0.1" ||
-      host === "0.0.0.0" ||
-      host.startsWith("192.168.") ||
-      host.startsWith("10.") ||
-      host.startsWith("172.") ||
+      bareHost === "127.0.0.1" ||
+      bareHost === "0.0.0.0" ||
+      bareHost === "::1" ||
       host === "[::1]" ||
-      host.endsWith(".local")
+      host.endsWith(".local") ||
+      PRIVATE_RANGES.some(r => r.test(bareHost))
     ) return null
 
     return parsed.href
