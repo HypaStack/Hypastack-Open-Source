@@ -31,6 +31,7 @@ export function UploadZone(props: UploadZoneProps) {
         handleAbortUpload={upload.handleAbortUpload}
         handleResumeUpload={upload.handleResumeUpload}
         handleResumeFileSelected={upload.handleResumeFileSelected}
+        state={upload.state}
       />
     </>
   )

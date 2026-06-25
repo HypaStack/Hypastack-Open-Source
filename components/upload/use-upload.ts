@@ -772,10 +772,17 @@ export function useUpload({
 
     setShowResumePopup(false)
     setResuming(true)
+    // Seed the tray with the resumed file so it renders the file row, the
+    // progress bar, the live stats, and the copy-link button on completion.
+    // Without this the tray is empty: no file, stuck on "Starting...", no link.
+    setFiles([{ file, id: generateId(), path: file.name }])
+    setZippedFile(null)
+    setUploadingIndex(0)
     setState("uploading")
     setIsUploading(true)
     setProgress(0)
     setErrorMessage("")
+    uploadStartTime.current = Date.now()
 
     try {
       const resumeRes = await apiFetch("/api/v2/upload-multipart/resume", {
@@ -870,6 +877,7 @@ export function useUpload({
       setShareUrl(interruptedSession.shareUrl)
       setInterruptedSession(null)
       setResuming(false)
+      if (onUploadComplete && uploadType !== "cdn") onUploadComplete(null)
     } catch (err: any) {
       console.error("[Upload] Resume failed:", err)
       setErrorMessage(err.message || "Resume failed")
