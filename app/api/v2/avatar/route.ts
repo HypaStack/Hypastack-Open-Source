@@ -19,6 +19,15 @@ export async function GET(request: NextRequest) {
       return new NextResponse("No avatar", { status: 404 })
     }
 
+    // Defense in depth: only ever sign objects under this user's own avatar
+    // prefix. Prevents avatar_url (if ever tampered with) from being used to
+    // mint presigned URLs for arbitrary objects in the bucket.
+    const expectedPrefix = `profiles/${currentUser.userId}/`
+    if (!user.avatar_url.startsWith(expectedPrefix)) {
+      console.error("[Avatar] Rejected avatar_url outside user prefix")
+      return new NextResponse("Invalid avatar", { status: 400 })
+    }
+
     // Generate a short-lived presigned URL so private profiles/ bucket objects are accessible
     const command = new GetObjectCommand({
       Bucket: getBucketName(),
