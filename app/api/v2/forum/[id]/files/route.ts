@@ -151,10 +151,15 @@ export async function PATCH(
 
     const { id: postId } = await params
     const body = await request.json()
-    const { fileId, sanitizedName, contentType } = body
+    const { fileId, sanitizedName, contentType, csrfToken } = body
 
-    if (!fileId || !sanitizedName) {
+    if (!fileId || !sanitizedName || !csrfToken) {
       return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+    }
+
+    const csrfValid = await validateCsrfToken(csrfToken)
+    if (!csrfValid) {
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     // Verify the post exists and belongs to the current user

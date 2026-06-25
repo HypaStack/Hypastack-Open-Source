@@ -159,7 +159,7 @@ export default function ForumNewPage() {
           const completeRes = await apiFetch(`/api/v2/forum/${postId}/files`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fileId, sanitizedName, contentType: pf.file.type }),
+            body: JSON.stringify({ fileId, sanitizedName, contentType: pf.file.type, csrfToken: csrfToken2 }),
           })
 
           if (!completeRes.ok) {
