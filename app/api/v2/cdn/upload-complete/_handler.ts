@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
-import { headCdnObject } from "@/lib/r2"
+import { headCdnObject, downloadHeadByKey, deleteByKey } from "@/lib/r2"
+import { verifyCdnFileType } from "@/lib/security/zero-trust"
+import { getFileExtension } from "@/lib/file-validation"
 import { createCdnAsset, createCdnAssetsBatch, getTotalStorageUsed } from "@/lib/cdn-model"
 import { getCdnFoldersByUserId } from "@/lib/cdn-folder-model"
 import { getUserTier } from "@/lib/user-model"
@@ -73,6 +75,31 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       const names = missing.map(r => r.sanitizedName).join(", ")
         console.error(`[API Error] 404 Not Found: ${`Upload not found in storage for: ${names}. Did the upload finish?`}`);
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+    }
+
+    // Magic-byte validation: CDN assets are public and unencrypted, so verify
+    // the actual bytes don't decode to a known-dangerous executable/script that
+    // was renamed to a safe extension. Types without distinctive magic bytes
+    // (svg, text, fonts, etc.) pass through unchanged.
+    const typeChecks = await Promise.all(
+      headResults.map(async (r) => {
+        try {
+          const head = await downloadHeadByKey(r.r2Key, 65536)
+          const ext = getFileExtension(r.sanitizedName).replace(/^\./, "")
+          const result = await verifyCdnFileType(head, ext)
+          return { r2Key: r.r2Key, name: r.sanitizedName, valid: result.valid, error: result.error }
+        } catch {
+          return { r2Key: r.r2Key, name: r.sanitizedName, valid: false, error: "File validation failed" }
+        }
+      })
+    )
+    const blocked = typeChecks.filter(c => !c.valid)
+    if (blocked.length > 0) {
+      // Remove the rejected objects so they never become reachable on the CDN.
+      await Promise.all(blocked.map(c => deleteByKey(c.r2Key).catch(() => {})))
+      const names = blocked.map(c => c.name).join(", ")
+      console.error(`[API Error] 415 Unsupported Media Type: ${`Blocked file contents for: ${names}`}`)
+      return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
     }
 
     // Storage quota check using R2-reported sizes (don't trust the client)
