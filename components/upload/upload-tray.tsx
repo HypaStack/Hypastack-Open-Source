@@ -122,8 +122,8 @@ export function UploadTray({
                       <MIcon name="folder_zip" size={18} className="text-muted-foreground shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[14px] font-medium text-foreground">Zipping {files.length} items...</p>
-                        <div className="mt-1.5 h-1 w-full bg-secondary">
-                          <div className="h-full bg-[#9b9b9b] transition-all" style={{ width: `${zipProgress}%` }} />
+                        <div className="mt-1.5 h-[3px] w-full overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
+                          <div className="h-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] transition-[width] duration-300 ease-out dark:from-[#8a9099] dark:to-[#f7f8f8]" style={{ width: `${zipProgress}%` }} />
                         </div>
                       </div>
                     </div>
@@ -163,8 +163,8 @@ export function UploadTray({
                             </div>
                           )}
                           {state === "uploading" && (
-                            <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
-                              <div style={{ height: "100%", width: `${progress}%`, borderRadius: 1, backgroundColor: "#555", transition: "width 0.3s ease" }} />
+                            <div className="absolute left-4 right-4 bottom-[2px] h-[3px] overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
+                              <div className="h-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] transition-[width] duration-300 ease-out dark:from-[#8a9099] dark:to-[#f7f8f8]" style={{ width: `${progress}%` }} />
                             </div>
                           )}
                         </div>
@@ -209,13 +209,13 @@ export function UploadTray({
                               </div>
                             )}
                             {state === "uploading" && index === uploadingIndex && (
-                              <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
-                                <div style={{ height: "100%", width: `${progress}%`, borderRadius: 1, backgroundColor: "#555", transition: "width 0.3s ease" }} />
+                              <div className="absolute left-4 right-4 bottom-[2px] h-[3px] overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
+                                <div className="h-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] transition-[width] duration-300 ease-out dark:from-[#8a9099] dark:to-[#f7f8f8]" style={{ width: `${progress}%` }} />
                               </div>
                             )}
                             {state === "uploading" && index < uploadingIndex && (
-                              <div className="absolute left-4 right-4" style={{ bottom: 2, height: 2, borderRadius: 1, backgroundColor: "#e5e5e5" }}>
-                                <div style={{ height: "100%", width: "100%", borderRadius: 1, backgroundColor: "#555" }} />
+                              <div className="absolute left-4 right-4 bottom-[2px] h-[3px] overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
+                                <div className="h-full w-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] dark:from-[#8a9099] dark:to-[#f7f8f8]" />
                               </div>
                             )}
                           </div>
