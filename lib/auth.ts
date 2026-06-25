@@ -18,11 +18,19 @@ export function verifyProxyToken(token: string, fileId: string): boolean {
   try {
     const [payloadB64, signature] = token.split(".")
     if (!payloadB64 || !signature) return false
-    const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString())
+    // Verify the HMAC over the exact bytes that were signed (the decoded
+    // payload string) rather than a re-serialized object. Re-serializing via
+    // JSON.stringify(JSON.parse(...)) relies on engine-specific key ordering
+    // and would silently break or diverge if the payload shape ever changes.
+    const rawPayload = Buffer.from(payloadB64, "base64url").toString()
+    const expected = crypto.createHmac("sha256", PROXY_SECRET).update(rawPayload).digest("base64url")
+    const sigBuf = Buffer.from(signature)
+    const expBuf = Buffer.from(expected)
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) return false
+    const payload = JSON.parse(rawPayload)
     if (payload.exp < Math.floor(Date.now() / 1000)) return false
     if (payload.fileId !== fileId) return false
-    const expected = crypto.createHmac("sha256", PROXY_SECRET).update(JSON.stringify(payload)).digest("base64url")
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+    return true
   } catch {
     return false
   }
