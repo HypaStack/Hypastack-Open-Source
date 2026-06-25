@@ -7,7 +7,7 @@ import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
 import { getUserCdnStats } from "@/lib/cdn-model"
 import { getUserTier } from "@/lib/user-model"
 import { getTierLimits } from "@/constants/tier-limits"
-import { initiateMultipartUpload } from "@/lib/r2-multipart"
+import { initiateMultipartUpload, abortMultipartUpload } from "@/lib/r2-multipart"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
@@ -126,7 +126,10 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       }
     }
 
-    await createStagingRecord({
+    // Pass the tier limit so the insert is quota-guarded atomically at the DB
+    // level. The pre-check above is only a fast early-out; this closes the
+    // TOCTOU race where concurrent multipart inits could both pass that check.
+    const staged = await createStagingRecord({
       id: fileId,
       r2_key: r2Key,
       original_name: encryptedOriginalName,
@@ -142,7 +145,14 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       encryption_chunk_size: chunkSize,
       encryption_total_parts: totalParts,
       folder_id: finalFolderId,
-    })
+    }, tier.maxFileLinks)
+
+    if (!staged) {
+      // Quota was reached between the pre-check and the insert.
+      await abortMultipartUpload({ r2Key, uploadId }).catch(() => {})
+      console.error(`[API Error] 403 Forbidden: ${"403 Active File Limit Reached"}`);
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+    }
 
 
     return NextResponse.json({
