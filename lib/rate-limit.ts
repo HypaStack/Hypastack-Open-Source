@@ -62,30 +62,27 @@ async function checkRateLimit(
       [action, windowMinutes]
     )
 
-      await pool.query(
-        `INSERT INTO rate_limits (account_id, action, attempt_count, first_attempt, last_attempt)
-         VALUES ($1, $2, 1, NOW(), NOW())
-         ON CONFLICT (account_id, action) DO UPDATE SET
-           attempt_count = CASE
-             WHEN EXTRACT(EPOCH FROM (NOW() - rate_limits.first_attempt)) >= $3::int
-             THEN 1
-             ELSE rate_limits.attempt_count + 1
-           END,
-           first_attempt = CASE
-             WHEN EXTRACT(EPOCH FROM (NOW() - rate_limits.first_attempt)) >= $3::int
-             THEN NOW()
-             ELSE rate_limits.first_attempt
-           END,
-           last_attempt = NOW()`,
-        [accountId, action, windowSeconds]
-      )
-
-
+    // Single atomic upsert that RETURNs the row's own post-increment count.
+    // Reading via RETURNING (instead of a separate SELECT) means concurrent
+    // requests each observe their committed counter value rather than racing
+    // a follow-up read that could under-count.
     const result = await pool.query(
-      `SELECT attempt_count, first_attempt, EXTRACT(EPOCH FROM (NOW() - first_attempt)) as seconds_elapsed
-       FROM rate_limits
-       WHERE account_id = $1 AND action = $2`,
-      [accountId, action]
+      `INSERT INTO rate_limits (account_id, action, attempt_count, first_attempt, last_attempt)
+       VALUES ($1, $2, 1, NOW(), NOW())
+       ON CONFLICT (account_id, action) DO UPDATE SET
+         attempt_count = CASE
+           WHEN EXTRACT(EPOCH FROM (NOW() - rate_limits.first_attempt)) >= $3::int
+           THEN 1
+           ELSE rate_limits.attempt_count + 1
+         END,
+         first_attempt = CASE
+           WHEN EXTRACT(EPOCH FROM (NOW() - rate_limits.first_attempt)) >= $3::int
+           THEN NOW()
+           ELSE rate_limits.first_attempt
+         END,
+         last_attempt = NOW()
+       RETURNING attempt_count, EXTRACT(EPOCH FROM (NOW() - first_attempt)) as seconds_elapsed`,
+      [accountId, action, windowSeconds]
     )
 
     if (result.rows.length === 0) {
