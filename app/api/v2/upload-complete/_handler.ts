@@ -29,7 +29,10 @@ export async function handleUploadCompletePost(request: NextRequest) {
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
-    if (record.user_id && record.user_id !== currentUser.userId) {
+    // Both upload init handlers always stamp the authenticated user_id, so a
+    // null owner is unexpected. Reject anything that isn't owned by the caller
+    // (including null) rather than letting the `&&` short-circuit skip the check.
+    if (record.user_id !== currentUser.userId) {
         console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
       return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
