@@ -208,14 +208,12 @@ export function UploadTray({
                                 </button>
                               </div>
                             )}
-                            {state === "uploading" && index === uploadingIndex && (
+                            {(state === "selected" || state === "uploading") && (
                               <div className="absolute left-4 right-4 bottom-[2px] h-[3px] overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
-                                <div className="h-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] transition-[width] duration-300 ease-out dark:from-[#8a9099] dark:to-[#f7f8f8]" style={{ width: `${progress}%` }} />
-                              </div>
-                            )}
-                            {state === "uploading" && index < uploadingIndex && (
-                              <div className="absolute left-4 right-4 bottom-[2px] h-[3px] overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10">
-                                <div className="h-full w-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] dark:from-[#8a9099] dark:to-[#f7f8f8]" />
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-[#3a3b3c] to-[#6b7280] transition-[width] duration-300 ease-out dark:from-[#8a9099] dark:to-[#f7f8f8]"
+                                  style={{ width: state === "uploading" ? (index < uploadingIndex ? "100%" : index === uploadingIndex ? `${progress}%` : "0%") : "0%" }}
+                                />
                               </div>
                             )}
                           </div>
