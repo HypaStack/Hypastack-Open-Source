@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
+import crypto from "crypto"
 import { cleanupExpiredFiles, cleanupStaging, cleanupDumpsterPastes } from "@/lib/cleanup"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
+
+/** Constant-time comparison that never short-circuits on length or content. */
+function safeKeyEqual(provided: string, expected: string): boolean {
+  const providedBuf = Buffer.from(provided)
+  const expectedBuf = Buffer.from(expected)
+  if (providedBuf.length !== expectedBuf.length) return false
+  return crypto.timingSafeEqual(providedBuf, expectedBuf)
+}
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization")
@@ -13,7 +22,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: API_ERRORS.SERVICE_UNAVAILABLE }, { status: 503 })
   }
 
-  if (!authHeader || !authHeader.startsWith("Bearer ") || authHeader.slice(7) !== expectedKey) {
+  if (!authHeader || !authHeader.startsWith("Bearer ") || !safeKeyEqual(authHeader.slice(7), expectedKey)) {
       console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
     return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
   }
