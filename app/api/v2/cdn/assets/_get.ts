@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { withRouteCache } from '@/lib/route-cache'
 import { getCurrentUser } from '@/lib/auth'
 import { getCdnAssetsByUserId, getUserCdnStats } from '@/lib/cdn-model'
 import { API_ERRORS } from "@/constants"

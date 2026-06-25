@@ -61,9 +61,6 @@ export async function DELETE(request: NextRequest) {
       await deleteCdnAssetsByIds(idsWithR2Ok, currentUser.userId)
     }
 
-    for (const _id of idsWithR2Ok) {
-    }
-
     // 4. Stream results back (all at once, preserving existing frontend contract)
     const encoder = new TextEncoder()
     const stream = new ReadableStream({

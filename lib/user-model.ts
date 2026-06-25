@@ -63,10 +63,6 @@ export async function createUser(input: CreateUserInput): Promise<void> {
   )
 }
 
-export async function nicknameExists(nickname: string): Promise<boolean> {
-  return false
-}
-
 export async function getUserById(id: string): Promise<User | null> {
   return cached(`user:${id}:profile`, 300, async () => {
     await ensureDatabase()
