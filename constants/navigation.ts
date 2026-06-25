@@ -36,7 +36,6 @@ export const SECTION_ORDER: Record<string, number> = {
   Drive: 0,
   CDN: 1,
   Dumpster: 2,
-  Canary: 3,
 }
 
 /** width of the secondary (sub-nav) sidebar in pixels */

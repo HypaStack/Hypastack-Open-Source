@@ -77,8 +77,7 @@ export async function initDatabase(): Promise<void> {
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW(),
         last_login TIMESTAMPTZ,
-        onboarding_data JSONB,
-        is_insider SMALLINT DEFAULT 0
+        onboarding_data JSONB
       )
     `)
 
@@ -251,10 +250,6 @@ export async function initDatabase(): Promise<void> {
 
     try {
       await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS inactivity_purge_days INTEGER NOT NULL DEFAULT 7`)
-    } catch {}
-
-    try {
-      await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_insider SMALLINT DEFAULT 0`)
     } catch {}
 
     try {

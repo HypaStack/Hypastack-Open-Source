@@ -24,7 +24,6 @@ export interface PreferencesUser {
   premium: boolean
   tier?: PreferencesTier
   inactivityPurgeDays?: number
-  is_insider?: number
 }
 
 function resolveTier(user: PreferencesUser): PreferencesTier {
@@ -583,9 +582,6 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         <div className="flex-1 min-w-0 flex flex-col">
           <div className="flex items-center gap-1.5">
             <p className="text-[22px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
-            {user.is_insider === 1 && (
-              <MIcon name="verified" size={20} style={{ color: '#eab308' }} className="shrink-0" />
-            )}
           </div>
           <div className="mt-auto pt-2 flex gap-2">
             <button

@@ -13,7 +13,6 @@ export interface User {
   tier: Tier
   last_acknowledged_tier: Tier
   inactivity_purge_days: number
-  is_insider: number
 
   created_at: Date
   updated_at: Date
@@ -85,7 +84,6 @@ export async function getUserById(id: string): Promise<User | null> {
       tier: normalizeTier(row.tier),
       last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
       inactivity_purge_days: row.inactivity_purge_days ?? 7,
-      is_insider: row.is_insider ?? 0,
 
       created_at: row.created_at,
       updated_at: row.updated_at,

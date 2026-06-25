@@ -49,7 +49,6 @@ function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/cdn")) return "CDN"
   if (pathname.startsWith("/manage/dumpster")) return "Dumpster"
-  if (pathname.startsWith("/manage/canary")) return "Canary"
   return "Drive"
 }
 
@@ -93,9 +92,9 @@ function NavRow({
   )
 }
 
-function SidebarNavContent({ section, pathname, isInsider }: { section: string, pathname: string, isInsider: boolean }) {
+function SidebarNavContent({ section, pathname }: { section: string, pathname: string }) {
   // Use a fallback path if the section doesn't match the pathname to ensure we get the right nav items
-  const items = section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : section === "Canary" ? [] : DRIVE_SUBNAV
+  const items = section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : DRIVE_SUBNAV
 
   return (
     <>
@@ -117,14 +116,6 @@ function SidebarNavContent({ section, pathname, isInsider }: { section: string, 
               active={pathname === item.href}
             />
           ))}
-
-          {isInsider && section === "Drive" && (
-            <NavRow
-              item={{ label: "Insider Program", href: "/manage/canary", icon: "science" }}
-              active={pathname === "/manage/canary"}
-              badge={<span style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '2px 5px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>v2.7.3</span>}
-            />
-          )}
         </div>
       </nav>
     </>
@@ -399,10 +390,9 @@ function ManageLayoutInner({
               style={{ willChange: 'transform', width: '100%', height: '100%' }}
               className="flex flex-col bg-white dark:bg-[#0a0b0c]"
             >
-              <SidebarNavContent 
-                section={currentSection} 
-                pathname={pathname} 
-                isInsider={user?.is_insider === 1} 
+              <SidebarNavContent
+                section={currentSection}
+                pathname={pathname}
               />
             </motion.div>
           </AnimatePresence>
@@ -522,23 +512,6 @@ function ManageLayoutInner({
                     </Link>
                   )
                 })}
-
-                {user?.is_insider === 1 && (
-                  <Link
-                    href="/manage/canary"
-                    onClick={() => setDrawerOpen(false)}
-                    className={`flex items-center gap-4 w-full active:scale-[0.98] transition-all duration-75 ${
-                      pathname === "/manage/canary"
-                        ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]"
-                        : "text-[#666] dark:text-[#888] active:bg-white dark:active:bg-[#2a2a2a]"
-                    }`}
-                    style={{ height: 42, paddingLeft: 16, paddingRight: 16, borderRadius: 6 }}
-                  >
-                    <MIcon name="science" size={20} style={{ color: pathname === "/manage/canary" ? (resolvedTheme === 'dark' ? '#e3e3e3' : '#171717') : (resolvedTheme === 'dark' ? '#888' : '#666') }} />
-                    <span style={{ fontSize: 15, fontWeight: 500, flex: 1, lineHeight: 'normal' }}>Insider Program</span>
-                    <span style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#eab308', padding: '2px 5px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>v2.7.3</span>
-                  </Link>
-                )}
               </div>
 
               <div style={{ height: 1, margin: '4px 12px', backgroundColor: 'rgba(0,0,0,0.06)' }} />

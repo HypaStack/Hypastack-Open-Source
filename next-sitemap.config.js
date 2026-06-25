@@ -76,8 +76,7 @@ module.exports = {
     '/desktop',
     '/desktop/*',
     '/transfer',
-    '/waitlist',
-    '/insider-program'
+    '/waitlist'
   ],
   
   // Transform function for additional customization
