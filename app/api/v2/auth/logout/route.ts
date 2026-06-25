@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import crypto from "crypto"
 import { clearAuthCookie, clearRefreshCookie, getCurrentUser } from "@/lib/auth"
 import { revokeSession } from "@/lib/user-model"
+import { bustCache } from "@/lib/cache"
 import { API_ERRORS } from "@/constants"
 
 export async function POST(request: NextRequest) {
@@ -11,6 +11,9 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (currentUser?.sessionId) {
       await revokeSession(currentUser.sessionId)
+      // Bust the cached revocation flag (getCurrentUser caches it for 60s),
+      // otherwise a just-revoked/stolen token stays valid until the TTL lapses.
+      await bustCache(`session:${currentUser.sessionId}:revoked`)
     }
 
     await clearAuthCookie()
