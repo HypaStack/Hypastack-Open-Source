@@ -398,7 +398,7 @@ export default function CdnPage() {
       const completeRes = await apiFetch("/api/v2/cdn/hot-swap", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId: target.id }),
+        body: JSON.stringify({ assetId: target.id, csrfToken }),
       })
 
       if (!completeRes.ok) {

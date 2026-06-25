@@ -98,11 +98,17 @@ export async function handleHotSwapComplete(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { assetId } = body
+    const { assetId, csrfToken } = body
 
-    if (!assetId) {
-      console.error(`[API Error] 400 Bad Request: Missing assetId`)
+    if (!assetId || !csrfToken) {
+      console.error(`[API Error] 400 Bad Request: Missing required fields`)
       return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+    }
+
+    const csrfValid = await validateCsrfToken(csrfToken)
+    if (!csrfValid) {
+      console.error(`[API Error] 403 Forbidden: Invalid CSRF token`)
+      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
     }
 
     // Verify asset exists and belongs to user
