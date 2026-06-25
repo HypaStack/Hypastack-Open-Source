@@ -27,8 +27,12 @@ const executeBurnDeletion = async (id: string, r2Key: string) => {
 
   while (attempts < BURN_DELETE_MAX_RETRIES) {
     try {
-      await deleteFileRecord(id);
+      // Delete the R2 object BEFORE the DB row. If R2 deletion fails, the DB
+      // row survives (already marked burned, so it can't be re-downloaded) and
+      // the expired-file cron sweep can still find and remove the object later.
+      // Deleting the row first would orphan the object beyond cron's reach.
       await deleteByKey(r2Key);
+      await deleteFileRecord(id);
       return;
     } catch (error) {
       attempts++
