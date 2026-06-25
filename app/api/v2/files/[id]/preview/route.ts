@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { getFileById } from "@/lib/file-model"
 import { getPresignedDownloadUrl } from "@/lib/r2"
+import { decryptFilename } from "@/lib/filename-crypto"
 import { checkApiRateLimit } from "@/lib/rate-limit"
 import { PREVIEWABLE_MIME_REGEX } from "@/constants"
 import { API_ERRORS } from "@/constants"
@@ -42,7 +43,7 @@ export async function GET(
 
   const url = await getPresignedDownloadUrl({
     r2Key: record.r2_key,
-    originalName: record.original_name,
+    originalName: decryptFilename(record.custom_filename || record.original_name),
     contentType: record.content_type,
     expiresIn: 300,
     disposition: "inline",
