@@ -1,134 +1,105 @@
 # Hypastack
 
-Hypastack is an open-source, privacy-first file sharing and CDN asset hosting platform built in Europe. All file transfers are encrypted in the browser using AES-256 before leaving your device. No email, no passwords, no tracking.
+Hypastack is an open source, privacy first file sharing and CDN platform. Files are encrypted in your browser with AES-256 before they ever leave your device, so the server only ever stores ciphertext. No email, no password, no tracking.
 
-Live at **[hypastack.com](https://hypastack.com)** — built by [Kiko](https://usekiko.com).
+It runs live at [hypastack.com](https://hypastack.com) and is built by [Kiko](https://usekiko.com).
 
 ![Dashboard](https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=2)
 
-## Features
+## What it does
 
-- **Zero-knowledge encryption** — AES-256-GCM encryption runs entirely in the browser. The server never sees plaintext file contents or decryption keys.
-- **Burn on read** — files can be configured to self-destruct after a single download.
-- **Auto-expiring share links** — temporary links that expire after a configurable number of days.
-- **Permanent CDN hosting** — public asset hosting with automatic EXIF and GPS metadata stripping on upload.
-- **Anonymous authentication** — access key based, no email or password required.
-- **Multipart uploads** — large files are split into encrypted chunks and uploaded in parallel.
-- **Blog** — built-in MDX blog rendered server-side without webpack.
-- **Desktop app** — early-stage Tauri wrapper for native Windows access.
+- Browser side encryption. AES-256-GCM runs entirely in the browser. The decryption key lives in the URL fragment (the part after `#`), which browsers never send to the server, so the server cannot read your files.
+- Burn on read. A file can be set to delete itself after a single download.
+- Expiring links. Share links expire after a set number of days, scaled to the size of the file.
+- Permanent CDN hosting. Public assets have their EXIF and GPS metadata stripped on upload.
+- Anonymous accounts. Access is based on a generated key, with no email or password to manage.
+- Multipart uploads. Large files are split into encrypted chunks, uploaded in parallel, and can be resumed if a transfer is interrupted.
+- Built in blog. MDX posts rendered on the server.
+- Desktop app. An early Tauri build that wraps the app for Windows, with a system tray and right click upload.
 
-## Technical Stack
+## Stack
 
-### Core
+The web app is Next.js 16 (App Router, Turbopack) with React 19 and TypeScript. Styling is Tailwind CSS v4, animations use Motion, icons come from Material Symbols, and the font is SF Pro Display.
 
-| Layer | Technology |
-|---|---|
-| Framework | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
-| UI | [React 19](https://react.dev/) |
-| Language | [TypeScript 5](https://www.typescriptlang.org/) |
-| Desktop | [Tauri v2](https://v2.tauri.app/) |
+On the backend:
 
-### Styling and Animation
+- PostgreSQL for data, through the `pg` driver. The schema is created and migrated on startup, so there is no separate migration step to run.
+- Redis as an optional cache in front of Postgres. If Redis is unreachable the app falls back to Postgres on its own.
+- Cloudflare R2 for object storage, using the S3 compatible AWS SDK with presigned URLs.
+- Cloudflare Turnstile for bot protection.
+- Sharp for image re-encoding and metadata stripping.
 
-- **Styling:** Tailwind CSS v4
-- **Animations:** [Motion](https://motion.dev/)
-- **Icons:** Material Symbols (Rounded)
-- **Fonts:** SF Pro Display
+The desktop app is built with Tauri v2 (Rust) and wraps the same web app in a native webview.
 
-### Backend and Infrastructure
-
-- **Database:** PostgreSQL (via `pg`)
-- **Storage:** Cloudflare R2 (S3-compatible, via `@aws-sdk/client-s3`)
-- **Payments:** Stripe (credit purchases)
-- **Bot protection:** Cloudflare Turnstile
-- **Encryption:** Web Crypto API (AES-256-GCM, client-side)
-- **Image processing:** Sharp (EXIF stripping, re-encoding)
-
-### Key Libraries
-
-- `next-mdx-remote` — server-side MDX blog rendering
-- `JSZip` — client-side archive creation
-- `file-type` — server-side MIME validation
-- `pdf-lib` — receipt generation
-- `motion` — UI animations
-
-## Architecture Overview
+## How it fits together
 
 ```
 Browser
-  └── AES-256-GCM encryption (Web Crypto API)
-        └── Encrypted chunks → Cloudflare R2 (via presigned URLs)
+  AES-256-GCM encryption (Web Crypto API)
+  Encrypted chunks upload straight to Cloudflare R2 via presigned URLs
 
 Server (Next.js App Router)
-  ├── API routes under /api/v2/
-  ├── Rate limiting (PostgreSQL-backed, per IP hash)
-  ├── Tier-based access control (free / essential / premium / ultimate)
-  └── Cloudflare Turnstile bot protection
+  API routes under /api/v2/
+  Rate limiting backed by Postgres, keyed on a hashed IP
+  Turnstile bot checks
 
 Desktop (Tauri v2)
-  └── Wraps the web app as a native webview
+  Wraps the web app and adds a system tray plus right click upload
 ```
 
-The decryption key is **never sent to the server** — it lives exclusively in the URL fragment (`#key=...`), which browsers do not include in HTTP requests.
+The decryption key never reaches the server. It stays in the URL fragment (`#key=...`), and browsers do not include the fragment in HTTP requests.
 
-## Getting Started
+## Running it locally
 
-### Prerequisites
+You will need:
 
-- Node.js 20+
-- PostgreSQL database
-- Cloudflare R2 bucket (or any S3-compatible storage)
-- Rust toolchain (only required for the Tauri desktop build)
+- Node.js 20 or newer
+- A PostgreSQL database
+- A Cloudflare R2 bucket, or any S3 compatible storage
+- Redis, which is optional
+- The Rust toolchain, only if you want to build the desktop app
 
-### Installation
+Then:
 
-1. Install dependencies:
+1. Install dependencies.
 
 ```bash
 npm install
 ```
 
-2. Copy `.env.example` to `.env` and configure your environment variables (database, R2, Stripe, Turnstile, JWT secret).
+2. Copy the example env file and fill it in.
 
-3. Start the development server with Turbopack:
+```bash
+cp .env.example .env
+```
+
+`.env.example` lists every variable with a short note on what it is for. The ones you cannot skip are the database connection, the R2 credentials, the Turnstile keys, and the three secrets (`JWT_SECRET`, `FILENAME_ENCRYPTION_KEY`, `ENCRYPTION_KEY`). You can generate a secret with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+3. Start the dev server.
 
 ```bash
 npm run dev
 ```
 
-### Required Environment Variables
+The database tables are created automatically the first time the app connects, so there is nothing else to set up.
 
-| Variable | Description |
-|---|---|
-| `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | PostgreSQL connection |
-| `JWT_SECRET` | Secret for auth tokens and IP hashing — **must be set** |
-| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | R2 credentials |
-| `R2_BUCKET_NAME`, `R2_CDN_DOMAIN` | R2 bucket and public CDN domain |
-| `NEXT_PUBLIC_APP_URL` | Public app URL (e.g. `https://hypastack.com`) |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
-| `FILENAME_ENCRYPTION_KEY` | Key for server-side filename encryption |
-| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Stripe payment processing |
-
-## Desktop Application (Tauri)
-
-Run in development mode:
+## Desktop app
 
 ```bash
-npm run tauri:dev
+npm run tauri:dev     # run in development
+npm run tauri:build   # build a release
 ```
 
-Build for production:
+## Security notes
 
-```bash
-npm run tauri:build
-```
-
-## Security Model
-
-- IP addresses are never stored. Rate limiting uses an HMAC-SHA256 hash of the IP (keyed with `JWT_SECRET`).
-- Filenames are encrypted at rest using a separate `FILENAME_ENCRYPTION_KEY`.
-- All CDN image uploads are re-encoded by Sharp to strip EXIF, GPS, and camera metadata before storage.
-- Burn-on-read uses an atomic `SELECT ... FOR UPDATE` to prevent race conditions on concurrent downloads.
+- IP addresses are never stored. Rate limiting uses an HMAC-SHA256 hash of the IP, keyed with `JWT_SECRET`.
+- Filenames are encrypted at rest with their own key, kept separate from file contents.
+- Every CDN image is re-encoded by Sharp on upload, which drops EXIF, GPS, and camera metadata.
+- Burn on read uses an atomic `SELECT ... FOR UPDATE`, so two concurrent downloads cannot both succeed.
 
 ## License
 
