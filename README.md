@@ -87,6 +87,22 @@ npm run dev
 
 The database tables are created automatically the first time the app connects, so there is nothing else to set up.
 
+## Running with Docker
+
+The repo ships a multi stage `Dockerfile` that runs as a non root user and mirrors how the app is deployed in production.
+
+```bash
+docker build -t hypastack .
+docker run --rm --network host --env-file .env hypastack
+```
+
+A couple of things worth knowing:
+
+- The build reads `.env` so the build time `NEXT_PUBLIC_*` values (the app URL and the Turnstile site key) get baked in, so fill in your `.env` before building. The `.env` is stripped before the final image, so no secrets are baked in.
+- The container listens on `127.0.0.1:3000` so it can sit behind a reverse proxy. With `--network host` it also reaches a Postgres and Redis running on the host. If you would rather expose it directly, change the host bind to `0.0.0.0` in the start command and publish the port with `-p 3000:3000`.
+
+In production the app runs as a rootless container managed by systemd, behind Caddy.
+
 ## Desktop app
 
 ```bash
