@@ -20,12 +20,10 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
+            export XDG_RUNTIME_DIR=/run/user/$(id -u)
             cd ~/Hypastack-Open-Source
             git fetch origin
             git reset --hard origin/main
-            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v24.16.0/bin
-            rm -rf .next node_modules
-            npm install
-            npm run build
-            pm2 restart hypastack
-
+            podman build --network=host -t localhost/hypastack:latest .
+            systemctl --user restart hypastack.service
+            podman image prune -f
