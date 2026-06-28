@@ -130,7 +130,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 function buildCsp(nonce: string | null): string {
   const scriptSrc = nonce
     ? `script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
-    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
+    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https:` // ONLY ALLOW CLOUDFLARE TURNSTILE ADDRESSES IN THE FUTURE - THIS IS A TEMPORARY FIX
   return [
     "default-src 'self'",
     scriptSrc,
