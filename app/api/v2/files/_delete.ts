@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { getFilesByIds, deleteFilesByIds } from "@/lib/file-model"
 import { deleteObjectsBatch } from "@/lib/r2"
@@ -12,13 +13,11 @@ export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     const { fileId, fileIds } = await request.json()
@@ -31,8 +30,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (idsToDelete.length === 0) {
-        console.error(`[API Error] 400 Bad Request: ${"400: File IDs Required"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "400: File IDs Required")
     }
 
     // free tier throttle
@@ -106,7 +104,6 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     console.error("[Auth Files] DELETE error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 Deletion Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Deletion Failed")
   }
 }

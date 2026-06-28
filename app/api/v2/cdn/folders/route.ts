@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { createCdnFolder, deleteCdnFolderRecursively } from "@/lib/cdn-folder-model"
 import { API_ERRORS } from "@/constants"
@@ -8,20 +9,17 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "Unauthorized")
     }
 
     const { name, parentId } = await request.json()
 
     if (!name || typeof name !== "string" || name.trim() === "") {
-        console.error(`[API Error] 400 Bad Request: ${"Folder name is required"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Folder name is required")
     }
 
     if (name.length > 200) {
-        console.error(`[API Error] 400 Bad Request: ${"Folder name is too long"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Folder name is too long")
     }
 
     const folder = await createCdnFolder(currentUser.userId, name.trim(), parentId || null)
@@ -29,8 +27,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, folder })
   } catch (error: any) {
     console.error("[CDN Folders] Error creating folder:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create folder"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to create folder")
   }
 }
 
@@ -38,15 +35,13 @@ export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "Unauthorized")
     }
 
     const { folderId } = await request.json()
 
     if (!folderId) {
-        console.error(`[API Error] 400 Bad Request: ${"Folder ID is required"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Folder ID is required")
     }
 
     const { deletedAssets, folderIds } = await deleteCdnFolderRecursively(currentUser.userId, folderId)
@@ -91,7 +86,6 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Folders] Error deleting folder:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to delete folder"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to delete folder")
   }
 }

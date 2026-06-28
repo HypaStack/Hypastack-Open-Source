@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
 import { getCdnAssetById, getTotalStorageUsed, updateCdnAssetAfterSwap } from "@/lib/cdn-model"
@@ -18,29 +19,25 @@ export async function handleHotSwapInit(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      console.error(`[API Error] 401 Unauthorized: Authentication required`)
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+      return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required")
     }
 
     const body = await request.json()
     const { assetId, fileSize, contentType, csrfToken } = body
 
     if (!assetId || typeof fileSize !== "number" || !contentType || !csrfToken) {
-      console.error(`[API Error] 400 Bad Request: Missing required fields`)
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+      return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      console.error(`[API Error] 403 Forbidden: Invalid CSRF token`)
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      return apiError(403, API_ERRORS.FORBIDDEN, "Invalid CSRF token")
     }
 
     // Verify asset exists and belongs to user
     const asset = await getCdnAssetById(assetId)
     if (!asset || asset.user_id !== currentUser.userId) {
-      console.error(`[API Error] 404 Not Found: Asset not found`)
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+      return apiError(404, API_ERRORS.NOT_FOUND, "Asset not found")
     }
 
     // Tier limits check
@@ -52,8 +49,7 @@ export async function handleHotSwapInit(request: NextRequest) {
 
     if (fileSize <= 0 || fileSize > tier.maxCdnFileSize) {
       const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
-      console.error(`[API Error] 413 Payload Too Large: File is too large. Maximum ${limitMB}MB per file on your plan.`)
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "File is too large. Maximum ${limitMB}MB per file on your plan.")
     }
 
     // Storage quota: account for the size difference (new - old)
@@ -61,8 +57,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     if (sizeDelta > 0 && currentStorage + sizeDelta > tier.maxCdnStorage) {
       const remaining = Math.max(0, tier.maxCdnStorage - currentStorage)
       const remainingMB = Math.floor(remaining / (1024 * 1024))
-      console.error(`[API Error] 413 Payload Too Large: Not enough storage. You have ${remainingMB}MB remaining.`)
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Not enough storage. You have ${remainingMB}MB remaining.")
     }
 
     // Generate presigned PUT URL for the EXISTING R2 key (overwrites in-place)
@@ -81,8 +76,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Hot Swap Init] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: Failed to initialize hot swap`)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to initialize hot swap")
   }
 }
 
@@ -93,36 +87,31 @@ export async function handleHotSwapComplete(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-      console.error(`[API Error] 401 Unauthorized: Authentication required`)
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+      return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required")
     }
 
     const body = await request.json()
     const { assetId, csrfToken } = body
 
     if (!assetId || !csrfToken) {
-      console.error(`[API Error] 400 Bad Request: Missing required fields`)
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+      return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      console.error(`[API Error] 403 Forbidden: Invalid CSRF token`)
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      return apiError(403, API_ERRORS.FORBIDDEN, "Invalid CSRF token")
     }
 
     // Verify asset exists and belongs to user
     const asset = await getCdnAssetById(assetId)
     if (!asset || asset.user_id !== currentUser.userId) {
-      console.error(`[API Error] 404 Not Found: Asset not found`)
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+      return apiError(404, API_ERRORS.NOT_FOUND, "Asset not found")
     }
 
     // HEAD the R2 object to confirm the new file landed
     const head = await headCdnObject(asset.r2_key)
     if (!head) {
-      console.error(`[API Error] 404 Not Found: Upload not found in storage. Did the upload finish?`)
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+      return apiError(404, API_ERRORS.NOT_FOUND, "Upload not found in storage. Did the upload finish?")
     }
 
     // Authoritative quota check using the ACTUAL uploaded size from R2 — the
@@ -136,8 +125,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
     if (actualDelta > 0 && currentStorage + actualDelta > tier.maxCdnStorage) {
       const remaining = Math.max(0, tier.maxCdnStorage - currentStorage)
       const remainingMB = Math.floor(remaining / (1024 * 1024))
-      console.error(`[API Error] 413 Payload Too Large: Uploaded file exceeds storage quota. You have ${remainingMB}MB remaining.`)
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Uploaded file exceeds storage quota. You have ${remainingMB}MB remaining.")
     }
 
     // Update DB record with new size and content type
@@ -147,8 +135,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
     })
 
     if (!updated) {
-      console.error(`[API Error] 500 Internal Server Error: Failed to update asset record`)
-      return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+      return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to update asset record")
     }
 
     return NextResponse.json({
@@ -161,7 +148,6 @@ export async function handleHotSwapComplete(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[CDN Hot Swap Complete] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: Failed to complete hot swap`)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to complete hot swap")
   }
 }

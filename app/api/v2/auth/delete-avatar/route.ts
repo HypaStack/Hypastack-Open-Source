@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById, updateAvatarUrl } from "@/lib/user-model"
 import { deleteByKey } from "@/lib/r2"
@@ -10,13 +11,11 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     const user = await getUserById(currentUser.userId)
@@ -35,7 +34,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error("[Avatar] Delete error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 Avatar Deletion Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Avatar Deletion Failed")
   }
 }

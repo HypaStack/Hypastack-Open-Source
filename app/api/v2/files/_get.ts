@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { withRouteCache } from "@/lib/route-cache"
 import { getCurrentUser } from "@/lib/auth"
 import { getFilesByUserId } from "@/lib/file-model"
@@ -10,13 +11,11 @@ export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     const files = await getFilesByUserId(currentUser.userId)
@@ -37,7 +36,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("[Auth Files] GET error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 File Fetch Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 File Fetch Failed")
   }
 }

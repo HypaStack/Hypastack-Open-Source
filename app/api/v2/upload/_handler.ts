@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate } from "@/lib/r2"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
 import { createStagingRecord, getUserFileStats } from "@/lib/file-model"
-import { ensureFolderPath, getFoldersByUserId } from "@/lib/folder-model"
+import { resolveUploadFolder } from "@/lib/folder-model"
 import { getUserCdnStats } from "@/lib/cdn-model"
 import { verifyTurnstileToken } from "@/lib/turnstile"
 import { validateCsrfToken } from "@/lib/security"
@@ -17,21 +18,18 @@ export async function handleUploadPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Authentication required. Please sign in."}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required. Please sign in.")
     }
 
     const body = await request.json()
     const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, note, path, folderId } = body
 
     if (!fileName || !fileSize || !contentType) {
-        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
     }
 
     if (fileName.length > 200) {
-        console.error(`[API Error] 400 Bad Request: ${"Filename too long. Max 200 characters."}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Filename too long. Max 200 characters.")
     }
 
     const [userTier, fileStats, cdnStats] = await Promise.all([
@@ -43,35 +41,30 @@ export async function handleUploadPost(request: NextRequest) {
 
     if (fileSize > tier.maxNormalUploadSize) {
       const limitMB = Math.round(tier.maxNormalUploadSize / (1024 * 1024))
-        console.error(`[API Error] 413 Payload Too Large: ${`File too large. Max ${limitMB}MB on your plan.`}`);
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+        return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File too large. Max ${limitMB}MB on your plan.`)
     }
 
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
-          console.error(`[API Error] 403 Forbidden: ${`You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+          return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`)
       }
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "Invalid security token. Please refresh the page and try again.")
     }
 
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"Rate limit reached, try again later"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Rate limit reached, try again later")
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security verification failed"}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+          return apiError(403, API_ERRORS.FORBIDDEN, turnstileResult.error || "Security verification failed")
       }
     }
 
@@ -92,21 +85,11 @@ export async function handleUploadPost(request: NextRequest) {
       ? encryptFilename(sanitizedCustomFilename)
       : null
 
-    let finalFolderId = folderId || null
-    if (finalFolderId) {
-      const userFolders = await getFoldersByUserId(currentUser.userId)
-      if (!userFolders.some(f => f.id === finalFolderId)) {
-          console.error(`[API Error] 403 Forbidden: ${"Folder not found or unauthorized"}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
-      }
+    const folderResult = await resolveUploadFolder(currentUser.userId, folderId, path)
+    if (!folderResult.ok) {
+      return apiError(403, API_ERRORS.FORBIDDEN, "Folder not found or unauthorized")
     }
-
-    if (path) {
-      const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null
-      if (dirPath) {
-        finalFolderId = await ensureFolderPath(currentUser.userId, dirPath, folderId || null)
-      }
-    }
+    const finalFolderId = folderResult.folderId
 
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
 
@@ -130,8 +113,7 @@ export async function handleUploadPost(request: NextRequest) {
     }, tier.maxFileLinks)
 
     if (!staged) {
-        console.error(`[API Error] 403 Forbidden: ${`You have reached your limit of ${tier.maxFileLinks} active file links on your current plan.`}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your limit of ${tier.maxFileLinks} active file links on your current plan.`)
     }
 
     const proxyToken = generateProxyToken(fileId)
@@ -147,7 +129,6 @@ export async function handleUploadPost(request: NextRequest) {
 
   } catch (error: any) {
     console.error("[Upload] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate upload URL"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to generate upload URL")
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { uploadFileBuffer, getExpirationDate } from "@/lib/r2"
 import { createFileRecord, markUploadComplete } from "@/lib/file-model"
 import { getCurrentUser, verifyProxyToken } from "@/lib/auth"
@@ -19,16 +20,14 @@ export async function handleUploadProxyPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
     }
 
     const userTier = await getUserTier(currentUser.userId)
     const tier = getTierLimits(userTier)
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     const formData = await request.formData()
@@ -41,27 +40,23 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const customFilename = formData.get("customFilename") as string | null
 
     if (!fileId || !proxyToken || !verifyProxyToken(proxyToken, fileId)) {
-        console.error(`[API Error] 403 Forbidden: ${"403 Upload Session Invalid"}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "403 Upload Session Invalid")
     }
 
     const csrfValid = await validateCsrfToken(csrfToken || "")
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "403 Invalid CSRF Token")
     }
 
     if (!file) {
-        console.error(`[API Error] 400 Bad Request: ${"400 No File Provided"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "400 No File Provided")
     }
 
     const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
     const limit = Math.min(tier.maxNormalUploadSize, MAX_PROXY_SIZE);
     if (file.size > limit) {
       const limitMB = Math.round(limit / (1024 * 1024))
-      console.error(`[API Error] 413 Payload Too Large: Proxy Upload Limit Exceeded (Max ${limitMB}MB)`);
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Proxy Upload Limit Exceeded (Max ${limitMB}MB)")
     }
 
     const bytes = await file.arrayBuffer()
@@ -70,14 +65,12 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
     const typeVerification = await verifyFileType(buffer)
     if (!typeVerification.valid) {
-        console.error(`[API Error] 415 Unsupported Media Type: ${typeVerification.error || "415 Unsupported File Type"}`);
-      return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
+        return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, typeVerification.error || "415 Unsupported File Type")
     }
 
     const filenameSanitization = sanitizeFilename(file.name)
     if (!filenameSanitization.isValid) {
-        console.error(`[API Error] 400 Bad Request: ${filenameSanitization.error || "400 Invalid Filename"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, filenameSanitization.error || "400 Invalid Filename")
     }
 
     buffer = await stripMetadata(buffer, typeVerification.mimeType!)
@@ -126,7 +119,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
 
   } catch (error: any) {
     console.error("[UploadProxy] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 Proxy Upload Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Proxy Upload Failed")
   }
 }

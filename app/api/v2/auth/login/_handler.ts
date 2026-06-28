@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import crypto from "crypto"
 import { z } from "zod"
 import { verifyPassword, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword } from "@/lib/auth"
@@ -24,30 +25,26 @@ export async function handleLoginPost(request: NextRequest) {
 
     const validation = LoginSchema.safeParse(body)
     if (!validation.success) {
-      console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`)
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+      return apiError(400, API_ERRORS.BAD_REQUEST, validation.error.issues[0].message)
     }
 
     const { accessKey, turnstileToken, csrfToken } = validation.data
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-      console.error(`[API Error] 403 Forbidden: Invalid csrf token, try again.`)
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      return apiError(403, API_ERRORS.FORBIDDEN, "Invalid csrf token, try again.")
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-        console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification failed"}`)
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, turnstileResult.error || "Security Verification failed")
       }
     }
 
     const rateLimit = await checkLoginRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-      console.error(`[API Error] 429 Too Many Requests: rate limit exceeded`)
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "rate limit exceeded")
     }
 
     // Key format: hpsk_<uuid_no_hyphens>_<secret>
@@ -71,8 +68,7 @@ export async function handleLoginPost(request: NextRequest) {
     }
 
     if (!matchedUserId) {
-      console.error(`[API Error] 401 Unauthorized: Invalid access key`)
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+      return apiError(401, API_ERRORS.UNAUTHORIZED, "Invalid access key")
     }
 
     await updateLastLogin(matchedUserId)
@@ -87,7 +83,6 @@ export async function handleLoginPost(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Login error:", error)
-    console.error(`[API Error] 500 Internal Server Error: Failed to sign in`)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to sign in")
   }
 }

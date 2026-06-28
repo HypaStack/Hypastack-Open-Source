@@ -121,6 +121,34 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 
 // Routes that require a valid session are defined in @/constants/proxy.ts
 
+// Build the Content-Security-Policy. In production we emit a per-request nonce
+// and drop 'unsafe-inline'/'unsafe-eval' from script-src, so an injected inline
+// <script> cannot execute. Third-party hosts stay allow-listed (no
+// 'strict-dynamic') because the Cloudflare Insights beacon is injected at the
+// edge without our nonce. In development we keep the unsafe directives because
+// Turbopack HMR / React Refresh require them.
+function buildCsp(nonce: string | null): string {
+  const scriptSrc = nonce
+    ? `script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
+    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
+  return [
+    "default-src 'self'",
+    scriptSrc,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
+    "font-src 'self' https://r2.hypastack.com https://fonts.gstatic.com",
+    "connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com",
+    "frame-src https://challenges.cloudflare.com",
+    "media-src 'self' blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
+    "worker-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self'",
+    "upgrade-insecure-requests",
+  ].join("; ")
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -204,9 +232,26 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const response = NextResponse.next()
+  // Per-request nonce in production only. Forwarding the CSP (with the nonce) on
+  // the request headers lets Next.js stamp the nonce onto its own framework
+  // scripts and any <Script> components automatically.
+  const isProd = process.env.NODE_ENV === "production"
+  let response: NextResponse
+  let nonce: string | null = null
+
+  if (isProd) {
+    const bytes = crypto.getRandomValues(new Uint8Array(16))
+    nonce = btoa(String.fromCharCode(...bytes))
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set("x-nonce", nonce)
+    requestHeaders.set("content-security-policy", buildCsp(nonce))
+    response = NextResponse.next({ request: { headers: requestHeaders } })
+  } else {
+    response = NextResponse.next()
+  }
 
   // security headers
+  response.headers.set("Content-Security-Policy", buildCsp(nonce))
   response.headers.set("X-Frame-Options", "SAMEORIGIN")
   response.headers.set("X-Content-Type-Options", "nosniff")
   response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")

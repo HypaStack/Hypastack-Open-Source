@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { z } from "zod"
 import { hashPassword } from "@/lib/auth"
 import { createUser } from "@/lib/user-model"
@@ -26,8 +27,7 @@ export async function POST(request: NextRequest) {
 
     const validation = RegisterSchema.safeParse(body)
     if (!validation.success) {
-        console.error(`[API Error] 400 Bad Request: ${validation.error.issues[0].message}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, validation.error.issues[0].message)
     }
 
     const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
@@ -38,28 +38,24 @@ export async function POST(request: NextRequest) {
     // can't create an account whose id and key are inconsistent.
     const embeddedId = accessKey.split("_")[1] || ""
     if (embeddedId.toLowerCase() !== userId.replace(/-/g, "").toLowerCase()) {
-        console.error(`[API Error] 400 Bad Request: ${"Access key does not match account id"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Access key does not match account id")
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"Invalid security token. Please refresh the page and try again."}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "Invalid security token. Please refresh the page and try again.")
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-          console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security verification failed"}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+          return apiError(403, API_ERRORS.FORBIDDEN, turnstileResult.error || "Security verification failed")
       }
     }
 
     const rateLimit = await checkRegisterRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"Too many registration attempts. Please try again later."}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Too many registration attempts. Please try again later.")
     }
 
     const { hash: passwordHash } = hashPassword(accessKey)
@@ -74,7 +70,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Registration error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to create account"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to create account")
   }
 }

@@ -90,6 +90,38 @@ export async function ensureFolderPath(userId: string, path: string, baseFolderI
   return currentParentId
 }
 
+/**
+ * Validates an explicit folderId belongs to the user (if given) and, when a
+ * file `path` like "Folder/Sub/file.ext" is provided, ensures the directory
+ * portion exists, creating folders as needed. Returns the resolved folder id.
+ *
+ * Shared by the upload init handlers (single + multipart) which had this block
+ * copy-pasted. Kept free of HTTP concerns — callers map `{ ok: false }` to 403.
+ */
+export async function resolveUploadFolder(
+  userId: string,
+  folderId: string | null | undefined,
+  path: string | null | undefined,
+): Promise<{ ok: true; folderId: string | null } | { ok: false }> {
+  let finalFolderId = folderId || null
+
+  if (finalFolderId) {
+    const userFolders = await getFoldersByUserId(userId)
+    if (!userFolders.some(f => f.id === finalFolderId)) {
+      return { ok: false }
+    }
+  }
+
+  if (path) {
+    const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null
+    if (dirPath) {
+      finalFolderId = await ensureFolderPath(userId, dirPath, folderId || null)
+    }
+  }
+
+  return { ok: true, folderId: finalFolderId }
+}
+
 export async function deleteFolderRecursively(userId: string, folderId: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()

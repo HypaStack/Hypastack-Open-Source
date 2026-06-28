@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import {
   isFileValid,
   markFileBurned,
@@ -63,27 +64,20 @@ export async function handleDownloadPost(
 
     const rateLimit = await checkDownloadRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"Download limit reached"}`);
-      return NextResponse.json(
-        {
-          error: API_ERRORS.TOO_MANY_REQUESTS,
-          message: "You've downloaded too many files recently. Please wait a moment.",
-          retryAfter: rateLimit.resetInSeconds,
-        },
-        { status: 429 }
-      )
+      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Download limit reached", {
+        message: "You've downloaded too many files recently. Please wait a moment.",
+        retryAfter: rateLimit.resetInSeconds,
+      })
     }
 
     const { valid, record } = await isFileValid(id)
 
     if (!record) {
-        console.error(`[API Error] 404 Not Found: ${"File not found"}`);
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+      return apiError(404, API_ERRORS.NOT_FOUND, "File not found")
     }
 
     if (!valid) {
-        console.error(`[API Error] 410 Gone: ${"File has expired"}`);
-      return NextResponse.json({ error: API_ERRORS.GONE }, { status: 410 })
+      return apiError(410, API_ERRORS.GONE, "File has expired")
     }
 
     // Atomic burn-mark BEFORE issuing any URL so concurrent requests can't
@@ -92,11 +86,7 @@ export async function handleDownloadPost(
     if (record.burn_on_read === 1) {
       const burnResult = await markFileBurned(id)
       if (!burnResult.success) {
-          console.error(`[API Error] 410 Gone: ${"File has already been downloaded"}`);
-        return NextResponse.json(
-          { error: API_ERRORS.GONE },
-          { status: 410 }
-        )
+        return apiError(410, API_ERRORS.GONE, "File has already been downloaded")
       }
       burned = true
     }
@@ -134,10 +124,6 @@ export async function handleDownloadPost(
     })
   } catch (error) {
     console.error("[Download] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to generate download URL"}`);
-    return NextResponse.json(
-      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
-      { status: 500 }
-    )
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to generate download URL")
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { validateCsrfToken } from "@/lib/security"
 import { verifyTurnstileToken } from "@/lib/turnstile"
@@ -12,15 +13,14 @@ import { initiateMultipartUpload, abortMultipartUpload } from "@/lib/r2-multipar
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zero-trust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/filename-crypto"
-import { ensureFolderPath, getFoldersByUserId } from "@/lib/folder-model"
+import { resolveUploadFolder } from "@/lib/folder-model"
 import { API_ERRORS } from "@/constants"
 
 export async function handleUploadMultipartPost(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Authentication Required"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Authentication Required")
     }
 
     const body = await request.json()
@@ -40,26 +40,22 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     } = body
 
     if (!fileName || !fileSize || !contentType) {
-        console.error(`[API Error] 400 Bad Request: ${"400 Missing Required Fields"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "400 Missing Required Fields")
     }
 
     if (fileName.length > 200) {
-        console.error(`[API Error] 400 Bad Request: ${"400 File Name Too Long"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "400 File Name Too Long")
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
     if (!csrfValid) {
-        console.error(`[API Error] 403 Forbidden: ${"403 Invalid CSRF Token"}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "403 Invalid CSRF Token")
     }
 
     if (process.env.NODE_ENV !== "development") {
       const turnstileResult = await verifyTurnstileToken(turnstileToken)
       if (!turnstileResult.success) {
-        console.error(`[API Error] 403 Forbidden: ${turnstileResult.error || "Security Verification Failed"}`)
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, turnstileResult.error || "Security Verification Failed")
       }
     }
 
@@ -72,25 +68,21 @@ export async function handleUploadMultipartPost(request: NextRequest) {
 
     const rateLimit = await checkUploadRateLimit(currentUser.userId, userTier)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     if (fileSize > tier.maxNormalUploadSize) {
-        console.error(`[API Error] 413 Payload Too Large: ${`413 File Too Large`}`);
-      return NextResponse.json({ error: API_ERRORS.PAYLOAD_TOO_LARGE }, { status: 413 })
+        return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `413 File Too Large`)
     }
 
     if (fileStats.activeFiles >= tier.maxFileLinks) {
-        console.error(`[API Error] 403 Forbidden: ${`403 Active File Limit Reached`}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, `403 Active File Limit Reached`)
     }
 
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
-          console.error(`[API Error] 403 Forbidden: ${`403 Total File Limit Reached`}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+          return apiError(403, API_ERRORS.FORBIDDEN, `403 Total File Limit Reached`)
       }
     }
 
@@ -119,22 +111,11 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       ? encryptFilename(sanitizedCustomFilename)
       : null
 
-    let finalFolderId = folderId || null
-    if (finalFolderId) {
-      const userFolders = await getFoldersByUserId(currentUser.userId)
-      if (!userFolders.some(f => f.id === finalFolderId)) {
-          console.error(`[API Error] 403 Forbidden: ${"403 Folder Not Found"}`);
-        return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
-      }
+    const folderResult = await resolveUploadFolder(currentUser.userId, folderId, path)
+    if (!folderResult.ok) {
+      return apiError(403, API_ERRORS.FORBIDDEN, "403 Folder Not Found")
     }
-
-    if (path) {
-      // path may be "Folder/Subfolder/file.ext" — extract dir portion only
-      const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : null
-      if (dirPath) {
-        finalFolderId = await ensureFolderPath(currentUser.userId, dirPath, folderId || null)
-      }
-    }
+    const finalFolderId = folderResult.folderId
 
     // Pass the tier limit so the insert is quota-guarded atomically at the DB
     // level. The pre-check above is only a fast early-out; this closes the
@@ -160,8 +141,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     if (!staged) {
       // Quota was reached between the pre-check and the insert.
       await abortMultipartUpload({ r2Key, uploadId }).catch(() => {})
-      console.error(`[API Error] 403 Forbidden: ${"403 Active File Limit Reached"}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      return apiError(403, API_ERRORS.FORBIDDEN, "403 Active File Limit Reached")
     }
 
 
@@ -178,7 +158,6 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Upload Multipart] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${error.message || "500 Multipart Upload Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, error.message || "500 Multipart Upload Failed")
   }
 }

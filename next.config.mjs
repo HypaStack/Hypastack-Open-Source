@@ -36,25 +36,10 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "SAMEORIGIN",
           },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
-              "font-src 'self' https://r2.hypastack.com https://fonts.gstatic.com",
-              "connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com",
-              "frame-src https://challenges.cloudflare.com",
-              "media-src 'self' blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
-              "worker-src 'self' blob:",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'self'",
-              "upgrade-insecure-requests",
-            ].join("; "),
-          },
+          // Content-Security-Policy is set per-request in proxy.ts so it can
+          // carry a per-request nonce. Defining it here too would emit a second,
+          // nonce-less CSP header that the browser also enforces, breaking the
+          // nonce'd scripts.
           {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",

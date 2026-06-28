@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { getFileById, toggleFileStarred } from "@/lib/file-model"
 import { checkApiRateLimit } from "@/lib/rate-limit"
@@ -8,37 +9,31 @@ export async function PATCH(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"401 Not Authenticated"}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
     }
     const rateLimit = await checkApiRateLimit(currentUser.userId)
     if (!rateLimit.allowed) {
-        console.error(`[API Error] 429 Too Many Requests: ${"429 Too Many Requests"}`);
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
     }
 
     const { fileId, starred } = await request.json()
     if (!fileId || typeof starred !== "boolean") {
-        console.error(`[API Error] 400 Bad Request: ${"400 Invalid Request Parameters"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "400 Invalid Request Parameters")
     }
 
     const file = await getFileById(fileId)
     if (!file || file.user_id !== currentUser.userId) {
-        console.error(`[API Error] 404 Not Found: ${"404 Not Found"}`);
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+        return apiError(404, API_ERRORS.NOT_FOUND, "404 Not Found")
     }
 
     const updated = await toggleFileStarred(fileId, currentUser.userId, starred)
     if (!updated) {
-        console.error(`[API Error] 500 Internal Server Error: ${"500 Update Failed"}`);
-      return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+        return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Update Failed")
     }
 
     return NextResponse.json({ success: true, starred })
   } catch (error) {
     console.error("[Auth Files] PATCH error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 Update Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Update Failed")
   }
 }

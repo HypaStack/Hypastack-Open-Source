@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { getFileById } from "@/lib/file-model"
 import { getPresignedDownloadUrl } from "@/lib/r2"
@@ -17,28 +18,23 @@ export async function GET(
 ) {
   const currentUser = await getCurrentUser(request)
   if (!currentUser) {
-      console.error(`[API Error] 401 Unauthorized: ${"Not authenticated"}`);
-    return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+      return apiError(401, API_ERRORS.UNAUTHORIZED, "Not authenticated")
   }
   const rateLimit = await checkApiRateLimit(currentUser.userId)
   if (!rateLimit.allowed) {
-      console.error(`[API Error] 429 Too Many Requests: ${"Rate limit exceeded"}`);
-    return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Rate limit exceeded")
   }
 
   const { id } = await params
   const record = await getFileById(id)
   if (!record) {
-      console.error(`[API Error] 404 Not Found: ${"Not found"}`);
-    return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+      return apiError(404, API_ERRORS.NOT_FOUND, "Not found")
   }
   if (record.user_id !== currentUser.userId) {
-      console.error(`[API Error] 403 Forbidden: ${"Forbidden"}`);
-    return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+      return apiError(403, API_ERRORS.FORBIDDEN, "Forbidden")
   }
   if (!PREVIEWABLE.test(record.content_type || "")) {
-      console.error(`[API Error] 415 Unsupported Media Type: ${"Not previewable"}`);
-    return NextResponse.json({ error: API_ERRORS.UNSUPPORTED_MEDIA_TYPE }, { status: 415 })
+      return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, "Not previewable")
   }
 
   const url = await getPresignedDownloadUrl({
@@ -59,15 +55,24 @@ export async function GET(
       return NextResponse.json({ error: "Failed to fetch preview" }, { status: response.status })
     }
 
-    const headers = new Headers(response.headers)
-    // Instruct the browser and edge to cache this aggressively
+    // Build a clean header set rather than echoing R2's. content_type is
+    // client-supplied at upload time and the previewable check admits
+    // image/svg+xml, so serving it inline could execute script on our origin.
+    // `sandbox` puts the response in an opaque origin with scripts disabled
+    // (neutralizing SVG/HTML payloads) and nosniff stops content-type guessing.
+    const headers = new Headers()
+    headers.set("Content-Type", record.content_type)
+    headers.set("Content-Disposition", "inline")
+    headers.set("X-Content-Type-Options", "nosniff")
+    headers.set("Content-Security-Policy", "sandbox")
     headers.set("Cache-Control", "private, max-age=86400, immutable")
-    
+    const contentLength = response.headers.get("content-length")
+    if (contentLength) headers.set("Content-Length", contentLength)
+
     // We stream the body back to the client
     return new NextResponse(response.body, { headers })
   } catch (error) {
     console.error("Preview fetch error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Internal server error"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Internal server error")
   }
 }

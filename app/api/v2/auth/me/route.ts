@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { withRouteCache } from "@/lib/route-cache"
 import { getCurrentUser } from "@/lib/auth"
 import { getUserById } from "@/lib/user-model"
@@ -47,8 +48,7 @@ export async function GET(request: NextRequest) {
     ])
 
     if ((wantUser || wantStats) && !user) {
-        console.error(`[API Error] 404 Not Found: ${"User not found"}`);
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+        return apiError(404, API_ERRORS.NOT_FOUND, "User not found")
     }
 
     const body: Record<string, unknown> = { authenticated: true, userId: currentUser.userId }
@@ -124,7 +124,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error("[Auth] Get user error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to get user"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to get user")
   }
 }

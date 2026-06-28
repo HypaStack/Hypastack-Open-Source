@@ -10,8 +10,9 @@ node_modules/
 .DS_Store
 .env
 
-replace.ps1
 src-tauri/tauri.conf.json
 
 package-lock.json
 tsconfig.tsbuildinfo
+
+CLAUDE.md

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { getCurrentUser } from "@/lib/auth"
 import { getStagingRecord } from "@/lib/file-model"
 import { listUploadedParts, getPresignedUrlsForParts } from "@/lib/r2-multipart"
@@ -11,25 +12,21 @@ export async function POST(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
     if (!currentUser) {
-        console.error(`[API Error] 401 Unauthorized: ${"Authentication required."}`);
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+        return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required.")
     }
 
     const { fileId, uploadId, totalParts, chunkSize } = await request.json()
 
     if (!fileId || !uploadId || !totalParts) {
-        console.error(`[API Error] 400 Bad Request: ${"Missing required fields"}`);
-      return NextResponse.json({ error: API_ERRORS.BAD_REQUEST }, { status: 400 })
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
     }
 
     const record = await getStagingRecord(fileId)
     if (!record) {
-        console.error(`[API Error] 404 Not Found: ${"Upload session not found or expired"}`);
-      return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
+        return apiError(404, API_ERRORS.NOT_FOUND, "Upload session not found or expired")
     }
     if (record.user_id && record.user_id !== currentUser.userId) {
-        console.error(`[API Error] 403 Forbidden: ${"Unauthorized"}`);
-      return NextResponse.json({ error: API_ERRORS.FORBIDDEN }, { status: 403 })
+        return apiError(403, API_ERRORS.FORBIDDEN, "Unauthorized")
     }
 
     const uploadedParts = await listUploadedParts({
@@ -73,10 +70,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("[Upload Resume] Error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Failed to check upload status"}`);
-    return NextResponse.json(
-      { error: API_ERRORS.INTERNAL_SERVER_ERROR },
-      { status: 500 }
-    )
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to check upload status")
   }
 }

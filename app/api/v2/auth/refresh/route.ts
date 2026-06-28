@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import crypto from "crypto"
 import { generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie } from "@/lib/auth"
 import { atomicRotateRefreshToken } from "@/lib/user-model"
@@ -39,7 +40,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("[Auth] Refresh error:", error)
-    console.error(`[API Error] 500 Internal Server Error: Failed to refresh session`)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to refresh session")
   }
 }

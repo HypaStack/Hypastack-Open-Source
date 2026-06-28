@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { clearAuthCookie, clearRefreshCookie, getCurrentUser } from "@/lib/auth"
 import { revokeSession } from "@/lib/user-model"
 import { bustCache } from "@/lib/cache"
@@ -21,7 +22,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("[Auth] Logout error:", error)
-    console.error(`[API Error] 500 Internal Server Error: Failed to logout`)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to logout")
   }
 }

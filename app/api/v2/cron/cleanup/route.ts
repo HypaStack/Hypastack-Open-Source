@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import crypto from "crypto"
 import { cleanupExpiredFiles, cleanupStaging, cleanupDumpsterPastes } from "@/lib/cleanup"
 import { API_ERRORS } from "@/constants"
@@ -18,13 +19,11 @@ export async function POST(request: NextRequest) {
   const expectedKey = process.env.ADMIN_SECRET_KEY
 
   if (!expectedKey) {
-      console.error(`[API Error] 503 Service Unavailable: ${"Not configured"}`);
-    return NextResponse.json({ error: API_ERRORS.SERVICE_UNAVAILABLE }, { status: 503 })
+      return apiError(503, API_ERRORS.SERVICE_UNAVAILABLE, "Not configured")
   }
 
   if (!authHeader || !authHeader.startsWith("Bearer ") || !safeKeyEqual(authHeader.slice(7), expectedKey)) {
-      console.error(`[API Error] 401 Unauthorized: ${"Unauthorized"}`);
-    return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
+      return apiError(401, API_ERRORS.UNAUTHORIZED, "Unauthorized")
   }
 
   try {
@@ -40,7 +39,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("[Cron] Cleanup error:", error)
-    console.error(`[API Error] 500 Internal Server Error: ${"Cleanup failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Cleanup failed")
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-error"
 import { createHash } from "crypto"
 import { isFileValid } from "@/lib/file-model"
 import { getR2Client, getBucketName, buildContentDisposition } from "@/lib/r2"
@@ -36,8 +37,7 @@ export async function handleStreamGet(
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
     if (!valid) {
-        console.error(`[API Error] 410 Gone: ${"410 File Expired"}`);
-      return NextResponse.json({ error: API_ERRORS.GONE }, { status: 410 })
+        return apiError(410, API_ERRORS.GONE, "410 File Expired")
     }
 
     // bounce
@@ -81,7 +81,6 @@ export async function handleStreamGet(
     })
   } catch (error: any) {
     console.error(`[DownloadProxy] Error for file ${fileId}:`, error)
-    console.error(`[API Error] 500 Internal Server Error: ${"500 Download Failed"}`);
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Download Failed")
   }
 }

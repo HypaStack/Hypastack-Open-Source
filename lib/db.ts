@@ -1,8 +1,35 @@
 import { Pool, PoolClient, QueryResult } from 'pg'
+import { readFileSync } from 'fs'
 
 declare global {
   var __basedropDbPool: Pool | undefined
   var __basedropDbInitialized: boolean | undefined
+}
+
+type DbSsl = { ca: string; rejectUnauthorized: true; servername?: string } | { rejectUnauthorized: false }
+
+/**
+ * Returns the pg SSL config. If a CA is pinned (DB_CA_CERT inline PEM, or
+ * DB_CA_CERT_PATH file), TLS certificate validation is ENFORCED against it.
+ * DB_TLS_SERVERNAME overrides the hostname checked against the cert's SAN —
+ * needed when the app connects to Postgres by IP but the cert is issued for a
+ * hostname (e.g. a Cloudflare Origin CA cert for db.hypastack.com).
+ *
+ * Until a CA is provided, we fall back to the prior behavior (encrypted but
+ * unauthenticated) so existing deployments keep working.
+ */
+function getDbSsl(): DbSsl {
+  const caInline = process.env.DB_CA_CERT
+  const caPath = process.env.DB_CA_CERT_PATH
+  let ca: string | undefined
+  if (caInline) ca = caInline.replace(/\\n/g, '\n')
+  else if (caPath) ca = readFileSync(caPath, 'utf8')
+
+  if (ca) {
+    const servername = process.env.DB_TLS_SERVERNAME
+    return { ca, rejectUnauthorized: true, ...(servername ? { servername } : {}) }
+  }
+  return { rejectUnauthorized: false }
 }
 
 export function getPool(): Pool {
@@ -14,7 +41,7 @@ export function getPool(): Pool {
       console.log('[DB] Creating PostgreSQL pool via DATABASE_URL (SSL required)')
       globalThis.__basedropDbPool = new Pool({
         connectionString: cleanUrl,
-        ssl: { rejectUnauthorized: false },
+        ssl: getDbSsl(),
         max: 40,
         min: 2,
         idleTimeoutMillis: 30000,
@@ -34,7 +61,7 @@ export function getPool(): Pool {
         min: 2,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 10000,
-        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+        ssl: process.env.DB_SSL === 'true' ? getDbSsl() : undefined,
       })
     }
 
@@ -353,6 +380,30 @@ export async function initDatabase(): Promise<void> {
         created_at  TIMESTAMPTZ   DEFAULT NOW()
       )
     `)
+
+    // ── Schema migration tracking ───────────────────────────────────────────
+    // Everything above is the idempotent baseline schema. Going forward, add
+    // discrete ordered migrations to INCREMENTAL_MIGRATIONS below instead of
+    // appending more ad-hoc ALTERs above — each runs exactly once, in order, and
+    // is recorded so it won't re-run on the next cold start.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version    TEXT PRIMARY KEY,
+        applied_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await client.query(`INSERT INTO schema_migrations (version) VALUES ('baseline') ON CONFLICT DO NOTHING`)
+
+    const INCREMENTAL_MIGRATIONS: { version: string; sql: string }[] = [
+      // { version: '2026-07-01-example', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS example TEXT` },
+    ]
+    for (const migration of INCREMENTAL_MIGRATIONS) {
+      const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
+      if (done.rows.length > 0) continue
+      await client.query(migration.sql)
+      await client.query(`INSERT INTO schema_migrations (version) VALUES ($1) ON CONFLICT DO NOTHING`, [migration.version])
+      console.log(`[DB] Applied migration: ${migration.version}`)
+    }
 
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')

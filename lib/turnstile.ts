@@ -1,6 +1,13 @@
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY
 
-const verifiedTokens = new Map<string, number>()
+// A solved token may legitimately back a single user action that fans out to a
+// few backend calls (e.g. a multi-file upload makes one init call per file with
+// the same token). We cache the verified result briefly so those calls succeed,
+// but cap reuse so one solved challenge can't authorize an unbounded burst of
+// requests within the window.
+const TOKEN_TTL_MS = 60000
+const MAX_TOKEN_REUSES = 50
+const verifiedTokens = new Map<string, { at: number; uses: number }>()
 
 export async function verifyTurnstileToken(token: string): Promise<{ success: boolean; error?: string }> {
   if (!TURNSTILE_SECRET_KEY) {
@@ -13,13 +20,16 @@ export async function verifyTurnstileToken(token: string): Promise<{ success: bo
   }
 
   const now = Date.now()
-  if (verifiedTokens.has(token)) {
-    const verifiedAt = verifiedTokens.get(token)!
-    if (now - verifiedAt < 60000) {
+  const cached = verifiedTokens.get(token)
+  if (cached) {
+    if (now - cached.at < TOKEN_TTL_MS) {
+      if (cached.uses >= MAX_TOKEN_REUSES) {
+        return { success: false, error: 'Security token exhausted, please retry' }
+      }
+      cached.uses++
       return { success: true }
-    } else {
-      verifiedTokens.delete(token)
     }
+    verifiedTokens.delete(token)
   }
 
   try {
@@ -39,9 +49,9 @@ export async function verifyTurnstileToken(token: string): Promise<{ success: bo
       return { success: false, error: 'Turnstile verification failed' }
     }
 
-    verifiedTokens.set(token, now)
+    verifiedTokens.set(token, { at: now, uses: 1 })
     for (const [k, v] of verifiedTokens.entries()) {
-      if (now - v > 60000) {
+      if (now - v.at > TOKEN_TTL_MS) {
         verifiedTokens.delete(k)
       }
     }
