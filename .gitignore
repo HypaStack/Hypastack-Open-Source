@@ -12,7 +12,7 @@ node_modules/
 
 src-tauri/tauri.conf.json
 
-test (trigger redeploy)
+test (trigger redeploy )
 package-lock.json
 tsconfig.tsbuildinfo
 
