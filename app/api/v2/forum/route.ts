@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { withRouteCache } from "@/lib/route-cache"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { validateCsrfToken } from "@/lib/security"
 import { createForumPost, getForumPosts, normalizeTags } from "@/lib/forum-model"
-import { checkApiRateLimit } from "@/lib/rate-limit"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -26,18 +25,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/v2/forum — create a new post (auth required)
-export async function POST(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
-    }
-
-    const rateLimit = await checkApiRateLimit(currentUser.userId)
-    if (!rateLimit.allowed) {
-      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
-    }
-
+export const POST = withAuth(async ({ request, user: currentUser }) => {
     const body = await request.json()
     const { csrfToken, title, description, tags } = body
 
@@ -72,8 +60,4 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ success: true, postId: post.id, slug: post.slug })
-  } catch (error: any) {
-    console.error("[Forum] POST error:", error)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
-  }
-}
+}, { rateLimit: true, label: "Forum POST" })

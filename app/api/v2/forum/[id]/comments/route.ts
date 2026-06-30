@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { validateCsrfToken } from "@/lib/security"
 import { getForumPostById, addComment, getCommentsByPostId } from "@/lib/forum-model"
 import { API_ERRORS } from "@/constants"
@@ -28,17 +28,9 @@ export async function GET(
 }
 
 // POST /api/v2/forum/[id]/comments — add a comment (auth required)
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withAuth<{ id: string }>(async ({ request, user: currentUser, params }) => {
   try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
-    }
-
-    const { id: postId } = await params
+    const { id: postId } = params
     const body = await request.json()
     const { csrfToken, body: commentBody, parentId } = body
 
@@ -78,4 +70,4 @@ export async function POST(
     console.error("[Forum Comments] POST error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
-}
+}, { label: "Forum Comments POST" })

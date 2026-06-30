@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getForumPostById, getForumPostBySlug, incrementViewCount, deleteForumPost, getForumFileR2KeysByPostId } from "@/lib/forum-model"
 import { deleteObjectsBatch } from "@/lib/r2"
 import { API_ERRORS } from "@/constants"
@@ -41,22 +41,13 @@ export async function GET(
 }
 
 // DELETE /api/v2/forum/[id] — owner-only delete
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-      return NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
-    }
-
-    const { id } = await params
+export const DELETE = withAuth<{ id: string }>(async ({ user, params }) => {
+    const { id } = params
 
     // Get R2 keys before deleting DB records
     const r2Keys = await getForumFileR2KeysByPostId(id)
 
-    const deleted = await deleteForumPost(id, currentUser.userId)
+    const deleted = await deleteForumPost(id, user.userId)
     if (!deleted) {
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
@@ -69,8 +60,4 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    console.error("[Forum] DELETE [id] error:", error)
-    return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
-  }
-}
+}, { label: "Forum DELETE" })

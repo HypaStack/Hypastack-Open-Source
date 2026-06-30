@@ -1,18 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from '@/lib/auth'
+import { NextResponse } from 'next/server'
+import { withAuth } from "@/lib/route"
 import { getCdnAssetsByUserId, getUserCdnStats } from '@/lib/cdn-model'
-import { API_ERRORS } from "@/constants"
 
-export async function GET(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-        return apiError(401, API_ERRORS.UNAUTHORIZED, 'Authentication required')
-    }
-
-    const assets = await getCdnAssetsByUserId(currentUser.userId)
-    const stats = await getUserCdnStats(currentUser.userId)
+export const GET = withAuth(async ({ user }) => {
+    const assets = await getCdnAssetsByUserId(user.userId)
+    const stats = await getUserCdnStats(user.userId)
 
     return NextResponse.json({
       assets: assets.map(a => ({
@@ -25,8 +17,4 @@ export async function GET(request: NextRequest) {
       })),
       stats,
     })
-  } catch (error: any) {
-    console.error('[CDN] List error:', error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, 'Failed to load assets')
-  }
-}
+}, { label: "CDN List" })

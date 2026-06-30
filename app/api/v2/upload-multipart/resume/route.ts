@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getStagingRecord } from "@/lib/file-model"
 import { listUploadedParts, getPresignedUrlsForParts } from "@/lib/r2-multipart"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
@@ -8,13 +8,7 @@ import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-export async function POST(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-        return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required.")
-    }
-
+export const POST = withAuth(async ({ request, user: currentUser }) => {
     const { fileId, uploadId, totalParts, chunkSize } = await request.json()
 
     if (!fileId || !uploadId || !totalParts) {
@@ -68,8 +62,4 @@ export async function POST(request: NextRequest) {
       shareUrl: record.share_url,
       chunkSize: chunkSize || DEFAULT_CHUNK_SIZE,
     })
-  } catch (error: any) {
-    console.error("[Upload Resume] Error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to check upload status")
-  }
-}
+}, { label: "Upload Resume" })

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/auth"
+import { NextResponse } from "next/server"
+import { withAuth } from "@/lib/route"
 import { getUserById } from "@/lib/user-model"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
@@ -7,13 +7,7 @@ import { getR2Client, getBucketName } from "@/lib/r2"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 })
-    }
-
+export const GET = withAuth(async ({ user: currentUser }) => {
     const user = await getUserById(currentUser.userId)
     if (!user?.avatar_url) {
       return new NextResponse("No avatar", { status: 404 })
@@ -37,8 +31,4 @@ export async function GET(request: NextRequest) {
 
     const signedUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
     return NextResponse.redirect(signedUrl, { status: 302 })
-  } catch (error: any) {
-    console.error("[Avatar] Error generating avatar URL:", error)
-    return new NextResponse("Failed to load avatar", { status: 500 })
-  }
-}
+}, { label: "Avatar" })

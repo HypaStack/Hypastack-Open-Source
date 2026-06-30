@@ -1,19 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getStagingRecord, deleteStagingRecord } from "@/lib/file-model"
 import { abortMultipartUpload } from "@/lib/r2-multipart"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-export async function POST(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-        return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required.")
-    }
-
+export const POST = withAuth(async ({ request, user: currentUser }) => {
     const { fileId, uploadId } = await request.json()
 
     if (!fileId || !uploadId) {
@@ -36,8 +30,4 @@ export async function POST(request: NextRequest) {
     await deleteStagingRecord(fileId)
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    console.error("[Upload Abort] Error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to abort upload")
-  }
-}
+}, { label: "Upload Abort" })

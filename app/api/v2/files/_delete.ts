@@ -1,25 +1,13 @@
-import { NextRequest } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getFilesByIds, deleteFilesByIds } from "@/lib/file-model"
 import { deleteObjectsBatch } from "@/lib/r2"
 import { getUserTier } from "@/lib/user-model"
 import { getTierDelayMs } from "@/constants/tier-limits"
 import { decryptFilename } from "@/lib/filename-crypto"
-import { checkApiRateLimit } from "@/lib/rate-limit"
 import { API_ERRORS } from "@/constants"
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-        return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
-    }
-    const rateLimit = await checkApiRateLimit(currentUser.userId)
-    if (!rateLimit.allowed) {
-        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
-    }
-
+export const DELETE = withAuth(async ({ request, user }) => {
     const { fileId, fileIds } = await request.json()
 
     let idsToDelete: string[] = []
@@ -34,14 +22,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     // free tier throttle
-    const userTier = await getUserTier(currentUser.userId)
+    const userTier = await getUserTier(user.userId)
     const delayMs = getTierDelayMs(userTier)
     if (idsToDelete.length > 1 && delayMs > 0) {
       await new Promise(resolve => setTimeout(resolve, delayMs))
     }
 
     // batch fetch all
-    const ownedFiles = await getFilesByIds(idsToDelete, currentUser.userId)
+    const ownedFiles = await getFilesByIds(idsToDelete, user.userId)
     const ownedById = new Map(ownedFiles.map(f => [f.id, f]))
 
     // batch delete (up to 1000 keys - but we're limiting it to 500 per batch)
@@ -62,7 +50,7 @@ export async function DELETE(request: NextRequest) {
       .map(f => f.id)
 
     if (idsWithR2Ok.length > 0) {
-      await deleteFilesByIds(idsWithR2Ok, currentUser.userId)
+      await deleteFilesByIds(idsWithR2Ok, user.userId)
     }
 
     // stream results back
@@ -102,8 +90,4 @@ export async function DELETE(request: NextRequest) {
         'Connection': 'keep-alive'
       }
     })
-  } catch (error) {
-    console.error("[Auth Files] DELETE error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Deletion Failed")
-  }
-}
+}, { rateLimit: true, label: "Auth Files DELETE" })

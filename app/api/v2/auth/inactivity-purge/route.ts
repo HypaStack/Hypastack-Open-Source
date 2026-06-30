@@ -1,26 +1,14 @@
-import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getPool, ensureDatabase } from "@/lib/db"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { getUserById } from "@/lib/user-model"
-import { checkApiRateLimit } from "@/lib/rate-limit"
+import { NextResponse } from "next/server"
 import { MIN_INACTIVITY_PURGE_DAYS, MAX_INACTIVITY_PURGE_DAYS } from "@/constants"
 import { API_ERRORS } from "@/constants"
 
-export async function POST(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-        return apiError(401, API_ERRORS.UNAUTHORIZED, "Not authenticated")
-    }
-
-    const rateLimit = await checkApiRateLimit(currentUser.userId)
-    if (!rateLimit.allowed) {
-        return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
-    }
-
-    const user = await getUserById(currentUser.userId)
+export const POST = withAuth(async ({ request, user: auth }) => {
+    const user = await getUserById(auth.userId)
     if (!user) {
         return apiError(404, API_ERRORS.NOT_FOUND, "User not found")
     }
@@ -49,12 +37,8 @@ export async function POST(request: NextRequest) {
     const pool = getPool()
     await pool.query(
       `UPDATE users SET inactivity_purge_days = $1, updated_at = NOW() WHERE id = $2`,
-      [days, currentUser.userId]
+      [days, auth.userId]
     )
 
     return NextResponse.json({ success: true, inactivityPurgeDays: days })
-  } catch (error) {
-    console.error("[API] Update inactivity purge error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to update setting")
-  }
-}
+}, { rateLimit: true, label: "Inactivity Purge" })

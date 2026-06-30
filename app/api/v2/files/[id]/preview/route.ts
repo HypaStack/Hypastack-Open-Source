@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { getFileById } from "@/lib/file-model"
 import { getPresignedDownloadUrl } from "@/lib/r2"
 import { decryptFilename } from "@/lib/filename-crypto"
-import { checkApiRateLimit } from "@/lib/rate-limit"
 import { PREVIEWABLE_MIME_REGEX } from "@/constants"
 import { API_ERRORS } from "@/constants"
 
@@ -12,25 +11,13 @@ export const dynamic = "force-dynamic"
 
 const PREVIEWABLE = PREVIEWABLE_MIME_REGEX
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const currentUser = await getCurrentUser(request)
-  if (!currentUser) {
-      return apiError(401, API_ERRORS.UNAUTHORIZED, "Not authenticated")
-  }
-  const rateLimit = await checkApiRateLimit(currentUser.userId)
-  if (!rateLimit.allowed) {
-      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Rate limit exceeded")
-  }
-
-  const { id } = await params
+export const GET = withAuth<{ id: string }>(async ({ user, params }) => {
+  const { id } = params
   const record = await getFileById(id)
   if (!record) {
       return apiError(404, API_ERRORS.NOT_FOUND, "Not found")
   }
-  if (record.user_id !== currentUser.userId) {
+  if (record.user_id !== user.userId) {
       return apiError(403, API_ERRORS.FORBIDDEN, "Forbidden")
   }
   if (!PREVIEWABLE.test(record.content_type || "")) {
@@ -75,4 +62,4 @@ export async function GET(
     console.error("Preview fetch error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Internal server error")
   }
-}
+}, { rateLimit: true, label: "File Preview GET" })

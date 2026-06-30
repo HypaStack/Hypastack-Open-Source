@@ -1,20 +1,14 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getStagingRecord, promoteStagingToFile } from "@/lib/file-model"
 import { fileExistsByKey, deleteByKey, downloadHeadByKey } from "@/lib/r2"
 import { validateFileType } from "@/lib/file-validation"
 import { decryptFilename } from "@/lib/filename-crypto"
-import { getCurrentUser } from "@/lib/auth"
+import { withAuth } from "@/lib/route"
 import { completeMultipartUpload, abortMultipartUpload } from "@/lib/r2-multipart"
 import { API_ERRORS } from "@/constants"
 import { apiError } from "@/lib/api-error"
 
-export async function handleUploadCompletePost(request: NextRequest) {
-  try {
-    const currentUser = await getCurrentUser(request)
-    if (!currentUser) {
-      return apiError(401, API_ERRORS.UNAUTHORIZED, "Authentication required")
-    }
-
+export const handleUploadCompletePost = withAuth(async ({ request, user: currentUser }) => {
     const body = await request.json()
     const { fileId, uploadId, parts } = body
 
@@ -85,9 +79,4 @@ export async function handleUploadCompletePost(request: NextRequest) {
       success: true,
       message: "Upload confirmed",
     })
-
-  } catch (error) {
-    console.error("[UploadComplete] Error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to confirm upload")
-  }
-}
+}, { label: "UploadComplete" })
