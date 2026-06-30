@@ -324,7 +324,7 @@ export function UploadTray({
                             </p>
                           </div>
                             <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
-                            {zipMultipleFiles && (
+                            {zipMultipleFiles ? (
                               <>
                                 <div style={{ padding: "12px 14px 12px" }}>
                                   <div className="flex items-center gap-2 mb-2">
@@ -341,7 +341,24 @@ export function UploadTray({
                                   />
                                 </div>
                                 <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
+                                {/* Zipped = one share link, so a custom link applies */}
+                                <CustomLinkField
+                                  slugLocked={slugLocked}
+                                  customSlug={customSlug}
+                                  setCustomSlug={setCustomSlug}
+                                  slugError={slugError}
+                                  setSlugError={setSlugError}
+                                  prefix="/d/"
+                                  placeholder="my-archive"
+                                  previewBase="hypastack.com/d/"
+                                />
+                                <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
                             </>
+                          ) : (
+                              <>
+                                <NoCustomLinkNote text="Custom links aren't available when uploading files separately — zip them into one archive to use one." />
+                                <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
+                              </>
                           )}
                         </>
                       ) : (
@@ -363,78 +380,17 @@ export function UploadTray({
                           <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
 
                           {/* Custom link (Essential plan and above) */}
-                          <>
-                            <div style={{ padding: "12px 14px 12px" }}>
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <MIcon name="link" size={16} className="text-[#999] dark:text-[#898e97]" />
-                                  <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Custom link</span>
-                                </div>
-                                {slugLocked && (
-                                  <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#999] dark:text-[#898e97]">
-                                    <MIcon name="lock" size={12} /> Essential+
-                                  </span>
-                                )}
-                              </div>
-                              <div
-                                className={`flex items-center bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] transition-colors duration-150 ${slugLocked ? "opacity-60 cursor-not-allowed select-none" : "focus-within:border-[#888] dark:focus-within:border-[#f7f8f8]"}`}
-                                style={{ height: 38, borderRadius: 8, borderStyle: "solid", borderWidth: 1, paddingLeft: 12, paddingRight: 12 }}
-                              >
-                                <span className="shrink-0 text-[#999] dark:text-[#6b6b6b]" style={{ fontSize: 13 }}>/d/</span>
-                                <input
-                                  type="text"
-                                  value={slugLocked ? "" : customSlug}
-                                  onChange={(e) => {
-                                    if (slugLocked) return
-                                    setCustomSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
-                                    if (slugError) setSlugError(null)
-                                  }}
-                                  placeholder={slugLocked ? "available on paid plans" : "my-custom-file"}
-                                  maxLength={64}
-                                  disabled={slugLocked}
-                                  readOnly={slugLocked}
-                                  tabIndex={slugLocked ? -1 : undefined}
-                                  aria-disabled={slugLocked}
-                                  className={`flex-1 min-w-0 bg-transparent placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none text-[#111] dark:text-[#f7f8f8] ${slugLocked ? "cursor-not-allowed select-none pointer-events-none" : ""}`}
-                                  style={{ fontSize: 13 }}
-                                />
-                              </div>
-                              {slugLocked ? (
-                                <a
-                                  href="/pricing"
-                                  className="inline-block mt-1.5 text-[11px] text-[#888] dark:text-[#898e97] underline hover:text-[#111] dark:hover:text-white transition-colors"
-                                  style={{ paddingLeft: 2 }}
-                                >
-                                  Upgrade to Essential to use custom links
-                                </a>
-                              ) : slugError ? (
-                                <div className="mt-2">
-                                  <p className="text-[11px] text-red-500" style={{ paddingLeft: 2 }}>{slugError.message}</p>
-                                  {slugError.suggestions.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                      {slugError.suggestions.map((s) => (
-                                        <button
-                                          key={s}
-                                          type="button"
-                                          onClick={() => { setCustomSlug(s); setSlugError(null) }}
-                                          className="px-2 py-1 rounded-md text-[11px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)] text-[#555] dark:text-[#cbd5e1] hover:bg-[#e5e5e5] dark:hover:bg-[rgba(255,255,255,0.12)] transition-colors"
-                                        >
-                                          {s}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              ) : (
-                                customSlug.trim() && (
-                                  <p className="mt-1.5 text-[11px] text-[#999] dark:text-[#898e97] truncate" style={{ paddingLeft: 2 }}>
-                                    hypastack.com/d/{customSlug.trim()}
-                                  </p>
-                                )
-                              )}
-                            </div>
-                            <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
-                          </>
+                          <CustomLinkField
+                            slugLocked={slugLocked}
+                            customSlug={customSlug}
+                            setCustomSlug={setCustomSlug}
+                            slugError={slugError}
+                            setSlugError={setSlugError}
+                            prefix="/d/"
+                            placeholder="my-custom-file"
+                            previewBase="hypastack.com/d/"
+                          />
+                          <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
                         </>
                       )}
 
@@ -459,78 +415,23 @@ export function UploadTray({
                   )}
                 </div>
 
-                {/* Custom link for a single CDN asset (Essential plan and above) */}
-                {state === "selected" && uploadType === "cdn" && files.length === 1 && (
+                {/* Custom link for a single CDN asset; note for multi (Essential plan and above) */}
+                {state === "selected" && uploadType === "cdn" && (
                   <div className="bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ margin: "0 12px 12px", borderRadius: 12 }}>
-                    <div style={{ padding: "12px 14px 12px" }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <MIcon name="link" size={16} className="text-[#999] dark:text-[#898e97]" />
-                          <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Custom link</span>
-                        </div>
-                        {slugLocked && (
-                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#999] dark:text-[#898e97]">
-                            <MIcon name="lock" size={12} /> Essential+
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className={`flex items-center bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] transition-colors duration-150 ${slugLocked ? "opacity-60 cursor-not-allowed select-none" : "focus-within:border-[#888] dark:focus-within:border-[#f7f8f8]"}`}
-                        style={{ height: 38, borderRadius: 8, borderStyle: "solid", borderWidth: 1, paddingLeft: 12, paddingRight: 12 }}
-                      >
-                        <span className="shrink-0 text-[#999] dark:text-[#6b6b6b]" style={{ fontSize: 13 }}>cdn/</span>
-                        <input
-                          type="text"
-                          value={slugLocked ? "" : customSlug}
-                          onChange={(e) => {
-                            if (slugLocked) return
-                            setCustomSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
-                            if (slugError) setSlugError(null)
-                          }}
-                          placeholder={slugLocked ? "available on paid plans" : "my-asset"}
-                          maxLength={64}
-                          disabled={slugLocked}
-                          readOnly={slugLocked}
-                          tabIndex={slugLocked ? -1 : undefined}
-                          aria-disabled={slugLocked}
-                          className={`flex-1 min-w-0 bg-transparent placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none text-[#111] dark:text-[#f7f8f8] ${slugLocked ? "cursor-not-allowed select-none pointer-events-none" : ""}`}
-                          style={{ fontSize: 13 }}
-                        />
-                      </div>
-                      {slugLocked ? (
-                        <a
-                          href="/pricing"
-                          className="inline-block mt-1.5 text-[11px] text-[#888] dark:text-[#898e97] underline hover:text-[#111] dark:hover:text-white transition-colors"
-                          style={{ paddingLeft: 2 }}
-                        >
-                          Upgrade to Essential to use custom links
-                        </a>
-                      ) : slugError ? (
-                        <div className="mt-2">
-                          <p className="text-[11px] text-red-500" style={{ paddingLeft: 2 }}>{slugError.message}</p>
-                          {slugError.suggestions.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-1.5">
-                              {slugError.suggestions.map((s) => (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  onClick={() => { setCustomSlug(s); setSlugError(null) }}
-                                  className="px-2 py-1 rounded-md text-[11px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)] text-[#555] dark:text-[#cbd5e1] hover:bg-[#e5e5e5] dark:hover:bg-[rgba(255,255,255,0.12)] transition-colors"
-                                >
-                                  {s}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        customSlug.trim() && (
-                          <p className="mt-1.5 text-[11px] text-[#999] dark:text-[#898e97] truncate" style={{ paddingLeft: 2 }}>
-                            r2.hypastack.com/cdn/{customSlug.trim()}
-                          </p>
-                        )
-                      )}
-                    </div>
+                    {files.length === 1 ? (
+                      <CustomLinkField
+                        slugLocked={slugLocked}
+                        customSlug={customSlug}
+                        setCustomSlug={setCustomSlug}
+                        slugError={slugError}
+                        setSlugError={setSlugError}
+                        prefix="cdn/"
+                        placeholder="my-asset"
+                        previewBase="r2.hypastack.com/cdn/"
+                      />
+                    ) : (
+                      <NoCustomLinkNote text="Custom links aren't available for multi-file uploads — upload a single asset to use one." />
+                    )}
                   </div>
                 )}
 
@@ -632,5 +533,112 @@ export function UploadTray({
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+// Shared custom-link (slug) field. Used for single files, zipped archives, and
+// single CDN assets — anywhere the upload yields exactly one share link. Free
+// users see it locked; the server is the real gate.
+function CustomLinkField({
+  slugLocked,
+  customSlug,
+  setCustomSlug,
+  slugError,
+  setSlugError,
+  prefix,
+  placeholder,
+  previewBase,
+}: {
+  slugLocked: boolean
+  customSlug: string
+  setCustomSlug: (v: string) => void
+  slugError: { message: string; suggestions: string[] } | null
+  setSlugError: (v: { message: string; suggestions: string[] } | null) => void
+  prefix: string
+  placeholder: string
+  previewBase: string
+}) {
+  return (
+    <div style={{ padding: "12px 14px 12px" }}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <MIcon name="link" size={16} className="text-[#999] dark:text-[#898e97]" />
+          <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Custom link</span>
+        </div>
+        {slugLocked && (
+          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#999] dark:text-[#898e97]">
+            <MIcon name="lock" size={12} /> Essential+
+          </span>
+        )}
+      </div>
+      <div
+        className={`flex items-center bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] transition-colors duration-150 ${slugLocked ? "opacity-60 cursor-not-allowed select-none" : "focus-within:border-[#888] dark:focus-within:border-[#f7f8f8]"}`}
+        style={{ height: 38, borderRadius: 8, borderStyle: "solid", borderWidth: 1, paddingLeft: 12, paddingRight: 12 }}
+      >
+        <span className="shrink-0 text-[#999] dark:text-[#6b6b6b]" style={{ fontSize: 13 }}>{prefix}</span>
+        <input
+          type="text"
+          value={slugLocked ? "" : customSlug}
+          onChange={(e) => {
+            if (slugLocked) return
+            setCustomSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
+            if (slugError) setSlugError(null)
+          }}
+          placeholder={slugLocked ? "available on paid plans" : placeholder}
+          maxLength={64}
+          disabled={slugLocked}
+          readOnly={slugLocked}
+          tabIndex={slugLocked ? -1 : undefined}
+          aria-disabled={slugLocked}
+          className={`flex-1 min-w-0 bg-transparent placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none text-[#111] dark:text-[#f7f8f8] ${slugLocked ? "cursor-not-allowed select-none pointer-events-none" : ""}`}
+          style={{ fontSize: 13 }}
+        />
+      </div>
+      {slugLocked ? (
+        <a
+          href="/pricing"
+          className="inline-block mt-1.5 text-[11px] text-[#888] dark:text-[#898e97] underline hover:text-[#111] dark:hover:text-white transition-colors"
+          style={{ paddingLeft: 2 }}
+        >
+          Upgrade to Essential to use custom links
+        </a>
+      ) : slugError ? (
+        <div className="mt-2">
+          <p className="text-[11px] text-red-500" style={{ paddingLeft: 2 }}>{slugError.message}</p>
+          {slugError.suggestions.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {slugError.suggestions.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => { setCustomSlug(s); setSlugError(null) }}
+                  className="px-2 py-1 rounded-md text-[11px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)] text-[#555] dark:text-[#cbd5e1] hover:bg-[#e5e5e5] dark:hover:bg-[rgba(255,255,255,0.12)] transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        customSlug.trim() && (
+          <p className="mt-1.5 text-[11px] text-[#999] dark:text-[#898e97] truncate" style={{ paddingLeft: 2 }}>
+            {previewBase}{customSlug.trim()}
+          </p>
+        )
+      )}
+    </div>
+  )
+}
+
+// Small inline note explaining a custom link can't be used for this upload.
+function NoCustomLinkNote({ text }: { text: string }) {
+  return (
+    <div style={{ padding: "12px 14px 12px" }}>
+      <div className="flex items-start gap-2">
+        <MIcon name="info" size={14} className="text-[#999] dark:text-[#898e97] shrink-0 mt-0.5" />
+        <p className="text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, lineHeight: 1.4 }}>{text}</p>
+      </div>
+    </div>
   )
 }

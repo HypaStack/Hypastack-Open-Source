@@ -128,11 +128,11 @@ export function useUpload({
           })()
     if (list.length === 0) return
     handleFiles(list)
-    // Paid users uploading a single CDN asset get to set a custom link first,
-    // so don't auto-start that case; everyone else keeps the instant flow.
-    const cdnSlugEligible =
-      uploadType === "cdn" && list.length === 1 && isPaidTier(normalizeTier(user?.tier))
-    if ((autoStart || uploadType === "cdn") && !cdnSlugEligible) {
+    // Paid users see the CDN options first (a custom link for a single asset, or
+    // a "not available" note for multi-file), so don't auto-start their CDN
+    // uploads; free users keep the instant flow.
+    const cdnShowsOptions = uploadType === "cdn" && isPaidTier(normalizeTier(user?.tier))
+    if ((autoStart || uploadType === "cdn") && !cdnShowsOptions) {
       setAutoStartArmed(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -578,10 +578,17 @@ export function useUpload({
     let finalNote: string | null = note.trim() || null
     const finalSlug: string | null = customSlug.trim() || null
 
+    const isMultipleOrNested = files.length > 1 || files.some(f => f.path?.includes("/"))
+    const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested && zipMultipleFiles
+    // A custom link only applies when the upload produces a single share link:
+    // a single file, a zipped archive, or a single CDN asset. For separate
+    // multi-file uploads it doesn't apply, so we ignore any stale slug value.
+    const slugApplies = uploadType === "cdn" ? files.length === 1 : (files.length === 1 || shouldZip)
+
     // Validate the custom link before doing any work — keeps the user in the
     // editable state (and avoids burning a single-use Turnstile token) on a
     // simple length/charset mistake, instead of bouncing to the error screen.
-    if (finalSlug) {
+    if (finalSlug && slugApplies) {
       const slugCheck = validateSlug(finalSlug)
       if (!slugCheck.ok) {
         setSlugError({ message: slugCheck.error || "Invalid custom link", suggestions: [] })
@@ -605,8 +612,6 @@ export function useUpload({
     setIsUploading(true)
 
     let fileToUpload: File | null = null
-    const isMultipleOrNested = files.length > 1 || files.some(f => f.path?.includes("/"))
-    const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested && zipMultipleFiles
 
     if (shouldZip) {
       if (finalFilename) {
