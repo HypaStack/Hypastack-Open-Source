@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import Script from "next/script"
+import { headers } from "next/headers"
 import { ConsoleGreeting } from "@/components/console-greeting"
 import { DesktopGate } from "@/components/desktop-gate"
 import { DesktopGuard } from "@/components/desktop-guard"
@@ -119,14 +120,30 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Per-request CSP nonce set by the proxy. We load Cloudflare Turnstile's
+  // api.js here (root layout, beforeInteractive) carrying this nonce so it
+  // runs before the page bundle, sets window.turnstile, and becomes a
+  // nonce-trusted root. react-turnstile then skips its own (un-nonced)
+  // injection, and the inline scripts api.js creates inherit trust via
+  // 'strict-dynamic'. Loading it per-page from a client component did not get
+  // nonced by Next and was blocked by CSP.
+  const nonce = (await headers()).get("x-nonce") ?? undefined
   return (
     <html lang="en" dir="ltr" className="dark" suppressHydrationWarning style={{ backgroundColor: '#000000' }}>
       <head>
+        {process.env.NODE_ENV !== "development" && (
+          <Script
+            id="cf-turnstile-api"
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            strategy="beforeInteractive"
+            nonce={nonce}
+          />
+        )}
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://hypastack.com" />
         <link rel="dns-prefetch" href="https://hypastack.com" />

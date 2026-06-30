@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import Script from "next/script"
 import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
@@ -58,9 +57,6 @@ export default function SignInPage() {
 
   return (
     <>
-      {process.env.NODE_ENV !== "development" && (
-        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="beforeInteractive" />
-      )}
       <div className="flex min-h-screen bg-[#08090a]">
         <div className="relative flex flex-1 flex-col items-center lg:items-start lg:pl-[12%] xl:pl-[16%] justify-center px-8 py-12">
           <div
