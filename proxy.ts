@@ -122,18 +122,24 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 // Routes that require a valid session are defined in @/constants/proxy.ts
 
 // Build the Content-Security-Policy. In production we emit a per-request nonce
-// and drop 'unsafe-inline'/'unsafe-eval' from script-src, so an injected inline
-// <script> cannot execute. Our own framework/inline scripts run via the nonce;
-// third-party scripts (Cloudflare Turnstile + Insights beacon) stay host
-// allow-listed (no 'strict-dynamic', since react-turnstile injects its loader
-// without our nonce). 'wasm-unsafe-eval' is required because Cloudflare
-// Turnstile runs its bot check in WebAssembly — it permits WASM compilation
-// only, NOT string eval()/new Function(), so it does not re-open inline XSS.
-// In development we keep the unsafe directives because Turbopack HMR / React
-// Refresh require them.
+// and use 'strict-dynamic' instead of 'unsafe-inline', so an injected inline
+// <script> cannot execute. Our framework scripts (and the Turnstile loader,
+// which we render via next/script) get the nonce, and 'strict-dynamic'
+// propagates that trust to the dynamic inline scripts Turnstile injects to run
+// its challenge — a host allow-list can never cover those inline scripts, which
+// is why nonce alone failed. 'wasm-unsafe-eval' is required because Turnstile
+// runs its bot check in WebAssembly — it permits WASM compilation only, NOT
+// string eval()/new Function(), so it does not re-open inline XSS.
+//
+// Tradeoff: under 'strict-dynamic', CSP3 browsers IGNORE the host allow-list, so
+// the Cloudflare Insights beacon (auto-injected at the edge without our nonce)
+// is blocked. That's analytics, not auth — acceptable. The https hosts below are
+// kept only as a fallback for legacy browsers that don't understand
+// 'strict-dynamic'. In development we keep the unsafe directives because
+// Turbopack HMR / React Refresh require them.
 function buildCsp(nonce: string | null): string {
   const scriptSrc = nonce
-    ? `script-src 'self' 'nonce-${nonce}' 'wasm-unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
+    ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
     : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
   return [
     "default-src 'self'",
