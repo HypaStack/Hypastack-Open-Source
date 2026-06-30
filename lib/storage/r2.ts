@@ -117,6 +117,15 @@ export function getExpirationDate(fileSize: number, multiplier: number = 1): Dat
   return new Date(now.getTime() + baseDays * multiplier * day)
 }
 
+/**
+ * Custom expiration chosen by the user (Essential+). Clamps to [1 minute,
+ * 30 days] so a tampered client can't request an out-of-range lifetime.
+ */
+export function getCustomExpirationDate(minutes: number): Date {
+  const clamped = Math.max(1, Math.min(30 * 24 * 60, Math.floor(minutes)))
+  return new Date(Date.now() + clamped * 60 * 1000)
+}
+
 export function getDaysUntilExpiration(expiresAt: Date): number {
   const now = new Date()
   const diff = expiresAt.getTime() - now.getTime()

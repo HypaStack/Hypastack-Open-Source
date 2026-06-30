@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate } from "@/lib/storage/r2"
+import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate, getCustomExpirationDate } from "@/lib/storage/r2"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/security/filenameCrypto"
 import { createStagingRecord, getUserFileStats, isSlugTaken, suggestAvailableSlugs } from "@/lib/models/fileModel"
 import { resolveUploadFolder } from "@/lib/models/folderModel"
@@ -23,7 +23,7 @@ export async function handleUploadPost(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, customSlug, note, path, folderId } = body
+    const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, customSlug, expiresInMinutes, note, path, folderId } = body
 
     if (!fileName || !fileSize || !contentType) {
         return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
@@ -92,7 +92,12 @@ export async function handleUploadPost(request: NextRequest) {
     const storageName = generateOpaqueStorageName()
     const r2Key = `uploads/${fileId}/${storageName}`
 
-    const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
+    // Custom expiration is a paid feature; otherwise fall back to the size-based
+    // default. The helper clamps to [1 minute, 30 days] server-side.
+    const useCustomExpiry = isPaidTier(normalizeTier(userTier)) && typeof expiresInMinutes === "number" && expiresInMinutes > 0
+    const expiresAt = useCustomExpiry
+      ? getCustomExpirationDate(expiresInMinutes)
+      : getExpirationDate(fileSize, tier.expirationMultiplier)
     const uploadUrl = await getPresignedUploadUrlByKey(r2Key, contentType)
 
     const sanitizedCustomFilename = customFilename
@@ -123,7 +128,6 @@ export async function handleUploadPost(request: NextRequest) {
         file_size: fileSize,
         content_type: contentType,
         expires_at: expiresAt,
-        pin: null,
         burn_on_read: burnOnRead === true,
         share_url: shareUrl,
         custom_filename: encryptedCustomFilename,

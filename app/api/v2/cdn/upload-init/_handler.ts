@@ -6,11 +6,12 @@ import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { checkCdnUploadRateLimit } from "@/lib/data/rateLimit"
 import { isExtensionBlocked } from "@/lib/validation/fileValidation"
 import { sanitizeCdnFilename } from "@/lib/security/zeroTrust"
-import { generateCdnId, getTotalStorageUsed, getUserCdnStats } from "@/lib/models/cdnModel"
+import { generateCdnId, getTotalStorageUsed, getUserCdnStats, isCdnSlugTaken, suggestAvailableCdnSlugs } from "@/lib/models/cdnModel"
 import { getUserFileStats } from "@/lib/models/fileModel"
 import { getPresignedCdnUploadUrl } from "@/lib/storage/r2"
 import { getUserTier } from "@/lib/models/userModel"
-import { getTierLimits } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { validateSlug } from "@/lib/validation/slug"
 import { API_ERRORS } from "@/constants"
 
 interface FileInitInput {
@@ -123,16 +124,42 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "R2_CDN_DOMAIN not configured")
     }
 
+    // Custom CDN slug (paid plans, single asset only). The slug becomes the
+    // public path segment `/cdn/<slug>/<name>`, so it must be globally unique
+    // across CDN assets.
+    let finalSlug: string | null = null
+    if (body.customSlug != null && String(body.customSlug).trim() !== "") {
+      if (!isPaidTier(normalizeTier(userTier))) {
+        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Essential plan and above.")
+      }
+      if (sanitizedFiles.length !== 1) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Custom links are only available when uploading a single file.")
+      }
+      const slugCheck = validateSlug(String(body.customSlug))
+      if (!slugCheck.ok) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, slugCheck.error || "Invalid custom link")
+      }
+      if (await isCdnSlugTaken(slugCheck.slug)) {
+        const suggestions = await suggestAvailableCdnSlugs(slugCheck.slug)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: slugCheck.slug, suggestions })
+      }
+      finalSlug = slugCheck.slug
+    }
+
     const results = await Promise.all(
       sanitizedFiles.map(async (f) => {
         const cdnId = generateCdnId()
+        // The random id stays the primary key; the slug (when set) only replaces
+        // the URL/R2 path segment.
+        const pathSegment = finalSlug ?? cdnId
         const { uploadUrl, r2Key } = await getPresignedCdnUploadUrl(
-          cdnId,
+          pathSegment,
           f.sanitizedName,
           f.contentType || "application/octet-stream",
         )
         return {
           cdnId,
+          slug: finalSlug,
           uploadUrl,
           r2Key,
           sanitizedName: f.sanitizedName,
@@ -146,6 +173,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       return NextResponse.json({
         success: true,
         cdnId: results[0].cdnId,
+        slug: results[0].slug,
         uploadUrl: results[0].uploadUrl,
         r2Key: results[0].r2Key,
         sanitizedName: results[0].sanitizedName,

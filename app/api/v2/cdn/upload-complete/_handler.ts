@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/security/auth"
 import { headCdnObject, downloadHeadByKey, deleteByKey } from "@/lib/storage/r2"
 import { verifyCdnFileType } from "@/lib/security/zeroTrust"
 import { getFileExtension } from "@/lib/validation/fileValidation"
-import { createCdnAsset, createCdnAssetsBatch, getTotalStorageUsed } from "@/lib/models/cdnModel"
+import { createCdnAsset, createCdnAssetsBatch, getTotalStorageUsed, suggestAvailableCdnSlugs } from "@/lib/models/cdnModel"
 import { getCdnFoldersByUserId } from "@/lib/models/cdnFolderModel"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
@@ -15,6 +15,7 @@ interface FileCompleteInput {
   sanitizedName: string
   contentType?: string
   folderId?: string | null
+  slug?: string | null
 }
 
 export async function handleCdnUploadCompletePost(request: NextRequest) {
@@ -33,11 +34,11 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     if (Array.isArray(body.files)) {
       filesToComplete = body.files
     } else {
-      const { cdnId, sanitizedName, contentType, folderId } = body
+      const { cdnId, sanitizedName, contentType, folderId, slug } = body
       if (!cdnId || !sanitizedName) {
           return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
       }
-      filesToComplete = [{ cdnId, sanitizedName, contentType, folderId }]
+      filesToComplete = [{ cdnId, sanitizedName, contentType, folderId, slug }]
     }
 
     if (filesToComplete.length === 0) {
@@ -59,7 +60,8 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     // Verify all files exist in R2 in parallel — one concurrent batch of HEAD requests
     const headResults = await Promise.all(
       filesToComplete.map(async (f) => {
-        const r2Key = `cdn/${f.cdnId}/${f.sanitizedName}`
+        // A custom slug (when set) replaces the random id in the public path.
+        const r2Key = `cdn/${f.slug ?? f.cdnId}/${f.sanitizedName}`
         const head = await headCdnObject(r2Key)
         return { ...f, r2Key, head }
       })
@@ -116,11 +118,26 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       original_name: r.sanitizedName,
       file_size: r.head!.size,
       content_type: r.head!.contentType || r.contentType || "application/octet-stream",
-      cdn_url: `https://${cdnDomain}/cdn/${r.cdnId}/${encodeURIComponent(r.sanitizedName)}`,
+      cdn_url: `https://${cdnDomain}/cdn/${r.slug ?? r.cdnId}/${encodeURIComponent(r.sanitizedName)}`,
       folder_id: r.folderId || null,
+      slug: r.slug ?? null,
     }))
 
-    await createCdnAssetsBatch(assetInputs)
+    try {
+      await createCdnAssetsBatch(assetInputs)
+    } catch (e: any) {
+      // Slug already taken (lost the race, or the client supplied another user's
+      // slug). We deliberately DO NOT delete the R2 object here: slug, cdnId and
+      // filename are all client-supplied and public, so `cdn/<slug>/<name>` may
+      // be the slug owner's existing object — deleting it would let one user wipe
+      // another's asset. A rare orphan from a legitimate race is the safe trade.
+      const taken = assetInputs.find(a => a.slug)?.slug ?? null
+      if (e?.code === "23505" && taken) {
+        const suggestions = await suggestAvailableCdnSlugs(taken)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: taken, suggestions })
+      }
+      throw e
+    }
 
     // Build response assets array
     const completedAssets = assetInputs.map(a => ({

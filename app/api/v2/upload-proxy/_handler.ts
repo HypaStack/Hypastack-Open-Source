@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { uploadFileBuffer, getExpirationDate } from "@/lib/storage/r2"
-import { createFileRecord, markUploadComplete } from "@/lib/models/fileModel"
+import { createFileRecord, markUploadComplete, getStagingRecord } from "@/lib/models/fileModel"
 import { getCurrentUser, verifyProxyToken } from "@/lib/security/auth"
 import { checkUploadRateLimit } from "@/lib/data/rateLimit"
 import { validateCsrfToken } from "@/lib/security/security"
@@ -82,8 +82,15 @@ export async function handleUploadProxyPost(request: NextRequest) {
       ? sanitizeFilename(customFilename).sanitized || null
       : null
 
-    const expiresAt = getExpirationDate(buffer.length, tier.expirationMultiplier)
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
+    // The slug + expiry were already validated and reserved when /api/v2/upload
+    // created the staging row for this fileId; reuse them so the CORS-fallback
+    // path yields an identical share link instead of silently dropping the slug.
+    const staging = await getStagingRecord(fileId)
+    const finalSlug = staging?.slug ?? null
+    const expiresAt = staging?.expires_at
+      ? new Date(staging.expires_at)
+      : getExpirationDate(buffer.length, tier.expirationMultiplier)
+    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${finalSlug ?? fileId}`
 
     await uploadFileBuffer(
       fileId,
@@ -99,13 +106,13 @@ export async function handleUploadProxyPost(request: NextRequest) {
       file_size: buffer.length,
       content_type: typeVerification.mimeType!,
       expires_at: expiresAt,
-      pin: null,
       burn_on_read: burnOnRead,
       custom_filename: sanitizedCustomFilename,
       note: sanitizedNote,
       user_id: currentUser.userId,
       encryption_iv: encryption.iv,
       encryption_auth_tag: encryption.authTag,
+      slug: finalSlug,
     })
 
     await markUploadComplete(fileId, undefined)

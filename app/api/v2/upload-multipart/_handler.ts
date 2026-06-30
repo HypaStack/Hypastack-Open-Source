@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/security/auth"
 import { validateCsrfToken } from "@/lib/security/security"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { checkUploadRateLimit } from "@/lib/data/rateLimit"
-import { generateFileId, getExpirationDate } from "@/lib/storage/r2"
+import { generateFileId, getExpirationDate, getCustomExpirationDate } from "@/lib/storage/r2"
 import { createStagingRecord, getUserFileStats, isSlugTaken, suggestAvailableSlugs } from "@/lib/models/fileModel"
 import { getUserCdnStats } from "@/lib/models/cdnModel"
 import { getUserTier } from "@/lib/models/userModel"
@@ -35,6 +35,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       turnstileToken,
       customFilename,
       customSlug,
+      expiresInMinutes,
       chunkSize: clientChunkSize,
       path,
       folderId,
@@ -114,7 +115,10 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     const fileId = generateFileId()
     const storageName = generateOpaqueStorageName()
     const r2Key = `uploads/${fileId}/${storageName}`
-    const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
+    const useCustomExpiry = isPaidTier(normalizeTier(userTier)) && typeof expiresInMinutes === "number" && expiresInMinutes > 0
+    const expiresAt = useCustomExpiry
+      ? getCustomExpirationDate(expiresInMinutes)
+      : getExpirationDate(fileSize, tier.expirationMultiplier)
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${finalSlug ?? fileId}`
 
     const chunkSize = clientChunkSize || DEFAULT_CHUNK_SIZE
@@ -149,7 +153,6 @@ export async function handleUploadMultipartPost(request: NextRequest) {
         file_size: fileSize,
         content_type: contentType,
         expires_at: expiresAt,
-        pin: null,
         burn_on_read: burnOnRead === true,
         share_url: shareUrl,
         custom_filename: encryptedCustomFilename,

@@ -11,7 +11,6 @@ export interface FileRecord {
   content_type: string
   upload_date: Date
   expires_at: Date
-  pin: string | null
   burn_on_read: 0 | 1 | 2
   upload_completed: boolean
   upload_started_at: Date
@@ -35,7 +34,6 @@ export interface CreateFileInput {
   file_size: number
   content_type: string
   expires_at: Date
-  pin?: string | null
   burn_on_read?: boolean
   custom_filename?: string | null
   note?: string | null
@@ -44,6 +42,7 @@ export interface CreateFileInput {
   encryption_auth_tag?: string | null
   encryption_chunk_size?: number | null
   encryption_total_parts?: number | null
+  slug?: string | null
 }
 
 export interface StagingInput {
@@ -53,7 +52,6 @@ export interface StagingInput {
   file_size: number
   content_type: string
   expires_at: Date
-  pin?: string | null
   burn_on_read?: boolean
   share_url: string
   custom_filename?: string | null
@@ -82,28 +80,28 @@ export async function createStagingRecord(
 
   if (input.user_id && maxFileLinks !== undefined) {
     // Atomic quota-guarded insert: only proceeds if current count < limit.
-    // $12 is user_id in the INSERT values; $18 is the SAME value but used
+    // $11 is user_id in the INSERT values; $17 is the SAME value but used
     // separately in WHERE subqueries to avoid Postgres type-inference conflict
     // (42P08) when the two user_id columns have different declared types
     // (e.g. text vs character varying).
     const result = await pool.query(
-      `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
-       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+      `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
        WHERE (
-         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $18 AND expires_at > NOW())
+         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $17 AND expires_at > NOW())
          +
-         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $18 AND created_at > NOW() - INTERVAL '2 hours')
-       ) < $17`,
-      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null, maxFileLinks, input.user_id]
+         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $17 AND created_at > NOW() - INTERVAL '2 hours')
+       ) < $16`,
+      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null, maxFileLinks, input.user_id]
     )
     return (result.rowCount ?? 0) > 0
   }
 
   // No quota guard needed (anonymous upload or no limit)
   await pool.query(
-    `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
-    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null]
+    `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null]
   )
   return true
 }
@@ -130,7 +128,6 @@ export async function getStagingRecord(id: string): Promise<StagingInput | null>
     file_size: Number(row.file_size),
     content_type: row.content_type,
     expires_at: row.expires_at,
-    pin: row.pin,
     burn_on_read: row.burn_on_read,
     share_url: row.share_url,
     custom_filename: row.custom_filename,
@@ -163,9 +160,9 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
     const staging = result.rows[0]
 
     await client.query(
-      `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, upload_completed, file_hash, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE, $9, $10, $11, $12, $13, $14, $15, $16)`,
-      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, staging.expires_at, staging.pin, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null, staging.slug || null]
+      `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, burn_on_read, upload_completed, file_hash, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, $8, $9, $10, $11, $12, $13, $14, $15)`,
+      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, staging.expires_at, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null, staging.slug || null]
     )
 
     await client.query(
@@ -237,9 +234,9 @@ export async function createFileRecord(input: CreateFileInput): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
   await pool.query(
-    `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, upload_completed, custom_filename, note, user_id, encryption_iv, encryption_auth_tag)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE, $9, $10, $11, $12, $13)`,
-    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read ? 1 : 0, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_iv || null, input.encryption_auth_tag || null]
+    `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, burn_on_read, upload_completed, custom_filename, note, user_id, encryption_iv, encryption_auth_tag, slug)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, $8, $9, $10, $11, $12, $13)`,
+    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.burn_on_read ? 1 : 0, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_iv || null, input.encryption_auth_tag || null, input.slug || null]
   )
   if (input.user_id) await bustCache(`user:${input.user_id}:files`, `user:${input.user_id}:file-stats`, `user:${input.user_id}:storage`)
 }
@@ -266,7 +263,6 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
       content_type: row.content_type,
       upload_date: row.upload_date,
       expires_at: row.expires_at,
-      pin: row.pin,
       burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
       upload_completed: row.upload_completed,
       upload_started_at: row.upload_started_at,
@@ -318,7 +314,6 @@ export async function getFileBySlugOrId(value: string, retries = 2): Promise<Fil
       content_type: row.content_type,
       upload_date: row.upload_date,
       expires_at: row.expires_at,
-      pin: row.pin,
       burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
       upload_completed: row.upload_completed,
       upload_started_at: row.upload_started_at,
@@ -412,7 +407,6 @@ export async function getIncompleteUploads(olderThanMinutes: number = 60): Promi
     content_type: row.content_type,
     upload_date: row.upload_date,
     expires_at: row.expires_at,
-    pin: row.pin,
     burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
     upload_completed: row.upload_completed,
     upload_started_at: row.upload_started_at,
@@ -437,7 +431,6 @@ export async function getExpiredFiles(limit = 500): Promise<FileRecord[]> {
     content_type: row.content_type,
     upload_date: row.upload_date,
     expires_at: row.expires_at,
-    pin: row.pin,
     burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
     upload_completed: row.upload_completed,
     upload_started_at: row.upload_started_at,
@@ -520,7 +513,7 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
 
     const result = await pool.query(
       `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
-              pin, burn_on_read, upload_completed, upload_started_at,
+              burn_on_read, upload_completed, upload_started_at,
               custom_filename, note, starred, folder_id
        FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
       [userId]
@@ -534,7 +527,6 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
       content_type: row.content_type,
       upload_date: row.upload_date,
       expires_at: row.expires_at,
-      pin: row.pin,
       burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
       upload_completed: row.upload_completed,
       upload_started_at: row.upload_started_at,
@@ -563,7 +555,6 @@ export async function toggleFileStarred(fileId: string, userId: string, starred:
 export async function getUserFileStats(userId: string): Promise<{
   totalUploads: number
   activeFiles: number
-  totalDownloads: number
   storageUsed: number
 }> {
   return cached(`user:${userId}:file-stats`, 120, async () => {
@@ -583,7 +574,6 @@ export async function getUserFileStats(userId: string): Promise<{
     return {
       totalUploads: Number(row.total_uploads),
       activeFiles: Number(row.active_files),
-      totalDownloads: 0,
       storageUsed: Number(row.storage_used),
     }
   })
@@ -621,7 +611,6 @@ export async function getFilesByIds(ids: string[], userId: string): Promise<File
     content_type: row.content_type,
     upload_date: row.upload_date,
     expires_at: row.expires_at,
-    pin: row.pin,
     burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
     upload_completed: row.upload_completed,
     upload_started_at: row.upload_started_at,
@@ -716,7 +705,6 @@ export async function getFileByIdForUpdate(fileId: string): Promise<FileRecord |
       content_type: row.content_type,
       upload_date: row.upload_date,
       expires_at: row.expires_at,
-      pin: row.pin,
       burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
       upload_completed: row.upload_completed,
       upload_started_at: row.upload_started_at,

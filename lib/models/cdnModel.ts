@@ -12,6 +12,7 @@ export interface CdnAsset {
   content_type: string
   cdn_url: string
   folder_id: string | null
+  slug: string | null
   created_at: Date
 }
 
@@ -24,6 +25,7 @@ export interface CreateCdnAssetInput {
   content_type: string
   cdn_url: string
   folder_id?: string | null
+  slug?: string | null
 }
 
 export function generateCdnId(): string {
@@ -39,9 +41,9 @@ export async function createCdnAsset(input: CreateCdnAssetInput): Promise<void> 
   await ensureDatabase()
   const pool = getPool()
   await pool.query(
-    `INSERT INTO cdn_assets (id, user_id, r2_key, original_name, file_size, content_type, cdn_url, folder_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [input.id, input.user_id, input.r2_key, input.original_name, input.file_size, input.content_type, input.cdn_url, input.folder_id || null]
+    `INSERT INTO cdn_assets (id, user_id, r2_key, original_name, file_size, content_type, cdn_url, folder_id, slug)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [input.id, input.user_id, input.r2_key, input.original_name, input.file_size, input.content_type, input.cdn_url, input.folder_id || null, input.slug || null]
   )
   await bustCache(`user:${input.user_id}:cdn-assets`, `user:${input.user_id}:cdn-stats`, `user:${input.user_id}:storage`)
 }
@@ -52,7 +54,7 @@ export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promi
   await ensureDatabase()
   const pool = getPool()
 
-  const COLS = 8
+  const COLS = 9
   const values: unknown[] = []
   const placeholders = inputs.map((input, i) => {
     const base = i * COLS
@@ -65,12 +67,13 @@ export async function createCdnAssetsBatch(inputs: CreateCdnAssetInput[]): Promi
       input.content_type,
       input.cdn_url,
       input.folder_id || null,
+      input.slug || null,
     )
-    return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7}, $${base + 8})`
+    return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7}, $${base + 8}, $${base + 9})`
   }).join(', ')
 
   await pool.query(
-    `INSERT INTO cdn_assets (id, user_id, r2_key, original_name, file_size, content_type, cdn_url, folder_id)
+    `INSERT INTO cdn_assets (id, user_id, r2_key, original_name, file_size, content_type, cdn_url, folder_id, slug)
      VALUES ${placeholders}`,
     values
   )
@@ -98,9 +101,36 @@ export async function getCdnAssetsByUserId(userId: string): Promise<CdnAsset[]> 
       content_type: row.content_type,
       cdn_url: row.cdn_url,
       folder_id: row.folder_id || null,
+      slug: row.slug || null,
       created_at: row.created_at,
     }))
   })
+}
+
+/**
+ * True if a CDN slug is unavailable. The slug becomes the public path segment
+ * (`/cdn/<slug>/<name>`), so it must be unique across cdn_assets. The `id = $1`
+ * clause is defense-in-depth against a slug colliding with a random asset id.
+ */
+export async function isCdnSlugTaken(slug: string): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query(
+    `SELECT 1 FROM cdn_assets WHERE slug = $1 OR id = $1 LIMIT 1`,
+    [slug]
+  )
+  return result.rows.length > 0
+}
+
+export async function suggestAvailableCdnSlugs(base: string, max = 3): Promise<string[]> {
+  const { generateSlugCandidates } = await import('@/lib/validation/slug')
+  const candidates = generateSlugCandidates(base)
+  const available: string[] = []
+  for (const candidate of candidates) {
+    if (available.length >= max) break
+    if (!(await isCdnSlugTaken(candidate))) available.push(candidate)
+  }
+  return available
 }
 
 export async function getCdnAssetById(id: string): Promise<CdnAsset | null> {
@@ -124,6 +154,7 @@ export async function getCdnAssetById(id: string): Promise<CdnAsset | null> {
     content_type: row.content_type,
     cdn_url: row.cdn_url,
     folder_id: row.folder_id || null,
+    slug: row.slug || null,
     created_at: row.created_at,
   }
 }
@@ -159,6 +190,7 @@ export async function getCdnAssetsByIds(ids: string[], userId: string): Promise<
     content_type: row.content_type,
     cdn_url: row.cdn_url,
     folder_id: row.folder_id || null,
+    slug: row.slug || null,
     created_at: row.created_at,
   }))
 }

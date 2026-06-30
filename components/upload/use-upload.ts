@@ -4,10 +4,11 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import JSZip from "jszip"
 import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
-import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/constants/tier-limits"
+import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
+import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
 import { apiFetch } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 
@@ -36,6 +37,9 @@ export function useUpload({
   const [customFilename, setCustomFilename] = useState("")
   const [customSlug, setCustomSlug] = useState("")
   const [slugError, setSlugError] = useState<{ message: string; suggestions: string[] } | null>(null)
+  // Custom expiration in minutes (Essential+). Defaults to the max (30 days) so
+  // an untouched picker never shortens a paid user's default lifetime.
+  const [expirationMinutes, setExpirationMinutes] = useState<number>(MAX_EXPIRATION_MINUTES)
   const [zippedFile, setZippedFile] = useState<File | null>(null)
   const [note, setNote] = useState("")
   const [zipMultipleFiles, setZipMultipleFiles] = useState(true)
@@ -124,7 +128,11 @@ export function useUpload({
           })()
     if (list.length === 0) return
     handleFiles(list)
-    if (autoStart || uploadType === "cdn") {
+    // Paid users uploading a single CDN asset get to set a custom link first,
+    // so don't auto-start that case; everyone else keeps the instant flow.
+    const cdnSlugEligible =
+      uploadType === "cdn" && list.length === 1 && isPaidTier(normalizeTier(user?.tier))
+    if ((autoStart || uploadType === "cdn") && !cdnSlugEligible) {
       setAutoStartArmed(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -266,6 +274,7 @@ export function useUpload({
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
         customSlug: finalSlug,
+        expiresInMinutes: expirationMinutes,
         note: finalNote,
         path: filePath || (fileToUpload as any).path,
         folderId: currentFolderId,
@@ -343,6 +352,7 @@ export function useUpload({
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
         customSlug: finalSlug,
+        expiresInMinutes: expirationMinutes,
         note: finalNote,
         chunkSize: DEFAULT_CHUNK_SIZE,
         path: filePath || (fileToUpload as any).path,
@@ -462,16 +472,22 @@ export function useUpload({
         csrfToken: currentCsrfToken,
         turnstileToken,
         folderId: currentFolderId,
+        customSlug: files.length === 1 ? (customSlug.trim() || null) : null,
       }),
     })
 
     if (!initResponse.ok) {
       const error = await initResponse.json()
+      if (initResponse.status === 409) {
+        const e: any = new Error(error.error || "Custom link already taken")
+        e.slugConflict = { suggestions: error.suggestions || [] }
+        throw e
+      }
       throw new Error(error.error || "Failed to initialize CDN upload")
     }
 
     const { files: initResults } = await initResponse.json()
-    const completedUploads: { cdnId: string; sanitizedName: string; contentType: string }[] = []
+    const completedUploads: { cdnId: string; sanitizedName: string; contentType: string; slug: string | null }[] = []
 
     for (let i = 0; i < files.length; i++) {
       if (i > 0 && uploadDelayMs > 0) {
@@ -481,7 +497,7 @@ export function useUpload({
       setProgress(0)
 
       const { file } = files[i]
-      const { cdnId, uploadUrl, sanitizedName, contentType } = initResults[i]
+      const { cdnId, uploadUrl, sanitizedName, contentType, slug } = initResults[i]
 
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest()
@@ -506,7 +522,7 @@ export function useUpload({
         xhr.send(file)
       })
 
-      completedUploads.push({ cdnId, sanitizedName, contentType })
+      completedUploads.push({ cdnId, sanitizedName, contentType, slug: slug ?? null })
     }
 
     const completeRes = await apiFetch("/api/v2/cdn/upload-complete", {
@@ -518,12 +534,18 @@ export function useUpload({
           sanitizedName: u.sanitizedName,
           contentType: u.contentType,
           folderId: currentFolderId,
+          slug: u.slug,
         })),
       }),
     })
 
     if (!completeRes.ok) {
       const error = await completeRes.json()
+      if (completeRes.status === 409) {
+        const e: any = new Error(error.error || "Custom link already taken")
+        e.slugConflict = { suggestions: error.suggestions || [] }
+        throw e
+      }
       throw new Error(error.error || "Failed to complete CDN upload")
     }
 
@@ -760,6 +782,7 @@ export function useUpload({
     setCustomFilename("")
     setCustomSlug("")
     setSlugError(null)
+    setExpirationMinutes(MAX_EXPIRATION_MINUTES)
     setNote("")
     setInterruptedSession(null)
     setShowResumePopup(false)
@@ -982,6 +1005,8 @@ export function useUpload({
     setCustomSlug,
     slugError,
     setSlugError,
+    expirationMinutes,
+    setExpirationMinutes,
     zippedFile,
     note,
     setNote,

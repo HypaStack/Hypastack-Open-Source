@@ -79,7 +79,6 @@ export async function GET(request: NextRequest) {
       body.stats = {
         totalUploads: rawFiles.length,
         activeFiles: rawFiles.filter(f => new Date(f.expires_at).getTime() > now).length,
-        totalDownloads: 0,
         storageUsed: fileStorageUsed,
         cdnAssets: rawCdnAssets.length,
         cdnStorage: cdnStorageUsed,

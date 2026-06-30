@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 
 interface FileInfo {
   id: string; name: string; size: number; contentType: string; expiresAt: string;
-  downloadCount: number; burnOnRead: boolean; customFilename?: string;
+  burnOnRead: boolean; customFilename?: string;
   note?: string; encryptionChunkSize?: number | null; encryptionTotalParts?: number | null;
 }
 
@@ -22,8 +22,15 @@ function fmt(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + s[i];
 }
 
-function daysLeft(d: string): number {
-  return Math.ceil((new Date(d).getTime() - Date.now()) / 864e5);
+function timeLeft(d: string): string {
+  const ms = new Date(d).getTime() - Date.now();
+  if (ms <= 0) return "Expired";
+  const mins = Math.floor(ms / 60000);
+  if (mins < 60) return `${Math.max(1, mins)} minute${mins === 1 ? "" : "s"}`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"}`;
+  const days = Math.ceil(hours / 24);
+  return `${days} day${days === 1 ? "" : "s"}`;
 }
 
 export default function DownloadPage() {
@@ -269,7 +276,7 @@ export default function DownloadPage() {
 
               <div className="mx-3 mb-3 p-1 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
                 {[
-                  { icon: "schedule", label: "Expires", value: encryptionKeyBase64 ? `${daysLeft(fileInfo.expiresAt)} days` : "Unavailable", show: true, color: !encryptionKeyBase64 ? "text-[#898e97]" : "text-[#f7f8f8]" },
+                  { icon: "schedule", label: "Expires", value: encryptionKeyBase64 ? timeLeft(fileInfo.expiresAt) : "Unavailable", show: true, color: !encryptionKeyBase64 ? "text-[#898e97]" : "text-[#f7f8f8]" },
                   { icon: "local_fire_department", label: "Burn on read", value: burned ? "Burned" : "Active", show: !!fileInfo.burnOnRead && !!encryptionKeyBase64, color: burned ? "text-red-500" : "text-amber-500" },
                   { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-[#f7f8f8] underline underline-offset-2" : "text-[#898e97]" },
                 ].filter(r => r.show).map((r, i, arr) => (

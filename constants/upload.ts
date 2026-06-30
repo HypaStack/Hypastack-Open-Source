@@ -43,3 +43,28 @@ export const MAX_CONCURRENT_CHUNKS = 10
 
 /** Regex to detect previewable content types inline */
 export const PREVIEWABLE_MIME_REGEX = /^(image|video|audio)\//
+
+/** Min/max custom file expiration in minutes (1 minute … 30 days). Paid plans. */
+export const MIN_EXPIRATION_MINUTES = 1
+export const MAX_EXPIRATION_MINUTES = 30 * 24 * 60 // 43200
+
+/**
+ * Discrete steps for the custom-expiration slider (Essential+). The slider
+ * indexes into this array; each step maps to a duration in minutes.
+ */
+export const EXPIRATION_STEPS: { minutes: number; label: string }[] = [
+  { minutes: 1, label: "1 minute" },
+  { minutes: 5, label: "5 minutes" },
+  { minutes: 15, label: "15 minutes" },
+  { minutes: 30, label: "30 minutes" },
+  { minutes: 60, label: "1 hour" },
+  { minutes: 180, label: "3 hours" },
+  { minutes: 360, label: "6 hours" },
+  { minutes: 720, label: "12 hours" },
+  { minutes: 1440, label: "1 day" },
+  { minutes: 2880, label: "2 days" },
+  { minutes: 4320, label: "3 days" },
+  { minutes: 10080, label: "7 days" },
+  { minutes: 20160, label: "14 days" },
+  { minutes: 43200, label: "30 days" },
+]
