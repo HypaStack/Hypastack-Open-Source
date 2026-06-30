@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/api-error"
-import { createHash } from "crypto"
 import { isFileValid } from "@/lib/file-model"
 import { getR2Client, getBucketName, buildContentDisposition } from "@/lib/r2"
 import { verifyDownloadRateLimit } from "@/lib/rate-limit"
 import { createDecryptStream } from "@/lib/security/zero-trust"
 import { decryptFilename } from "@/lib/filename-crypto"
+import { getHashedIp } from "@/lib/ip"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { Readable } from "stream"
 import { API_ERRORS } from "@/constants"
@@ -20,9 +20,10 @@ export async function handleStreamGet(
     const { id } = await params
     fileId = id
 
-    const forwardedFor = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip")
-    const rawIp = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1'
-    const hashedIp = createHash('sha256').update(rawIp).digest('hex')
+    // Use the shared hardened IP helper (prefers cf-connecting-ip and only
+    // trusts the configured number of proxy hops in x-forwarded-for) so this
+    // throttle can't be bypassed by spoofing the left-most XFF entry.
+    const hashedIp = getHashedIp(request)
 
     const rateLimit = await verifyDownloadRateLimit(hashedIp)
     if (!rateLimit.allowed) {

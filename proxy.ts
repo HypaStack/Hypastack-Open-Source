@@ -123,14 +123,18 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 
 // Build the Content-Security-Policy. In production we emit a per-request nonce
 // and drop 'unsafe-inline'/'unsafe-eval' from script-src, so an injected inline
-// <script> cannot execute. Third-party hosts stay allow-listed (no
-// 'strict-dynamic') because the Cloudflare Insights beacon is injected at the
-// edge without our nonce. In development we keep the unsafe directives because
-// Turbopack HMR / React Refresh require them.
+// <script> cannot execute. Our own framework/inline scripts run via the nonce;
+// third-party scripts (Cloudflare Turnstile + Insights beacon) stay host
+// allow-listed (no 'strict-dynamic', since react-turnstile injects its loader
+// without our nonce). 'wasm-unsafe-eval' is required because Cloudflare
+// Turnstile runs its bot check in WebAssembly — it permits WASM compilation
+// only, NOT string eval()/new Function(), so it does not re-open inline XSS.
+// In development we keep the unsafe directives because Turbopack HMR / React
+// Refresh require them.
 function buildCsp(nonce: string | null): string {
   const scriptSrc = nonce
-    ? `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
-    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https:` // ONLY ALLOW CLOUDFLARE TURNSTILE ADDRESSES IN THE FUTURE - THIS IS A TEMPORARY FIX
+    ? `script-src 'self' 'nonce-${nonce}' 'wasm-unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
+    : `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com`
   return [
     "default-src 'self'",
     scriptSrc,
