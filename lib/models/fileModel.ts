@@ -25,6 +25,7 @@ export interface FileRecord {
   encryption_chunk_size?: number | null
   encryption_total_parts?: number | null
   folder_id?: string | null
+  slug?: string | null
 }
 
 export interface CreateFileInput {
@@ -61,6 +62,7 @@ export interface StagingInput {
   encryption_chunk_size?: number | null
   encryption_total_parts?: number | null
   folder_id?: string | null
+  slug?: string | null
 }
 
 /**
@@ -80,28 +82,28 @@ export async function createStagingRecord(
 
   if (input.user_id && maxFileLinks !== undefined) {
     // Atomic quota-guarded insert: only proceeds if current count < limit.
-    // $12 is user_id in the INSERT values; $17 is the SAME value but used
+    // $12 is user_id in the INSERT values; $18 is the SAME value but used
     // separately in WHERE subqueries to avoid Postgres type-inference conflict
     // (42P08) when the two user_id columns have different declared types
     // (e.g. text vs character varying).
     const result = await pool.query(
-      `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
-       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+      `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
        WHERE (
-         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $17 AND expires_at > NOW())
+         (SELECT COUNT(*) FROM basedrop_files WHERE user_id = $18 AND expires_at > NOW())
          +
-         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $17 AND created_at > NOW() - INTERVAL '2 hours')
-       ) < $16`,
-      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, maxFileLinks, input.user_id]
+         (SELECT COUNT(*) FROM upload_staging WHERE user_id = $18 AND created_at > NOW() - INTERVAL '2 hours')
+       ) < $17`,
+      [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null, maxFileLinks, input.user_id]
     )
     return (result.rowCount ?? 0) > 0
   }
 
   // No quota guard needed (anonymous upload or no limit)
   await pool.query(
-    `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null]
+    `INSERT INTO upload_staging (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, share_url, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+    [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.pin || null, input.burn_on_read || false, input.share_url, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_chunk_size || null, input.encryption_total_parts || null, input.folder_id || null, input.slug || null]
   )
   return true
 }
@@ -137,6 +139,7 @@ export async function getStagingRecord(id: string): Promise<StagingInput | null>
     encryption_chunk_size: row.encryption_chunk_size ? Number(row.encryption_chunk_size) : null,
     encryption_total_parts: row.encryption_total_parts ? Number(row.encryption_total_parts) : null,
     folder_id: row.folder_id,
+    slug: row.slug,
   }
 }
 
@@ -160,9 +163,9 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
     const staging = result.rows[0]
 
     await client.query(
-      `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, upload_completed, file_hash, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE, $9, $10, $11, $12, $13, $14, $15)`,
-      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, staging.expires_at, staging.pin, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null]
+      `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, pin, burn_on_read, upload_completed, file_hash, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE, $9, $10, $11, $12, $13, $14, $15, $16)`,
+      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, staging.expires_at, staging.pin, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null, staging.slug || null]
     )
 
     await client.query(
@@ -276,6 +279,7 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
       encryption_chunk_size: row.encryption_chunk_size ? Number(row.encryption_chunk_size) : null,
       encryption_total_parts: row.encryption_total_parts ? Number(row.encryption_total_parts) : null,
       folder_id: row.folder_id,
+      slug: row.slug,
     }
   } catch (error: any) {
     if (retries > 0 && (error.code === 'ECONNREFUSED' || error.code === 'ECONNRESET' || error.code === '57P01')) {
@@ -285,6 +289,94 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
     console.error(`[DB] Error getting file:`, error.message, '- Code:', error.code)
     return null
   }
+}
+
+/**
+ * Resolve a public `/d/{value}` segment to a file by either its random id OR
+ * its custom slug. Id matches win ties (`ORDER BY (id = $1) DESC`), so a custom
+ * slug can never shadow an existing random file id.
+ */
+export async function getFileBySlugOrId(value: string, retries = 2): Promise<FileRecord | null> {
+  try {
+    await ensureDatabase()
+    const pool = getPool()
+    const result = await pool.query(
+      `SELECT * FROM basedrop_files WHERE id = $1 OR slug = $1 ORDER BY (id = $1) DESC LIMIT 1`,
+      [value]
+    )
+
+    if (result.rows.length === 0) {
+      return null
+    }
+
+    const row = result.rows[0]
+    return {
+      id: row.id,
+      r2_key: row.r2_key,
+      original_name: row.original_name,
+      file_size: Number(row.file_size),
+      content_type: row.content_type,
+      upload_date: row.upload_date,
+      expires_at: row.expires_at,
+      pin: row.pin,
+      burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
+      upload_completed: row.upload_completed,
+      upload_started_at: row.upload_started_at,
+      file_hash: row.file_hash,
+      custom_filename: row.custom_filename,
+      note: row.note,
+      user_id: row.user_id,
+      encryption_iv: row.encryption_iv,
+      encryption_auth_tag: row.encryption_auth_tag,
+      encryption_chunk_size: row.encryption_chunk_size ? Number(row.encryption_chunk_size) : null,
+      encryption_total_parts: row.encryption_total_parts ? Number(row.encryption_total_parts) : null,
+      folder_id: row.folder_id,
+      slug: row.slug,
+    }
+  } catch (error: any) {
+    if (retries > 0 && (error.code === 'ECONNREFUSED' || error.code === 'ECONNRESET' || error.code === '57P01')) {
+      await new Promise(r => setTimeout(r, 100))
+      return getFileBySlugOrId(value, retries - 1)
+    }
+    console.error(`[DB] Error resolving file by slug/id:`, error.message, '- Code:', error.code)
+    return null
+  }
+}
+
+/**
+ * True if a slug is unavailable — claimed by a committed file or an in-flight
+ * staging row (last 2h, matching the staging quota window). The `id = $1` clause
+ * is defense-in-depth: the 9-char slug minimum already makes a slug equal to an
+ * 8-char file id impossible, but the check costs nothing and survives any future
+ * change to the id format. Best-effort pre-check; the partial unique index is
+ * the real race guard.
+ */
+export async function isSlugTaken(slug: string): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query(
+    `SELECT 1 FROM basedrop_files WHERE slug = $1 OR id = $1
+     UNION ALL
+     SELECT 1 FROM upload_staging WHERE (slug = $1 OR id = $1) AND created_at > NOW() - INTERVAL '2 hours'
+     LIMIT 1`,
+    [slug]
+  )
+  return result.rows.length > 0
+}
+
+/**
+ * Given a base slug the user wanted but that's taken, return up to `max`
+ * concrete alternatives that are currently free.
+ */
+export async function suggestAvailableSlugs(base: string, max = 3): Promise<string[]> {
+  const { generateSlugCandidates } = await import('@/lib/validation/slug')
+  const candidates = generateSlugCandidates(base)
+  const available: string[] = []
+  for (const candidate of candidates) {
+    if (available.length >= max) break
+    if (!(await isSlugTaken(candidate))) available.push(candidate)
+  }
+  return available
 }
 
 

@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import Turnstile from "react-turnstile"
-import { normalizeTier } from "@/constants/tier-limits"
+import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { formatFileSize } from "./utils"
 import type { UseUploadReturn } from "./use-upload"
 
@@ -30,6 +30,10 @@ export function UploadTray({
   zipProgress,
   customFilename,
   setCustomFilename,
+  customSlug,
+  setCustomSlug,
+  slugError,
+  setSlugError,
   zippedFile,
   note,
   setNote,
@@ -308,6 +312,62 @@ export function UploadTray({
                             />
                           </div>
                           <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
+
+                          {/* Custom link (Essential plan and above) */}
+                          {isPaidTier(normalizeTier(user?.tier)) && (
+                            <>
+                              <div style={{ padding: "12px 14px 12px" }}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <MIcon name="link" size={16} className="text-[#999] dark:text-[#898e97]" />
+                                  <span className="text-[#666] dark:text-[#f7f8f8]" style={{ fontSize: 13, fontWeight: 500 }}>Custom link</span>
+                                </div>
+                                <div
+                                  className="flex items-center bg-white dark:bg-[rgba(255,255,255,0.03)] border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] focus-within:border-[#888] dark:focus-within:border-[#f7f8f8] transition-colors duration-150"
+                                  style={{ height: 38, borderRadius: 8, borderStyle: "solid", borderWidth: 1, paddingLeft: 12, paddingRight: 12 }}
+                                >
+                                  <span className="shrink-0 text-[#999] dark:text-[#6b6b6b]" style={{ fontSize: 13 }}>/d/</span>
+                                  <input
+                                    type="text"
+                                    value={customSlug}
+                                    onChange={(e) => {
+                                      setCustomSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
+                                      if (slugError) setSlugError(null)
+                                    }}
+                                    placeholder="my-file"
+                                    maxLength={64}
+                                    className="flex-1 min-w-0 bg-transparent placeholder:text-[#666] dark:placeholder:text-[#898e97] focus:outline-none text-[#111] dark:text-[#f7f8f8]"
+                                    style={{ fontSize: 13 }}
+                                  />
+                                </div>
+                                {slugError ? (
+                                  <div className="mt-2">
+                                    <p className="text-[11px] text-red-500" style={{ paddingLeft: 2 }}>{slugError.message}</p>
+                                    {slugError.suggestions.length > 0 && (
+                                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                        {slugError.suggestions.map((s) => (
+                                          <button
+                                            key={s}
+                                            type="button"
+                                            onClick={() => { setCustomSlug(s); setSlugError(null) }}
+                                            className="px-2 py-1 rounded-md text-[11px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)] text-[#555] dark:text-[#cbd5e1] hover:bg-[#e5e5e5] dark:hover:bg-[rgba(255,255,255,0.12)] transition-colors"
+                                          >
+                                            {s}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  customSlug.trim() && (
+                                    <p className="mt-1.5 text-[11px] text-[#999] dark:text-[#898e97] truncate" style={{ paddingLeft: 2 }}>
+                                      hypastack.com/d/{customSlug.trim()}
+                                    </p>
+                                  )
+                                )}
+                              </div>
+                              <div className="bg-black/5 dark:bg-[rgba(255,255,255,0.06)]" style={{ height: 1 }} />
+                            </>
+                          )}
                         </>
                       )}
 

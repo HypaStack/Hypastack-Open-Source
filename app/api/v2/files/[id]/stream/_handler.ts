@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { isFileValid } from "@/lib/models/fileModel"
+import { getFileBySlugOrId } from "@/lib/models/fileModel"
 import { getR2Client, getBucketName, buildContentDisposition } from "@/lib/storage/r2"
 import { verifyDownloadRateLimit } from "@/lib/data/rateLimit"
 import { createDecryptStream } from "@/lib/security/zeroTrust"
@@ -33,11 +33,11 @@ export async function handleStreamGet(
       )
     }
 
-    const { valid, record } = await isFileValid(id)
+    const record = await getFileBySlugOrId(id)
     if (!record) {
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
-    if (!valid) {
+    if (!record.upload_completed || new Date() > new Date(record.expires_at)) {
         return apiError(410, API_ERRORS.GONE, "410 File Expired")
     }
 

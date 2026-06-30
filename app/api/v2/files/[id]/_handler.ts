@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { getFileById } from "@/lib/models/fileModel"
+import { getFileBySlugOrId } from "@/lib/models/fileModel"
 import { deleteByKey, getPresignedDownloadUrl } from "@/lib/storage/r2"
 import { decryptFilename } from "@/lib/security/filenameCrypto"
 import { checkApiRateLimit } from "@/lib/data/rateLimit"
@@ -24,10 +24,10 @@ export async function handleFileGet(
         return apiError(400, API_ERRORS.BAD_REQUEST, "No file ID provided")
     }
 
-    // Get file from database
+    // Get file from database (resolves either a random id or a custom slug)
     let record
     try {
-      record = await getFileById(id)
+      record = await getFileBySlugOrId(id)
     } catch (dbError: any) {
       console.error("[File] Database error:", dbError.message)
       return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Database error")

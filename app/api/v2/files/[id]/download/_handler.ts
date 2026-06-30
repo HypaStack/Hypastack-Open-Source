@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import {
-  isFileValid,
+  getFileBySlugOrId,
   markFileBurned,
   deleteFileRecord,
 } from "@/lib/models/fileModel"
@@ -70,21 +70,22 @@ export async function handleDownloadPost(
       })
     }
 
-    const { valid, record } = await isFileValid(id)
+    const record = await getFileBySlugOrId(id)
 
     if (!record) {
       return apiError(404, API_ERRORS.NOT_FOUND, "File not found")
     }
 
-    if (!valid) {
+    if (!record.upload_completed || new Date() > new Date(record.expires_at)) {
       return apiError(410, API_ERRORS.GONE, "File has expired")
     }
 
     // Atomic burn-mark BEFORE issuing any URL so concurrent requests can't
-    // all succeed. markFileBurned uses SELECT ... FOR UPDATE.
+    // all succeed. markFileBurned uses SELECT ... FOR UPDATE. Operate on the
+    // resolved primary key, not the URL segment (which may be a custom slug).
     let burned = false
     if (record.burn_on_read === 1) {
-      const burnResult = await markFileBurned(id)
+      const burnResult = await markFileBurned(record.id)
       if (!burnResult.success) {
         return apiError(410, API_ERRORS.GONE, "File has already been downloaded")
       }
@@ -112,7 +113,7 @@ export async function handleDownloadPost(
     }
 
     if (burned) {
-      executeBurnDeletion(id, record.r2_key);
+      executeBurnDeletion(record.id, record.r2_key);
     }
 
 

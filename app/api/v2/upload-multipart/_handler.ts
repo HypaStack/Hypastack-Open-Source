@@ -5,10 +5,11 @@ import { validateCsrfToken } from "@/lib/security/security"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { checkUploadRateLimit } from "@/lib/data/rateLimit"
 import { generateFileId, getExpirationDate } from "@/lib/storage/r2"
-import { createStagingRecord, getUserFileStats } from "@/lib/models/fileModel"
+import { createStagingRecord, getUserFileStats, isSlugTaken, suggestAvailableSlugs } from "@/lib/models/fileModel"
 import { getUserCdnStats } from "@/lib/models/cdnModel"
 import { getUserTier } from "@/lib/models/userModel"
-import { getTierLimits } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { validateSlug } from "@/lib/validation/slug"
 import { initiateMultipartUpload, abortMultipartUpload } from "@/lib/storage/r2Multipart"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zeroTrust"
 import { DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
@@ -33,6 +34,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       csrfToken,
       turnstileToken,
       customFilename,
+      customSlug,
       chunkSize: clientChunkSize,
       path,
       folderId,
@@ -91,11 +93,29 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       : null
     const sanitizedNote = note ? sanitizeNote(note) : null
 
+    // Custom slug (paid plans only). Validated and pre-checked here, before any
+    // R2 multipart upload is initiated, to avoid orphaning an upload on conflict.
+    let finalSlug: string | null = null
+    if (customSlug != null && String(customSlug).trim() !== "") {
+      if (!isPaidTier(normalizeTier(userTier))) {
+        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Essential plan and above.")
+      }
+      const slugCheck = validateSlug(String(customSlug))
+      if (!slugCheck.ok) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, slugCheck.error || "Invalid custom link")
+      }
+      if (await isSlugTaken(slugCheck.slug)) {
+        const suggestions = await suggestAvailableSlugs(slugCheck.slug)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: slugCheck.slug, suggestions })
+      }
+      finalSlug = slugCheck.slug
+    }
+
     const fileId = generateFileId()
     const storageName = generateOpaqueStorageName()
     const r2Key = `uploads/${fileId}/${storageName}`
     const expiresAt = getExpirationDate(fileSize, tier.expirationMultiplier)
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
+    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${finalSlug ?? fileId}`
 
     const chunkSize = clientChunkSize || DEFAULT_CHUNK_SIZE
     const totalParts = Math.ceil(fileSize / chunkSize)
@@ -120,23 +140,35 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     // Pass the tier limit so the insert is quota-guarded atomically at the DB
     // level. The pre-check above is only a fast early-out; this closes the
     // TOCTOU race where concurrent multipart inits could both pass that check.
-    const staged = await createStagingRecord({
-      id: fileId,
-      r2_key: r2Key,
-      original_name: encryptedOriginalName,
-      file_size: fileSize,
-      content_type: contentType,
-      expires_at: expiresAt,
-      pin: null,
-      burn_on_read: burnOnRead === true,
-      share_url: shareUrl,
-      custom_filename: encryptedCustomFilename,
-      note: sanitizedNote,
-      user_id: currentUser.userId,
-      encryption_chunk_size: chunkSize,
-      encryption_total_parts: totalParts,
-      folder_id: finalFolderId,
-    }, tier.maxFileLinks)
+    let staged: boolean
+    try {
+      staged = await createStagingRecord({
+        id: fileId,
+        r2_key: r2Key,
+        original_name: encryptedOriginalName,
+        file_size: fileSize,
+        content_type: contentType,
+        expires_at: expiresAt,
+        pin: null,
+        burn_on_read: burnOnRead === true,
+        share_url: shareUrl,
+        custom_filename: encryptedCustomFilename,
+        note: sanitizedNote,
+        user_id: currentUser.userId,
+        encryption_chunk_size: chunkSize,
+        encryption_total_parts: totalParts,
+        folder_id: finalFolderId,
+        slug: finalSlug,
+      }, tier.maxFileLinks)
+    } catch (e: any) {
+      // Race: the slug was claimed between the pre-check and the insert.
+      if (e?.code === "23505" && finalSlug) {
+        await abortMultipartUpload({ r2Key, uploadId }).catch(() => {})
+        const suggestions = await suggestAvailableSlugs(finalSlug)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: finalSlug, suggestions })
+      }
+      throw e
+    }
 
     if (!staged) {
       // Quota was reached between the pre-check and the insert.

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getPresignedUploadUrlByKey, generateFileId, getExpirationDate } from "@/lib/storage/r2"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/security/filenameCrypto"
-import { createStagingRecord, getUserFileStats } from "@/lib/models/fileModel"
+import { createStagingRecord, getUserFileStats, isSlugTaken, suggestAvailableSlugs } from "@/lib/models/fileModel"
 import { resolveUploadFolder } from "@/lib/models/folderModel"
 import { getUserCdnStats } from "@/lib/models/cdnModel"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
@@ -11,7 +11,8 @@ import { checkUploadRateLimit } from "@/lib/data/rateLimit"
 import { getCurrentUser, generateProxyToken } from "@/lib/security/auth"
 import { sanitizeNote, sanitizeFilename } from "@/lib/security/zeroTrust"
 import { getUserTier } from "@/lib/models/userModel"
-import { getTierLimits } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { validateSlug } from "@/lib/validation/slug"
 import { API_ERRORS } from "@/constants"
 
 export async function handleUploadPost(request: NextRequest) {
@@ -22,7 +23,7 @@ export async function handleUploadPost(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, note, path, folderId } = body
+    const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, customSlug, note, path, folderId } = body
 
     if (!fileName || !fileSize || !contentType) {
         return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
@@ -68,6 +69,24 @@ export async function handleUploadPost(request: NextRequest) {
       }
     }
 
+    // Custom slug (paid plans only). The file is useless without the #key=
+    // fragment, so surfacing "that link is taken" + suggestions leaks nothing.
+    let finalSlug: string | null = null
+    if (customSlug != null && String(customSlug).trim() !== "") {
+      if (!isPaidTier(normalizeTier(userTier))) {
+        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Essential plan and above.")
+      }
+      const slugCheck = validateSlug(String(customSlug))
+      if (!slugCheck.ok) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, slugCheck.error || "Invalid custom link")
+      }
+      if (await isSlugTaken(slugCheck.slug)) {
+        const suggestions = await suggestAvailableSlugs(slugCheck.slug)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: slugCheck.slug, suggestions })
+      }
+      finalSlug = slugCheck.slug
+    }
+
     const fileId = generateFileId()
     const storageName = generateOpaqueStorageName()
     const r2Key = `uploads/${fileId}/${storageName}`
@@ -91,26 +110,37 @@ export async function handleUploadPost(request: NextRequest) {
     }
     const finalFolderId = folderResult.folderId
 
-    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${fileId}`
+    const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${finalSlug ?? fileId}`
 
     // Atomically check quota + create staging record in one query (fixes TOCTOU race)
-    const staged = await createStagingRecord({
-      id: fileId,
-      r2_key: r2Key,
-      original_name: encryptedOriginalName,
-      file_size: fileSize,
-      content_type: contentType,
-      expires_at: expiresAt,
-      pin: null,
-      burn_on_read: burnOnRead === true,
-      share_url: shareUrl,
-      custom_filename: encryptedCustomFilename,
-      note: sanitizedNote,
-      user_id: currentUser.userId,
-      encryption_total_parts: 1,
-      encryption_chunk_size: null,
-      folder_id: finalFolderId,
-    }, tier.maxFileLinks)
+    let staged: boolean
+    try {
+      staged = await createStagingRecord({
+        id: fileId,
+        r2_key: r2Key,
+        original_name: encryptedOriginalName,
+        file_size: fileSize,
+        content_type: contentType,
+        expires_at: expiresAt,
+        pin: null,
+        burn_on_read: burnOnRead === true,
+        share_url: shareUrl,
+        custom_filename: encryptedCustomFilename,
+        note: sanitizedNote,
+        user_id: currentUser.userId,
+        encryption_total_parts: 1,
+        encryption_chunk_size: null,
+        folder_id: finalFolderId,
+        slug: finalSlug,
+      }, tier.maxFileLinks)
+    } catch (e: any) {
+      // Race: the slug was claimed between the pre-check and the insert.
+      if (e?.code === "23505" && finalSlug) {
+        const suggestions = await suggestAvailableSlugs(finalSlug)
+        return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: finalSlug, suggestions })
+      }
+      throw e
+    }
 
     if (!staged) {
         return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your limit of ${tier.maxFileLinks} active file links on your current plan.`)

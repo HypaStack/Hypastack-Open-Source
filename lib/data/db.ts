@@ -396,6 +396,10 @@ export async function initDatabase(): Promise<void> {
 
     const INCREMENTAL_MIGRATIONS: { version: string; sql: string }[] = [
       // { version: '2026-07-01-example', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS example TEXT` },
+      { version: '2026-06-30-file-slug-files', sql: `ALTER TABLE basedrop_files ADD COLUMN IF NOT EXISTS slug VARCHAR(64)` },
+      { version: '2026-06-30-file-slug-staging', sql: `ALTER TABLE upload_staging ADD COLUMN IF NOT EXISTS slug VARCHAR(64)` },
+      { version: '2026-06-30-file-slug-files-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_basedrop_files_slug ON basedrop_files(slug) WHERE slug IS NOT NULL` },
+      { version: '2026-06-30-file-slug-staging-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_upload_staging_slug ON upload_staging(slug) WHERE slug IS NOT NULL` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

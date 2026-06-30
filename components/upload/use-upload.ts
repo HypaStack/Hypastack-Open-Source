@@ -9,6 +9,7 @@ import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
+import { validateSlug } from "@/lib/validation/slug"
 
 export function useUpload({
   initialFiles,
@@ -33,6 +34,8 @@ export function useUpload({
   const [csrfToken, setCsrfToken] = useState<string>("")
   const [zipProgress, setZipProgress] = useState(0)
   const [customFilename, setCustomFilename] = useState("")
+  const [customSlug, setCustomSlug] = useState("")
+  const [slugError, setSlugError] = useState<{ message: string; suggestions: string[] } | null>(null)
   const [zippedFile, setZippedFile] = useState<File | null>(null)
   const [note, setNote] = useState("")
   const [zipMultipleFiles, setZipMultipleFiles] = useState(true)
@@ -239,7 +242,8 @@ export function useUpload({
     currentCsrfToken: string,
     finalFilename: string | null,
     finalNote: string | null,
-    filePath?: string
+    filePath?: string,
+    finalSlug?: string | null
   ): Promise<string> => {
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
@@ -261,6 +265,7 @@ export function useUpload({
         turnstileToken,
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
+        customSlug: finalSlug,
         note: finalNote,
         path: filePath || (fileToUpload as any).path,
         folderId: currentFolderId,
@@ -269,6 +274,11 @@ export function useUpload({
 
     if (!initResponse.ok) {
       const error = await initResponse.json()
+      if (initResponse.status === 409) {
+        const e: any = new Error(error.error || "Custom link already taken")
+        e.slugConflict = { suggestions: error.suggestions || [] }
+        throw e
+      }
       throw new Error(error.error || "Failed to initialize upload")
     }
 
@@ -316,7 +326,8 @@ export function useUpload({
     currentCsrfToken: string,
     finalFilename: string | null,
     finalNote: string | null,
-    filePath?: string
+    filePath?: string,
+    finalSlug?: string | null
   ): Promise<string> => {
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
@@ -331,6 +342,7 @@ export function useUpload({
         turnstileToken,
         csrfToken: currentCsrfToken,
         customFilename: finalFilename,
+        customSlug: finalSlug,
         note: finalNote,
         chunkSize: DEFAULT_CHUNK_SIZE,
         path: filePath || (fileToUpload as any).path,
@@ -340,6 +352,11 @@ export function useUpload({
 
     if (!initResponse.ok) {
       const error = await initResponse.json()
+      if (initResponse.status === 409) {
+        const e: any = new Error(error.error || "Custom link already taken")
+        e.slugConflict = { suggestions: error.suggestions || [] }
+        throw e
+      }
       throw new Error(error.error || "Failed to initialize multipart upload")
     }
 
@@ -533,9 +550,22 @@ export function useUpload({
   const handleUpload = async () => {
     if (files.length === 0 || isUploading) return
     setErrorMessage("")
+    setSlugError(null)
 
     let finalFilename: string | null = customFilename.trim() || null
     let finalNote: string | null = note.trim() || null
+    const finalSlug: string | null = customSlug.trim() || null
+
+    // Validate the custom link before doing any work — keeps the user in the
+    // editable state (and avoids burning a single-use Turnstile token) on a
+    // simple length/charset mistake, instead of bouncing to the error screen.
+    if (finalSlug) {
+      const slugCheck = validateSlug(finalSlug)
+      if (!slugCheck.ok) {
+        setSlugError({ message: slugCheck.error || "Invalid custom link", suggestions: [] })
+        return
+      }
+    }
 
     let currentCsrfToken = csrfToken
     try {
@@ -582,13 +612,16 @@ export function useUpload({
         if (shouldZip && fileToUpload) {
           let url = ""
           if (shouldUseMultipart(fileToUpload.size)) {
-            url = await handleMultipartUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote)
+            url = await handleMultipartUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote, undefined, finalSlug)
           } else {
-            url = await handleSingleUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote)
+            url = await handleSingleUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote, undefined, finalSlug)
           }
           setShareUrl(url)
         } else {
           const urls: string[] = []
+          // A custom slug only applies to a single share link; skip it when
+          // uploading multiple files individually (each would collide).
+          const slugForLoop = files.length === 1 ? finalSlug : null
           for (let i = 0; i < files.length; i++) {
             if (i > 0 && uploadDelayMs > 0) {
               await new Promise((resolve) => setTimeout(resolve, uploadDelayMs))
@@ -599,9 +632,9 @@ export function useUpload({
             let url = ""
             try {
               if (shouldUseMultipart(f.file.size)) {
-                url = await handleMultipartUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
+                url = await handleMultipartUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path, slugForLoop)
               } else {
-                url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path)
+                url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path, slugForLoop)
               }
               urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
             } catch (err: any) {
@@ -628,6 +661,16 @@ export function useUpload({
       }
     } catch (error: any) {
       if (error.message === "Upload aborted") {
+        return
+      }
+      if (error.slugConflict) {
+        // The link was taken — drop back to the editable state so the user can
+        // pick another. Turnstile tokens are single-use, so force a re-verify.
+        setSlugError({ message: "That custom link is already taken. Try one of these:", suggestions: error.slugConflict.suggestions || [] })
+        setState("selected")
+        setTurnstileToken("")
+        setTurnstileReady(process.env.NODE_ENV === "development")
+        if (turnstileRef.current) turnstileRef.current.reset()
         return
       }
       setErrorMessage(error.message || "Upload failed. Please try again.")
@@ -715,6 +758,8 @@ export function useUpload({
     setTurnstileToken("")
     setTurnstileReady(process.env.NODE_ENV === "development")
     setCustomFilename("")
+    setCustomSlug("")
+    setSlugError(null)
     setNote("")
     setInterruptedSession(null)
     setShowResumePopup(false)
@@ -933,6 +978,10 @@ export function useUpload({
     zipProgress,
     customFilename,
     setCustomFilename,
+    customSlug,
+    setCustomSlug,
+    slugError,
+    setSlugError,
     zippedFile,
     note,
     setNote,
