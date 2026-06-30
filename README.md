@@ -47,7 +47,7 @@ Desktop (Tauri v2)
   Wraps the web app and adds a system tray plus right click upload
 ```
 
-The decryption key never reaches the server. It stays in the URL fragment (`#key=...`), and browsers do not include the fragment in HTTP requests.
+The decryption key never reaches the server. It stays in the URL fragment (`#...`), and browsers do not include the fragment in HTTP requests.
 
 ## Running it locally
 

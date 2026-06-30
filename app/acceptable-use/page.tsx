@@ -93,7 +93,7 @@ export default function AcceptableUse() {
                 Instead, include:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-2">
-                <li>The URL of the file (without the <code className="text-[#f7f8f8] font-medium">#key=...</code> fragment)</li>
+                <li>The URL of the file (without the <code className="text-[#f7f8f8] font-medium">#...</code> fragment)</li>
                 <li>A screenshot, description, or any other contextual proof that does not require me to decrypt the content</li>
                 <li>The nature of the violation (e.g. CSAM, malware, phishing)</li>
               </ul>

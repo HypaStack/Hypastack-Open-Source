@@ -33,7 +33,7 @@ export default function PrivacyPolicy() {
                 Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption for its Secure File Sharing pipeline. All files uploaded through this pipeline are encrypted locally on your device using AES-GCM (256-bit) before transmission. Note that our Permanent CDN Hosting pipeline is designed for public assets and is intentionally unencrypted, as detailed below.
               </p>
               <p>
-                The encryption key (found in the URL fragment <code className="text-primary font-medium">#key=...</code>) is processed only by your local browser environment. Because web browsers are architecturally designed to never transmit the URL fragment to the server during a request, it is mathematically impossible for our infrastructure to intercept, record, or utilize your decryption keys. We have no "master key", no backdoor, and no ability to decrypt your files.
+                The encryption key (found in the URL fragment <code className="text-primary font-medium">#...</code>) is processed only by your local browser environment. Because web browsers are architecturally designed to never transmit the URL fragment to the server during a request, it is mathematically impossible for our infrastructure to intercept, record, or utilize your decryption keys. We have no "master key", no backdoor, and no ability to decrypt your files.
               </p>
             </section>
 

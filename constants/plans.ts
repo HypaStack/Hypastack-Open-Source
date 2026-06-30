@@ -34,6 +34,7 @@ export const PLAN_INFO: PlanInfo[] = [
       "Up to 500MB per file (200MB CDN)",
       "45 CDN links, 45 file links",
       "2x expiration windows",
+      "Custom share links",
     ],
   },
   {
@@ -47,6 +48,7 @@ export const PLAN_INFO: PlanInfo[] = [
       "Up to 1GB per file (500MB CDN)",
       "100 CDN links, 100 file links",
       "3x expiration windows",
+      "Custom share links",
       "Fast support",
     ],
   },
@@ -61,6 +63,7 @@ export const PLAN_INFO: PlanInfo[] = [
       "Up to 2.5GB per file (1GB CDN)",
       "125 CDN links, 125 file links",
       "4x expiration",
+      "Custom share links",
       "Priority support",
     ],
   },

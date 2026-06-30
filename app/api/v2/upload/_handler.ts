@@ -69,8 +69,9 @@ export async function handleUploadPost(request: NextRequest) {
       }
     }
 
-    // Custom slug (paid plans only). The file is useless without the #key=
-    // fragment, so surfacing "that link is taken" + suggestions leaks nothing.
+    // Custom slug (paid plans only). The file is useless without the decryption
+    // key in the URL fragment, so surfacing "that link is taken" + suggestions
+    // leaks nothing.
     let finalSlug: string | null = null
     if (customSlug != null && String(customSlug).trim() !== "") {
       if (!isPaidTier(normalizeTier(userTier))) {

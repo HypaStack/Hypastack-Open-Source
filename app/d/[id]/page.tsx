@@ -50,9 +50,13 @@ export default function DownloadPage() {
   }, [downloadCooldown]);
 
   useEffect(() => {
-    const m = window.location.hash.match(/key=([A-Za-z0-9_-]+)/);
-    if (m) {
-      setEncryptionKeyBase64(m[1]);
+    // The decryption key lives in the URL fragment as a bare value (`#<key>`).
+    // Legacy links used `#key=<key>`, so still accept that form for back-compat.
+    const raw = window.location.hash.replace(/^#/, "");
+    const legacy = raw.match(/(?:^|[#&])key=([A-Za-z0-9_-]+)/);
+    const key = legacy ? legacy[1] : (/^[A-Za-z0-9_-]+$/.test(raw) ? raw : null);
+    if (key) {
+      setEncryptionKeyBase64(key);
       (async () => {
         try {
           const r = await apiFetch(`/api/v2/files/${fileId}`);
@@ -187,7 +191,7 @@ export default function DownloadPage() {
               </h2>
             </div>
             <p className="text-[14px] text-[#898e97] leading-relaxed">
-              You are missing the #key= portion of the URL. Viewing and downloading is completely disabled.
+              You are missing the decryption key (the part after the # in the URL). Viewing and downloading is completely disabled.
             </p>
           </div>
         </motion.div>

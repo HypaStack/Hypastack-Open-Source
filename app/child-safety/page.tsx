@@ -85,7 +85,7 @@ export default function ChildSafety() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Reporting</h2>
               <p className="mb-4">
-                If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="font-medium">#key=...</code> fragment) via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. I will act within 24 hours.
+                If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="font-medium">#...</code> fragment) via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. I will act within 24 hours.
               </p>
               <p className="mb-4">
                 <strong className="text-[#f7f8f8]">Do not send me the decryption key.</strong> I will not ask for it. Receiving and decrypting content to verify a CSAM report creates direct legal liability for me. I do not and will not do this.

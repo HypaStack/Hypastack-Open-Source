@@ -299,7 +299,7 @@ export function useUpload({
         throw new Error(error.error || "Upload validation failed")
       }
 
-      return `${url}#key=${keyBase64}`
+      return `${url}#${keyBase64}`
     } catch (fetchError: any) {
       const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
       if (isCORSError) {
@@ -314,7 +314,7 @@ export function useUpload({
           (pct) => setProgress(pct)
         )
         setProgress(100)
-        return `${proxyUrl}#key=${keyBase64}`
+        return `${proxyUrl}#${keyBase64}`
       } else {
         throw fetchError
       }
@@ -372,7 +372,7 @@ export function useUpload({
       fileName: fileToUpload.name,
       fileSize: fileToUpload.size,
       keyBase64,
-      shareUrl: `${url}#key=${keyBase64}`,
+      shareUrl: `${url}#${keyBase64}`,
     }
     setInterruptedSession(sessionInfo)
     localStorage.setItem(STORAGE_KEY_INTERRUPTED_UPLOAD, JSON.stringify(sessionInfo))
@@ -433,7 +433,7 @@ export function useUpload({
 
       setProgress(100)
       setInterruptedSession(null)
-      return `${url}#key=${keyBase64}`
+      return `${url}#${keyBase64}`
     } catch (uploadError: any) {
       if (uploadError.message === "Upload aborted") {
         throw uploadError
