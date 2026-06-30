@@ -85,10 +85,16 @@ export async function handleUploadProxyPost(request: NextRequest) {
     // The slug + expiry were already validated and reserved when /api/v2/upload
     // created the staging row for this fileId; reuse them so the CORS-fallback
     // path yields an identical share link instead of silently dropping the slug.
+    // This proxy IS the completion step, so re-anchor the lifetime to now (the
+    // intended duration is the staging row's expires_at - created_at) rather than
+    // letting a short custom expiry tick down during the upload.
     const staging = await getStagingRecord(fileId)
     const finalSlug = staging?.slug ?? null
-    const expiresAt = staging?.expires_at
-      ? new Date(staging.expires_at)
+    const stagingDurationMs = staging?.expires_at && staging?.created_at
+      ? new Date(staging.expires_at).getTime() - new Date(staging.created_at).getTime()
+      : 0
+    const expiresAt = stagingDurationMs > 0
+      ? new Date(Date.now() + stagingDurationMs)
       : getExpirationDate(buffer.length, tier.expirationMultiplier)
     const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/d/${finalSlug ?? fileId}`
 

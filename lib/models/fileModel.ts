@@ -61,6 +61,7 @@ export interface StagingInput {
   encryption_total_parts?: number | null
   folder_id?: string | null
   slug?: string | null
+  created_at?: Date
 }
 
 /**
@@ -137,6 +138,7 @@ export async function getStagingRecord(id: string): Promise<StagingInput | null>
     encryption_total_parts: row.encryption_total_parts ? Number(row.encryption_total_parts) : null,
     folder_id: row.folder_id,
     slug: row.slug,
+    created_at: row.created_at,
   }
 }
 
@@ -159,10 +161,18 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
 
     const staging = result.rows[0]
 
+    // Re-anchor the lifetime to completion time. expires_at was computed at
+    // upload init; for short custom expirations (down to 1 minute) a slow upload
+    // could otherwise leave the file already expired when it finishes. The
+    // intended duration is staging.expires_at - staging.created_at, so we re-add
+    // it from now.
+    const durationMs = new Date(staging.expires_at).getTime() - new Date(staging.created_at).getTime()
+    const finalExpiresAt = durationMs > 0 ? new Date(Date.now() + durationMs) : staging.expires_at
+
     await client.query(
       `INSERT INTO basedrop_files (id, r2_key, original_name, file_size, content_type, expires_at, burn_on_read, upload_completed, file_hash, custom_filename, note, user_id, encryption_chunk_size, encryption_total_parts, folder_id, slug)
        VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, $8, $9, $10, $11, $12, $13, $14, $15)`,
-      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, staging.expires_at, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null, staging.slug || null]
+      [staging.id, staging.r2_key, staging.original_name, staging.file_size, staging.content_type, finalExpiresAt, staging.burn_on_read ? 1 : 0, fileHash || null, staging.custom_filename, staging.note, staging.user_id || null, staging.encryption_chunk_size || null, staging.encryption_total_parts || null, staging.folder_id || null, staging.slug || null]
     )
 
     await client.query(
