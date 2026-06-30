@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { getUserById } from "@/lib/user-model"
+import { withAuth } from "@/lib/http/route"
+import { getUserById } from "@/lib/models/userModel"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
-import { getR2Client, getBucketName } from "@/lib/r2"
+import { getR2Client, getBucketName } from "@/lib/storage/r2"
 
 export const dynamic = "force-dynamic"
 

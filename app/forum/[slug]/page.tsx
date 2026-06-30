@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 
 interface ForumFile {

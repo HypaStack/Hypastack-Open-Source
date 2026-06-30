@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
-import { getStagingRecord, promoteStagingToFile } from "@/lib/file-model"
-import { fileExistsByKey, deleteByKey, downloadHeadByKey } from "@/lib/r2"
-import { validateFileType } from "@/lib/file-validation"
-import { decryptFilename } from "@/lib/filename-crypto"
-import { withAuth } from "@/lib/route"
-import { completeMultipartUpload, abortMultipartUpload } from "@/lib/r2-multipart"
+import { getStagingRecord, promoteStagingToFile } from "@/lib/models/fileModel"
+import { fileExistsByKey, deleteByKey, downloadHeadByKey } from "@/lib/storage/r2"
+import { validateFileType } from "@/lib/validation/fileValidation"
+import { decryptFilename } from "@/lib/security/filenameCrypto"
+import { withAuth } from "@/lib/http/route"
+import { completeMultipartUpload, abortMultipartUpload } from "@/lib/storage/r2Multipart"
 import { API_ERRORS } from "@/constants"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 
 export const handleUploadCompletePost = withAuth(async ({ request, user: currentUser }) => {
     const body = await request.json()

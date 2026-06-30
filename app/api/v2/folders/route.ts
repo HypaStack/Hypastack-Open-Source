@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { withAuth } from "@/lib/route"
-import { createFolder, deleteFolderRecursively, getFoldersByUserId } from "@/lib/folder-model"
+import { apiError } from "@/lib/http/apiError"
+import { withAuth } from "@/lib/http/route"
+import { createFolder, deleteFolderRecursively, getFoldersByUserId } from "@/lib/models/folderModel"
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 

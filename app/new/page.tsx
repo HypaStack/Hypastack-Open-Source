@@ -7,8 +7,8 @@ import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
-import { generateUserIdClient, generateAccessKeyClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/crypto-client"
-import { apiFetch } from "@/lib/fetch"
+import { generateUserIdClient, generateAccessKeyClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
+import { apiFetch } from "@/lib/http/fetch"
 import { Button } from "@/components/ui/button"
 
 const FEATURES = [

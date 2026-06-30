@@ -1,8 +1,8 @@
 import crypto from "crypto"
 import { cookies } from "next/headers"
 import { NextRequest } from "next/server"
-import { getPool, ensureDatabase } from "@/lib/db"
-import { cached } from "@/lib/cache"
+import { getPool, ensureDatabase } from "@/lib/data/db"
+import { cached } from "@/lib/data/cache"
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")

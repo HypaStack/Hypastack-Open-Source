@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 import crypto from "crypto"
 import { cleanupExpiredFiles, cleanupStaging, cleanupDumpsterPastes } from "@/lib/cleanup"
 import { API_ERRORS } from "@/constants"

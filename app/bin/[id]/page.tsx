@@ -5,7 +5,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion } from "motion/react"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 function fmtBytes(bytes: number): string {
   if (bytes === 0) return "0 B"

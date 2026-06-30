@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { deleteComment } from "@/lib/forum-model"
+import { withAuth } from "@/lib/http/route"
+import { deleteComment } from "@/lib/models/forumModel"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

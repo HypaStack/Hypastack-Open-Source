@@ -1,6 +1,6 @@
-import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from './file-model'
-import { deleteByKey } from './r2'
-import { getClient } from './db'
+import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from '@/lib/models/fileModel'
+import { deleteByKey } from '@/lib/storage/r2'
+import { getClient } from '@/lib/data/db'
 
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number

@@ -1,10 +1,10 @@
-import { apiError } from "@/lib/api-error"
-import { withAuth } from "@/lib/route"
-import { getFilesByIds, deleteFilesByIds } from "@/lib/file-model"
-import { deleteObjectsBatch } from "@/lib/r2"
-import { getUserTier } from "@/lib/user-model"
+import { apiError } from "@/lib/http/apiError"
+import { withAuth } from "@/lib/http/route"
+import { getFilesByIds, deleteFilesByIds } from "@/lib/models/fileModel"
+import { deleteObjectsBatch } from "@/lib/storage/r2"
+import { getUserTier } from "@/lib/models/userModel"
 import { getTierDelayMs } from "@/constants/tier-limits"
-import { decryptFilename } from "@/lib/filename-crypto"
+import { decryptFilename } from "@/lib/security/filenameCrypto"
 import { API_ERRORS } from "@/constants"
 
 export const DELETE = withAuth(async ({ request, user }) => {

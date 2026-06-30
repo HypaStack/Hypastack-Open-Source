@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { useMemo, useState } from "react"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 const GREETINGS = [
   (n: string) => `What's the move, ${n}?`,

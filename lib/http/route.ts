@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from "@/lib/auth"
-import { checkApiRateLimit } from "@/lib/rate-limit"
+import { apiError } from "@/lib/http/apiError"
+import { getCurrentUser } from "@/lib/security/auth"
+import { checkApiRateLimit } from "@/lib/data/rateLimit"
 import { API_ERRORS } from "@/constants"
 
 type AuthedUser = { userId: string; sessionId: string }

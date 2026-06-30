@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { validateCsrfToken } from "@/lib/security"
-import { getForumPostById, addComment, getCommentsByPostId } from "@/lib/forum-model"
+import { withAuth } from "@/lib/http/route"
+import { validateCsrfToken } from "@/lib/security/security"
+import { getForumPostById, addComment, getCommentsByPostId } from "@/lib/models/forumModel"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

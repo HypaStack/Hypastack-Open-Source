@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 interface AuthContextType {
   userId: string | null

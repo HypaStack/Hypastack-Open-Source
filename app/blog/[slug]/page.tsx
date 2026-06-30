@@ -6,7 +6,7 @@ import { join } from "path"
 import { MDXRemote } from "next-mdx-remote/rsc"
 import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
-import { getPostBySlug, getAllSlugs } from "@/lib/blog-posts"
+import { getPostBySlug, getAllSlugs } from "@/lib/blogPosts"
 
 interface Props {
   params: Promise<{ slug: string }>

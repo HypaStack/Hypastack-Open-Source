@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { getFilesByUserId } from "@/lib/file-model"
-import { decryptFilename } from "@/lib/filename-crypto"
+import { withAuth } from "@/lib/http/route"
+import { getFilesByUserId } from "@/lib/models/fileModel"
+import { decryptFilename } from "@/lib/security/filenameCrypto"
 
 export const GET = withAuth(async ({ user }) => {
   const files = await getFilesByUserId(user.userId)

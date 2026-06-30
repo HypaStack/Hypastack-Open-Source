@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 import {
   isFileValid,
   markFileBurned,
   deleteFileRecord,
-} from "@/lib/file-model"
-import { checkDownloadRateLimit } from "@/lib/rate-limit"
-import { getPresignedDownloadUrl, deleteByKey } from "@/lib/r2"
-import { decryptFilename } from "@/lib/filename-crypto"
-import { getHashedIp } from "@/lib/ip"
+} from "@/lib/models/fileModel"
+import { checkDownloadRateLimit } from "@/lib/data/rateLimit"
+import { getPresignedDownloadUrl, deleteByKey } from "@/lib/storage/r2"
+import { decryptFilename } from "@/lib/security/filenameCrypto"
+import { getHashedIp } from "@/lib/http/ip"
 import {
   PRESIGNED_TTL_SECONDS,
   BURN_PRESIGNED_TTL_SECONDS,

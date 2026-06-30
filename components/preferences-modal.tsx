@@ -8,11 +8,11 @@ import { MIcon } from "@/components/ui/material-icon"
 import { useManage } from "@/hooks/useManage"
 import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
-import { getSessionKey, encryptE2E } from "@/lib/crypto-client"
+import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { type PreferencesTier } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"

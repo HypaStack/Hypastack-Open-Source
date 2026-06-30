@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { MIcon } from "@/components/ui/material-icon";
-import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/multipart";
+import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/storage/multipart";
 import { motion } from "motion/react";
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 import { Button } from "@/components/ui/button"
 
 interface FileInfo {

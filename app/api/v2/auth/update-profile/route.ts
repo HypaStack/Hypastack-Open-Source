@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 import { z } from "zod"
-import { withAuth } from "@/lib/route"
-import { getUserById, updateNickname } from "@/lib/user-model"
+import { withAuth } from "@/lib/http/route"
+import { getUserById, updateNickname } from "@/lib/models/userModel"
 import { API_ERRORS } from "@/constants"
 // Strict ciphertext format: base64(iv):base64(ciphertext), max 500 chars total
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/

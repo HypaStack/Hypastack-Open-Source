@@ -8,7 +8,7 @@ import { useManage } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 interface CdnAsset {
   id: string

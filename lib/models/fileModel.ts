@@ -1,6 +1,6 @@
-import { getPool, ensureDatabase, getClient } from './db'
-import { cached, bustCache } from './cache'
-import { bustRouteCache } from './route-cache'
+import { getPool, ensureDatabase, getClient } from '@/lib/data/db'
+import { cached, bustCache } from '@/lib/data/cache'
+import { bustRouteCache } from '@/lib/http/routeCache'
 import { randomUUID, webcrypto } from 'node:crypto'
 
 export interface FileRecord {
@@ -211,7 +211,7 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
 
       for (const record of result.rows) {
         try {
-          const { deleteByKey } = await import('./r2')
+          const { deleteByKey } = await import('@/lib/storage/r2')
           await deleteByKey(record.r2_key)
         } catch { /* r2 deletion best-effort */ }
 

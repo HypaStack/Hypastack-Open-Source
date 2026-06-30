@@ -1,11 +1,11 @@
-import { getPool, ensureDatabase, getClient } from './db'
+import { getPool, ensureDatabase, getClient } from '@/lib/data/db'
 import { randomUUID } from 'node:crypto'
-import { encryptFilename, decryptFilename } from './filename-crypto'
-import { getFilesByUserId, deleteFileRecord } from './file-model'
-import { deleteFileFromR2 } from './r2'
-import { getUserTier } from './user-model'
+import { encryptFilename, decryptFilename } from '@/lib/security/filenameCrypto'
+import { getFilesByUserId, deleteFileRecord } from '@/lib/models/fileModel'
+import { deleteFileFromR2 } from '@/lib/storage/r2'
+import { getUserTier } from '@/lib/models/userModel'
 import { getTierDelayMs } from '@/constants/tier-limits'
-import { cached, bustCache } from './cache'
+import { cached, bustCache } from '@/lib/data/cache'
 
 export interface FolderRecord {
   id: string

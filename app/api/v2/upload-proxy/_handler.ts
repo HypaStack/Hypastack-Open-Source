@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { uploadFileBuffer, getExpirationDate } from "@/lib/r2"
-import { createFileRecord, markUploadComplete } from "@/lib/file-model"
-import { getCurrentUser, verifyProxyToken } from "@/lib/auth"
-import { checkUploadRateLimit } from "@/lib/rate-limit"
-import { validateCsrfToken } from "@/lib/security"
+import { apiError } from "@/lib/http/apiError"
+import { uploadFileBuffer, getExpirationDate } from "@/lib/storage/r2"
+import { createFileRecord, markUploadComplete } from "@/lib/models/fileModel"
+import { getCurrentUser, verifyProxyToken } from "@/lib/security/auth"
+import { checkUploadRateLimit } from "@/lib/data/rateLimit"
+import { validateCsrfToken } from "@/lib/security/security"
 import {
   sanitizeNote,
   sanitizeFilename,
   verifyFileType,
   stripMetadata,
   encryptFile,
-} from "@/lib/security/zero-trust"
-import { getUserTier } from "@/lib/user-model"
+} from "@/lib/security/zeroTrust"
+import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 

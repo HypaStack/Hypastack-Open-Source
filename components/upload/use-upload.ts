@@ -2,13 +2,13 @@
 
 import { useState, useCallback, useRef, useEffect } from "react"
 import JSZip from "jszip"
-import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/multipart"
+import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier } from "@/constants/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 export function useUpload({
   initialFiles,
@@ -244,7 +244,7 @@ export function useUpload({
     const { key: encKey, keyBase64 } = await generateEncryptionKey()
 
     const plaintext = await fileToUpload.arrayBuffer()
-    const { encryptChunk } = await import("@/lib/multipart")
+    const { encryptChunk } = await import("@/lib/storage/multipart")
     const encrypted = await encryptChunk(encKey, plaintext)
     const encryptedBlob = new File([encrypted], fileToUpload.name, {
       type: fileToUpload.type || "application/octet-stream",
@@ -805,7 +805,7 @@ export function useUpload({
       const { uploadedParts, missingParts } = resumeData
 
       const { importKeyFromBase64, readFileSlice, encryptChunk, uploadChunkToR2 } =
-        await import("@/lib/multipart")
+        await import("@/lib/storage/multipart")
       const encKey = await importKeyFromBase64(interruptedSession.keyBase64)
 
       const chunkSize = interruptedSession.chunkSize

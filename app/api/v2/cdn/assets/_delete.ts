@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server'
-import { apiError } from "@/lib/api-error"
-import { getCurrentUser } from '@/lib/auth'
-import { getCdnAssetsByIds, deleteCdnAssetsByIds } from '@/lib/cdn-model'
-import { deleteObjectsBatch } from '@/lib/r2'
-import { getUserTier } from "@/lib/user-model"
+import { apiError } from "@/lib/http/apiError"
+import { getCurrentUser } from '@/lib/security/auth'
+import { getCdnAssetsByIds, deleteCdnAssetsByIds } from '@/lib/models/cdnModel'
+import { deleteObjectsBatch } from '@/lib/storage/r2'
+import { getUserTier } from "@/lib/models/userModel"
 import { getTierDelayMs } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 

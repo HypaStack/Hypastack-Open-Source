@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { withAuth } from "@/lib/route"
-import { createCdnFolder, deleteCdnFolderRecursively } from "@/lib/cdn-folder-model"
+import { apiError } from "@/lib/http/apiError"
+import { withAuth } from "@/lib/http/route"
+import { createCdnFolder, deleteCdnFolderRecursively } from "@/lib/models/cdnFolderModel"
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 

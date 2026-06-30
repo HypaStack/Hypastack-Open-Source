@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { setCsrfCookie } from '@/lib/security'
+import { setCsrfCookie } from '@/lib/security/security'
 
 export async function GET() {
   const token = await setCsrfCookie()

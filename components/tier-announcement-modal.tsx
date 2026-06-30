@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 export function TierAnnouncementModal() {
   const { user, refreshUser } = useManage();

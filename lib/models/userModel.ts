@@ -1,7 +1,7 @@
-import { getPool, ensureDatabase } from './db'
+import { getPool, ensureDatabase } from '@/lib/data/db'
 import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
-import { cached, bustCache } from './cache'
+import { cached, bustCache } from '@/lib/data/cache'
 
 
 export interface User {

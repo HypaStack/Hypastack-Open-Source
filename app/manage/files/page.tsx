@@ -14,7 +14,7 @@ import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
 import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
 import { FILES_PER_PAGE } from "@/constants"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 function getFileExt(name: string): string {
   const dot = name.lastIndexOf(".")

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { getUserById, updateAvatarUrl } from "@/lib/user-model"
-import { deleteByKey } from "@/lib/r2"
+import { withAuth } from "@/lib/http/route"
+import { getUserById, updateAvatarUrl } from "@/lib/models/userModel"
+import { deleteByKey } from "@/lib/storage/r2"
 export const dynamic = "force-dynamic"
 
 export const POST = withAuth(async ({ user: auth }) => {

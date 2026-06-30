@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { withAuth } from "@/lib/route"
-import { getFileById, toggleFileStarred } from "@/lib/file-model"
+import { apiError } from "@/lib/http/apiError"
+import { withAuth } from "@/lib/http/route"
+import { getFileById, toggleFileStarred } from "@/lib/models/fileModel"
 import { API_ERRORS } from "@/constants"
 
 export const PATCH = withAuth(async ({ request, user }) => {

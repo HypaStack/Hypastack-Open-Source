@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { withAuth } from "@/lib/route"
-import { getCdnAssetsByUserId, getUserCdnStats } from '@/lib/cdn-model'
+import { withAuth } from "@/lib/http/route"
+import { getCdnAssetsByUserId, getUserCdnStats } from '@/lib/models/cdnModel'
 
 export const GET = withAuth(async ({ user }) => {
     const assets = await getCdnAssetsByUserId(user.userId)

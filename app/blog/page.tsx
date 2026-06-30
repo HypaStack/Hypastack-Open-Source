@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
-import { blogPosts } from "@/lib/blog-posts"
+import { blogPosts } from "@/lib/blogPosts"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {

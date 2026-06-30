@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getCurrentUser } from "@/lib/auth"
-import { getRedis } from "@/lib/redis"
+import { getCurrentUser } from "@/lib/security/auth"
+import { getRedis } from "@/lib/data/redis"
 
 export interface RouteCacheOptions {
   /** Time-to-live in seconds */

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 import { API_ERRORS } from "@/constants"
 const WEBHOOK_URL = process.env.DISCORD_FEEDBACK_WEBHOOK
 

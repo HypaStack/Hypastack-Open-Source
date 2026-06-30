@@ -8,7 +8,7 @@ async function ping(url: string | undefined, ok: boolean) {
     .catch((err: any) => console.error(`[Heartbeat] Ping failed (${target}):`, err?.message))
 }async function checkDb(): Promise<boolean> {
   try {
-    const { getPool } = await import('./lib/db')
+    const { getPool } = await import('./lib/data/db')
     await getPool().query('SELECT 1')
     return true
   } catch (err: any) {
@@ -17,7 +17,7 @@ async function ping(url: string | undefined, ok: boolean) {
   }
 }async function checkAuth(): Promise<boolean> {
   try {
-    const { generateToken, verifyToken } = await import('./lib/auth')
+    const { generateToken, verifyToken } = await import('./lib/security/auth')
     const token = generateToken({ userId: 'heartbeat-probe', sessionId: 'heartbeat-probe' })
     const result = verifyToken(token)
     return result?.userId === 'heartbeat-probe'
@@ -27,7 +27,7 @@ async function ping(url: string | undefined, ok: boolean) {
   }
 }async function checkCsrf(): Promise<boolean> {
   try {
-    const { generateCsrfToken } = await import('./lib/security')
+    const { generateCsrfToken } = await import('./lib/security/security')
     const token = generateCsrfToken()
     const a = Buffer.from(token, 'utf8')
     const b = Buffer.from(token, 'utf8')
@@ -85,7 +85,7 @@ function startHeartbeats() {
 }
 async function init() {
   try {
-    const { initDatabase } = await import('./lib/db')
+    const { initDatabase } = await import('./lib/data/db')
     const { startCleanupScheduler } = await import('./lib/cleanup')
     await initDatabase()
     cleanupTimer = startCleanupScheduler()

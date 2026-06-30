@@ -1,6 +1,6 @@
-import { getPool, ensureDatabase } from './db'
-import { cached, bustCache } from './cache'
-import { bustRouteCache } from './route-cache'
+import { getPool, ensureDatabase } from '@/lib/data/db'
+import { cached, bustCache } from '@/lib/data/cache'
+import { bustRouteCache } from '@/lib/http/routeCache'
 import crypto from 'crypto'
 
 export interface CdnAsset {

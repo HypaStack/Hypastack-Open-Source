@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { useRouter } from "next/navigation"
-import { apiFetch } from "@/lib/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 
 export default function DumpsterPage() {
   const [content, setContent] = useState("")

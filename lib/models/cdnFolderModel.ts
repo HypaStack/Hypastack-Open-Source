@@ -1,8 +1,8 @@
-import { getPool, ensureDatabase } from './db'
+import { getPool, ensureDatabase } from '@/lib/data/db'
 import { randomUUID } from 'node:crypto'
-import { deleteObjectsBatch } from './r2'
-import { deleteCdnAssetsByIds } from './cdn-model'
-import { cached, bustCache } from './cache'
+import { deleteObjectsBatch } from '@/lib/storage/r2'
+import { deleteCdnAssetsByIds } from '@/lib/models/cdnModel'
+import { cached, bustCache } from '@/lib/data/cache'
 
 export interface CdnFolder {
   id: string

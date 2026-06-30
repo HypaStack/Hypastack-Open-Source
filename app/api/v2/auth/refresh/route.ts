@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
+import { apiError } from "@/lib/http/apiError"
 import crypto from "crypto"
-import { generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie } from "@/lib/auth"
-import { atomicRotateRefreshToken } from "@/lib/user-model"
+import { generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie } from "@/lib/security/auth"
+import { atomicRotateRefreshToken } from "@/lib/models/userModel"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

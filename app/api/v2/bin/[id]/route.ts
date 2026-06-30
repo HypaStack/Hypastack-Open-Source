@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { getClient } from "@/lib/db"
-import { downloadHeadByKey } from "@/lib/r2"
+import { apiError } from "@/lib/http/apiError"
+import { getClient } from "@/lib/data/db"
+import { downloadHeadByKey } from "@/lib/storage/r2"
 import { API_ERRORS } from "@/constants"
 
 export async function GET(

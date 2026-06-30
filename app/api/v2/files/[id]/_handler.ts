@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { getFileById } from "@/lib/file-model"
-import { deleteByKey, getPresignedDownloadUrl } from "@/lib/r2"
-import { decryptFilename } from "@/lib/filename-crypto"
-import { checkApiRateLimit } from "@/lib/rate-limit"
-import { getHashedIp } from "@/lib/ip"
+import { apiError } from "@/lib/http/apiError"
+import { getFileById } from "@/lib/models/fileModel"
+import { deleteByKey, getPresignedDownloadUrl } from "@/lib/storage/r2"
+import { decryptFilename } from "@/lib/security/filenameCrypto"
+import { checkApiRateLimit } from "@/lib/data/rateLimit"
+import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
 export async function handleFileGet(

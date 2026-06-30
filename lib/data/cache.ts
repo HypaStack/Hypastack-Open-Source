@@ -1,4 +1,4 @@
-import { getRedis } from './redis'
+import { getRedis } from '@/lib/data/redis'
 
 // ── Cache-Aside Pattern ───────────────────────────────────────────────────
 // Every call is wrapped in try/catch. If Redis is down, we silently fall

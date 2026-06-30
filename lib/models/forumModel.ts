@@ -1,5 +1,5 @@
-import { getPool, ensureDatabase } from './db'
-import { cached, bustCache, bustCachePattern } from './cache'
+import { getPool, ensureDatabase } from '@/lib/data/db'
+import { cached, bustCache, bustCachePattern } from '@/lib/data/cache'
 import crypto from 'crypto'
 
 // ── Types ─────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getForumPostById, reportPost } from "@/lib/forum-model"
-import { checkForumReportRateLimit } from "@/lib/rate-limit"
+import { getForumPostById, reportPost } from "@/lib/models/forumModel"
+import { checkForumReportRateLimit } from "@/lib/data/rateLimit"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

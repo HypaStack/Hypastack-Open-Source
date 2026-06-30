@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { getClient } from "@/lib/db"
-import { downloadHeadByKey } from "@/lib/r2"
+import { getClient } from "@/lib/data/db"
+import { downloadHeadByKey } from "@/lib/storage/r2"
 
 export async function GET(
   req: Request,

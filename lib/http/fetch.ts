@@ -8,7 +8,7 @@
  * then retries the original request once.
  *
  * Usage:
- *   import { apiFetch } from "@/lib/fetch"
+ *   import { apiFetch } from "@/lib/http/fetch"
  *   const res = await apiFetch("/api/v2/files", { method: "GET" })
  */
 

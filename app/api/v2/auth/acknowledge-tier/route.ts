@@ -1,5 +1,5 @@
-import { withAuth } from "@/lib/route"
-import { acknowledgeUserTier } from "@/lib/user-model"
+import { withAuth } from "@/lib/http/route"
+import { acknowledgeUserTier } from "@/lib/models/userModel"
 import { NextResponse } from "next/server"
 export const dynamic = "force-dynamic"
 

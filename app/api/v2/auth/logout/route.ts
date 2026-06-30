@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { clearAuthCookie, clearRefreshCookie, getCurrentUser } from "@/lib/auth"
-import { revokeSession } from "@/lib/user-model"
-import { bustCache } from "@/lib/cache"
+import { apiError } from "@/lib/http/apiError"
+import { clearAuthCookie, clearRefreshCookie, getCurrentUser } from "@/lib/security/auth"
+import { revokeSession } from "@/lib/models/userModel"
+import { bustCache } from "@/lib/data/cache"
 import { API_ERRORS } from "@/constants"
 
 export async function POST(request: NextRequest) {

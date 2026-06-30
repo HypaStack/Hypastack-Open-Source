@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { withAuth } from "@/lib/route"
-import { getStagingRecord, deleteStagingRecord } from "@/lib/file-model"
-import { abortMultipartUpload } from "@/lib/r2-multipart"
+import { apiError } from "@/lib/http/apiError"
+import { withAuth } from "@/lib/http/route"
+import { getStagingRecord, deleteStagingRecord } from "@/lib/models/fileModel"
+import { abortMultipartUpload } from "@/lib/storage/r2Multipart"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

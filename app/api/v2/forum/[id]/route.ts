@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { withAuth } from "@/lib/route"
-import { getForumPostById, getForumPostBySlug, incrementViewCount, deleteForumPost, getForumFileR2KeysByPostId } from "@/lib/forum-model"
-import { deleteObjectsBatch } from "@/lib/r2"
+import { withAuth } from "@/lib/http/route"
+import { getForumPostById, getForumPostBySlug, incrementViewCount, deleteForumPost, getForumFileR2KeysByPostId } from "@/lib/models/forumModel"
+import { deleteObjectsBatch } from "@/lib/storage/r2"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"

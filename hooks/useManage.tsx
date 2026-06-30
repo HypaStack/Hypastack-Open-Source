@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
-import { getSessionKey, decryptE2E } from "@/lib/crypto-client"
-import { apiFetch } from "@/lib/fetch"
+import { getSessionKey, decryptE2E } from "@/lib/security/cryptoClient"
+import { apiFetch } from "@/lib/http/fetch"
 
 export type Tier = "free" | "essential" | "premium" | "ultimate"
 

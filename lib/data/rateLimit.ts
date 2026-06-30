@@ -1,5 +1,5 @@
-import { getPool } from './db'
-import { getRedis } from './redis'
+import { getPool } from '@/lib/data/db'
+import { getRedis } from '@/lib/data/redis'
 import { WINDOW_MINUTES, MAX_ATTEMPTS } from '@/constants'
 
 type TierKey = 'free' | 'essential' | 'premium' | 'ultimate'

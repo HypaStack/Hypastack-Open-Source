@@ -1,11 +1,11 @@
 import { NextResponse, NextRequest } from "next/server"
-import { apiError } from "@/lib/api-error"
-import { getClient } from "@/lib/db"
-import { generateFileId, putObjectByKey } from "@/lib/r2"
+import { apiError } from "@/lib/http/apiError"
+import { getClient } from "@/lib/data/db"
+import { generateFileId, putObjectByKey } from "@/lib/storage/r2"
 import { API_ERRORS } from "@/constants"
-import { getCurrentUser } from "@/lib/auth"
-import { getUserTier } from "@/lib/user-model"
-import { checkUploadRateLimit } from "@/lib/rate-limit"
+import { getCurrentUser } from "@/lib/security/auth"
+import { getUserTier } from "@/lib/models/userModel"
+import { checkUploadRateLimit } from "@/lib/data/rateLimit"
 
 export async function POST(req: NextRequest) {
   try {
