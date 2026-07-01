@@ -41,6 +41,14 @@ export function generateSalt(): string {
   return crypto.randomBytes(16).toString("hex")
 }
 
+// Deterministic, indexable lookup value for an identifier. Used only to find
+// the account row at login (the PBKDF2 password_hash still authenticates).
+// A plain SHA-256 is safe here because identifiers carry ~190 bits of entropy,
+// so the lookup value is not brute-forceable even if the column leaks.
+export function computeKeyLookup(key: string): string {
+  return crypto.createHash("sha256").update(key).digest("hex")
+}
+
 export function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
   const useSalt = salt || generateSalt()
   const hash = crypto

@@ -7,7 +7,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
-import { generateUserIdClient, generateAccessKeyClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
+import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
 import { Button } from "@/components/ui/button"
 
@@ -45,7 +45,7 @@ export default function CreateAccountPage() {
     setIsLoading(true)
     try {
       const userId = generateUserIdClient()
-      const accessKey = generateAccessKeyClient(userId)
+      const accessKey = generateIdentifierClient()
       const masterKey = await deriveMasterKey(accessKey, userId)
       const nickname_encrypted = await encryptE2E(nickname, masterKey)
       const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
@@ -126,14 +126,14 @@ export default function CreateAccountPage() {
             >
               Account created
             </h1>
-            <p className="text-[14px] text-[#898e97] mb-8">Save your access key somewhere safe, it's the only way to sign in.</p>
+            <p className="text-[14px] text-[#898e97] mb-8">Save your identifier somewhere safe, it's the only way to sign in.</p>
 
             <div className="relative overflow-hidden rounded-[8px] p-[1px] mb-5">
               <div className="absolute inset-0 bg-[rgba(255,255,255,0.08)] z-0" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_40%,rgba(247,248,248,0.1)_70%,rgba(247,248,248,0.6)_100%)] blur-md z-0" />
               <div className="relative z-10 bg-[#0a0b0c] h-full w-full rounded-[7px] p-4 flex flex-col items-start overflow-hidden">
                 <div className="w-full flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Access Key</span>
+                  <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Identifier</span>
                   <button
                     onClick={handleCopy}
                     className="flex items-center gap-1.5 text-[12px] font-medium text-[#898e97] hover:text-[#f7f8f8] transition-colors"

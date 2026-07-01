@@ -402,6 +402,11 @@ export async function initDatabase(): Promise<void> {
       { version: '2026-06-30-drop-pin-staging', sql: `ALTER TABLE upload_staging DROP COLUMN IF EXISTS pin` },
       { version: '2026-06-30-cdn-slug', sql: `ALTER TABLE cdn_assets ADD COLUMN IF NOT EXISTS slug VARCHAR(64)` },
       { version: '2026-06-30-cdn-slug-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_cdn_assets_slug ON cdn_assets(slug) WHERE slug IS NOT NULL` },
+      // Deterministic login lookup for prefix-only identifiers (cid_...) that
+      // don't embed the user id. Legacy hpsk_ keys are resolved via the id
+      // embedded in the key and get backfilled here on next login.
+      { version: '2026-07-01-user-key-lookup', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS key_lookup TEXT` },
+      { version: '2026-07-01-user-key-lookup-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_key_lookup ON users(key_lookup) WHERE key_lookup IS NOT NULL` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

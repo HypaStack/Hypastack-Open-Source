@@ -49,6 +49,7 @@ export interface CreateUserInput {
   id: string
   nickname_encrypted: string
   password_hash: string
+  key_lookup?: string
 }
 
 export async function createUser(input: CreateUserInput): Promise<void> {
@@ -56,9 +57,36 @@ export async function createUser(input: CreateUserInput): Promise<void> {
   const pool = getPool()
 
   await pool.query(
-    `INSERT INTO users (id, nickname_encrypted, password_hash, created_at, updated_at)
-     VALUES ($1, $2, $3, NOW(), NOW())`,
-    [input.id, input.nickname_encrypted, input.password_hash]
+    `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, NOW(), NOW())`,
+    [input.id, input.nickname_encrypted, input.password_hash, input.key_lookup ?? null]
+  )
+}
+
+// Resolve an account by the deterministic identifier lookup (cid_ keys, which
+// don't embed the user id). Returns password_hash so the caller can still
+// authenticate with PBKDF2.
+export async function getUserForAuthByKeyLookup(keyLookup: string): Promise<{ id: string; password_hash: string } | null> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `SELECT id, password_hash FROM users WHERE key_lookup = $1`,
+    [keyLookup]
+  )
+
+  return result.rows.length > 0 ? result.rows[0] : null
+}
+
+// Backfill the lookup for a legacy (hpsk_) account after a successful login,
+// so future logins can also resolve it via the indexed path.
+export async function setUserKeyLookup(userId: string, keyLookup: string): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  await pool.query(
+    `UPDATE users SET key_lookup = $1 WHERE id = $2 AND key_lookup IS NULL`,
+    [keyLookup, userId]
   )
 }
 

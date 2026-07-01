@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { z } from "zod"
-import { hashPasswordAsync } from "@/lib/security/auth"
+import { hashPasswordAsync, computeKeyLookup } from "@/lib/security/auth"
 import { createUser } from "@/lib/models/userModel"
 import { checkRegisterRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
@@ -12,7 +12,7 @@ const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
 const RegisterSchema = z.object({
   userId: z.string().uuid(),
-  accessKey: z.string().startsWith("hpsk_").min(40),
+  accessKey: z.string().regex(/^(hpsk_|cid_)/, "Invalid identifier format").min(20),
   nickname_encrypted: z.string()
     .min(10, "Ciphertext too short")
     .max(500, "Ciphertext too long")
@@ -32,13 +32,16 @@ export async function POST(request: NextRequest) {
 
     const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
 
-    // The access key encodes the user id as hpsk_<uuid-no-hyphens>_<secret>,
-    // and login derives the account id from that embedded segment. Reject any
-    // registration whose declared userId disagrees with the key, so a client
-    // can't create an account whose id and key are inconsistent.
-    const embeddedId = accessKey.split("_")[1] || ""
-    if (embeddedId.toLowerCase() !== userId.replace(/-/g, "").toLowerCase()) {
-        return apiError(400, API_ERRORS.BAD_REQUEST, "Access key does not match account id")
+    // Legacy hpsk_ keys encode the user id as hpsk_<uuid-no-hyphens>_<secret>;
+    // reject any registration whose declared userId disagrees with the key so a
+    // client can't create an account whose id and key are inconsistent. New
+    // cid_ identifiers carry no embedded id (login resolves them via key_lookup),
+    // so this consistency check does not apply to them.
+    if (accessKey.startsWith("hpsk_")) {
+      const embeddedId = accessKey.split("_")[1] || ""
+      if (embeddedId.toLowerCase() !== userId.replace(/-/g, "").toLowerCase()) {
+          return apiError(400, API_ERRORS.BAD_REQUEST, "Identifier does not match account id")
+      }
     }
 
     const csrfValid = await validateCsrfToken(csrfToken)
@@ -64,6 +67,7 @@ export async function POST(request: NextRequest) {
       id: userId,
       nickname_encrypted,
       password_hash: passwordHash,
+      key_lookup: computeKeyLookup(accessKey),
     })
 
     return NextResponse.json({ success: true })

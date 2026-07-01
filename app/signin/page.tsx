@@ -41,8 +41,10 @@ export default function SignInPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to sign in")
-      const userId = extractUserIdFromAccessKey(accessKey)
-      if (!userId) throw new Error("Invalid access key format")
+      // cid_ identifiers don't embed the id, so the server returns it; legacy
+      // hpsk_ keys fall back to extracting it locally.
+      const userId = data.userId || extractUserIdFromAccessKey(accessKey)
+      if (!userId) throw new Error("Invalid identifier format")
       const masterKey = await deriveMasterKey(accessKey, userId)
       await storeSessionKey(masterKey)
       const params = new URLSearchParams(window.location.search)
@@ -77,7 +79,7 @@ export default function SignInPage() {
             >
               Sign in
             </h1>
-            <p className="text-[14px] text-[#898e97] mb-8">Enter your access key to continue.</p>
+            <p className="text-[14px] text-[#898e97] mb-8">Enter your identifier to continue.</p>
             {error && (
               <div className="flex items-center gap-2.5 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] px-4 py-3 rounded-full mb-5">
                 <MIcon name="error" size={15} className="shrink-0" />
@@ -87,7 +89,7 @@ export default function SignInPage() {
             {!isLoading ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-[13px] font-medium text-[#f7f8f8] mb-2 pl-1">Access key</label>
+                  <label className="block text-[13px] font-medium text-[#f7f8f8] mb-2 pl-1">Identifier</label>
                   <div
                     className="flex items-center border border-[rgba(255,255,255,0.08)] bg-[#0a0b0c] focus-within:border-[rgba(255,255,255,0.2)] transition-colors rounded-full"
                   >
@@ -96,7 +98,7 @@ export default function SignInPage() {
                       type={showKey ? "text" : "password"}
                       value={accessKey}
                       onChange={(e) => setAccessKey(e.target.value)}
-                      placeholder="hpsk_..."
+                      placeholder="cid_..."
                       autoComplete="new-password"
                       autoCorrect="off"
                       autoCapitalize="off"

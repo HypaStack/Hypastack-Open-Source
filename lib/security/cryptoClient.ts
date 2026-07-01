@@ -133,6 +133,20 @@ export function generateAccessKeyClient(userId: string): string {
   return `hpsk_${cleanId}_${secretHex}`
 }
 
+// New identifier scheme: cid_<32 random alphanumerics>. Carries no embedded
+// user id (the server resolves it via a deterministic lookup at login), so the
+// account id is generated and stored separately.
+export function generateIdentifierClient(): string {
+  assertWebCrypto()
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  const bytes = crypto.getRandomValues(new Uint8Array(32))
+  let out = ""
+  for (let i = 0; i < bytes.length; i++) {
+    out += alphabet[bytes[i] % alphabet.length]
+  }
+  return `cid_${out}`
+}
+
 export function extractUserIdFromAccessKey(accessKey: string): string | null {
   const parts = accessKey.split("_")
   if (parts.length !== 3 || parts[0] !== "hpsk" || parts[1].length !== 32) {
