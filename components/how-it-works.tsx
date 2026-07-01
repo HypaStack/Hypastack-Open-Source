@@ -122,19 +122,6 @@ export function HowItWorks() {
                   "We switched to Hypastack for hosting our files and haven't looked back. <span className="text-[#898e97]">It delivers huge files near-instantly with zero overhead and absolute privacy."</span>
                 </h2>
               </div>
-              <div className="hidden sm:flex flex-col items-end text-right shrink-0">
-                <div className="flex flex-col gap-0.5 mb-3">
-                  <span
-                    className="text-[17px] font-semibold text-[#f7f8f8]"
-                  >
-                    Someone
-                  </span>
-                  <span className="text-[#898e97] text-[14px] font-medium">User</span>
-                </div>
-                <div className="w-[32px] h-[32px] rounded-full overflow-hidden border border-[rgba(0,0,0,0.08)] shadow-sm bg-[#08090a]">
-                  <img src="/user/no-profile.png" alt="Someone" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
-                </div>
-              </div>
             </div>
           </div>
         </div>
