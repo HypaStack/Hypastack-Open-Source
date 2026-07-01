@@ -1,6 +1,7 @@
 import { getPool, ensureDatabase, getClient } from '@/lib/data/db'
 import { cached, bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
+import { scheduleFileExpiry } from '@/lib/expiryScheduler'
 import { randomUUID, webcrypto } from 'node:crypto'
 
 export interface FileRecord {
@@ -186,6 +187,7 @@ export async function promoteStagingToFile(id: string, fileHash?: string): Promi
       await bustCache(`user:${uid}:files`, `user:${uid}:file-stats`, `user:${uid}:storage`)
       await bustRouteCache(uid, 'files:list')
     }
+    scheduleFileExpiry(staging.id, staging.r2_key, uid ?? null, finalExpiresAt)
     return true
 
   } catch (error) {
@@ -249,6 +251,7 @@ export async function createFileRecord(input: CreateFileInput): Promise<void> {
     [input.id, input.r2_key, input.original_name, input.file_size, input.content_type, input.expires_at, input.burn_on_read ? 1 : 0, input.custom_filename || null, input.note || null, input.user_id || null, input.encryption_iv || null, input.encryption_auth_tag || null, input.slug || null]
   )
   if (input.user_id) await bustCache(`user:${input.user_id}:files`, `user:${input.user_id}:file-stats`, `user:${input.user_id}:storage`)
+  scheduleFileExpiry(input.id, input.r2_key, input.user_id ?? null, input.expires_at)
 }
 
 export async function getFileById(id: string, retries = 2): Promise<FileRecord | null> {
@@ -449,6 +452,28 @@ export async function getExpiredFiles(limit = 500): Promise<FileRecord[]> {
   }))
 }
 
+/**
+ * Files committed and expiring within the next hour. Used by the expiry
+ * scheduler to arm precise deletion timers (on startup and each hourly tick).
+ */
+export async function getFilesExpiringWithinHour(): Promise<
+  { id: string; r2_key: string; user_id: string | null; expires_at: Date }[]
+> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query(
+    `SELECT id, r2_key, user_id, expires_at FROM basedrop_files
+     WHERE expires_at > NOW() AND expires_at <= NOW() + INTERVAL '1 hour'
+     LIMIT 2000`
+  )
+  return result.rows.map(row => ({
+    id: row.id,
+    r2_key: row.r2_key,
+    user_id: row.user_id,
+    expires_at: row.expires_at,
+  }))
+}
+
 export async function deleteFileRecord(id: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
@@ -525,7 +550,7 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
       `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
               burn_on_read, upload_completed, upload_started_at,
               custom_filename, note, starred, folder_id
-       FROM basedrop_files WHERE user_id = $1 ORDER BY upload_date DESC`,
+       FROM basedrop_files WHERE user_id = $1 AND expires_at > NOW() ORDER BY upload_date DESC`,
       [userId]
     )
 

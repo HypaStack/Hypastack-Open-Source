@@ -1,6 +1,7 @@
 import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from '@/lib/models/fileModel'
 import { deleteByKey } from '@/lib/storage/r2'
 import { getClient } from '@/lib/data/db'
+import { scheduleUpcomingExpiries } from '@/lib/expiryScheduler'
 
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number
@@ -49,12 +50,14 @@ export function startCleanupScheduler(): NodeJS.Timeout {
   cleanupExpiredFiles()
     .then(() => cleanupStaging())
     .then(() => cleanupDumpsterPastes())
+    .then(() => scheduleUpcomingExpiries())
     .catch(console.error)
 
   return setInterval(() => {
     cleanupExpiredFiles()
       .then(() => cleanupStaging())
       .then(() => cleanupDumpsterPastes())
+      .then(() => scheduleUpcomingExpiries())
       .catch(console.error)
   }, 60 * 60 * 1000)
 }
