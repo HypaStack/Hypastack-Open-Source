@@ -33,7 +33,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Clamp to a 1em square and clip so the ligature name (rendered as an
+     invisible fallback during font-display:block) can't reserve extra width
+     and cause the "wide blank → snap" FOUC. */
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  overflow: hidden;
+  /* Prefixes required — without -webkit-/-moz- the ligature text was still
+     selectable/copyable in Chromium, leaking icon names like "bug_report". */
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
