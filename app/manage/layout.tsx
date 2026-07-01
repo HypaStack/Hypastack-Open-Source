@@ -433,6 +433,7 @@ function ManageLayoutInner({
           
           <button
             type="button"
+            onClick={() => openPreferences("plans")}
             className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 mt-4"
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
