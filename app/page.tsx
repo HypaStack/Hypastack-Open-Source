@@ -46,7 +46,7 @@ export default function Home() {
       <Navbar />
       <main className="relative min-h-screen bg-[#08090a] text-foreground w-full overflow-hidden">
         <Hero />
-        <div className="flex flex-col gap-[150px] sm:gap-[250px] lg:gap-[350px] pb-[100px] sm:pb-[150px]">
+        <div className="flex flex-col gap-[80px] sm:gap-[120px] lg:gap-[180px] pb-[100px] sm:pb-[150px]">
           <HowItWorks />
           <Faq />
           <CtaSection />
