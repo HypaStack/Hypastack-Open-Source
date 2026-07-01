@@ -75,7 +75,7 @@ export function HowItWorks() {
                     className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-medium"
                     style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
                   >
-                    Privacy is a fundamental human right, <span className="text-[#898e97]">not a confession.</span>
+                    Privacy is a <span className="text-[#898e97]">fundamental human right.</span>
                   </h2>
                 <Button href="https://github.com/hypastack" target="_blank" rel="noopener noreferrer" variant="landing-primary" size="lg" className="shrink-0">
                   <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current text-[#f7f8f8]">
@@ -84,9 +84,6 @@ export function HowItWorks() {
                   <span>Source code</span>
                 </Button>
                 </div>
-                <p className="mt-4 text-[16px] sm:text-[18px] leading-relaxed text-[#898e97]">
-                  And you may ask why... here's why.
-                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 sm:mt-12">
