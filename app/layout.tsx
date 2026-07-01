@@ -147,6 +147,14 @@ export default async function RootLayout({
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://hypastack.com" />
         <link rel="dns-prefetch" href="https://hypastack.com" />
+
+        {/* Font origin: preconnect + preload the primary SF Pro Display weights
+            (Regular → 400/500, Medium → 600/700) so they arrive before first
+            paint and avoid the fallback-font flash (FOUC). */}
+        <link rel="preconnect" href="https://r2.hypastack.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://r2.hypastack.com" />
+        <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/58kpu13r0tb0/SFPRODISPLAYREGULAR.OTF" />
+        <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/rqid9rynsfmy/SFPRODISPLAYMEDIUM.OTF" />
         
         {/* Alternate language versions */}
         <link rel="alternate" hrefLang="en" href="https://hypastack.com" />
