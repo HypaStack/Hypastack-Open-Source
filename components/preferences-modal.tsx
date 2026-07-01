@@ -740,8 +740,18 @@ function EditProfileDialog({
     return () => document.removeEventListener("keydown", onKey)
   }, [open, onClose])
 
+  // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.
+  const nicknameError =
+    nickname.length === 0 ? "" :
+    /\s/.test(nickname) ? "No spaces allowed." :
+    !/^[A-Za-z0-9]*$/.test(nickname) ? "Letters and numbers only — no symbols." :
+    nickname.length < 3 ? "Must be at least 3 characters." :
+    nickname.length > 12 ? "Must be 12 characters or fewer." : ""
+  const isNicknameValid = /^[A-Za-z0-9]{3,12}$/.test(nickname)
+
   const handleSave = async () => {
     if (saving) return
+    if (!isNicknameValid) return
     if (nickname.trim() === user.nickname) {
       onClose()
       return
@@ -817,6 +827,9 @@ function EditProfileDialog({
                   />
                 </div>
 
+                {nicknameError && (
+                  <p className="text-[11px] text-red-500">{nicknameError}</p>
+                )}
                 {error && (
                   <p className="text-[11px] text-red-500">{error}</p>
                 )}
@@ -836,7 +849,7 @@ function EditProfileDialog({
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={saving || !nickname.trim()}
+                disabled={saving || !isNicknameValid}
                 className="relative flex-1 inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ height: 38 }}
               >

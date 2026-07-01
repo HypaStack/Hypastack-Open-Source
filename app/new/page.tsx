@@ -35,7 +35,14 @@ export default function CreateAccountPage() {
     if (!authLoading && isAuthenticated) window.location.href = "/manage/files"
   }, [isAuthenticated, authLoading])
 
-  const isNicknameValid = nickname.length > 0 && nickname.length <= 100
+  // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.
+  const nicknameError =
+    nickname.length === 0 ? "" :
+    /\s/.test(nickname) ? "No spaces allowed." :
+    !/^[A-Za-z0-9]*$/.test(nickname) ? "Letters and numbers only — no symbols." :
+    nickname.length < 3 ? "Must be at least 3 characters." :
+    nickname.length > 12 ? "Must be 12 characters or fewer." : ""
+  const isNicknameValid = /^[A-Za-z0-9]{3,12}$/.test(nickname)
   const canSubmit = isNicknameValid && ageConfirmed && !isLoading && (turnstileToken || process.env.NODE_ENV === "development")
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,8 +257,8 @@ export default function CreateAccountPage() {
                 </div>
               </div>
 
-              {nickname.length > 100 && (
-                <p className="text-[12px] text-[#ff6b6b] pl-1">Username must be 100 characters or fewer</p>
+              {nicknameError && (
+                <p className="text-[12px] text-[#ff6b6b] pl-1">{nicknameError}</p>
               )}
 
               <label className="flex items-start gap-3 cursor-pointer select-none pt-2">
