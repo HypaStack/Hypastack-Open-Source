@@ -54,7 +54,7 @@ export function Navbar() {
             Log in
           </Button>
           <Button
-            href="#features"
+            href="/about"
             variant="landing-primary"
             size="sm"
           >
