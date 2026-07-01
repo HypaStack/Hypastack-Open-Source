@@ -1,9 +1,6 @@
 name: Deploy Hypastack
 
-# Auto-deploy now runs on the VPS itself: a systemd user timer polls origin/main
-# and rebuilds on change (see /home/ubuntu/deploy-hypastack.sh). That keeps the
-# deploy off the inbound-SSH path from GitHub runners, whose shared Azure IPs
-# intermittently land in the VPS's CrowdSec blocklist and get dropped. This
+# Auto-deploy runs on the server via a scheduled rebuild-on-change; this
 # workflow is kept only as a manual fallback.
 on:
   workflow_dispatch:
