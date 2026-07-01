@@ -563,7 +563,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             )}
           </div>
           <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-[#555] dark:text-[#e3e3e3] hover:text-[#111] dark:hover:text-white hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#2c2c30] flex items-center justify-center text-[#555] dark:text-[#e3e3e3] hover:text-[#111] dark:hover:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#3a3a3b] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
             aria-label="Change avatar"
           >
             <MIcon name="photo_camera" size={16} />
