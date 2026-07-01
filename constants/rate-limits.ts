@@ -7,6 +7,7 @@ export const WINDOW_MINUTES = {
   api: 1,
   forumPost: 10,
   forumUpload: 5,
+  proxyToken: 1,
 } as const
 
 export const MAX_ATTEMPTS = {
@@ -18,6 +19,7 @@ export const MAX_ATTEMPTS = {
   api:            { free: 150 },
   forumPost:      { free: 5,  essential: 15, premium: 30,  ultimate: 60  },
   forumUpload:    { free: 3,  essential: 15, premium: 30,  ultimate: 60  },
+  proxyToken:     { free: 60 },
 } as const
 
 /** Max page refreshes allowed before triggering a lockout (Tauri desktop) */

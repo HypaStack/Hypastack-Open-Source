@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { API_ERRORS } from "@/constants"
+import { getHashedIp } from "@/lib/http/ip"
+import { checkProxyTokenRateLimit } from "@/lib/data/rateLimit"
 
 export const dynamic = "force-dynamic"
 
@@ -22,8 +24,13 @@ async function getSigningKey(): Promise<CryptoKey | null> {
   return _cachedKey
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const rl = await checkProxyTokenRateLimit(getHashedIp(req))
+    if (!rl.allowed) {
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+    }
+
     const key = await getSigningKey()
     if (!key) {
       console.error("[ProxyToken] PROXY_SECRET env var is not set")

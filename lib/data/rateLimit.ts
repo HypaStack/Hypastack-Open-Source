@@ -104,6 +104,8 @@ async function checkRateLimit(
       resetInSeconds
     }
   } catch (error) {
+    // Fail closed: if Redis AND Postgres are both unreachable, deny rather than
+    // let requests through unthrottled.
     console.error(`[RateLimit] Error checking ${action} rate limit:`, error)
     return { allowed: false, remaining: 0, resetInSeconds: windowSeconds }
   }
@@ -196,5 +198,11 @@ export async function checkApiRateLimit(accountId: string): Promise<RateLimitRes
 /** 5 reports per IP per 10 minutes — prevents forum_reports table flooding */
 export async function checkForumReportRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'forum_report', 10, 5)
+}
+
+/** Throttle the unauthenticated proxy-token endpoint per IP (client caches the
+ *  token for ~50s, so a real user needs far fewer than this). */
+export async function checkProxyTokenRateLimit(ip: string): Promise<RateLimitResult> {
+  return checkRateLimit(ip, 'proxytoken', WINDOW_MINUTES.proxyToken, MAX_ATTEMPTS.proxyToken.free)
 }
 

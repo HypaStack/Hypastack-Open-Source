@@ -3,6 +3,8 @@ import { withRouteCache } from "@/lib/http/routeCache"
 import { withAuth } from "@/lib/http/route"
 import { validateCsrfToken } from "@/lib/security/security"
 import { createForumPost, getForumPosts, normalizeTags } from "@/lib/models/forumModel"
+import { checkApiRateLimit } from "@/lib/data/rateLimit"
+import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -10,6 +12,11 @@ export const dynamic = "force-dynamic"
 // GET /api/v2/forum — public listing/search
 export async function GET(request: NextRequest) {
   try {
+    const rl = await checkApiRateLimit(getHashedIp(request))
+    if (!rl.allowed) {
+      return NextResponse.json({ error: API_ERRORS.TOO_MANY_REQUESTS }, { status: 429 })
+    }
+
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get("page") ?? "1", 10)
     const tag = url.searchParams.get("tag") ?? undefined
