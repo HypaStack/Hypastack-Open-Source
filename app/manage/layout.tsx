@@ -24,6 +24,7 @@ import {
   SIDEBAR_WIDTH,
   STORAGE_KEY_DONATION_NOTICE,
 } from "@/constants"
+import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -168,7 +169,7 @@ function ManageLayoutInner({
   const router = useRouter()
   const pathname = usePathname()
   const { isAuthenticated } = useAuth()
-  const { user, stats, isLoading, logout } = useManage()
+  const { user, stats, files, cdnAssets, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
 
   const currentSection = sectionTitle(pathname)
@@ -270,6 +271,16 @@ function ManageLayoutInner({
 
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = stats?.storagePercent ?? 0
+
+  // Sidebar usage indicators for shared file links and CDN assets, against the
+  // user's tier caps. Bar goes gray → yellow (past halfway) → red (at the cap).
+  const tierLimits = getTierLimits(normalizeTier(user.tier))
+  const sharedUsed = files?.length ?? 0
+  const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
+  const sharedPct = tierLimits.maxFileLinks > 0 ? (sharedUsed / tierLimits.maxFileLinks) * 100 : 0
+  const cdnPct = tierLimits.maxCdnLinks > 0 ? (cdnUsed / tierLimits.maxCdnLinks) * 100 : 0
+  const usageBarColor = (pct: number) =>
+    pct >= 100 ? "bg-red-500" : pct >= 50 ? "bg-yellow-500" : "bg-gray-400 dark:bg-gray-500"
 
   return (
     <>
@@ -423,9 +434,41 @@ function ManageLayoutInner({
                 <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
               </div>
               <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
-                <div 
-                  className="h-full rounded-full bg-[#171717] dark:bg-[#f7f8f8]" 
-                  style={{ width: `${usedPct}%` }} 
+                <div
+                  className="h-full rounded-full bg-[#171717] dark:bg-[#f7f8f8]"
+                  style={{ width: `${usedPct}%` }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between text-sm mb-1.5">
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
+                  <span>Shared Links</span>
+                </div>
+                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{tierLimits.maxFileLinks}</span>
+              </div>
+              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${usageBarColor(sharedPct)}`}
+                  style={{ width: `${Math.min(100, sharedPct)}%` }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between text-sm mb-1.5">
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
+                  <span>CDN Assets</span>
+                </div>
+                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
+              </div>
+              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${usageBarColor(cdnPct)}`}
+                  style={{ width: `${Math.min(100, cdnPct)}%` }}
                 />
               </div>
             </div>
