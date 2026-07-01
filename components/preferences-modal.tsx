@@ -683,14 +683,14 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px', minHeight: 140 }}>
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div>
           <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Delete account</p>
           <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">
             All data will be permanently erased. This cannot be undone.
           </p>
         </div>
-        <div className="mt-auto pt-4 flex justify-end">
+        <div className="pt-4 flex justify-end">
           <button
             type="button"
             onClick={handleDeleteAccount}
