@@ -10,7 +10,6 @@ import { getCdnFoldersByUserId } from "@/lib/models/cdnFolderModel"
 import { decryptFilename } from "@/lib/security/filenameCrypto"
 import { normalizeTier, isPaidTier, getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
-export const dynamic = "force-dynamic"
 
 export async function GET(request: NextRequest) {
   try {
