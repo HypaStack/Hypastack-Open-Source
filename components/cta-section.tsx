@@ -32,7 +32,7 @@ export function CtaSection() {
                     <span>Welcome <span className="text-[#898e97]">back!</span></span>
                   </div>
                 </h2>
-                <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Button href="/manage" variant="landing-primary" size="lg">
                     Go to Dashboard
                   </Button>
