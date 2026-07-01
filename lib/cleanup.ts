@@ -46,19 +46,22 @@ export async function cleanupExpiredFiles(): Promise<{
 }
 
 export function startCleanupScheduler(): NodeJS.Timeout {
-  // Run sequentially on startup
-  cleanupExpiredFiles()
-    .then(() => cleanupStaging())
-    .then(() => cleanupDumpsterPastes())
-    .then(() => scheduleUpcomingExpiries())
-    .catch(console.error)
+  // The hypasched sidecar owns expiry deletion and the periodic sweeps. This
+  // hourly tick only runs the legacy in-process cleanup as a total fallback
+  // when the sidecar is unreachable.
+  const tick = async () => {
+    const { schedHealthy } = await import('@/lib/schedService')
+    if (await schedHealthy()) return
+    console.warn('[Cleanup] sched service unreachable, running legacy sweep')
+    await cleanupExpiredFiles()
+    await cleanupStaging()
+    await cleanupDumpsterPastes()
+    await scheduleUpcomingExpiries()
+  }
 
+  tick().catch(console.error)
   return setInterval(() => {
-    cleanupExpiredFiles()
-      .then(() => cleanupStaging())
-      .then(() => cleanupDumpsterPastes())
-      .then(() => scheduleUpcomingExpiries())
-      .catch(console.error)
+    tick().catch(console.error)
   }, 60 * 60 * 1000)
 }
 

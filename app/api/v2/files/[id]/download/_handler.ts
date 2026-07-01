@@ -113,7 +113,12 @@ export async function handleDownloadPost(
     }
 
     if (burned) {
-      executeBurnDeletion(record.id, record.r2_key);
+      // Prefer the hypasched sidecar (supervised retries, survives restarts);
+      // fall back to the legacy in-process delayed retry loop if unreachable.
+      import("@/lib/schedService")
+        .then(({ schedBurnDeletion }) =>
+          schedBurnDeletion(record.id, record.r2_key, record.user_id ?? null, BURN_DELETE_DELAY_MS))
+        .catch(() => executeBurnDeletion(record.id, record.r2_key))
     }
 
 

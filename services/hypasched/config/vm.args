@@ -1,0 +1,6 @@
+## The relx start script requires a node name. Distribution and epmd are
+## pinned to loopback via sys.config + ERL_EPMD_ADDRESS so no external TCP
+## port opens; the service itself only serves a unix socket.
+-sname hypasched
+-setcookie hypasched_local_only
++A 8

@@ -1,0 +1,18 @@
+{application, hypasched, [
+    {description, "File expiry and deletion scheduler for Hypastack"},
+    {vsn, "0.1.0"},
+    {registered, [hypasched_sup, hypasched_db, hypasched_manager]},
+    {mod, {hypasched_app, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        crypto,
+        public_key,
+        ssl,
+        inets,
+        epgsql
+    ]},
+    {env, []},
+    {licenses, ["AGPL-3.0"]},
+    {links, []}
+]}.
