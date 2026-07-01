@@ -282,7 +282,7 @@ export default function CreateAccountPage() {
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <MIcon name="progress_activity" size={15} className="animate-spin" />
+                      <span className="inline-block h-[15px] w-[15px] rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
                       Creating…
                     </span>
                   ) : "Create account"}
