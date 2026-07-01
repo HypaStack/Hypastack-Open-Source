@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import crypto from "crypto"
 import { z } from "zod"
-import { verifyPassword, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword } from "@/lib/security/auth"
+import { verifyPasswordAsync, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword } from "@/lib/security/auth"
 import { getUserForAuthById, updateLastLogin, createUserSession } from "@/lib/models/userModel"
 import { checkLoginRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
@@ -57,14 +57,14 @@ export async function handleLoginPost(request: NextRequest) {
 
       const user = await getUserForAuthById(extractedId)
       if (user && user.password_hash) {
-        if (verifyPassword(accessKey, user.password_hash)) {
+        if (await verifyPasswordAsync(accessKey, user.password_hash)) {
           matchedUserId = user.id
         }
       } else {
-        verifyPassword(accessKey, DUMMY_HASH)
+        await verifyPasswordAsync(accessKey, DUMMY_HASH)
       }
     } else {
-      verifyPassword(accessKey, DUMMY_HASH)
+      await verifyPasswordAsync(accessKey, DUMMY_HASH)
     }
 
     if (!matchedUserId) {

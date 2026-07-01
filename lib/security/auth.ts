@@ -3,6 +3,7 @@ import { cookies } from "next/headers"
 import { NextRequest } from "next/server"
 import { getPool, ensureDatabase } from "@/lib/data/db"
 import { cached } from "@/lib/data/cache"
+import { deriveViaService } from "@/lib/security/hashService"
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
@@ -56,11 +57,44 @@ export function verifyPassword(password: string, storedHash: string): boolean {
   const [salt] = storedHash.split(":")
   if (!salt) return false
   const { hash } = hashPassword(password, salt)
-  
+
   const hashBuf = Buffer.from(hash)
   const storedBuf = Buffer.from(storedHash)
   if (hashBuf.length !== storedBuf.length) return false
-  
+
+  return crypto.timingSafeEqual(hashBuf, storedBuf)
+}
+
+// Async variants that offload PBKDF2 to the Go sidecar and fall back to the
+// synchronous in-process implementation above if it's unreachable. Same hash
+// format either way, so results are interchangeable.
+
+export async function hashPasswordAsync(
+  password: string,
+  salt?: string,
+): Promise<{ hash: string; salt: string }> {
+  try {
+    return await deriveViaService(password, salt)
+  } catch {
+    return hashPassword(password, salt)
+  }
+}
+
+export async function verifyPasswordAsync(password: string, storedHash: string): Promise<boolean> {
+  const [salt] = storedHash.split(":")
+  if (!salt) return false
+
+  let computed: string
+  try {
+    computed = (await deriveViaService(password, salt)).hash
+  } catch {
+    return verifyPassword(password, storedHash)
+  }
+
+  const hashBuf = Buffer.from(computed)
+  const storedBuf = Buffer.from(storedHash)
+  if (hashBuf.length !== storedBuf.length) return false
+
   return crypto.timingSafeEqual(hashBuf, storedBuf)
 }
 

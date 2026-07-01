@@ -24,6 +24,9 @@ jobs:
             cd ~/Hypastack-Open-Source
             git fetch origin
             git reset --hard origin/main
+            mkdir -p /home/ubuntu/hypahash/run
+            podman build --network=host -t localhost/hypahash:latest ./services/hypahash
             podman build --network=host -t localhost/hypastack:latest .
+            systemctl --user restart hypahash.service
             systemctl --user restart hypastack.service
             podman image prune -f

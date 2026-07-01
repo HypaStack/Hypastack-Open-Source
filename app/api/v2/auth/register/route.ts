@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { z } from "zod"
-import { hashPassword } from "@/lib/security/auth"
+import { hashPasswordAsync } from "@/lib/security/auth"
 import { createUser } from "@/lib/models/userModel"
 import { checkRegisterRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Too many registration attempts. Please try again later.")
     }
 
-    const { hash: passwordHash } = hashPassword(accessKey)
+    const { hash: passwordHash } = await hashPasswordAsync(accessKey)
 
     await createUser({
       id: userId,
