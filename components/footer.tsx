@@ -86,7 +86,7 @@ export function Footer() {
       <div className="w-full max-w-[1440px] mx-auto flex flex-col relative z-[60]">
         <footer className="w-full bg-[#08090a] text-[#a3a3a3] pt-6 pb-8 px-8 md:px-16 lg:px-20 font-sans relative">
           <div className="w-full mx-auto relative z-20">
-            <div className="flex items-start justify-between mb-4 mt-2">
+            <div className="flex items-stretch justify-between mb-4 mt-2">
               {/* Left Column: Image and Text */}
               <div className="flex flex-col gap-6">
                 <img src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[52px] h-auto object-contain select-none pointer-events-none" draggable={false} />
@@ -108,7 +108,7 @@ export function Footer() {
               </div>
 
               {/* Right Column: Popover Buttons */}
-              <div className="flex flex-col items-end gap-2">
+              <div className="flex flex-col items-end justify-end gap-2">
                 {columns.map((col) => (
                   <FooterPopover key={col.title} category={col} />
                 ))}
