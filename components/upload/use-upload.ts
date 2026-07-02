@@ -7,9 +7,9 @@ import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { formatFileSize, uploadWithXHR } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
-import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
+import { STORAGE_KEY_INTERRUPTED_UPLOAD, API_BASE, PROXY_HEADER } from "@/constants"
 import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
-import { apiFetch } from "@/lib/http/fetch"
+import { apiFetch, getProxyKey } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 
 export function useUpload({
@@ -234,9 +234,10 @@ export function useUpload({
     if (noteValue) formData.append("note", noteValue)
     if (filenameValue) formData.append("customFilename", filenameValue)
 
-    const xhr = await uploadWithXHR("/api/v2/upload-proxy", "POST", formData, (pct) => {
+    const proxyKey = await getProxyKey()
+    const xhr = await uploadWithXHR(`${API_BASE}/upload-proxy`, "POST", formData, (pct) => {
       onProgress(Math.min(90, pct))
-    })
+    }, { headers: { [PROXY_HEADER]: proxyKey }, withCredentials: true })
 
     const response = JSON.parse(xhr.responseText)
     if (!response.success) {

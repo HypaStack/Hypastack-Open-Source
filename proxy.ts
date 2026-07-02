@@ -215,8 +215,11 @@ export async function proxy(request: NextRequest) {
   // files. It's fetched raw (no proxy key) as a download, gated by the random id and
   // per-IP rate limiting — same public-GET class as the file-meta route above.
   const isStream = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+\/stream$/.test(pathname)
+  // the /files/[id]/preview endpoint is loaded as an <img src> (can't send the
+  // proxy-key header); it's owner-authenticated via withAuth and rate limited.
+  const isPreview = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+\/preview$/.test(pathname)
 
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta && !isPublicForum && !isStream) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta && !isPublicForum && !isStream && !isPreview) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
     const referer = request.headers.get('referer')

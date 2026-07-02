@@ -59,6 +59,12 @@ function invalidateProxyToken() {
   _cachedAt = 0
 }
 
+// Exposed for raw XHR callers (e.g. upload progress) that can't go through
+// apiFetch but still need the proxy-key header.
+export async function getProxyKey(): Promise<string> {
+  return getProxyToken()
+}
+
 // Prevent concurrent refresh calls
 let _refreshing = false
 let _refreshPromise: Promise<boolean> | null = null

@@ -13,7 +13,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
 import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
-import { FILES_PER_PAGE } from "@/constants"
+import { FILES_PER_PAGE, API_BASE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 
 function getFileExt(name: string): string {
@@ -1012,7 +1012,7 @@ function FileThumb({
   return (
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
-      src={`/api/v2/files/${id}/preview`}
+      src={`${API_BASE}/files/${id}/preview`}
       alt={name}
       className="h-full w-full object-cover select-none pointer-events-none"
       draggable={false}

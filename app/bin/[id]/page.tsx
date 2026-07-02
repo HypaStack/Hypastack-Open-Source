@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion } from "motion/react"
 import { apiFetch } from "@/lib/http/fetch"
+import { API_BASE } from "@/constants"
 
 function fmtBytes(bytes: number): string {
   if (bytes === 0) return "0 B"
@@ -46,7 +47,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
   }
 
   const handleRaw = () => {
-    window.open(`/api/v2/bin/${id}/raw`, '_blank', 'noopener,noreferrer')
+    window.open(`${API_BASE}/bin/${id}/raw`, '_blank', 'noopener,noreferrer')
   }
 
   // Calculate days left for 180-day retention
