@@ -10,7 +10,7 @@ import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
-import { type PreferencesTier } from "@/constants"
+import { type PreferencesTier, API_BASE } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -471,7 +471,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [avatarKey, setAvatarKey] = useState(0)
-  const avatarSrc = user.avatarUrl ? `/api/v2/avatar?t=${avatarKey}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'
+  const avatarSrc = user.avatarUrl ? `${API_BASE}/avatar?t=${avatarKey}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
   const usedPct = storage?.storagePercent ?? 0
 

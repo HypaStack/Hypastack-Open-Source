@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
+import { API_BASE } from "@/constants"
 
 interface ForumFile {
   id: string
@@ -197,7 +198,7 @@ export default function ForumPage() {
       if (activeTag) params.set("tag", activeTag)
       if (search) params.set("q", search)
 
-      const res = await fetch(`/api/v2/forum?${params.toString()}`)
+      const res = await fetch(`${API_BASE}/forum?${params.toString()}`)
       if (res.ok) {
         const data = await res.json()
         setPosts(data.posts)

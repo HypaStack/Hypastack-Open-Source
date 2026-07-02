@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES, PROXY_HEADER, PROXY_TOKEN_TTL_S } from '@/constants'
+import { MAINTENANCE, LEGAL_EXACT, AUTH_ROUTES, PROXY_HEADER, PROXY_TOKEN_TTL_S, ALLOWED_ORIGINS } from '@/constants'
+
+// Origin of the API when it's served from a separate host (NEXT_PUBLIC_API_BASE).
+// Empty in the default same-origin setup. Added to CSP connect-src/img-src.
+let API_ORIGIN = ''
+try { if (process.env.NEXT_PUBLIC_API_BASE) API_ORIGIN = new URL(process.env.NEXT_PUBLIC_API_BASE).origin } catch {}
+const API_ORIGIN_SUFFIX = API_ORIGIN ? ` ${API_ORIGIN}` : ''
 
 function isLegalPath(pathname: string): boolean {
   if (LEGAL_EXACT.has(pathname)) return true
@@ -145,9 +151,9 @@ function buildCsp(nonce: string | null): string {
     "default-src 'self'",
     scriptSrc,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
+    `img-src 'self' data: blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com${API_ORIGIN_SUFFIX}`,
     "font-src 'self' https://r2.hypastack.com https://fonts.gstatic.com",
-    "connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com",
+    `connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com${API_ORIGIN_SUFFIX}`,
     "frame-src https://challenges.cloudflare.com",
     "media-src 'self' blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
     "worker-src 'self' blob:",
@@ -175,6 +181,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
+  // CORS: resolve the caller origin once. Only allow-listed origins get CORS
+  // headers (and can call the API cross-origin from a separate host).
+  const requestOrigin = request.headers.get('origin')
+  const corsOrigin = requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : null
+
+  // Preflight — the custom proxy-key header makes cross-origin API calls non-simple.
+  if (pathname.startsWith('/api/') && request.method === 'OPTIONS') {
+    const preflight = new NextResponse(null, { status: 204 })
+    if (corsOrigin) {
+      preflight.headers.set('Access-Control-Allow-Origin', corsOrigin)
+      preflight.headers.set('Access-Control-Allow-Credentials', 'true')
+      preflight.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+      preflight.headers.set('Access-Control-Allow-Headers', `content-type, ${PROXY_HEADER}`)
+      preflight.headers.set('Access-Control-Max-Age', '600')
+      preflight.headers.set('Vary', 'Origin')
+    }
+    return preflight
+  }
+
   // the /bin/[id]/raw endpoint is excluded to allow direct browser viewing of raw pastes.
   const isRawBin = pathname.startsWith('/api/v2/bin/') && pathname.endsWith('/raw')
   // the /proxy-token endpoint issues tokens — it must be exempt from key verification (chicken-and-egg)
@@ -186,12 +211,16 @@ export async function proxy(request: NextRequest) {
   const isPublicFileMeta = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+$/.test(pathname)
   // the /forum endpoints are publicly readable (GET only) — posting/uploading still requires auth + proxy key
   const isPublicForum = request.method === 'GET' && pathname.startsWith('/api/v2/forum')
+  // the /files/[id]/stream endpoint streams ciphertext for legacy encrypted-at-rest
+  // files. It's fetched raw (no proxy key) as a download, gated by the random id and
+  // per-IP rate limiting — same public-GET class as the file-meta route above.
+  const isStream = request.method === 'GET' && /^\/api\/v2\/files\/[a-zA-Z0-9_-]+\/stream$/.test(pathname)
 
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta && !isPublicForum) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/v2/cron') && !isRawBin && !isAvatar && !isPublicFileMeta && !isPublicForum && !isStream) {
     const fetchSite = request.headers.get('sec-fetch-site')
     const fetchMode = request.headers.get('sec-fetch-mode')
-    const origin = request.headers.get('origin')
     const referer = request.headers.get('referer')
+    const appOrigin = new URL(request.url).origin
 
     // direct browser
     if (fetchMode === 'navigate') {
@@ -199,20 +228,20 @@ export async function proxy(request: NextRequest) {
       return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
-    // programmatic requests
-    if (fetchSite && fetchSite !== 'same-origin') {
+    // Cross-site requests are allowed only from an allow-listed origin. Same-origin
+    // and same-site (the app calling its own api. subdomain) pass through.
+    if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'same-site' && !corsOrigin) {
       console.error(`[API Error] 403 Forbidden: Forbidden: Cross-origin requests are not allowed`)
       return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
     }
 
-    // fallback
+    // fallback for clients that don't send Sec-Fetch-Site
     if (!fetchSite) {
-      const appOrigin = new URL(request.url).origin
-      if (origin && origin !== appOrigin) {
+      if (requestOrigin && requestOrigin !== appOrigin && !ALLOWED_ORIGINS.includes(requestOrigin)) {
         console.error(`[API Error] 403 Forbidden: Forbidden: Invalid Origin`)
         return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
-      if (!origin && referer && !referer.startsWith(appOrigin)) {
+      if (!requestOrigin && referer && !referer.startsWith(appOrigin) && !ALLOWED_ORIGINS.some((o) => referer.startsWith(o))) {
         console.error(`[API Error] 403 Forbidden: Forbidden: Invalid Referer`)
         return NextResponse.json({ error: "403 Forbidden" }, { status: 403 })
       }
@@ -268,6 +297,13 @@ export async function proxy(request: NextRequest) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
   response.headers.set("X-DNS-Prefetch-Control", "on")
+
+  // CORS response headers for allow-listed cross-origin API calls
+  if (pathname.startsWith('/api/') && corsOrigin) {
+    response.headers.set("Access-Control-Allow-Origin", corsOrigin)
+    response.headers.set("Access-Control-Allow-Credentials", "true")
+    response.headers.append("Vary", "Origin")
+  }
 
   return response
 }

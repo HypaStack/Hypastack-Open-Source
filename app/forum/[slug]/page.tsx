@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/http/fetch"
+import { API_BASE } from "@/constants"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 
 interface ForumFile {
@@ -242,7 +243,7 @@ export default function ForumPostPage() {
       const viewParam = !sessionStorage.getItem(`viewed_post_${slug}`) ? "?view=1" : ""
       if (viewParam) sessionStorage.setItem(`viewed_post_${slug}`, "1")
       
-      const res = await fetch(`/api/v2/forum/${slug}${viewParam}`)
+      const res = await fetch(`${API_BASE}/forum/${slug}${viewParam}`)
       if (res.ok) {
         const data = await res.json()
         setPost(data.post)
@@ -259,7 +260,7 @@ export default function ForumPostPage() {
   const fetchComments = useCallback(async () => {
     if (!post) return
     try {
-      const res = await fetch(`/api/v2/forum/${post.id}/comments`)
+      const res = await fetch(`${API_BASE}/forum/${post.id}/comments`)
       if (res.ok) {
         const data = await res.json()
         setComments(data.comments)
@@ -321,7 +322,7 @@ export default function ForumPostPage() {
     if (!post) return
     window.open(`https://t.me/t_usekiko?text=${encodeURIComponent(`Reporting forum post: ${window.location.href}`)}`, "_blank")
     try {
-      await fetch(`/api/v2/forum/${post.id}/report`, {
+      await fetch(`${API_BASE}/forum/${post.id}/report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: "Reported via UI" }),

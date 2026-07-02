@@ -101,8 +101,10 @@ export async function handleDownloadPost(
 
     let downloadUrl: string
     if (isEncrypted) {
-      // Legacy encrypted-at-rest fallback (server must decrypt).
-      downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/v2/files/${id}/stream`
+      // Legacy encrypted-at-rest fallback (server must decrypt). The browser
+      // fetches this directly, so point it at the public API base.
+      const publicApiBase = process.env.NEXT_PUBLIC_API_BASE || `${process.env.NEXT_PUBLIC_APP_URL}/api/v2`
+      downloadUrl = `${publicApiBase}/files/${id}/stream`
     } else {
       downloadUrl = await getPresignedDownloadUrl({
         r2Key: record.r2_key,

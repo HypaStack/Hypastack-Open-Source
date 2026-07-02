@@ -12,8 +12,19 @@
  *   const res = await apiFetch("/api/v2/files", { method: "GET" })
  */
 
+import { API_BASE } from "@/constants"
+
 const PROXY_HEADER = "x-hypastack-proxy-key"
 const TOKEN_TTL_MS = 50_000 // refresh 10s before the 60s server expiry
+
+// Map a same-origin "/api/v2/..." path onto the configured API base (which may
+// be another origin, e.g. an api. subdomain). A no-op when API_BASE is the
+// default "/api/v2".
+function toApiUrl(input: RequestInfo | URL): RequestInfo | URL {
+  return typeof input === "string" && input.startsWith("/api/v2")
+    ? API_BASE + input.slice("/api/v2".length)
+    : input
+}
 
 let _cachedToken: string | null = null
 let _cachedAt = 0
@@ -31,7 +42,7 @@ async function getProxyToken(): Promise<string> {
 
   _tokenPromise = (async () => {
     // Always use raw fetch here — never apiFetch (would cause infinite recursion)
-    const res = await fetch("/api/v2/proxy-token", { credentials: "include" })
+    const res = await fetch(`${API_BASE}/proxy-token`, { credentials: "include" })
     if (!res.ok) throw new Error("[apiFetch] Failed to obtain proxy token")
     const { token } = await res.json()
     _cachedToken = token
@@ -58,7 +69,7 @@ async function tryRefresh(): Promise<boolean> {
   _refreshing = true
   _refreshPromise = (async () => {
     try {
-      const res = await fetch("/api/v2/auth/refresh", {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         credentials: "include",
       })
@@ -87,16 +98,20 @@ export async function apiFetch(
 
   const isApiCall =
     url.startsWith("/api/") ||
+    url.startsWith(API_BASE) ||
     (typeof globalThis !== "undefined" &&
       typeof (globalThis as any).location !== "undefined" &&
       url.startsWith((globalThis as any).location.origin + "/api/"))
 
   if (!isApiCall) return fetch(input, init)
 
+  // credentials: "include" so auth cookies are sent even when API_BASE is a
+  // different origin (they carry Domain=.<zone> in that setup).
+  const target = toApiUrl(input)
   const token = await getProxyToken()
   const headers = { ...(init.headers ?? {}), [PROXY_HEADER]: token }
 
-  const res = await fetch(input, { ...init, headers })
+  const res = await fetch(target, { ...init, headers, credentials: "include" })
 
   // Silently refresh and retry once on 401 (expired access token)
   if (res.status === 401) {
@@ -104,7 +119,7 @@ export async function apiFetch(
     const refreshed = await tryRefresh()
     if (refreshed) {
       const newToken = await getProxyToken()
-      return fetch(input, { ...init, headers: { ...(init.headers ?? {}), [PROXY_HEADER]: newToken } })
+      return fetch(target, { ...init, headers: { ...(init.headers ?? {}), [PROXY_HEADER]: newToken }, credentials: "include" })
     }
     // Refresh failed — the response is returned as-is; caller handles redirect to login
   }

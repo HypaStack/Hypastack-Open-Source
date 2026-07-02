@@ -8,6 +8,9 @@ import { deriveViaService } from "@/lib/security/hashService"
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
 const PROXY_SECRET = (process.env.PROXY_SECRET || JWT_SECRET) as string
+// Set when the API is served from a separate host (e.g. ".hypastack.com") so the
+// auth cookies are shared across the app and api. subdomains. Unset = host-only.
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined
 
 export function generateProxyToken(fileId: string): string {
   const payload = JSON.stringify({ fileId, exp: Math.floor(Date.now() / 1000) + 300 })
@@ -170,12 +173,13 @@ export async function setRefreshCookie(refreshToken: string) {
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60,
     path: "/",
+    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
   })
 }
 
 export async function clearRefreshCookie() {
   const cookieStore = await cookies()
-  cookieStore.delete("refresh_token")
+  cookieStore.delete({ name: "refresh_token", path: "/", ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}) })
 }
 
 export async function setAuthCookie(token: string, maxAge?: number) {
@@ -185,13 +189,14 @@ export async function setAuthCookie(token: string, maxAge?: number) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: maxAge || 7 * 24 * 60 * 60,
-    path: "/"
+    path: "/",
+    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
   })
 }
 
 export async function clearAuthCookie() {
   const cookieStore = await cookies()
-  cookieStore.delete("auth_token")
+  cookieStore.delete({ name: "auth_token", path: "/", ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}) })
 }
 
 export async function getCurrentUser(request: NextRequest): Promise<{ userId: string; sessionId: string } | null> {

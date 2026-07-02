@@ -17,7 +17,10 @@ export default async function Image({ params }: Props) {
   let burnOnRead = false
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/v2/files/${id}`, {
+    // Server-side call: hit the app directly (INTERNAL_API_ORIGIN, e.g. the
+    // loopback origin) so it doesn't depend on the public API host/edge.
+    const internalOrigin = process.env.INTERNAL_API_ORIGIN || process.env.NEXT_PUBLIC_APP_URL
+    const res = await fetch(`${internalOrigin}/api/v2/files/${id}`, {
       next: { revalidate: 60 },
     })
     if (res.ok) {
