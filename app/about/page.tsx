@@ -5,6 +5,9 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "About Hypastack",
   description: "Hypastack is a private, open-source file sharing platform and CDN built in Europe. No tracking, no personal data collected, and free to use.",
+  alternates: {
+    canonical: "https://hypastack.com/about",
+  },
 }
 
 export default function About() {

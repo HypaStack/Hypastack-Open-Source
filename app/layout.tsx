@@ -15,7 +15,6 @@ import {
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
   ICON_URL,
-  FAVICON_URL,
   PREVIEW_URL
 } from "@/constants"
 import "./globals.css"
@@ -70,32 +69,24 @@ export const metadata: Metadata = {
     ],
   },
 
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      "en-US": SITE_URL,
-      "en": SITE_URL,
-    },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} - ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [PREVIEW_URL],
   },
+  // Same-origin icons: Google's favicon pipeline does not accept WebP and
+  // falls back to /favicon.ico, so both must exist here (see public/).
   icons: {
     icon: [
-      { url: FAVICON_URL, type: "image/webp", sizes: "96x96" },
-      { url: FAVICON_URL, type: "image/webp", sizes: "32x32" },
-      { url: FAVICON_URL, type: "image/webp", sizes: "16x16" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-96.png", type: "image/png", sizes: "96x96" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
     ],
     apple: [
-      { url: FAVICON_URL, sizes: "180x180", type: "image/webp" },
-      { url: FAVICON_URL, sizes: "152x152", type: "image/webp" },
-      { url: FAVICON_URL, sizes: "120x120", type: "image/webp" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: FAVICON_URL,
-    other: [
-      {
-        rel: "mask-icon",
-        url: FAVICON_URL,
-        color: "#ffffff",
-      },
-    ],
+    shortcut: "/favicon.ico",
   },
   manifest: "/manifest.json",
 
@@ -156,10 +147,6 @@ export default async function RootLayout({
         <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/58kpu13r0tb0/SFPRODISPLAYREGULAR.OTF" />
         <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/rqid9rynsfmy/SFPRODISPLAYMEDIUM.OTF" />
         
-        {/* Alternate language versions */}
-        <link rel="alternate" hrefLang="en" href="https://hypastack.com" />
-        <link rel="alternate" hrefLang="x-default" href="https://hypastack.com" />
-        
         {/* PWA */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -170,7 +157,8 @@ export default async function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="format-detection" content="telephone=no" />
         
-        {/* Structured Data - JSON-LD */}
+        {/* Structured Data - JSON-LD. Facts here must stay consistent with the
+            visible site (FAQ, tier limits) — search and answer engines cross-check. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -178,9 +166,38 @@ export default async function RootLayout({
               "@context": "https://schema.org",
               "@graph": [
                 {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  name: SITE_NAME,
+                  url: SITE_URL,
+                  logo: {
+                    "@type": "ImageObject",
+                    url: ICON_URL,
+                    width: 512,
+                    height: 512,
+                    caption: "Hypastack logo",
+                  },
+                  founder: {
+                    "@type": "Person",
+                    name: "Kiko",
+                    url: "https://usekiko.com",
+                  },
+                  sameAs: [
+                    "https://github.com/HypaStack",
+                    "https://github.com/HypaStack/Hypastack-Open-Source",
+                  ],
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    url: "https://t.me/t_usekiko",
+                    contactType: "customer support",
+                    availableLanguage: ["English"],
+                  },
+                },
+                {
                   "@type": "WebSite",
                   "@id": `${SITE_URL}/#website`,
                   name: SITE_NAME,
+                  alternateName: ["hypastack.com", `${SITE_NAME} - ${SITE_TAGLINE}`],
                   url: SITE_URL,
                   description: SITE_DESCRIPTION,
                   publisher: {
@@ -194,159 +211,52 @@ export default async function RootLayout({
                   name: SITE_NAME,
                   url: SITE_URL,
                   description: SITE_DESCRIPTION,
-                  applicationCategory: "FileSharingApplication",
-                  operatingSystem: "Any",
-                  browserRequirements: "Requires JavaScript. Requires HTML5.",
-                  softwareVersion: "1.0",
+                  applicationCategory: "UtilitiesApplication",
+                  applicationSubCategory: "File sharing and CDN hosting",
+                  operatingSystem: "Any (web browser); Windows (desktop app)",
+                  browserRequirements: "Requires JavaScript and the Web Crypto API.",
+                  isAccessibleForFree: true,
                   offers: {
                     "@type": "Offer",
                     price: "0",
                     priceCurrency: "USD",
-                    priceValidUntil: "2030-01-01",
+                    description: "Free plan. Paid plans raise storage and upload limits.",
                   },
-                  aggregateRating: {
-                    "@type": "AggregateRating",
-                    ratingValue: "4.8",
-                    ratingCount: "1250",
-                    bestRating: "5",
-                    worstRating: "1",
-                  },
+                  license: "https://www.gnu.org/licenses/agpl-3.0.html",
+                  screenshot: PREVIEW_URL,
                   featureList: [
-                    "No tracking or logs",
-                    "No personal data collected",
-                    "EU-based servers",
-                    "Auto-expiring share links",
-                    "Burn after reading",
-                    "Permanent CDN asset hosting",
-                    "No account or email required",
-                    "100% open source",
-                    "Ad-free",
-                    "Free to use",
-                    "Dropbox alternative",
-                    "WeTransfer alternative",
+                    "Files are encrypted in the browser with AES-256-GCM before upload; the decryption key stays in the URL fragment and never reaches the server",
+                    "Share links that expire automatically",
+                    "Burn after reading: files that delete themselves after the first download",
+                    "Free global CDN for public assets with EXIF, GPS and camera metadata stripped on upload",
+                    "Anonymous accounts: no email, no password, no personal data",
+                    "No ads, no tracking, and IP addresses are never stored",
+                    "Anonymous text pastes",
+                    "Resumable parallel uploads for large files",
+                    "EU-based storage",
+                    "Windows desktop app with system tray upload",
+                    "Open source under AGPL-3.0",
                   ],
-                },
-                {
-                  "@type": "Organization",
-                  "@id": `${SITE_URL}/#organization`,
-                  name: SITE_NAME,
-                  url: SITE_URL,
-                  logo: {
-                    "@type": "ImageObject",
-                    url: ICON_URL,
-                    width: 512,
-                    height: 512,
-                    caption: "hypastack.com Logo",
-                  },
-                  image: `${SITE_URL}/images/hypastack-logo-and-text.webp`,
-                  sameAs: [
-                    "https://usekiko.com",
-                    "https://noinfo.bio",
-                    "https://github.com/hypastack",
-                  ],
-                  contactPoint: {
-                    "@type": "ContactPoint",
-                    url: "https://t.me/t_usekiko",
-                    contactType: "customer support",
-                    availableLanguage: ["English"],
-                  },
-                },
-                {
-                  "@type": "Service",
-                  "@id": `${SITE_URL}/#service`,
-                  serviceType: "File Sharing Service",
-                  provider: {
+                  publisher: {
                     "@id": `${SITE_URL}/#organization`,
                   },
-                  areaServed: "Worldwide",
-                  hasOfferCatalog: {
-                    "@type": "OfferCatalog",
-                    name: "File Sharing Services",
-                    itemListElement: [
-                      {
-                        "@type": "Offer",
-                        itemOffered: {
-                          "@type": "Service",
-                          name: "Secure File Upload",
-                        },
-                      },
-                      {
-                        "@type": "Offer",
-                        itemOffered: {
-                          "@type": "Service",
-                          name: "Temporary File Hosting",
-                        },
-                      },
-                    ],
-                  },
                 },
                 {
-                  "@type": "FAQPage",
-                  "@id": `${SITE_URL}/#faq`,
-                  mainEntity: [
-                    {
-                      "@type": "Question",
-                      name: "Is Hypastack free to use?",
-                      acceptedAnswer: {
-                        "@type": "Answer",
-                        text: "Yes, Hypastack is completely free to use. Creating an account is free and no payment is required.",
-                      },
-                    },
-                    {
-                      "@type": "Question",
-                      name: "How long do files stay available?",
-                      acceptedAnswer: {
-                        "@type": "Answer",
-                        text: "Files are automatically deleted after 3 to 7 days, depending on your selection. You can also enable 'Burn after reading' for one-time downloads.",
-                      },
-                    },
-                    {
-                      "@type": "Question",
-                      name: "What is the maximum file size?",
-                      acceptedAnswer: {
-                        "@type": "Answer",
-                        text: "Upload files up to 500MB in size after creating a free account.",
-                      },
-                    },
-                    {
-                      "@type": "Question",
-                      name: "Is my data secure?",
-                      acceptedAnswer: {
-                        "@type": "Answer",
-                        text: "Yes, all file transfers use TLS/SSL encryption. Files are stored encrypted and automatically deleted after expiration. We don't access or analyze your file contents.",
-                      },
-                    },
-                  ],
+                  "@type": "SoftwareSourceCode",
+                  "@id": `${SITE_URL}/#sourcecode`,
+                  name: "Hypastack source code",
+                  codeRepository: "https://github.com/HypaStack/Hypastack-Open-Source",
+                  programmingLanguage: ["TypeScript", "Go", "Erlang", "Rust"],
+                  license: "https://www.gnu.org/licenses/agpl-3.0.html",
+                  about: {
+                    "@id": `${SITE_URL}/#webapp`,
+                  },
                 },
               ],
             }),
           }}
         />
         
-        {/* Breadcrumb structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Home",
-                  item: SITE_URL,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: "Dashboard",
-                  item: `${SITE_URL}/manage`,
-                },
-              ],
-            }),
-          }}
-        />
         {/* Atlas Grotesk fonts loaded via @font-face in globals.css */}
         {/* Tauri detection for pure black background */}
         <Script id="tauri-detect" strategy="afterInteractive">{`

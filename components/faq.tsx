@@ -2,29 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
-
-const faqs = [
-  {
-    q: "What is Hypastack?",
-    a: "Think of it as a dead-simple way to share files that doesn't creep on your data. We handle the E2EE encryption, you just share your stuff. Just a heads up: the CDN isn't encrypted, but we do strip the EXIF metadata so you aren't accidentally leaking your location.",
-  },
-  {
-    q: "How big can my files be?",
-    a: "Free users can share up to 100MB and upload 20MB to the CDN (with a 5GB total limit). If you go Ultimate, you're looking at 2.5GB shares (per upload), a 1GB CDN Asset (per upload) limit, and a massive 1.1TB Total Storage.",
-  },
-  {
-    q: "How long do these links last?",
-    a: "Depends on how heavy the file is, Small stuff stays up for 7 days, massive files get a shorter window, down to 24 hours. Paid plans get way more time. CDN files? They're yours until you delete them.",
-  },
-  {
-    q: "How does the login work?",
-    a: "You pick a nickname, we give you a key, No emails no passwords, no 'Sign in with Google' nonsense. If you lose that key, your account is cooked, we don't even know who you are since your nickname is just a hash.",
-  },
-  {
-    q: "Is my stuff actually safe?",
-    a: "We encrypt your filenames with AES-256 before they go anywhere. Your files get random IDs on Cloudflare R2, we strip out EXIF/GPS junk from images, and you can even set shares to burn-on-download if you're feeling paranoid.",
-  },
-];
+import { faqs } from "@/components/faq-data";
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);

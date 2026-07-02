@@ -23,11 +23,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} - Hypastack Blog`,
     description: post.summary,
+    authors: [{ name: "Kiko", url: "https://usekiko.com" }],
+    alternates: {
+      canonical: `https://hypastack.com/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.summary,
       type: "article",
       publishedTime: post.date,
+      url: `https://hypastack.com/blog/${slug}`,
+      authors: ["Kiko"],
     },
   }
 }
@@ -47,6 +53,29 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="flex min-h-screen flex-col bg-[#08090a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.summary,
+            datePublished: post.date,
+            url: `https://hypastack.com/blog/${slug}`,
+            mainEntityOfPage: `https://hypastack.com/blog/${slug}`,
+            author: {
+              "@type": "Person",
+              name: "Kiko",
+              url: "https://usekiko.com",
+            },
+            publisher: {
+              "@id": "https://hypastack.com/#organization",
+            },
+            inLanguage: "en-US",
+          }),
+        }}
+      />
 
       <section className="flex-1 pt-28 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">

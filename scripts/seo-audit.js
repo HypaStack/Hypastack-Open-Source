@@ -108,14 +108,21 @@ function analyzeRobots() {
   const tests = [
     { name: 'User-agent directives', req: 'User-agent:' },
     { name: 'Sitemap reference', req: 'Sitemap:' },
-    { name: 'GPTBot blocking', req: 'GPTBot' },
-    { name: 'Google AI blocking', req: 'Google-Extended' }
+    // GEO: AI crawlers must NOT be blocked — being readable by answer
+    // engines (ChatGPT, Claude, Perplexity, AI Overviews) is intentional.
+    { name: 'AI crawlers allowed (no GPTBot block)', req: (c) => !c.includes('GPTBot') },
+    { name: 'AI crawlers allowed (no Google-Extended block)', req: (c) => !c.includes('Google-Extended') },
+    { name: 'Private paths disallowed (/d/)', req: 'Disallow: /d/' },
   ];
 
   for (const t of tests) {
-    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    const ok = typeof t.req === 'function' ? t.req(content) : content.includes(t.req);
+    if (checks.add(ok)) Logger.pass(t.name);
     else Logger.warn(`Missing: ${t.name}`);
   }
+
+  if (checks.add(fs.existsSync(path.join(process.cwd(), 'public/llms.txt')))) Logger.pass('llms.txt exists (GEO)');
+  else Logger.warn('Missing: public/llms.txt');
 }
 
 function analyzeSitemap() {
@@ -123,18 +130,21 @@ function analyzeSitemap() {
   const content = readSafe('public/sitemap.xml');
   if (!content) return Logger.fail('sitemap.xml not found');
 
+  // sitemap.xml is a sitemap index; the URLs live in sitemap-0.xml
+  const urls = readSafe('public/sitemap-0.xml') || content;
+
   const tests = [
-    { name: 'XML Declaration', req: '<?xml' },
-    { name: 'URL Set', req: 'urlset' },
-    { name: 'Loc Tags', req: 'loc' }
+    { name: 'XML Declaration', req: () => content.includes('<?xml') },
+    { name: 'URL Set', req: () => urls.includes('urlset') || content.includes('sitemapindex') },
+    { name: 'Loc Tags', req: () => urls.includes('loc') }
   ];
 
   for (const t of tests) {
-    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    if (checks.add(t.req())) Logger.pass(t.name);
     else Logger.fail(`Missing: ${t.name}`);
   }
 
-  const count = (content.match(/<url>/g) || []).length;
+  const count = (urls.match(/<url>/g) || []).length;
   Logger.info(`Indexed ${count} URLs`);
 }
 
@@ -143,15 +153,20 @@ function analyzeLayout() {
   const content = readSafe('app/layout.tsx');
   if (!content) return Logger.fail('app/layout.tsx not found');
 
+  // Canonical belongs on individual pages, not the root layout (a layout-wide
+  // canonical marks every page as a duplicate of the homepage).
+  const homepage = readSafe('app/page.tsx') || '';
   const metaTests = [
-    { name: 'Canonical URLs', req: 'canonical:' },
-    { name: 'Open Graph Config', req: 'openGraph:' },
-    { name: 'Twitter Cards', req: 'twitter:' },
-    { name: 'Structured Data / JSON-LD', req: 'application/ld+json' },
+    { name: 'Canonical URL (app/page.tsx)', req: () => homepage.includes('canonical:') },
+    { name: 'No layout-wide canonical', req: () => !content.includes('canonical:') },
+    { name: 'Open Graph Config', req: () => content.includes('openGraph:') },
+    { name: 'Twitter Cards', req: () => content.includes('twitter:') },
+    { name: 'Structured Data / JSON-LD', req: () => content.includes('application/ld+json') },
+    { name: 'Same-origin favicon.ico', req: () => fs.existsSync(path.join(process.cwd(), 'public/favicon.ico')) },
   ];
 
   for (const t of metaTests) {
-    if (checks.add(content.includes(t.req))) Logger.pass(t.name);
+    if (checks.add(t.req())) Logger.pass(t.name);
     else Logger.warn(`Missing: ${t.name}`);
   }
 }
