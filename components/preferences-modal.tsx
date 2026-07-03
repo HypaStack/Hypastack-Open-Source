@@ -21,6 +21,8 @@ export interface PreferencesUser {
   id: string
   nickname: string
   avatarUrl: string | null
+  bannerUrl?: string | null
+  displayName?: string | null
   premium: boolean
   tier?: PreferencesTier
   inactivityPurgeDays?: number
@@ -683,6 +685,8 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
         </div>
       )}
 
+      {user.premium && <BrandingSection user={user} />}
+
       <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div>
           <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Delete account</p>
@@ -707,6 +711,173 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     </div>
     <EditProfileDialog open={editing} user={user} onClose={() => setEditing(false)} />
     </>
+  )
+}
+
+// Paid-plan branding for the download page: a banner + public @display name that
+// appear above every file the user shares. Mirrors the avatar upload flow.
+function BrandingSection({ user }: { user: PreferencesUser }) {
+  const { refreshUser } = useManage()
+  const [cacheKey, setCacheKey] = useState(0)
+  const [uploading, setUploading] = useState(false)
+  const [removing, setRemoving] = useState(false)
+  const [displayName, setDisplayName] = useState(user.displayName ?? "")
+  const [savingName, setSavingName] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const bannerSrc = user.bannerUrl ? `${API_BASE}/banner?t=${cacheKey}` : null
+  const avatarSrc = user.avatarUrl ? `${API_BASE}/avatar?t=${cacheKey}` : "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"
+  const nameChanged = displayName.trim() !== (user.displayName ?? "")
+
+  const handleBannerFile = async (file: File) => {
+    if (!["image/jpeg", "image/png", "image/gif", "image/avif"].includes(file.type)) {
+      setError("Only JPEG, PNG, GIF and AVIF are allowed.")
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Banner must be 10 MB or smaller.")
+      return
+    }
+    setError(null)
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("banner", file)
+      const res = await apiFetch("/api/v2/auth/upload-banner", { method: "POST", body: fd })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setError(data.error || "Banner upload failed."); return }
+      await refreshUser()
+      setCacheKey(k => k + 1)
+    } catch {
+      setError("Banner upload failed.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemoveBanner = async () => {
+    setError(null)
+    setRemoving(true)
+    try {
+      const res = await apiFetch("/api/v2/auth/delete-banner", { method: "POST" })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        setError(d.error || "Couldn't remove banner.")
+        return
+      }
+      await refreshUser()
+      setCacheKey(k => k + 1)
+    } catch {
+      setError("Couldn't remove banner.")
+    } finally {
+      setRemoving(false)
+    }
+  }
+
+  const handleSaveName = async () => {
+    if (savingName || !nameChanged) return
+    setError(null)
+    setSavingName(true)
+    try {
+      const res = await apiFetch("/api/v2/auth/update-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ display_name: displayName.trim() }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setError(data.error || "Couldn't save display name."); return }
+      await refreshUser()
+    } catch {
+      setError("Couldn't save display name.")
+    } finally {
+      setSavingName(false)
+    }
+  }
+
+  return (
+    <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: "16px 20px", marginBottom: 16 }}>
+      <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Download page</p>
+      <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-4 font-normal leading-snug">
+        A banner and name shown above every file you share.
+      </p>
+
+      {/* Live preview — matches what people see on your download links */}
+      <div className="rounded-[10px] overflow-hidden border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0a0b0c]">
+        <div className="relative h-[92px] w-full bg-[#151616]">
+          {bannerSrc && (
+            <img src={bannerSrc} alt="Banner" className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" draggable={false} />
+          )}
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            </div>
+          )}
+        </div>
+        <div className="px-4 pb-3">
+          <div className="-mt-6 mb-1.5 h-12 w-12 rounded-md overflow-hidden border-2 border-white dark:border-[#0a0b0c] bg-[#151616]">
+            <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }} />
+          </div>
+          <p className="text-[14px] font-semibold text-[#111] dark:text-[#f0f0f0] truncate">
+            {displayName.trim() ? `@${displayName.trim()}` : <span className="text-[#aaa] dark:text-[#666]">@yourname</span>}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center gap-2">
+        <label className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 cursor-pointer">
+          <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+          <div className="relative bg-[#151616] rounded-full h-[32px] px-4 flex items-center gap-1.5 text-[#f7f8f8] text-[13px] font-medium">
+            <MIcon name="image" size={14} />
+            {user.bannerUrl ? "Change banner" : "Upload banner"}
+          </div>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/avif"
+            disabled={uploading}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleBannerFile(f); e.target.value = "" }}
+            className="hidden"
+          />
+        </label>
+        {user.bannerUrl && (
+          <button
+            type="button"
+            onClick={handleRemoveBanner}
+            disabled={removing}
+            className="h-[32px] px-3 rounded-full text-[13px] font-medium text-[#888] dark:text-[#898e97] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#333] dark:hover:text-[#f7f8f8] transition-colors disabled:opacity-40"
+          >
+            {removing ? "Removing..." : "Remove"}
+          </button>
+        )}
+      </div>
+
+      <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-4 mb-1.5">Display name</p>
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center bg-white dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.08)] rounded-[8px]" style={{ height: 36, paddingLeft: 10, paddingRight: 10 }}>
+          <span className="text-[#999] dark:text-[#6b6b6b] text-[13px] shrink-0">@</span>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value.replace(/[^A-Za-z0-9 ._-]/g, "").slice(0, 32))}
+            placeholder="yourname"
+            className="flex-1 min-w-0 bg-transparent focus:outline-none text-[#111] dark:text-[#f0f0f0]"
+            style={{ fontSize: 13, fontWeight: 500, paddingLeft: 2 }}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleSaveName}
+          disabled={savingName || !nameChanged}
+          className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+          <div className="relative bg-[#151616] rounded-full h-[32px] px-4 flex items-center justify-center text-[#f7f8f8] text-[13px] font-medium">
+            {savingName ? "Saving..." : "Save"}
+          </div>
+        </button>
+      </div>
+
+      {error && <p className="text-[11px] text-red-500 mt-2">{error}</p>}
+    </div>
   )
 }
 

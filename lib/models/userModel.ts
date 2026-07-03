@@ -9,6 +9,8 @@ export interface User {
   nickname_encrypted: string
   password_hash: string
   avatar_url: string | null
+  banner_url: string | null
+  display_name: string | null
   premium: boolean
   tier: Tier
   last_acknowledged_tier: Tier
@@ -108,6 +110,8 @@ export async function getUserById(id: string): Promise<User | null> {
       nickname_encrypted: row.nickname_encrypted,
       password_hash: row.password_hash,
       avatar_url: row.avatar_url,
+      banner_url: row.banner_url ?? null,
+      display_name: row.display_name ?? null,
       premium: isPaidTier(normalizeTier(row.tier)),
       tier: normalizeTier(row.tier),
       last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
@@ -163,6 +167,28 @@ export async function updateAvatarUrl(userId: string, avatarUrl: string | null):
   await pool.query(
     `UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2`,
     [avatarUrl, userId]
+  )
+  await bustCache(`user:${userId}:profile`)
+}
+
+export async function updateBannerUrl(userId: string, bannerUrl: string | null): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  await pool.query(
+    `UPDATE users SET banner_url = $1, updated_at = NOW() WHERE id = $2`,
+    [bannerUrl, userId]
+  )
+  await bustCache(`user:${userId}:profile`)
+}
+
+export async function updateDisplayName(userId: string, displayName: string | null): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  await pool.query(
+    `UPDATE users SET display_name = $1, updated_at = NOW() WHERE id = $2`,
+    [displayName, userId]
   )
   await bustCache(`user:${userId}:profile`)
 }

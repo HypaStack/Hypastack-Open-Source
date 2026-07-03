@@ -10,6 +10,8 @@ interface User {
   id: string
   nickname: string
   avatarUrl: string | null
+  bannerUrl: string | null
+  displayName: string | null
   createdAt: string
   premium: boolean
   tier: Tier

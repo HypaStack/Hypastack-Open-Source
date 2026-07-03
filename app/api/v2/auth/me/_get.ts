@@ -59,6 +59,8 @@ export async function GET(request: NextRequest) {
         id: user.id,
         nickname_encrypted: user.nickname_encrypted,
         avatarUrl: user.avatar_url,
+        bannerUrl: user.banner_url,
+        displayName: user.display_name,
         createdAt: user.created_at,
         premium: isPaidTier(tier),
         tier,

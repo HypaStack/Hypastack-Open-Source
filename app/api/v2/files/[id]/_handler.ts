@@ -2,10 +2,42 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getFileBySlugOrId } from "@/lib/models/fileModel"
 import { deleteByKey, getPresignedDownloadUrl } from "@/lib/storage/r2"
+import { imageContentTypeFromKey } from "@/lib/storage/bannerType"
+import { getUserById } from "@/lib/models/userModel"
+import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 import { decryptFilename } from "@/lib/security/filenameCrypto"
 import { checkApiRateLimit } from "@/lib/data/rateLimit"
 import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
+
+// Build the uploader's download-page branding (banner + pfp + @name). Only paid
+// plans with a banner set get a header; anonymous and free uploads return null.
+async function getUploaderBranding(userId: string | null | undefined) {
+  if (!userId) return null
+  const user = await getUserById(userId)
+  if (!user || !isPaidTier(normalizeTier(user.tier)) || !user.banner_url) return null
+
+  const [bannerUrl, avatarUrl] = await Promise.all([
+    getPresignedDownloadUrl({
+      r2Key: user.banner_url,
+      originalName: "banner",
+      contentType: imageContentTypeFromKey(user.banner_url),
+      disposition: "inline",
+      expiresIn: 3600,
+    }),
+    user.avatar_url
+      ? getPresignedDownloadUrl({
+          r2Key: user.avatar_url,
+          originalName: "avatar",
+          contentType: imageContentTypeFromKey(user.avatar_url),
+          disposition: "inline",
+          expiresIn: 3600,
+        })
+      : Promise.resolve(null),
+  ])
+
+  return { bannerUrl, avatarUrl, displayName: user.display_name }
+}
 
 export async function handleFileGet(
   request: NextRequest,
@@ -61,6 +93,13 @@ export async function handleFileGet(
     const decryptedName = decryptFilename(record.original_name)
     const decryptedCustom = record.custom_filename ? decryptFilename(record.custom_filename) : null
 
+    let uploader = null
+    try {
+      uploader = await getUploaderBranding(record.user_id)
+    } catch (e) {
+      console.error("[File] Failed to load uploader branding:", e)
+    }
+
     return NextResponse.json({
       success: true,
       file: {
@@ -77,6 +116,7 @@ export async function handleFileGet(
         encryptionChunkSize: record.encryption_chunk_size ?? null,
         encryptionTotalParts: record.encryption_total_parts ?? null,
       },
+      uploader,
     })
 
   } catch (error: any) {

@@ -15,6 +15,12 @@ interface FileInfo {
   note?: string; encryptionChunkSize?: number | null; encryptionTotalParts?: number | null;
 }
 
+interface Uploader {
+  bannerUrl: string;
+  avatarUrl: string | null;
+  displayName: string | null;
+}
+
 function fmt(bytes: number): string {
   if (bytes === 0) return "0 B";
   const k = 1024, s = ["B", "KB", "MB", "GB"];
@@ -36,6 +42,7 @@ function timeLeft(d: string): string {
 export default function DownloadPage() {
   const { id: fileId } = useParams() as { id: string };
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
+  const [uploader, setUploader] = useState<Uploader | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rateLimitError, setRateLimitError] = useState<{ message: string; retryAfter: number } | null>(null);
@@ -70,6 +77,7 @@ export default function DownloadPage() {
           const d = await r.json();
           if (!r.ok) { setError(d.error || "File not found"); return }
           setFileInfo(d.file);
+          setUploader(d.uploader ?? null);
           if (d.file?.name) document.title = `Download ${d.file.customFilename || d.file.name} - Hypastack`;
         } catch { setError("Failed to load file information") }
         finally { setLoading(false) }
@@ -254,6 +262,27 @@ export default function DownloadPage() {
 
         {fileInfo && !error && !missingKey && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            {uploader && (
+              <div className="mb-5">
+                <div className="relative">
+                  <div className="h-[120px] w-full rounded-md overflow-hidden bg-[#151616] border border-[rgba(255,255,255,0.08)]">
+                    <img src={uploader.bannerUrl} alt="" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
+                  </div>
+                  <img
+                    src={uploader.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
+                    alt=""
+                    className="absolute -bottom-5 left-4 h-[60px] w-[60px] rounded-md object-cover border-2 border-[#08090a] bg-[#151616] select-none pointer-events-none"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
+                  />
+                </div>
+                {uploader.displayName ? (
+                  <p className="mt-7 pl-1 text-[15px] font-semibold text-[#f7f8f8] truncate">@{uploader.displayName}</p>
+                ) : (
+                  <div className="h-7" />
+                )}
+              </div>
+            )}
             <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] overflow-hidden">
               <div style={{ padding: '20px 20px 16px' }}>
                 <h1 className={`text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#f7f8f8]'}`}>

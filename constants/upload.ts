@@ -14,6 +14,17 @@ export const ALLOWED_AVATAR_TYPES: string[] = [
 /** Maximum avatar file size in bytes (10 MB) */
 export const MAX_AVATAR_SIZE = 10 * 1024 * 1024
 
+/** Accepted MIME types for download-page banner uploads (paid plans) */
+export const ALLOWED_BANNER_TYPES: string[] = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/avif",
+]
+
+/** Maximum banner file size in bytes (10 MB) */
+export const MAX_BANNER_SIZE = 10 * 1024 * 1024
+
 /** Maximum output dimension when cropping and resizing an avatar (px) */
 export const AVATAR_MAX_DIMENSION = 512
 

@@ -97,6 +97,8 @@ export async function initDatabase(): Promise<void> {
         nickname_encrypted TEXT NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
         avatar_url VARCHAR(500),
+        banner_url VARCHAR(500),
+        display_name VARCHAR(64),
         premium BOOLEAN DEFAULT FALSE,
         tier TEXT NOT NULL DEFAULT 'free',
         last_acknowledged_tier TEXT NOT NULL DEFAULT 'free',
@@ -407,6 +409,9 @@ export async function initDatabase(): Promise<void> {
       // embedded in the key and get backfilled here on next login.
       { version: '2026-07-01-user-key-lookup', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS key_lookup TEXT` },
       { version: '2026-07-01-user-key-lookup-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_key_lookup ON users(key_lookup) WHERE key_lookup IS NOT NULL` },
+      // Download-page profile branding (paid plans): banner image + public display name.
+      { version: '2026-07-03-user-banner-url', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_url VARCHAR(500)` },
+      { version: '2026-07-03-user-display-name', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(64)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
