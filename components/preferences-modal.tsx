@@ -13,6 +13,7 @@ import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { type PreferencesTier, API_BASE } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
 import { apiFetch } from "@/lib/http/fetch"
+import { DISPLAY_NAME_CHANGE_COOLDOWN_MS, NICKNAME_CHANGE_COOLDOWN_MS } from "@/constants/profile"
 
 export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
@@ -23,6 +24,9 @@ export interface PreferencesUser {
   avatarUrl: string | null
   bannerUrl?: string | null
   displayName?: string | null
+  displayNameChangedAt?: string | null
+  nicknameChangedAt?: string | null
+  verified?: boolean
   premium: boolean
   tier?: PreferencesTier
   inactivityPurgeDays?: number
@@ -740,6 +744,10 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
   const [error, setError] = useState<string | null>(null)
 
   const nameChanged = displayName.trim() !== (user.displayName ?? "")
+  const nameCooldownMs = user.displayNameChangedAt
+    ? Math.max(0, new Date(user.displayNameChangedAt).getTime() + DISPLAY_NAME_CHANGE_COOLDOWN_MS - Date.now())
+    : 0
+  const nameCooldownDays = Math.ceil(nameCooldownMs / (24 * 60 * 60 * 1000))
 
   const handleBannerFile = async (file: File) => {
     if (!["image/jpeg", "image/png", "image/gif", "image/avif"].includes(file.type)) {
@@ -795,7 +803,7 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
         body: JSON.stringify({ display_name: displayName.trim() }),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) { setError(data.error || "Couldn't save display name."); return }
+      if (!res.ok) { setError(data.message || data.error || "Couldn't save display name."); return }
       await refreshUser()
     } catch {
       setError("Couldn't save display name.")
@@ -854,7 +862,7 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
         <button
           type="button"
           onClick={handleSaveName}
-          disabled={savingName || !nameChanged}
+          disabled={savingName || !nameChanged || nameCooldownMs > 0}
           className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
@@ -864,6 +872,11 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
         </button>
       </div>
 
+      {nameCooldownMs > 0 ? (
+        <p className="text-[11px] text-[#888] dark:text-[#898e97] mt-2">You can change your display name again in {nameCooldownDays === 1 ? "1 day" : `${nameCooldownDays} days`}.</p>
+      ) : (
+        <p className="text-[11px] text-[#999] dark:text-[#6b6b6b] mt-2">Unique across Hypastack, changeable once every 7 days.</p>
+      )}
       {error && <p className="text-[11px] text-red-500 mt-2">{error}</p>}
     </div>
   )
@@ -907,6 +920,12 @@ function EditProfileDialog({
     nickname.length < 3 ? "Must be at least 3 characters." :
     nickname.length > 12 ? "Must be 12 characters or fewer." : ""
   const isNicknameValid = /^[A-Za-z0-9]{3,12}$/.test(nickname)
+  const nickChanged = nickname.trim() !== user.nickname
+  const nickCooldownMs = user.nicknameChangedAt
+    ? Math.max(0, new Date(user.nicknameChangedAt).getTime() + NICKNAME_CHANGE_COOLDOWN_MS - Date.now())
+    : 0
+  const nickCooldownDays = Math.ceil(nickCooldownMs / (24 * 60 * 60 * 1000))
+  const nickCooldownLocked = nickChanged && nickCooldownMs > 0
 
   const handleSave = async () => {
     if (saving) return
@@ -933,7 +952,7 @@ function EditProfileDialog({
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error || "Profile update failed, contact us at t.me/hypastack")
+        setError(data.message || data.error || "Profile update failed, contact us at t.me/hypastack")
         return
       }
       await refreshUser()
@@ -989,6 +1008,9 @@ function EditProfileDialog({
                 {nicknameError && (
                   <p className="text-[11px] text-red-500">{nicknameError}</p>
                 )}
+                {!nicknameError && nickCooldownMs > 0 && (
+                  <p className="text-[11px] text-[#888] dark:text-[#898e97]">You can change your username again in {nickCooldownDays === 1 ? "1 day" : `${nickCooldownDays} days`}.</p>
+                )}
                 {error && (
                   <p className="text-[11px] text-red-500">{error}</p>
                 )}
@@ -1008,7 +1030,7 @@ function EditProfileDialog({
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={saving || !isNicknameValid}
+                disabled={saving || !isNicknameValid || nickCooldownLocked}
                 className="relative flex-1 inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ height: 38 }}
               >

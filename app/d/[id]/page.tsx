@@ -19,6 +19,7 @@ interface Uploader {
   bannerUrl: string;
   avatarUrl: string | null;
   displayName: string | null;
+  verified: boolean;
 }
 
 function fmt(bytes: number): string {
@@ -314,7 +315,7 @@ export default function DownloadPage() {
                     <img
                       src={uploader.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
                       alt=""
-                      className="-mt-[50px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#0a0b0c] bg-[#151616] select-none pointer-events-none"
+                      className="-mt-[59px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#0a0b0c] bg-[#151616] select-none pointer-events-none"
                       draggable={false}
                       onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
                     />
@@ -325,7 +326,14 @@ export default function DownloadPage() {
                 </div>
 
                 {uploader?.displayName && (
-                  <p className="mt-3 text-[22px] font-bold tracking-tight text-[#f7f8f8] truncate leading-tight">@{uploader.displayName}</p>
+                  <div className="mt-3 flex items-center gap-1.5 min-w-0">
+                    <p className="text-[22px] font-bold tracking-tight text-[#f7f8f8] truncate leading-tight">@{uploader.displayName}</p>
+                    {uploader.verified && (
+                      <span title="Verified account" className="shrink-0 inline-flex items-center text-[#3ba7ff]">
+                        <MIcon name="verified" size={19} />
+                      </span>
+                    )}
+                  </div>
                 )}
 
                 <div className={uploader?.displayName ? "mt-1.5" : uploader ? "mt-3" : "mt-1"}>
@@ -407,6 +415,14 @@ export default function DownloadPage() {
                 </div>
               )}
             </div>
+
+            {uploader && (
+              <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7079] text-center">
+                Anyone can set a name and banner. Hypastack doesn&apos;t vet profiles, so a banner alone proves nothing. Only accounts showing a{" "}
+                <span className="inline-flex items-center gap-0.5 align-middle text-[#8a9099]"><MIcon name="verified" size={12} />Verified</span>{" "}
+                badge are confirmed. Don&apos;t trust a file just because it looks branded.
+              </p>
+            )}
           </motion.div>
         )}
       </div>

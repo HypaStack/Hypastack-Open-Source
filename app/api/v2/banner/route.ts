@@ -5,6 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { getR2Client, getBucketName } from "@/lib/storage/r2"
 import { imageContentTypeFromKey } from "@/lib/storage/bannerType"
+import { isOwnProfileKey } from "@/lib/storage/profileKeys"
 
 export const dynamic = "force-dynamic"
 
@@ -14,11 +15,10 @@ export const GET = withAuth(async ({ user: currentUser }) => {
       return new NextResponse("No banner", { status: 404 })
     }
 
-    // Defense in depth: only ever sign objects under this user's own profile
-    // prefix, mirroring the avatar route.
-    const expectedPrefix = `profiles/${currentUser.userId}/`
-    if (!user.banner_url.startsWith(expectedPrefix)) {
-      console.error("[Banner] Rejected banner_url outside user prefix")
+    // Defense in depth: only ever sign objects under this user's own namespace,
+    // mirroring the avatar route.
+    if (!isOwnProfileKey(user.banner_url, currentUser.userId, user.storage_token)) {
+      console.error("[Banner] Rejected banner_url outside user namespace")
       return new NextResponse("Invalid banner", { status: 400 })
     }
 

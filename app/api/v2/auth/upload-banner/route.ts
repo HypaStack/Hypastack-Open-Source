@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { withAuth } from "@/lib/http/route"
-import { getUserById, updateBannerUrl } from "@/lib/models/userModel"
+import { getUserById, updateBannerUrl, getStorageToken } from "@/lib/models/userModel"
 import { putObjectByKey, deleteByKey } from "@/lib/storage/r2"
+import { isOwnProfileKey } from "@/lib/storage/profileKeys"
 import { fileTypeFromBuffer } from "file-type"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 import { ALLOWED_BANNER_TYPES, MAX_BANNER_SIZE } from "@/constants"
@@ -38,21 +39,19 @@ export const POST = withAuth(async ({ request, user: auth }) => {
         return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, "415 Invalid file type, only JPEG, PNG, GIF, and AVIF are allowed.")
     }
 
-    // Remove the previous banner (only within the user's own prefix).
-    if (user.banner_url) {
-      const expectedPrefix = `profiles/${auth.userId}/`
-      if (user.banner_url.startsWith(expectedPrefix)) {
-        try {
-          await deleteByKey(user.banner_url)
-        } catch (err) {
-          console.error("[Banner] Failed to delete old banner:", err)
-        }
+    // Remove the previous banner (only within the user's own namespace).
+    if (isOwnProfileKey(user.banner_url, auth.userId, user.storage_token)) {
+      try {
+        await deleteByKey(user.banner_url!)
+      } catch (err) {
+        console.error("[Banner] Failed to delete old banner:", err)
       }
     }
 
+    const token = user.storage_token || await getStorageToken(auth.userId)
     const { createHash } = await import("crypto")
     const hash = createHash("md5").update(buffer).digest("hex")
-    const bannerKey = `profiles/${auth.userId}/banner-${hash}.${fileType.ext}`
+    const bannerKey = `profiles/${token}/banner-${hash}.${fileType.ext}`
     await putObjectByKey(bannerKey, buffer, fileType.mime)
     await updateBannerUrl(auth.userId, bannerKey)
 

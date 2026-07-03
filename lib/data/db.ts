@@ -99,6 +99,10 @@ export async function initDatabase(): Promise<void> {
         avatar_url VARCHAR(500),
         banner_url VARCHAR(500),
         display_name VARCHAR(64),
+        display_name_changed_at TIMESTAMPTZ,
+        nickname_changed_at TIMESTAMPTZ,
+        storage_token VARCHAR(32),
+        verified BOOLEAN NOT NULL DEFAULT FALSE,
         premium BOOLEAN DEFAULT FALSE,
         tier TEXT NOT NULL DEFAULT 'free',
         last_acknowledged_tier TEXT NOT NULL DEFAULT 'free',
@@ -412,6 +416,23 @@ export async function initDatabase(): Promise<void> {
       // Download-page profile branding (paid plans): banner image + public display name.
       { version: '2026-07-03-user-banner-url', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_url VARCHAR(500)` },
       { version: '2026-07-03-user-display-name', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(64)` },
+      // Opaque per-user namespace for profile objects (avatar/banner) so their
+      // public URLs never expose the internal account id.
+      { version: '2026-07-03-user-storage-token', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS storage_token VARCHAR(32)` },
+      { version: '2026-07-03-user-storage-token-backfill', sql: `UPDATE users SET storage_token = md5(random()::text || id::text || clock_timestamp()::text) WHERE storage_token IS NULL` },
+      { version: '2026-07-03-user-storage-token-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_storage_token ON users(storage_token) WHERE storage_token IS NOT NULL` },
+      // Manual verification flag for the download-page "Verified" badge.
+      { version: '2026-07-03-user-verified', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS verified BOOLEAN NOT NULL DEFAULT FALSE` },
+      // Name-change cooldown timestamps (nickname + public display name).
+      { version: '2026-07-03-user-nickname-changed-at', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname_changed_at TIMESTAMPTZ` },
+      { version: '2026-07-03-user-display-name-changed-at', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name_changed_at TIMESTAMPTZ` },
+      // Null out any pre-existing duplicate display names (keep the earliest) so the
+      // unique index below can be created.
+      { version: '2026-07-03-display-name-dedupe', sql: `UPDATE users u SET display_name = NULL, display_name_changed_at = NULL WHERE display_name IS NOT NULL AND EXISTS (SELECT 1 FROM users u2 WHERE lower(u2.display_name) = lower(u.display_name) AND u2.created_at < u.created_at)` },
+      { version: '2026-07-03-display-name-uniq', sql: `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_display_name_lower ON users(lower(display_name)) WHERE display_name IS NOT NULL` },
+      // Released display names are held (locked for everyone) for a period so they
+      // can't be instantly re-registered; hypasched deletes rows once expired.
+      { version: '2026-07-03-display-name-holds', sql: `CREATE TABLE IF NOT EXISTS display_name_holds (name_lower VARCHAR(64) PRIMARY KEY, released_by VARCHAR(36), expires_at TIMESTAMPTZ NOT NULL)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

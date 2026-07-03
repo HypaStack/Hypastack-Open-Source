@@ -5,6 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { getR2Client, getBucketName } from "@/lib/storage/r2"
 import { imageContentTypeFromKey } from "@/lib/storage/bannerType"
+import { isOwnProfileKey } from "@/lib/storage/profileKeys"
 
 export const dynamic = "force-dynamic"
 
@@ -14,12 +15,11 @@ export const GET = withAuth(async ({ user: currentUser }) => {
       return new NextResponse("No avatar", { status: 404 })
     }
 
-    // Defense in depth: only ever sign objects under this user's own avatar
-    // prefix. Prevents avatar_url (if ever tampered with) from being used to
-    // mint presigned URLs for arbitrary objects in the bucket.
-    const expectedPrefix = `profiles/${currentUser.userId}/`
-    if (!user.avatar_url.startsWith(expectedPrefix)) {
-      console.error("[Avatar] Rejected avatar_url outside user prefix")
+    // Defense in depth: only ever sign objects under this user's own namespace.
+    // Prevents avatar_url (if ever tampered with) from being used to mint
+    // presigned URLs for arbitrary objects in the bucket.
+    if (!isOwnProfileKey(user.avatar_url, currentUser.userId, user.storage_token)) {
+      console.error("[Avatar] Rejected avatar_url outside user namespace")
       return new NextResponse("Invalid avatar", { status: 400 })
     }
 

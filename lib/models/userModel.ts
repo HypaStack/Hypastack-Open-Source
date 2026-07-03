@@ -1,6 +1,7 @@
 import { getPool, ensureDatabase } from '@/lib/data/db'
 import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { DISPLAY_NAME_HOLD_DAYS } from "@/constants/profile"
 import { cached, bustCache } from '@/lib/data/cache'
 
 
@@ -11,6 +12,10 @@ export interface User {
   avatar_url: string | null
   banner_url: string | null
   display_name: string | null
+  display_name_changed_at: Date | null
+  nickname_changed_at: Date | null
+  storage_token: string | null
+  verified: boolean
   premium: boolean
   tier: Tier
   last_acknowledged_tier: Tier
@@ -58,11 +63,32 @@ export async function createUser(input: CreateUserInput): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
 
+  const storageToken = crypto.randomBytes(16).toString('hex')
   await pool.query(
-    `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, NOW(), NOW())`,
-    [input.id, input.nickname_encrypted, input.password_hash, input.key_lookup ?? null]
+    `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, storage_token, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+    [input.id, input.nickname_encrypted, input.password_hash, input.key_lookup ?? null, storageToken]
   )
+}
+
+// Returns the user's opaque storage namespace, generating + persisting one for
+// legacy accounts that predate it (the migration backfills, so this is a rare
+// defensive path).
+export async function getStorageToken(userId: string): Promise<string> {
+  await ensureDatabase()
+  const pool = getPool()
+  const res = await pool.query<{ storage_token: string | null }>(
+    `SELECT storage_token FROM users WHERE id = $1`,
+    [userId]
+  )
+  const existing = res.rows[0]?.storage_token
+  if (existing) return existing
+  const token = crypto.randomBytes(16).toString('hex')
+  await pool.query(`UPDATE users SET storage_token = $1 WHERE id = $2 AND storage_token IS NULL`, [token, userId])
+  await bustCache(`user:${userId}:profile`)
+  // Re-read in case a concurrent request set it first.
+  const after = await pool.query<{ storage_token: string | null }>(`SELECT storage_token FROM users WHERE id = $1`, [userId])
+  return after.rows[0]?.storage_token ?? token
 }
 
 // Resolve an account by the deterministic identifier lookup (cid_ keys, which
@@ -112,6 +138,10 @@ export async function getUserById(id: string): Promise<User | null> {
       avatar_url: row.avatar_url,
       banner_url: row.banner_url ?? null,
       display_name: row.display_name ?? null,
+      display_name_changed_at: row.display_name_changed_at ?? null,
+      nickname_changed_at: row.nickname_changed_at ?? null,
+      storage_token: row.storage_token ?? null,
+      verified: row.verified ?? false,
       premium: isPaidTier(normalizeTier(row.tier)),
       tier: normalizeTier(row.tier),
       last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
@@ -154,7 +184,7 @@ export async function updateNickname(userId: string, nickname_encrypted: string)
   const pool = getPool()
 
   await pool.query(
-    `UPDATE users SET nickname_encrypted = $1, updated_at = NOW() WHERE id = $2`,
+    `UPDATE users SET nickname_encrypted = $1, nickname_changed_at = NOW(), updated_at = NOW() WHERE id = $2`,
     [nickname_encrypted, userId]
   )
   await bustCache(`user:${userId}:profile`)
@@ -187,10 +217,47 @@ export async function updateDisplayName(userId: string, displayName: string | nu
   const pool = getPool()
 
   await pool.query(
-    `UPDATE users SET display_name = $1, updated_at = NOW() WHERE id = $2`,
+    `UPDATE users SET display_name = $1, display_name_changed_at = NOW(), updated_at = NOW() WHERE id = $2`,
     [displayName, userId]
   )
   await bustCache(`user:${userId}:profile`)
+}
+
+// True if another account already holds this display name (case-insensitive).
+export async function isDisplayNameTaken(nameLower: string, exceptUserId: string): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+  const res = await pool.query(
+    `SELECT 1 FROM users WHERE lower(display_name) = $1 AND id <> $2 LIMIT 1`,
+    [nameLower, exceptUserId]
+  )
+  return res.rows.length > 0
+}
+
+// True if this display name is currently held (locked for everyone) after a
+// recent release. Expired holds are ignored (hypasched deletes them).
+export async function isDisplayNameHeld(nameLower: string): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+  const res = await pool.query(
+    `SELECT 1 FROM display_name_holds WHERE name_lower = $1 AND expires_at > NOW() LIMIT 1`,
+    [nameLower]
+  )
+  return res.rows.length > 0
+}
+
+// Reserve a released display name for the hold window. Locked for everyone,
+// including the previous owner, until it expires.
+export async function holdDisplayName(nameLower: string, releasedBy: string): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  const expiresAt = new Date(Date.now() + DISPLAY_NAME_HOLD_DAYS * 24 * 60 * 60 * 1000)
+  await pool.query(
+    `INSERT INTO display_name_holds (name_lower, released_by, expires_at)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (name_lower) DO UPDATE SET released_by = EXCLUDED.released_by, expires_at = EXCLUDED.expires_at`,
+    [nameLower, releasedBy, expiresAt]
+  )
 }
 
 

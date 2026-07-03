@@ -2,13 +2,13 @@ import { NextResponse } from "next/server"
 import { withAuth } from "@/lib/http/route"
 import { getUserById, updateBannerUrl } from "@/lib/models/userModel"
 import { deleteByKey } from "@/lib/storage/r2"
+import { isOwnProfileKey } from "@/lib/storage/profileKeys"
 export const dynamic = "force-dynamic"
 
 export const POST = withAuth(async ({ user: auth }) => {
     const user = await getUserById(auth.userId)
     if (user?.banner_url) {
-      const expectedPrefix = `profiles/${auth.userId}/`
-      if (user.banner_url.startsWith(expectedPrefix)) {
+      if (isOwnProfileKey(user.banner_url, auth.userId, user.storage_token)) {
         try {
           await deleteByKey(user.banner_url)
         } catch (err) {

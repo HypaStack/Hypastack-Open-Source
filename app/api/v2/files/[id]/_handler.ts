@@ -3,6 +3,7 @@ import { apiError } from "@/lib/http/apiError"
 import { getFileBySlugOrId } from "@/lib/models/fileModel"
 import { deleteByKey, getPresignedDownloadUrl } from "@/lib/storage/r2"
 import { imageContentTypeFromKey } from "@/lib/storage/bannerType"
+import { isTokenProfileKey } from "@/lib/storage/profileKeys"
 import { getUserById } from "@/lib/models/userModel"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 import { decryptFilename } from "@/lib/security/filenameCrypto"
@@ -15,28 +16,32 @@ import { API_ERRORS } from "@/constants"
 async function getUploaderBranding(userId: string | null | undefined) {
   if (!userId) return null
   const user = await getUserById(userId)
-  if (!user || !isPaidTier(normalizeTier(user.tier)) || !user.banner_url) return null
+  if (!user || !isPaidTier(normalizeTier(user.tier))) return null
+  // Only expose objects under the opaque token namespace, so a public URL can
+  // never reveal the internal account id. Legacy id-path objects are treated as
+  // absent (the user re-uploads to move them into the token namespace).
+  if (!isTokenProfileKey(user.banner_url, user.storage_token)) return null
 
   const [bannerUrl, avatarUrl] = await Promise.all([
     getPresignedDownloadUrl({
-      r2Key: user.banner_url,
+      r2Key: user.banner_url!,
       originalName: "banner",
-      contentType: imageContentTypeFromKey(user.banner_url),
+      contentType: imageContentTypeFromKey(user.banner_url!),
       disposition: "inline",
       expiresIn: 3600,
     }),
-    user.avatar_url
+    isTokenProfileKey(user.avatar_url, user.storage_token)
       ? getPresignedDownloadUrl({
-          r2Key: user.avatar_url,
+          r2Key: user.avatar_url!,
           originalName: "avatar",
-          contentType: imageContentTypeFromKey(user.avatar_url),
+          contentType: imageContentTypeFromKey(user.avatar_url!),
           disposition: "inline",
           expiresIn: 3600,
         })
       : Promise.resolve(null),
   ])
 
-  return { bannerUrl, avatarUrl, displayName: user.display_name }
+  return { bannerUrl, avatarUrl, displayName: user.display_name, verified: user.verified }
 }
 
 export async function handleFileGet(

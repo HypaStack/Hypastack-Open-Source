@@ -12,6 +12,9 @@ interface User {
   avatarUrl: string | null
   bannerUrl: string | null
   displayName: string | null
+  displayNameChangedAt: string | null
+  nicknameChangedAt: string | null
+  verified: boolean
   createdAt: string
   premium: boolean
   tier: Tier

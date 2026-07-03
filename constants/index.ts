@@ -9,6 +9,7 @@
 export * from "./navigation"
 export * from "./tiers"
 export * from "./upload"
+export * from "./profile"
 export * from "./rate-limits"
 export * from "./storage-keys"
 export * from "./languages"
