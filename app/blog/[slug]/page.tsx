@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(slug)
   if (!post) return {}
   return {
-    title: `${post.title} - Hypastack Blog`,
+    // absolute: skip the root "%s | Hypastack" template to avoid double branding
+    title: { absolute: `${post.title} - Hypastack Blog` },
     description: post.summary,
     authors: [{ name: "Kiko", url: "https://usekiko.com" }],
     alternates: {

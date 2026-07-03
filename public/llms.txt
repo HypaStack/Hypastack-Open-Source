@@ -22,6 +22,10 @@ Key facts, kept consistent with the live site and the source code:
 - [Why I built Hypastack](https://hypastack.com/blog/why-i-built-hypastack)
 - [On privacy, and keeping it simple](https://hypastack.com/blog/on-privacy-and-keeping-it-simple)
 - [Adding a CDN](https://hypastack.com/blog/the-cdn-thing)
+- [How to send large files without an email address](https://hypastack.com/blog/send-large-files-without-an-email)
+- [What zero-knowledge file sharing actually means](https://hypastack.com/blog/what-zero-knowledge-actually-means)
+- [A free CDN for your README images](https://hypastack.com/blog/free-cdn-for-readme-images)
+- [Burn after reading, explained](https://hypastack.com/blog/burn-after-reading-explained)
 - [Forum](https://hypastack.com/forum): public community file board
 - [Privacy policy](https://hypastack.com/privacy)
 - [Terms](https://hypastack.com/terms)

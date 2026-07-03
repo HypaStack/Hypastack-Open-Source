@@ -1,0 +1,43 @@
+Some files should be seen exactly once and then stop existing. Not "sit in a Downloads folder for three years." Not "remain in a cloud drive until the heat death of the universe." Once, and gone.
+
+That's the entire feature. It's called burn after reading, and it's one checkbox on a Hypastack upload.
+
+---
+
+## What is burn after reading?
+
+A burn after reading link works exactly one time. The first person to download the file gets it, and immediately afterwards the file is permanently deleted from storage. The link everyone else has, including the person who just used it, now points at nothing.
+
+It's the digital version of the envelope that gets shredded after opening. Except the shredding is automatic and nobody has to remember to do it.
+
+---
+
+## How does it work on Hypastack?
+
+The first download claims the file, atomically. That word is doing real work: if two people click the link at the same moment, the storage layer guarantees only one of them wins. There's no window where two copies slip out because the timing was lucky. One download, then deletion, every time.
+
+And because this is Hypastack, the file was [encrypted in your browser](/blog/what-zero-knowledge-actually-means) before it ever went up. So even during its short life on the server, it was unreadable. Burn after reading just makes the ending as clean as the middle.
+
+There's no trash bin, no restore button, no "contact support to recover." When it burns, it's gone. That is the feature working correctly, not a limitation.
+
+---
+
+## When should I use it?
+
+Use it for anything meant for exactly one person, exactly once. A contract for one signer. A document you want read but not kept. A file where "who else downloaded this?" should never even be a question, because the answer is enforced by the system: nobody.
+
+There's also a quieter benefit. With a normal link, you wonder if it got forwarded. With a burn link, you find out. If your recipient says the link was already dead when they clicked it, someone else got there first, and now you know something you wouldn't have known otherwise.
+
+Don't use it for anything you might need again, because you won't get it again. And don't use it for files a whole group needs, that's what a normal expiring link is for.
+
+---
+
+## Burn versus expiry
+
+Every share on Hypastack expires on a timer anyway, about 7 days for small files, shorter for big ones, custom on paid plans. Expiry answers "how long should this exist?"
+
+Burn after reading answers a different question: "how many times should this be seen?" One is about time, the other is about access. You can think of burn as a link that expires on first read, whichever comes sooner.
+
+Both come from the same belief, which is the reason Hypastack exists at all: a file sharing service should not slowly become a permanent archive of everything everyone ever sent. Files should have lifespans. This feature just gives them the shortest one possible.
+
+Try it on your next upload at [hypastack.com](https://hypastack.com). It's the checkbox that says burn after reading, and it does exactly what it says.

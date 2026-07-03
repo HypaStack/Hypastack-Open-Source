@@ -1,0 +1,50 @@
+Email tops out at about 25MB per attachment, and the moment a file is bigger than that, most tools have the same answer: create an account, verify your email, maybe look at some ads while you're at it. All you wanted was to hand someone a file.
+
+This post is about the ways to do that without giving anyone your email address, including the way I built.
+
+---
+
+## Why does every tool want my email?
+
+Because your email is worth more than your upload. It ties your activity to a real identity, it feeds a marketing list, and it lets the product email you later to pull you back in. The file transfer is the bait. The address book entry is the catch.
+
+There's nothing evil about a company wanting users. But it's worth noticing that sending a file, technically speaking, requires exactly zero information about you. Any tool that demands your identity for it is making a business decision, not a technical one.
+
+---
+
+## What are the usual options?
+
+Being fair to the alternatives, because some of them are genuinely fine:
+
+- **Cloud drives** (Google Drive, Dropbox). They work, but both sides usually end up signed in, the file sits there forever unless you remember to clean up, and the sharing permissions are a small puzzle every time.
+- **Transfer sites** in the WeTransfer style. Built around email fields by design: yours, theirs, everyone's. The free tiers tend to come with tracking and upsells.
+- **Peer-to-peer tools** like Wormhole or croc. Clever, genuinely private, but both devices have to stay online at the same time, which is exactly the coordination problem you were trying to avoid.
+- **Self-hosting.** Full control, real effort. Great if running a server sounds like a fun weekend. Most people's weekends disagree.
+
+---
+
+## How I send files
+
+[Hypastack](https://hypastack.com) works like this: you drop a file on the page, it gets encrypted in your browser before it leaves your device, and you get a link. You send that link over whatever channel you already use, a chat, a text, a sticky note. That's the entire flow.
+
+The person on the other end needs nothing. No account, no app, no email, just the link. They click it, the file decrypts in their browser, done.
+
+The free plan covers files up to 50MB with three active links at a time. Paid plans go up to 2.5GB per file, which covers video projects, design files, and most "why is this folder 2 gigabytes" situations. Large uploads get split into pieces and sent in parallel, and if your connection drops halfway, the upload resumes instead of starting over.
+
+---
+
+## What happens to the file afterwards?
+
+It deletes itself. Small files stay up for about 7 days, and the bigger the file, the shorter the window, down to 24 hours for the heaviest ones. Paid plans can set a custom lifetime, anywhere from 1 minute to 30 days. And if the file should only ever be seen once, [burn after reading](/blog/burn-after-reading-explained) deletes it right after the first download.
+
+The point is that nothing lingers. A file sharing service shouldn't slowly become an archive of everything you ever sent.
+
+---
+
+## And the email part, specifically?
+
+You never type an email anywhere on Hypastack. Not to upload, not to download, not even to create an account. Signing up means picking a nickname and letting your browser generate a key. That key is your login.
+
+This isn't just a convenience thing. An address I never collect is an address that can't leak, can't be sold, and can't end up in a breach dump with your name on it. The easiest data to protect is the data you never ask for.
+
+If that sounds like the way file sharing should have worked all along, [try it](https://hypastack.com). It's free, and nobody will email you afterwards, because nobody can.

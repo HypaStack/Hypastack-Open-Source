@@ -43,7 +43,7 @@ export default function BlogPage() {
           <div className="w-full h-px bg-[rgba(255,255,255,0.08)] mb-12" />
 
           <div className="flex flex-col divide-y divide-[rgba(255,255,255,0.08)]">
-            {blogPosts.map((post) => (
+            {[...blogPosts].sort((a, b) => (a.date < b.date ? 1 : -1)).map((post) => (
               <div
                 key={post.slug}
                 className="py-10 flex flex-col gap-3"

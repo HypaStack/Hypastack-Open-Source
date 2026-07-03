@@ -1,0 +1,49 @@
+You finish a project, you write a nice README, and then you hit the dumbest possible wall: where do you put the screenshot?
+
+It's a small problem that somehow has no good default answer. I know because I hit it myself, and the image at the top of Hypastack's own README is hosted on the thing I ended up building.
+
+---
+
+## Where do people usually host README images?
+
+The usual suspects, with their honest tradeoffs:
+
+- **Committing images to the repo.** Works, and for a small logo it's fine. But screenshots are heavy, they change often, and every old version lives in your git history forever. Your repo slowly becomes a photo album with some code attached.
+- **The GitHub issue upload trick.** Drag an image into an issue, copy the generated URL, close the issue. Free and fast, but it's an undocumented behavior, the URLs have broken for people before, and you're building your docs on a side effect.
+- **Imgur and friends.** Easy, but images get recompressed, inactive ones can get deleted, and hotlinking policies shift under your feet.
+- **Your own server.** Full control, plus a small recurring bill and one more thing to maintain for the rest of time.
+
+---
+
+## What actually makes a good image CDN?
+
+Four things, and they're all boring on purpose:
+
+1. **Permanent links.** A README image should outlive the trend cycle of image hosts. If the link can rot, it will, and always in the screenshot everyone sees first.
+2. **Direct URLs.** No landing page, no viewer, just the bytes. Markdown wants `![screenshot](url)` and nothing else.
+3. **Speed everywhere.** Your README gets read from Warsaw and from São Paulo. The image should come from a cache near both.
+4. **No surprises.** Nobody re-compressing your PNG into soup, no login wall appearing in front of your assets one Tuesday.
+
+---
+
+## How the Hypastack CDN works
+
+You upload an image in the [dashboard](https://hypastack.com/manage/cdn) and get a permanent direct link on `r2.hypastack.com`, served through Cloudflare's edge caches around the world with immutable caching. The file stays until you delete it. Not seven days, not "180 days of inactivity," just until you say so. That's the difference between the CDN side and the [file sharing side](/blog/send-large-files-without-an-email): shares are built to disappear, CDN assets are built to stay.
+
+The free plan gives you 300MB of CDN storage with files up to 20MB each, which is a lot of screenshots. Paid plans go up to 1TB with files up to 1GB.
+
+---
+
+## Why do the images get re-encoded?
+
+Because of what's hiding inside them. Every photo from a phone carries EXIF metadata: GPS coordinates, the exact device model, the timestamp, sometimes more. Post a photo of your desk setup and, in the metadata, you may have just published your home address to anyone who checks.
+
+So Hypastack re-encodes every image once at upload, which throws all of that away. The pixels stay, the location data doesn't. After that single cleanup pass, the file is served unchanged forever. I wrote more about the thinking behind this in [the CDN post](/blog/the-cdn-thing).
+
+---
+
+## What the CDN is not
+
+Public. That's the one rule. CDN files can't be encrypted, because a browser has to display them directly, so never put anything private there. Private things go through [file sharing](https://hypastack.com), where the encryption happens in your browser and I can't see anything at all.
+
+For everything meant to be seen, though, screenshots, avatars, website assets, this is the calm, boring image host I wished existed. Boring is what you want from infrastructure.

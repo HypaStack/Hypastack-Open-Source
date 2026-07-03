@@ -1,0 +1,70 @@
+"Zero-knowledge" is one of those phrases that gets stamped on products the way "artisanal" gets stamped on bread. Sometimes it means something. Often it means the marketing team liked the sound of it.
+
+So here's what it means when I say it about Hypastack, in plain words, with the parts it doesn't cover included. Because a privacy claim you can't examine is just a vibe.
+
+---
+
+## What does zero-knowledge actually mean?
+
+A zero-knowledge service stores your data but cannot read it. Not "promises not to read it." Cannot. The encryption happens on your device, the decryption happens on the recipient's device, and the key never touches the server in between.
+
+That last part is the whole trick, so let me show you where the key actually lives.
+
+---
+
+## Where does the key live?
+
+When you upload a file to Hypastack, your browser encrypts it with AES-256 and produces a link that looks something like this:
+
+```
+https://hypastack.com/d/abc123#kJ8f2m...
+```
+
+Everything after the `#` is called the URL fragment, and browsers treat it differently from the rest of the address: they never send it over the network. Not to me, not to anyone. This isn't a Hypastack feature, it's how the web has worked since the beginning. Fragments were designed to jump to sections within a page, so there was never a reason for browsers to transmit them.
+
+Which means the decryption key rides inside the link itself, from your screen to your recipient's screen, skipping my server entirely. When their browser opens the page, it reads the fragment locally and unlocks the file right there on their machine.
+
+---
+
+## What can the server see?
+
+Honesty section. Here's what actually exists on my side for a shared file:
+
+- A blob of encrypted bytes with a random ID
+- The file size and an expiry date
+- The filename, also encrypted, with a separate key
+- The account it belongs to, which is a nickname I can't read either, because it's encrypted in your browser before it's sent
+
+What doesn't exist on my side: your email (never asked), your IP address (never stored), the file contents (never readable), or the key (never transmitted).
+
+---
+
+## What does this protect you from?
+
+Three things, concretely.
+
+If Hypastack gets breached, the attacker gets what I have, which is ciphertext. Encrypted noise with no keys in the same building.
+
+If I turn out to be untrustworthy, it doesn't matter. I couldn't read your files out of curiosity if I wanted to. The architecture doesn't have a "just this once" mode.
+
+If someone demands data, there's nothing readable to hand over. Scrambled bytes and an encrypted filename is the complete inventory.
+
+---
+
+## What does it not protect?
+
+Zero-knowledge is not magic, and pretending otherwise would make me exactly the kind of product I built this to escape.
+
+Anyone who has the link has the key. If your recipient forwards it, the file opens for whoever they sent it to, at least until the link expires or [burns](/blog/burn-after-reading-explained). Choose your recipients like you'd choose who to hand an envelope to.
+
+Your own device is your job. Encryption in transit and at rest doesn't help if the laptop itself is compromised.
+
+And the [CDN side](/blog/the-cdn-thing) of Hypastack is public by definition. Those files are meant to be displayed on websites, so they can't be encrypted. Different tool, different rules.
+
+---
+
+## Why should you believe any of this?
+
+You shouldn't have to. The entire platform is open source under AGPL-3.0, and the code is at [github.com/HypaStack/Hypastack-Open-Source](https://github.com/HypaStack/Hypastack-Open-Source). You can read the encryption yourself, or self-host the whole thing and never think about me again.
+
+That's the real difference between a promise and an architecture. A promise asks for trust. An architecture lets you check.
