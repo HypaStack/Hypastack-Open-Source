@@ -718,15 +718,12 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
 // appear above every file the user shares. Mirrors the avatar upload flow.
 function BrandingSection({ user }: { user: PreferencesUser }) {
   const { refreshUser } = useManage()
-  const [cacheKey, setCacheKey] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [removing, setRemoving] = useState(false)
   const [displayName, setDisplayName] = useState(user.displayName ?? "")
   const [savingName, setSavingName] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const bannerSrc = user.bannerUrl ? `${API_BASE}/banner?t=${cacheKey}` : null
-  const avatarSrc = user.avatarUrl ? `${API_BASE}/avatar?t=${cacheKey}` : "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"
   const nameChanged = displayName.trim() !== (user.displayName ?? "")
 
   const handleBannerFile = async (file: File) => {
@@ -747,7 +744,6 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) { setError(data.error || "Banner upload failed."); return }
       await refreshUser()
-      setCacheKey(k => k + 1)
     } catch {
       setError("Banner upload failed.")
     } finally {
@@ -766,7 +762,6 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
         return
       }
       await refreshUser()
-      setCacheKey(k => k + 1)
     } catch {
       setError("Couldn't remove banner.")
     } finally {
@@ -801,29 +796,7 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
         A banner and name shown above every file you share.
       </p>
 
-      {/* Live preview — matches what people see on your download links */}
-      <div className="rounded-[10px] overflow-hidden border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0a0b0c]">
-        <div className="relative h-[92px] w-full bg-[#151616]">
-          {bannerSrc && (
-            <img src={bannerSrc} alt="Banner" className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" draggable={false} />
-          )}
-          {uploading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            </div>
-          )}
-        </div>
-        <div className="px-4 pb-3">
-          <div className="-mt-6 mb-1.5 h-12 w-12 rounded-md overflow-hidden border-2 border-white dark:border-[#0a0b0c] bg-[#151616]">
-            <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }} />
-          </div>
-          <p className="text-[14px] font-semibold text-[#111] dark:text-[#f0f0f0] truncate">
-            {displayName.trim() ? `@${displayName.trim()}` : <span className="text-[#aaa] dark:text-[#666]">@yourname</span>}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2">
+      <div className="flex items-center gap-2">
         <label className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 cursor-pointer">
           <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
           <div className="relative bg-[#151616] rounded-full h-[32px] px-4 flex items-center gap-1.5 text-[#f7f8f8] text-[13px] font-medium">
