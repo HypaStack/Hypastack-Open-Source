@@ -70,7 +70,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24">
-            <LoadingSvg variant="white" size={40} />
+            <LoadingSvg variant="white" size={80} />
           </motion.div>
         )}
 

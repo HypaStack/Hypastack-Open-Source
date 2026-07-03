@@ -66,7 +66,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
           </h1>
 
           <div className="flex items-center gap-2 mt-2">
-            <LoadingSvg variant="white" size={20} />
+            <LoadingSvg variant="white" size={32} />
             <span className="text-xs" style={{ color: "#71717a" }}>
               {isLoading ? "Authenticating…" : "Loading workspace…"}
             </span>

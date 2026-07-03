@@ -220,7 +220,7 @@ export default function DownloadPage() {
       className="flex items-center justify-center gap-2 whitespace-nowrap"
     >
       {downloading && !forceLocked ? (
-        <><LoadingSvg variant="white" size={16} />Downloading…</>
+        <><LoadingSvg variant="white" size={24} />Downloading…</>
       ) : downloadCooldown > 0 ? (
         <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
       ) : !encryptionKeyBase64 || forceLocked ? (
@@ -266,7 +266,7 @@ export default function DownloadPage() {
 
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24">
-            <LoadingSvg variant="white" size={40} />
+            <LoadingSvg variant="white" size={80} />
           </motion.div>
         )}
 

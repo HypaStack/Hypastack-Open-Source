@@ -523,7 +523,7 @@ function FilesPageInner() {
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center min-h-[400px]">
-          <LoadingSvg size={40} />
+          <LoadingSvg size={80} />
         </div>
       ) : isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />

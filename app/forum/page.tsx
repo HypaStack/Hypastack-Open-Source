@@ -317,7 +317,7 @@ export default function ForumPage() {
           {/* Post list */}
           {loading ? (
             <div className="flex justify-center items-center py-20 border-t border-[rgba(255,255,255,0.08)] ">
-              <LoadingSvg variant="white" size={32} />
+              <LoadingSvg variant="white" size={64} />
             </div>
           ) : posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">

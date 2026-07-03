@@ -290,7 +290,7 @@ export default function CreateAccountPage() {
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <LoadingSvg variant="white" size={16} />
+                      <LoadingSvg variant="white" size={24} />
                       Creating…
                     </span>
                   ) : "Create account"}
