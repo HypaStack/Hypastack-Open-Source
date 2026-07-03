@@ -310,7 +310,7 @@ export default function DownloadPage() {
                     <img
                       src={uploader.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
                       alt=""
-                      className="-mt-[56px] h-[96px] w-[96px] rounded-md object-cover border-2 border-[#0a0b0c] bg-[#151616] select-none pointer-events-none"
+                      className="-mt-[50px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#0a0b0c] bg-[#151616] select-none pointer-events-none"
                       draggable={false}
                       onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
                     />
@@ -325,12 +325,12 @@ export default function DownloadPage() {
                 )}
 
                 <div className={uploader?.displayName ? "mt-1.5" : uploader ? "mt-3" : "mt-1"}>
-                  <h1 className={`text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#f7f8f8]'}`}>
-                    {encryptionKeyBase64 ? displayName : "Unavailable"}
-                  </h1>
-                  <div className="flex items-center gap-2">
-                    {encryptionKeyBase64 && <span className="bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-[#898e97] rounded-[5px] px-[6px] py-[2px] text-[10px] font-semibold tracking-wide uppercase">{ext}</span>}
-                    <span className="text-[13px] text-[#898e97]">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h1 className={`min-w-0 truncate text-[18px] font-semibold tracking-tight leading-snug ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#c9ccd1]'}`}>
+                      {encryptionKeyBase64 ? displayName : "Unavailable"}
+                    </h1>
+                    {encryptionKeyBase64 && <span className="shrink-0 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-[#898e97] rounded-[5px] px-[6px] py-[2px] text-[10px] font-semibold tracking-wide uppercase">{ext}</span>}
+                    <span className="shrink-0 text-[13px] text-[#898e97]">
                       {encryptionKeyBase64 ? fmt(fileInfo.size) : <span className="flex items-center gap-1.5"><MIcon name="visibility_off" size={14} />Unavailable</span>}
                     </span>
                   </div>
@@ -384,17 +384,19 @@ export default function DownloadPage() {
                 </div>
               )}
 
-              <div style={{ padding: '0 12px 14px' }}>
-                {(rateLimitError || downloadCooldown > 0) && (
-                  <div className="text-center flex flex-col items-center gap-1 text-[13px] text-[#f59e0b] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.15)] px-4 py-3 rounded-[10px]">
-                    <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
-                    <span className="text-[11px] opacity-70">Try again in {downloadCooldown}s</span>
-                  </div>
-                )}
-                {downloaded && burned && (
-                  <p className="text-[12px] text-[#898e97] text-center mt-3">This file has been permanently deleted after download.</p>
-                )}
-              </div>
+              {(rateLimitError || downloadCooldown > 0 || (downloaded && burned)) && (
+                <div className="mx-3 mb-3">
+                  {(rateLimitError || downloadCooldown > 0) && (
+                    <div className="text-center flex flex-col items-center gap-1 text-[13px] text-[#f59e0b] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.15)] px-4 py-3 rounded-[10px]">
+                      <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
+                      <span className="text-[11px] opacity-70">Try again in {downloadCooldown}s</span>
+                    </div>
+                  )}
+                  {downloaded && burned && (
+                    <p className="text-[12px] text-[#898e97] text-center mt-3">This file has been permanently deleted after download.</p>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
