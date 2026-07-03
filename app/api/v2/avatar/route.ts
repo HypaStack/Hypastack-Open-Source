@@ -4,6 +4,7 @@ import { getUserById } from "@/lib/models/userModel"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { getR2Client, getBucketName } from "@/lib/storage/r2"
+import { imageContentTypeFromKey } from "@/lib/storage/bannerType"
 
 export const dynamic = "force-dynamic"
 
@@ -26,7 +27,7 @@ export const GET = withAuth(async ({ user: currentUser }) => {
     const command = new GetObjectCommand({
       Bucket: getBucketName(),
       Key: user.avatar_url,
-      ResponseContentType: "image/webp",
+      ResponseContentType: imageContentTypeFromKey(user.avatar_url),
     })
 
     const signedUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })

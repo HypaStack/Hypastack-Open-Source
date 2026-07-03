@@ -536,6 +536,22 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
     setAvatarKey(k => k + 1)
   }
 
+  // GIF avatars can't be cropped on a canvas without flattening to one frame,
+  // so they skip the cropper and upload as-is to keep the animation.
+  const uploadRawAvatar = async (file: File) => {
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("avatar", file)
+      const res = await apiFetch("/api/v2/auth/upload-avatar", { method: "POST", body: fd })
+      if (res.ok) await handleUploadSuccess()
+    } catch (e) {
+      console.error("[Avatar] GIF upload failed:", e)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <>
     {cropFile && (
@@ -572,17 +588,16 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={(e) => { 
-                const f = e.target.files?.[0]; 
-                console.log("[AvatarCrop] File selected:", f?.name, f?.type, f?.size)
+              onChange={(e) => {
+                const f = e.target.files?.[0]
                 if (f && ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(f.type) && f.size <= 10 * 1024 * 1024) {
-                  const url = URL.createObjectURL(f)
-                  console.log("[AvatarCrop] Setting cropFile, url:", url)
-                  setCropFile({ url, file: f })
-                } else {
-                  console.log("[AvatarCrop] File rejected or no file")
+                  if (f.type === "image/gif") {
+                    uploadRawAvatar(f)
+                  } else {
+                    setCropFile({ url: URL.createObjectURL(f), file: f })
+                  }
                 }
-                e.target.value = "" 
+                e.target.value = ""
               }}
               disabled={uploading}
               className="hidden"
