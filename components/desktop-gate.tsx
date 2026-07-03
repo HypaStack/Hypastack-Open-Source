@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
 import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "./page-logo"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 
 // shows splash screen
 
@@ -65,16 +66,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
           </h1>
 
           <div className="flex items-center gap-2 mt-2">
-            <div className="relative h-5 w-5">
-              <div
-                className="absolute inset-0 rounded-full border-2 border-transparent animate-spin"
-                style={{
-                  borderTopColor: "#b0b0b0",
-                  borderRightColor: "rgba(95, 157, 255, 0.3)",
-                  animationDuration: "0.8s",
-                }}
-              />
-            </div>
+            <LoadingSvg variant="white" size={20} />
             <span className="text-xs" style={{ color: "#71717a" }}>
               {isLoading ? "Authenticating…" : "Loading workspace…"}
             </span>

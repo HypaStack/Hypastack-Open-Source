@@ -23,6 +23,13 @@ export default function NotFoundPage() {
           />
         </Link>
 
+        <img
+          src="https://r2.hypastack.com/cdn/2m7ewrwiad94/404-not-found.svg"
+          alt="404"
+          className="w-[220px] max-w-full h-auto mb-6 select-none pointer-events-none"
+          draggable={false}
+        />
+
         <div className="w-full bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
           <div className="flex items-center gap-2.5 mb-3">
             <MIcon name="error" className="text-red-500" size={20} />

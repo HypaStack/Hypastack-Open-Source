@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
 import { Button } from "@/components/ui/button"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 export default function SignInPage() {
   const router = useRouter()
   const [showKey, setShowKey] = useState(false)
@@ -141,7 +142,7 @@ export default function SignInPage() {
               </form>
             ) : (
               <div className="flex items-center gap-2 text-[14px] text-[#898e97] py-4 pl-1">
-                <span className="inline-block h-[16px] w-[16px] rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
+                <LoadingSvg variant="white" size={16} />
                 Signing in…
               </div>
             )}

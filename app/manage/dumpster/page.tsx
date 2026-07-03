@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -81,7 +82,7 @@ export default function DumpsterPage() {
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.25)] group-hover:to-[rgba(255,255,255,0.35)] transition-colors duration-300" />
             <div className="relative bg-[#f7f8f8] rounded-full h-[38px] px-6 flex items-center justify-center gap-2 text-[#111111] text-[14px] font-medium">
               {saving ? (
-                <div className="w-[15px] h-[15px] border-2 border-black/30 border-t-black rounded-full animate-spin shrink-0" />
+                <LoadingSvg variant="dark" size={16} className="shrink-0" />
               ) : (
                 <MIcon name="save" size={15} className="shrink-0" />
               )}

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
 import Cropper from "react-easy-crop"
 import { MIcon } from "@/components/ui/material-icon"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useManage } from "@/hooks/useManage"
 import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
@@ -580,7 +581,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             />
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <LoadingSvg variant="white" size={18} />
               </div>
             )}
           </div>

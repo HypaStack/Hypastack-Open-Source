@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
+import { UploadProcessIcon } from "./upload-process-icon"
 import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
@@ -450,11 +451,7 @@ export function UploadTray({
                 <div className="relative overflow-hidden bg-transparent">
                   <div className="relative z-10 flex items-center justify-between p-4 pl-5">
                     <div className="flex items-center gap-3">
-                      <MIcon
-                        name="cloud_upload"
-                        size={22}
-                        className="shrink-0 text-[#888] dark:text-[#898e97]"
-                      />
+                      <UploadProcessIcon active={state === "uploading"} size={24} />
                       <div className="flex flex-col">
                         <span className="text-[15px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">
                           {state === "done"

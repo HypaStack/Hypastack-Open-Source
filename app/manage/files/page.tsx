@@ -1,6 +1,7 @@
 "use client"
 
 import { UploadZone } from "@/components/upload"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 
 import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"
@@ -522,7 +523,7 @@ function FilesPageInner() {
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center min-h-[400px]">
-          <MIcon name="refresh" size={24} className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] animate-spin" />
+          <LoadingSvg size={40} />
         </div>
       ) : isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />

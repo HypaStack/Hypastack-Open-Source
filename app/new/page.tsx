@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
 import { Button } from "@/components/ui/button"
+import { LoadingSvg } from "@/components/ui/loading-svg"
 
 const FEATURES = [
   { icon: "shield", label: "Zero-knowledge encryption" },
@@ -289,7 +290,7 @@ export default function CreateAccountPage() {
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <span className="inline-block h-[15px] w-[15px] rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
+                      <LoadingSvg variant="white" size={16} />
                       Creating…
                     </span>
                   ) : "Create account"}
