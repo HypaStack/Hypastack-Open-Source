@@ -581,7 +581,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             />
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
-                <LoadingSvg variant="white" size={32} />
+                <LoadingSvg variant="white" size={22} />
               </div>
             )}
           </div>

@@ -337,7 +337,7 @@ export default function ForumPostPage() {
         <Navbar />
         <section className="flex-1 pt-24 pb-20">
           <div className="flex justify-center items-center py-20">
-            <LoadingSvg variant="white" size={64} />
+            <LoadingSvg variant="white" size={28} />
           </div>
         </section>
       </main>

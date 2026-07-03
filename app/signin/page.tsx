@@ -142,7 +142,7 @@ export default function SignInPage() {
               </form>
             ) : (
               <div className="flex items-center gap-2 text-[14px] text-[#898e97] py-4 pl-1">
-                <LoadingSvg variant="white" size={24} />
+                <LoadingSvg variant="white" size={16} />
                 Signing in…
               </div>
             )}

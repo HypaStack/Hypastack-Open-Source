@@ -1015,7 +1015,7 @@ function CdnAssetTile({
           <>
             {imgLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#0e0f10]">
-                <LoadingSvg size={64} />
+                <LoadingSvg size={28} />
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}

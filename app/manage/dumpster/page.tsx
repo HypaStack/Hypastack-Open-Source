@@ -82,7 +82,7 @@ export default function DumpsterPage() {
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.25)] group-hover:to-[rgba(255,255,255,0.35)] transition-colors duration-300" />
             <div className="relative bg-[#f7f8f8] rounded-full h-[38px] px-6 flex items-center justify-center gap-2 text-[#111111] text-[14px] font-medium">
               {saving ? (
-                <LoadingSvg variant="dark" size={22} className="shrink-0" />
+                <LoadingSvg variant="dark" size={16} className="shrink-0" />
               ) : (
                 <MIcon name="save" size={15} className="shrink-0" />
               )}

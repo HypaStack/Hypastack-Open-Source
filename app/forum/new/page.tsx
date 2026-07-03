@@ -393,7 +393,7 @@ export default function ForumNewPage() {
               >
                 {submitting ? (
                   <>
-                    <LoadingSvg variant="dark" size={22} />
+                    <LoadingSvg variant="dark" size={16} />
                     Publishing...
                   </>
                 ) : (
