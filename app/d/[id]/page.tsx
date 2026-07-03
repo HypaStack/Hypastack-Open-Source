@@ -189,6 +189,10 @@ export default function DownloadPage() {
 
   const displayName = fileInfo ? (fileInfo.customFilename || fileInfo.name) : "";
   const ext = displayName.includes(".") ? displayName.split(".").pop()?.toUpperCase() : "FILE";
+  // Split so the base name can truncate while the extension always stays visible.
+  const dotIndex = displayName.lastIndexOf(".");
+  const baseName = dotIndex > 0 ? displayName.slice(0, dotIndex) : displayName;
+  const extSuffix = dotIndex > 0 ? displayName.slice(dotIndex) : "";
 
   // Primary action button, placed top-right of the card (X-post style).
   const downloadButton = downloaded ? (
@@ -326,8 +330,13 @@ export default function DownloadPage() {
 
                 <div className={uploader?.displayName ? "mt-1.5" : uploader ? "mt-3" : "mt-1"}>
                   <div className="flex items-center gap-2 min-w-0">
-                    <h1 className={`min-w-0 truncate text-[18px] font-semibold tracking-tight leading-snug ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#c9ccd1]'}`}>
-                      {encryptionKeyBase64 ? displayName : "Unavailable"}
+                    <h1 className={`flex items-baseline min-w-0 text-[18px] font-semibold tracking-tight leading-snug ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#c9ccd1]'}`}>
+                      {encryptionKeyBase64 ? (
+                        <>
+                          <span className="truncate min-w-0">{baseName}</span>
+                          {extSuffix && <span className="shrink-0">{extSuffix}</span>}
+                        </>
+                      ) : "Unavailable"}
                     </h1>
                     {encryptionKeyBase64 && <span className="shrink-0 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-[#898e97] rounded-[5px] px-[6px] py-[2px] text-[10px] font-semibold tracking-wide uppercase">{ext}</span>}
                     <span className="shrink-0 text-[13px] text-[#898e97]">
