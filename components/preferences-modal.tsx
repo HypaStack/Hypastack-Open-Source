@@ -722,7 +722,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
             className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40"
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.2)] to-[rgba(239,68,68,0.4)] group-hover:to-[rgba(239,68,68,0.6)] transition-colors duration-300" />
-            <div className="relative bg-[#1a0808] rounded-full h-[32px] px-5 flex items-center justify-center text-red-400 text-[13px] font-medium">
+            <div className="relative bg-[#fef2f2] dark:bg-[#1a0808] rounded-full h-[32px] px-5 flex items-center justify-center text-red-600 dark:text-red-400 text-[13px] font-medium">
               {deleteAccountLoading ? "Deleting..." : "Delete account"}
             </div>
           </button>
