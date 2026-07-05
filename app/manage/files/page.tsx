@@ -539,13 +539,13 @@ function FilesPageInner() {
                     onClick={() => setCurrentFolderId(folder.id)}
                     className="relative flex items-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150 cursor-pointer"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                    <div className="relative bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
-                      <MIcon name="folder" size={16} className="text-[#898e97] shrink-0" />
-                      <span className="text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(0,0,0,0.05)] to-[rgba(0,0,0,0.12)] group-hover:to-[rgba(0,0,0,0.18)] dark:from-[rgba(255,255,255,0.05)] dark:to-[rgba(255,255,255,0.15)] dark:group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
+                    <div className="relative bg-[#f4f4f4] dark:bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
+                      <MIcon name="folder" size={16} className="text-[#666] dark:text-[#898e97] shrink-0" />
+                      <span className="text-[#111] dark:text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
-                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#898e97] hover:text-red-400"
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#666] dark:text-[#898e97] hover:text-red-500 dark:hover:text-red-400"
                         style={{ height: 26, width: 26 }}
                         aria-label="Delete folder"
                       >
