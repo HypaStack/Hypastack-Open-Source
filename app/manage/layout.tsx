@@ -662,11 +662,11 @@ function ManageLayoutInner({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-6 right-6 z-[9999] max-w-sm w-full bg-white dark:bg-[#0a0b0c]"
-          style={{ borderRadius: 6, padding: 20, boxShadow: '0 0 0 1px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.08)' }}
+          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          style={{ borderRadius: 14, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
         >
           <div className="flex flex-col">
-            <h3 className="text-[15px] font-semibold text-[#171717] dark:text-[#e3e3e3] mb-2 leading-tight">A quick note</h3>
+            <h3 className="text-[15px] font-semibold text-[#111] dark:text-[#f0f0f0] mb-2 leading-tight">A quick note</h3>
             <p className="text-[13.5px] text-[#666] dark:text-[#a1a1aa] leading-relaxed mb-5">
               Please don't reveal photos for no reason and spam it, this will lower costs of keeping this platform alive. If you want, you can support us by clicking Donate.
             </p>
