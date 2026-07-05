@@ -52,21 +52,21 @@ export function Walkthrough({ id, steps, currentStep }: WalkthroughProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.96 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-2.5 text-[14px] font-medium text-[#333] bg-white border border-[#e5e5e5] pl-5 pr-3 py-2.5 rounded-md w-max max-w-[calc(100vw-2rem)] sm:max-w-md z-40 text-center sm:text-left"
+        className="fixed bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] font-medium text-[#333] dark:text-[#e3e3e3] bg-white dark:bg-[#0e0f10] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pl-4 sm:pl-5 pr-2.5 sm:pr-3 py-2.5 rounded-md w-max max-w-[calc(100vw-1.5rem)] sm:max-w-md z-40 text-center sm:text-left"
         style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)' }}
       >
-        <MIcon name={icon} size={18} className="text-[#555] shrink-0" />
+        <MIcon name={icon} size={18} className="text-[#555] dark:text-[#a1a1aa] shrink-0" />
         <span className="mr-1">{step.text}</span>
 
         {/* Step counter pill */}
-        <span className="text-[11px] font-semibold text-[#888] bg-[#f0f0f0] border border-[#e5e5e5] px-2 py-0.5 rounded-full shrink-0 tabular-nums">
+        <span className="text-[11px] font-semibold text-[#888] dark:text-[#a1a1aa] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.06)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] px-2 py-0.5 rounded-full shrink-0 tabular-nums">
           {progress}/{steps.length}
         </span>
 
         {/* Skip button */}
         <button
           onClick={handleSkip}
-          className="ml-0.5 flex items-center justify-center hover:bg-[#f0f0f0] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] hover:text-[#333] shrink-0"
+          className="ml-0.5 flex items-center justify-center hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] dark:text-[#777] hover:text-[#333] dark:hover:text-[#e3e3e3] shrink-0"
           title="Skip walkthrough"
         >
           <MIcon name="close" size={14} />
