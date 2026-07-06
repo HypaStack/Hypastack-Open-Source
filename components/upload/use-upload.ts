@@ -13,6 +13,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
 import { createZipArchive } from "./zip"
+import { selectFiles, generateFileId } from "./file-select"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 import { runCdnUpload } from "./cdn-upload"
 import { resumeMultipartUpload } from "./resume"
@@ -143,56 +144,31 @@ export function useUpload({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFiles, autoStart, uploadType])
 
-  const generateId = () => Math.random().toString(36).slice(2, 11)
-
-  const validateFile = (file: File): string | null => {
-    if (file.size > MAX_SIZE) return `"${file.name}" exceeds ${maxSizeLabel}`
-    return null
-  }
-
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList) return
-      const newFiles: FileWithPreview[] = []
-      const errors: string[] = []
-      let limitExceeded = false
+      const sel = selectFiles(fileList, files, { maxFiles: MAX_FILES, maxSize: MAX_SIZE, maxSizeLabel })
 
-      Array.from(fileList).forEach((f) => {
-        if (files.length + newFiles.length >= MAX_FILES) {
-          limitExceeded = true
-          return
-        }
-        const error = validateFile(f)
-        if (error) errors.push(error)
-        else newFiles.push({ file: f, id: generateId(), path: f.name })
-      })
-
-      if (limitExceeded) {
+      if (sel.limitExceeded) {
         setErrorMessage(`Maximum ${MAX_FILES} files allowed. Only the first ${MAX_FILES} files were selected.`)
       }
-
-      if (errors.length > 0) {
-        setErrorMessage(errors.slice(0, 3).join(". ") + (errors.length > 3 ? ` and ${errors.length - 3} more` : ""))
+      if (sel.fileErrors.length > 0) {
+        const e = sel.fileErrors
+        setErrorMessage(e.slice(0, 3).join(". ") + (e.length > 3 ? ` and ${e.length - 3} more` : ""))
         setState("error")
         return
       }
-
-      const existingSize = files.reduce((sum, f) => sum + f.file.size, 0)
-      const newSize = newFiles.reduce((sum, f) => sum + f.file.size, 0)
-      const totalSize = existingSize + newSize
-
-      if (totalSize > MAX_SIZE) {
-        setErrorMessage(`Total size exceeds ${maxSizeLabel} limit (${formatFileSize(totalSize)}). Remove some files.`)
+      if (sel.totalSizeExceeded) {
+        setErrorMessage(`Total size exceeds ${maxSizeLabel} limit (${formatFileSize(sel.totalSize)}). Remove some files.`)
         setState("error")
         return
       }
-
-      if (newFiles.length > 0) {
-        setFiles((prev) => [...prev, ...newFiles])
+      if (sel.accepted.length > 0) {
+        setFiles((prev) => [...prev, ...sel.accepted])
         setState("selected")
         setProgress(0)
         setCopied(false)
-        if (!limitExceeded) setErrorMessage("")
+        if (!sel.limitExceeded) setErrorMessage("")
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -372,7 +348,7 @@ export function useUpload({
       Object.defineProperty(dummyFile, "size", { value: size })
       Object.defineProperty(dummyFile, "path", { value: filePath })
 
-      setFiles([{ file: dummyFile, id: Math.random().toString(36).slice(2, 11), path: filePath }])
+      setFiles([{ file: dummyFile, id: generateFileId(), path: filePath }])
       setState("selected")
       setAutoStartArmed(true)
     }
@@ -503,7 +479,7 @@ export function useUpload({
     // Seed the tray with the resumed file so it renders the file row, the
     // progress bar, the live stats, and the copy-link button on completion.
     // Without this the tray is empty: no file, stuck on "Starting...", no link.
-    setFiles([{ file, id: generateId(), path: file.name }])
+    setFiles([{ file, id: generateFileId(), path: file.name }])
     setZippedFile(null)
     setUploadingIndex(0)
     setState("uploading")
