@@ -13,6 +13,7 @@ import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
 import { createZipArchive } from "./zip"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
+import { runCdnUpload } from "./cdn-upload"
 
 export function useUpload({
   initialFiles,
@@ -196,122 +197,6 @@ export function useUpload({
     [files, MAX_FILES, MAX_SIZE, maxSizeLabel]
   )
 
-  const handleCdnUpload = async (currentCsrfToken: string) => {
-    const filesMeta = files.map(f => ({
-      file: f.file,
-      fileName: f.file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_"),
-      contentType: f.file.type || "application/octet-stream",
-    }))
-
-    const initResponse = await apiFetch("/api/v2/cdn/upload-init", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        files: filesMeta.map(f => ({
-          fileName: f.fileName,
-          fileSize: f.file.size,
-          contentType: f.contentType,
-        })),
-        csrfToken: currentCsrfToken,
-        turnstileToken,
-        folderId: currentFolderId,
-        customSlug: files.length === 1 ? (customSlug.trim() || null) : null,
-      }),
-    })
-
-    if (!initResponse.ok) {
-      const error = await initResponse.json()
-      if (initResponse.status === 409) {
-        const e: any = new Error(error.error || "Custom link already taken")
-        e.slugConflict = { suggestions: error.suggestions || [] }
-        throw e
-      }
-      throw new Error(error.error || "Failed to initialize CDN upload")
-    }
-
-    const { files: initResults } = await initResponse.json()
-    const completedUploads: { cdnId: string; sanitizedName: string; contentType: string; slug: string | null }[] = []
-
-    for (let i = 0; i < files.length; i++) {
-      if (i > 0 && uploadDelayMs > 0) {
-        await new Promise(resolve => setTimeout(resolve, uploadDelayMs))
-      }
-      setUploadingIndex(i)
-      setProgress(0)
-
-      const { file } = files[i]
-      const { cdnId, uploadUrl, sanitizedName, contentType, slug } = initResults[i]
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) {
-            setProgress((e.loaded / e.total) * 100)
-          }
-        })
-        xhr.addEventListener("load", () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            setProgress(100)
-            resolve()
-          } else {
-            reject(new Error(`R2 upload failed (status ${xhr.status})`))
-          }
-        })
-        xhr.addEventListener("error", () => reject(new Error("Network error uploading to R2")))
-        xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")))
-        xhr.open("PUT", uploadUrl)
-        xhr.setRequestHeader("Content-Type", contentType)
-        xhr.setRequestHeader("Cache-Control", "public, max-age=31536000, immutable")
-        xhr.send(file)
-      })
-
-      completedUploads.push({ cdnId, sanitizedName, contentType, slug: slug ?? null })
-    }
-
-    const completeRes = await apiFetch("/api/v2/cdn/upload-complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        files: completedUploads.map(u => ({
-          cdnId: u.cdnId,
-          sanitizedName: u.sanitizedName,
-          contentType: u.contentType,
-          folderId: currentFolderId,
-          slug: u.slug,
-        })),
-      }),
-    })
-
-    if (!completeRes.ok) {
-      const error = await completeRes.json()
-      if (completeRes.status === 409) {
-        const e: any = new Error(error.error || "Custom link already taken")
-        e.slugConflict = { suggestions: error.suggestions || [] }
-        throw e
-      }
-      throw new Error(error.error || "Failed to complete CDN upload")
-    }
-
-    const { files: completedAssets } = await completeRes.json()
-
-    const urls: string[] = []
-    for (const asset of completedAssets) {
-      urls.push(files.length === 1 ? asset.cdnUrl : `${asset.fileName}: ${asset.cdnUrl}`)
-      if (onUploadComplete) {
-        onUploadComplete({
-          id: asset.id,
-          name: asset.fileName,
-          size: asset.fileSize,
-          contentType: asset.contentType,
-          cdnUrl: asset.cdnUrl,
-          createdAt: new Date().toISOString(),
-        })
-      }
-    }
-
-    setShareUrl(urls.join("\n"))
-  }
-
   // Multiple files init as ONE batch so a single solved Turnstile token verifies
   // the whole upload (instead of once per file, which hit the token reuse cap and
   // 403'd after ~50). Returns false when a partial failure was already surfaced,
@@ -418,7 +303,16 @@ export function useUpload({
 
     try {
       if (uploadType === "cdn") {
-        await handleCdnUpload(currentCsrfToken)
+        const url = await runCdnUpload(files, currentCsrfToken, {
+          turnstileToken,
+          folderId: currentFolderId,
+          customSlug,
+          uploadDelayMs,
+          onFileIndex: setUploadingIndex,
+          onProgress: setProgress,
+          onUploadComplete,
+        })
+        setShareUrl(url)
       } else {
         const meta = { burnOnRead, turnstileToken, expirationMinutes, folderId: currentFolderId }
         if (shouldZip && fileToUpload) {
