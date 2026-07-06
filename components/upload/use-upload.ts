@@ -233,7 +233,7 @@ export function useUpload({
     const finalSlug: string | null = customSlug.trim() || null
 
     const isMultipleOrNested = files.length > 1 || files.some(f => f.path?.includes("/"))
-    const shouldZip = uploadType !== "cdn" && !currentFolderId && isMultipleOrNested && zipMultipleFiles
+    const shouldZip = uploadType !== "cdn" && isMultipleOrNested && zipMultipleFiles
     // A custom link only applies when the upload produces a single share link:
     // a single file, a zipped archive, or a single CDN asset. For separate
     // multi-file uploads it doesn't apply, so we ignore any stale slug value.
