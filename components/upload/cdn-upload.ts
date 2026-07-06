@@ -15,12 +15,12 @@ interface CdnUploadDeps {
 // Uploads the selected files to the CDN: one batched init (a single Turnstile
 // check), a direct PUT per file to R2, then a batched finalize. CDN assets are
 // served raw (no client-side encryption), unlike Drive uploads. Returns the
-// joined share-URL text for the tray.
+// joined share-URL text (copy-all) plus the raw per-file URLs (copy-one).
 export async function runCdnUpload(
   files: FileWithPreview[],
   csrfToken: string,
   deps: CdnUploadDeps
-): Promise<string> {
+): Promise<{ text: string; urls: string[] }> {
   const filesMeta = files.map(f => ({
     file: f.file,
     fileName: f.file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_"),
@@ -119,7 +119,9 @@ export async function runCdnUpload(
   const { files: completedAssets } = await completeRes.json()
 
   const urls: string[] = []
+  const rawUrls: string[] = []
   for (const asset of completedAssets) {
+    rawUrls.push(asset.cdnUrl)
     urls.push(files.length === 1 ? asset.cdnUrl : `${asset.fileName}: ${asset.cdnUrl}`)
     if (deps.onUploadComplete) {
       deps.onUploadComplete({
@@ -133,5 +135,5 @@ export async function runCdnUpload(
     }
   }
 
-  return urls.join("\n")
+  return { text: urls.join("\n"), urls: rawUrls }
 }

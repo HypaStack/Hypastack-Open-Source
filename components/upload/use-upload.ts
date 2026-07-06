@@ -33,7 +33,9 @@ export function useUpload({
   const [files, setFiles] = useState<FileWithPreview[]>([])
   const [progress, setProgress] = useState(0)
   const [copied, setCopied] = useState(false)
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [shareUrl, setShareUrl] = useState("")
+  const [shareUrls, setShareUrls] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [burnOnRead, setBurnOnRead] = useState(false)
@@ -189,6 +191,7 @@ export function useUpload({
     const initResults = await initBatchUpload(files, currentCsrfToken, meta, { finalFilename, finalNote })
 
     const urls: string[] = []
+    const rawUrls: string[] = new Array(files.length).fill("")
     for (let i = 0; i < files.length; i++) {
       if (i > 0 && uploadDelayMs > 0) {
         await new Promise((resolve) => setTimeout(resolve, uploadDelayMs))
@@ -201,10 +204,12 @@ export function useUpload({
         const url = init.kind === "multipart"
           ? await uploadBatchMultipart(f.file, init, setProgress, abortControllerRef.current?.signal)
           : await uploadBatchSimple(f.file, init, currentCsrfToken, { finalFilename, finalNote, burnOnRead }, setProgress)
+        rawUrls[i] = url
         urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
       } catch (err: any) {
         if (err.message === "Upload aborted") return false
         if (urls.length > 0) {
+          setShareUrls(rawUrls)
           setShareUrl(urls.join("\n"))
           setErrorMessage(err.message || "Upload partially failed.")
           setState("error")
@@ -213,6 +218,7 @@ export function useUpload({
         throw err
       }
     }
+    setShareUrls(rawUrls)
     setShareUrl(urls.join("\n"))
     return true
   }
@@ -282,7 +288,7 @@ export function useUpload({
 
     try {
       if (uploadType === "cdn") {
-        const url = await runCdnUpload(files, currentCsrfToken, {
+        const { text, urls } = await runCdnUpload(files, currentCsrfToken, {
           turnstileToken,
           folderId: currentFolderId,
           customSlug,
@@ -291,7 +297,8 @@ export function useUpload({
           onProgress: setProgress,
           onUploadComplete,
         })
-        setShareUrl(url)
+        setShareUrl(text)
+        setShareUrls(urls)
       } else {
         const meta = { burnOnRead, turnstileToken, expirationMinutes, folderId: currentFolderId }
         if (shouldZip && fileToUpload) {
@@ -300,6 +307,7 @@ export function useUpload({
             ? await uploadMultipart(fileToUpload, currentCsrfToken, meta, opts, setProgress, setInterruptedSession, abortControllerRef.current?.signal)
             : await uploadSingle(fileToUpload, currentCsrfToken, meta, opts, setProgress)
           setShareUrl(url)
+          setShareUrls([url])
         } else if (files.length === 1) {
           // Single file keeps the proven single-init path (supports custom slug).
           const f = files[0]
@@ -308,6 +316,7 @@ export function useUpload({
             ? await uploadMultipart(f.file, currentCsrfToken, meta, opts, setProgress, setInterruptedSession, abortControllerRef.current?.signal)
             : await uploadSingle(f.file, currentCsrfToken, meta, opts, setProgress)
           setShareUrl(url)
+          setShareUrls([url])
         } else {
           // Multiple files init as one Turnstile-verified batch.
           const completed = await handleBatchUpload(currentCsrfToken, finalFilename, finalNote)
@@ -389,12 +398,26 @@ export function useUpload({
     setTimeout(() => setCopied(false), 2000)
   }
 
+  // Copies a single file's link (multi-file uploads). Per-row "Copied" feedback
+  // is tracked by index so only the clicked row lights up.
+  const handleCopyOne = async (index: number) => {
+    const link = shareUrls[index]
+    if (!link) return
+    try {
+      await copyToClipboard(link)
+    } catch (e) {}
+    setCopiedIndex(index)
+    setTimeout(() => setCopiedIndex(null), 2000)
+  }
+
   const doFullReset = () => {
     setState("idle")
     setFiles([])
     setProgress(0)
     setCopied(false)
+    setCopiedIndex(null)
     setShareUrl("")
+    setShareUrls([])
     setErrorMessage("")
     setIsUploading(false)
     setZipProgress(0)
@@ -479,6 +502,7 @@ export function useUpload({
       await resumeMultipartUpload(file, interruptedSession, setProgress)
       setState("done")
       setShareUrl(interruptedSession.shareUrl)
+      setShareUrls([interruptedSession.shareUrl])
       setInterruptedSession(null)
       setResuming(false)
       if (onUploadComplete && uploadType !== "cdn") onUploadComplete(null)
@@ -499,7 +523,9 @@ export function useUpload({
     files,
     progress,
     copied,
+    copiedIndex,
     shareUrl,
+    shareUrls,
     errorMessage,
     isUploading,
     burnOnRead,
@@ -535,6 +561,7 @@ export function useUpload({
     resumeInputRef,
     handleUpload,
     handleCopy,
+    handleCopyOne,
     handleReset,
     handleAbortUpload,
     handleResumeUpload,

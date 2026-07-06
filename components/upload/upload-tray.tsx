@@ -30,6 +30,7 @@ export function UploadTray({
   files,
   progress,
   copied,
+  copiedIndex,
   shareUrl,
   errorMessage,
   isUploading,
@@ -61,6 +62,7 @@ export function UploadTray({
   inputRef,
   handleUpload,
   handleCopy,
+  handleCopyOne,
   handleReset,
   getUploadStats,
   user,
@@ -235,8 +237,8 @@ export function UploadTray({
                                   : null
                               }
                               showCopy={state === "done"}
-                              copied={copied}
-                              onCopy={handleCopy}
+                              copied={copiedIndex === index}
+                              onCopy={() => handleCopyOne(index)}
                               error={state === "error" && index === uploadingIndex}
                             />
                           )
