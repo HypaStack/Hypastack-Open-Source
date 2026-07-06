@@ -76,6 +76,11 @@ function createR2Client(): S3Client {
     },
     forcePathStyle: true,
     requestHandler,
+    // R2 rejects the SDK's default CRC32 checksums (added in v3.729+): presigned
+    // URLs get an empty-body checksum signed in, so browser PUTs of real data
+    // get their connection reset. Only checksum when the operation requires it.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   })
 }
 
