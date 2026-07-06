@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
-import JSZip from "jszip"
 import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
@@ -12,6 +11,7 @@ import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
 import { apiFetch, getProxyKey } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
+import { createZipArchive } from "./zip"
 
 export function useUpload({
   initialFiles,
@@ -194,28 +194,6 @@ export function useUpload({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [files, MAX_FILES, MAX_SIZE, maxSizeLabel]
   )
-
-  const createZipFile = async (archiveName?: string | null): Promise<File> => {
-    const singleFileNoFolders = files.length === 1 && !files[0].path?.includes("/")
-    if (singleFileNoFolders) return files[0].file
-
-    const zip = new JSZip()
-    files.forEach((fileWithId) => {
-      const path = fileWithId.path || fileWithId.file.name
-      zip.file(path, fileWithId.file)
-    })
-
-    const content = await zip.generateAsync(
-      { type: "blob", compression: "DEFLATE" },
-      (metadata) => setZipProgress(Math.round(metadata.percent))
-    )
-
-    const safeName = archiveName?.trim()
-      ? archiveName.trim().replace(/\.zip$/i, "") + ".zip"
-      : "hypastack-archive.zip"
-
-    return new File([content], safeName, { type: "application/zip" })
-  }
 
   const uploadViaProxy = async (
     file: File,
@@ -754,7 +732,7 @@ export function useUpload({
         finalFilename = finalFilename.replace(/\.zip$/i, "") + ".zip"
       }
       setState("zipping")
-      fileToUpload = await createZipFile(finalFilename)
+      fileToUpload = await createZipArchive(files, finalFilename, setZipProgress)
       setZippedFile(fileToUpload)
     } else if (files.length > 0) {
       fileToUpload = files[0].file
