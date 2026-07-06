@@ -14,6 +14,7 @@ import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
 import { createZipArchive } from "./zip"
 import { selectFiles, generateFileId } from "./file-select"
+import { copyToClipboard, notifyDesktopUploadComplete } from "./desktop"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 import { runCdnUpload } from "./cdn-upload"
 import { resumeMultipartUpload } from "./resume"
@@ -369,33 +370,19 @@ export function useUpload({
 
   useEffect(() => {
     if (state === "done" && shareUrl && isTauri()) {
-      ;(async () => {
-        try {
-          const { sendNotification } = await import("@tauri-apps/plugin-notification")
-          const { writeText } = await import("@tauri-apps/plugin-clipboard-manager")
-          await writeText(shareUrl)
-          sendNotification({
-            title: "Hypastack Upload Complete",
-            body: "Your file has been uploaded. The link is copied to your clipboard.",
-          })
+      notifyDesktopUploadComplete(shareUrl)
+        .then(() => {
           setCopied(true)
           setTimeout(() => setCopied(false), 3000)
-        } catch (e) {
-          console.error("[Desktop] Failed to trigger native notification/clipboard", e)
-        }
-      })()
+        })
+        .catch((e) => console.error("[Desktop] Failed to trigger native notification/clipboard", e))
     }
   }, [state, shareUrl])
 
   const handleCopy = async () => {
     if (!shareUrl) return
     try {
-      if (isTauri()) {
-        const { writeText } = await import("@tauri-apps/plugin-clipboard-manager")
-        await writeText(shareUrl)
-      } else {
-        await navigator.clipboard.writeText(shareUrl)
-      }
+      await copyToClipboard(shareUrl)
     } catch (e) {}
     setCopied(true)
     if (onUploadStateChange) onUploadStateChange("copied")
