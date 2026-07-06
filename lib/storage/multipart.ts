@@ -1,4 +1,4 @@
-import { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE, MAX_CONCURRENT_CHUNKS } from '@/constants'
+import { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE, MAX_CONCURRENT_CHUNKS, CHUNK_UPLOAD_MAX_ATTEMPTS, CHUNK_UPLOAD_RETRY_DELAY_MS } from '@/constants'
 
 export { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE }
 
@@ -62,7 +62,27 @@ export function readFileSlice(file: File, start: number, end: number): Promise<A
   return file.slice(start, end).arrayBuffer()
 }
 
+// Retries transient failures (connection resets, TLS record corruption, 5xx)
+// so one network blip doesn't kill a multi-hundred-MB upload.
 export async function uploadChunkToR2(
+  presignedUrl: string,
+  data: ArrayBuffer,
+  onProgress?: (loaded: number, total: number) => void,
+  signal?: AbortSignal
+): Promise<string> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await putChunk(presignedUrl, data, onProgress, signal)
+    } catch (err: any) {
+      if (err.message === "Upload aborted" || attempt >= CHUNK_UPLOAD_MAX_ATTEMPTS) throw err
+      onProgress?.(0, data.byteLength)
+      await new Promise((r) => setTimeout(r, CHUNK_UPLOAD_RETRY_DELAY_MS * attempt))
+      if (signal?.aborted) throw new Error("Upload aborted")
+    }
+  }
+}
+
+function putChunk(
   presignedUrl: string,
   data: ArrayBuffer,
   onProgress?: (loaded: number, total: number) => void,

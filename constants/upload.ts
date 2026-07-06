@@ -55,6 +55,12 @@ export const MAX_CONCURRENT_CHUNKS = 10
 /** Concurrent chunk workers when resuming an interrupted multipart upload */
 export const RESUME_MAX_CONCURRENT_CHUNKS = 6
 
+/** Total attempts per chunk PUT (1 initial + retries) for transient network/TLS failures */
+export const CHUNK_UPLOAD_MAX_ATTEMPTS = 3
+
+/** Base delay in ms between chunk retry attempts (multiplied by attempt number) */
+export const CHUNK_UPLOAD_RETRY_DELAY_MS = 1_000
+
 /** Regex to detect previewable content types inline */
 export const PREVIEWABLE_MIME_REGEX = /^(image|video|audio)\//
 
