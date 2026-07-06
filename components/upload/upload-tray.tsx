@@ -89,6 +89,8 @@ export function UploadTray({
       ? `Uploading ${Math.min(uploadingIndex + 1, files.length)} of ${files.length}`
       : state === "error"
       ? "Upload failed"
+      : state === "zipping"
+      ? "Preparing upload"
       : `Ready to upload ${files.length} item${files.length !== 1 ? "s" : ""}`
   const footerSub =
     state === "done"
@@ -97,6 +99,8 @@ export function UploadTray({
       ? getUploadStats()
       : state === "error"
       ? errorMessage
+      : state === "zipping"
+      ? "Zipping your files — one moment…"
       : "Press Start to begin"
 
   if (!mounted) return null
