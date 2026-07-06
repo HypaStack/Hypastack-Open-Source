@@ -79,20 +79,20 @@ function NavRow({
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={`group relative flex items-center gap-3 rounded-md text-sm font-medium transition-colors duration-150 cursor-pointer ${
+      className={`group relative flex items-center gap-3 rounded-lg text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
           ? 'bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]'
           : 'text-[#666] dark:text-[#898e97] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#171717] dark:hover:text-[#f7f8f8]'
       }`}
       style={{
-        height: 32,
-        paddingLeft: 12,
-        paddingRight: 12,
+        height: 40,
+        paddingLeft: 14,
+        paddingRight: 14,
       }}
     >
-      <MIcon 
-        name={item.icon} 
-        size={18} 
+      <MIcon
+        name={item.icon}
+        size={20}
         className={`shrink-0 transition-colors ${active ? 'text-[#171717] dark:text-[#f7f8f8]' : 'text-[#666] dark:text-[#898e97] group-hover:text-[#171717] dark:group-hover:text-[#f7f8f8]'}`} 
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
@@ -109,8 +109,8 @@ function SidebarNavContent({ section, pathname }: { section: string, pathname: s
 
   return (
     <>
-      <div className="flex items-center pt-5 pb-3 shrink-0" style={{ paddingLeft: 24 }}>
-        <span className="text-[18px] font-medium tracking-tight text-black dark:text-[#e3e3e3]">
+      <div className="flex items-center pt-5 pb-4 shrink-0" style={{ paddingLeft: 24 }}>
+        <span className="text-[24px] font-semibold tracking-tight text-black dark:text-[#e3e3e3]">
           {section}
         </span>
       </div>
@@ -119,7 +119,7 @@ function SidebarNavContent({ section, pathname }: { section: string, pathname: s
         className="flex-1 min-h-0 pt-1 pb-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         style={{ padding: '0.25rem 0.75rem' }}
       >
-        <div className="space-y-0.5">
+        <div className="space-y-1">
           {items.map((item) => (
             <NavRow
               key={item.href}
