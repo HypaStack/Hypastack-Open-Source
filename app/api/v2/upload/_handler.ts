@@ -14,6 +14,7 @@ import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { validateSlug } from "@/lib/validation/slug"
 import { API_ERRORS } from "@/constants"
+import { handleUploadBatch } from "@/app/api/v2/upload/_batch"
 
 export async function handleUploadPost(request: NextRequest) {
   try {
@@ -23,6 +24,12 @@ export async function handleUploadPost(request: NextRequest) {
     }
 
     const body = await request.json()
+
+    // Multi-file uploads arrive as a `files[]` batch so one solved Turnstile
+    // token verifies the whole upload instead of once per file.
+    if (Array.isArray(body.files)) {
+      return handleUploadBatch(body, currentUser.userId)
+    }
     const { fileName, fileSize, contentType, burnOnRead, turnstileToken, csrfToken, customFilename, customSlug, expiresInMinutes, note, path, folderId } = body
 
     if (!fileName || !fileSize || !contentType) {
