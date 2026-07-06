@@ -14,6 +14,7 @@ import { formatUploadStats } from "./stats"
 import { createZipArchive } from "./zip"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 import { runCdnUpload } from "./cdn-upload"
+import { resumeMultipartUpload } from "./resume"
 
 export function useUpload({
   initialFiles,
@@ -511,94 +512,7 @@ export function useUpload({
     uploadStartTime.current = Date.now()
 
     try {
-      const resumeRes = await apiFetch("/api/v2/upload-multipart/resume", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileId: interruptedSession.fileId,
-          uploadId: interruptedSession.uploadId,
-          totalParts: interruptedSession.totalParts,
-          chunkSize: interruptedSession.chunkSize,
-        }),
-      })
-
-      if (!resumeRes.ok) {
-        const err = await resumeRes.json()
-        throw new Error(err.error || "Resume failed")
-      }
-
-      const resumeData = await resumeRes.json()
-      const { uploadedParts, missingParts } = resumeData
-
-      const { importKeyFromBase64, readFileSlice, encryptChunk, uploadChunkToR2 } =
-        await import("@/lib/storage/multipart")
-      const encKey = await importKeyFromBase64(interruptedSession.keyBase64)
-
-      const chunkSize = interruptedSession.chunkSize
-
-      const allEtags: { partNumber: number; etag: string }[] = [...uploadedParts]
-
-      const baseProgress = (uploadedParts.length / interruptedSession.totalParts) * 100
-      setProgress(baseProgress)
-
-      const MAX_CONCURRENT = 6
-      let nextIdx = 0
-      const chunkProgress = new Float64Array(missingParts.length)
-
-      const reportProgress = () => {
-        let done = 0
-        for (let i = 0; i < chunkProgress.length; i++) done += chunkProgress[i]
-        const missingBytes = missingParts.length * chunkSize
-        const pct = baseProgress + (done / Math.max(missingBytes, 1)) * (100 - baseProgress)
-        setProgress(Math.min(99, pct))
-      }
-
-      const worker = async () => {
-        while (true) {
-          const idx = nextIdx++
-          if (idx >= missingParts.length) break
-
-          const { partNumber, presignedUrl } = missingParts[idx]
-          const start = (partNumber - 1) * chunkSize
-          const end = Math.min(start + chunkSize, file.size)
-          const chunkBytes = end - start
-
-          const plaintext = await readFileSlice(file, start, end)
-          const encrypted = await encryptChunk(encKey, plaintext)
-          const etag = await uploadChunkToR2(presignedUrl, encrypted, (loaded, total) => {
-            chunkProgress[idx] = (loaded / total) * chunkBytes
-            reportProgress()
-          })
-
-          allEtags.push({ partNumber, etag })
-          chunkProgress[idx] = chunkBytes
-          reportProgress()
-        }
-      }
-
-      const workerCount = Math.min(MAX_CONCURRENT, missingParts.length)
-      const workers: Promise<void>[] = []
-      for (let i = 0; i < workerCount; i++) workers.push(worker())
-      await Promise.all(workers)
-
-      allEtags.sort((a, b) => a.partNumber - b.partNumber)
-
-      const completeRes = await apiFetch("/api/v2/upload-complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileId: interruptedSession.fileId,
-          uploadId: interruptedSession.uploadId,
-          parts: allEtags,
-        }),
-      })
-
-      if (!completeRes.ok) {
-        const err = await completeRes.json()
-        throw new Error(err.error || "Completion failed")
-      }
-
-      setProgress(100)
+      await resumeMultipartUpload(file, interruptedSession, setProgress)
       setState("done")
       setShareUrl(interruptedSession.shareUrl)
       setInterruptedSession(null)
