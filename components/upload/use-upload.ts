@@ -11,6 +11,7 @@ import { STORAGE_KEY_INTERRUPTED_UPLOAD, API_BASE, PROXY_HEADER } from "@/consta
 import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
 import { apiFetch, getProxyKey } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
+import { formatUploadStats } from "./stats"
 
 export function useUpload({
   initialFiles,
@@ -1073,34 +1074,8 @@ export function useUpload({
     }
   }
 
-  const getUploadStats = () => {
-    const totalBytes = files.reduce((acc, f) => acc + f.file.size, 0)
-    let uploadedPastFilesBytes = 0
-    for (let i = 0; i < uploadingIndex; i++) {
-      uploadedPastFilesBytes += files[i].file.size
-    }
-    const currentFileBytes = files[uploadingIndex]?.file.size || 0
-    const bytesUploaded = uploadedPastFilesBytes + currentFileBytes * (progress / 100)
-
-    const elapsed = (Date.now() - uploadStartTime.current) / 1000
-    if (elapsed < 1 || bytesUploaded === 0) return "Starting..."
-
-    const speed = bytesUploaded / elapsed
-    const remaining = totalBytes - bytesUploaded
-    const etaSeconds = Math.ceil(remaining / speed)
-    const speedStr =
-      speed >= 1024 * 1024
-        ? `${(speed / (1024 * 1024)).toFixed(1)} MB/s`
-        : `${(speed / 1024).toFixed(0)} KB/s`
-
-    const progressStr = `${formatFileSize(bytesUploaded)} / ${formatFileSize(totalBytes)}`
-
-    if (etaSeconds < 5) return `${progressStr} • ${speedStr} • Almost done`
-    if (etaSeconds < 60) return `${progressStr} • ${speedStr} • ${etaSeconds}s left`
-    const mins = Math.floor(etaSeconds / 60)
-    const secs = etaSeconds % 60
-    return `${progressStr} • ${speedStr} • ${mins}m ${secs}s left`
-  }
+  const getUploadStats = () =>
+    formatUploadStats(files, uploadingIndex, progress, uploadStartTime.current)
 
   return {
     state,
