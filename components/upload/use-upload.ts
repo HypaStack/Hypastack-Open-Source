@@ -1,17 +1,18 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
-import { shouldUseMultipart, generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
+import { shouldUseMultipart } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
-import { formatFileSize, uploadWithXHR } from "./utils"
+import { formatFileSize } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
-import { STORAGE_KEY_INTERRUPTED_UPLOAD, API_BASE, PROXY_HEADER } from "@/constants"
+import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
 import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
-import { apiFetch, getProxyKey } from "@/lib/http/fetch"
+import { apiFetch } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
 import { createZipArchive } from "./zip"
+import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 
 export function useUpload({
   initialFiles,
@@ -195,244 +196,6 @@ export function useUpload({
     [files, MAX_FILES, MAX_SIZE, maxSizeLabel]
   )
 
-  const uploadViaProxy = async (
-    file: File,
-    noteValue: string | null,
-    filenameValue: string | null,
-    proxyFileId: string,
-    proxyTokenValue: string,
-    currentCsrfToken: string,
-    onProgress: (percent: number) => void
-  ): Promise<string> => {
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("fileId", proxyFileId)
-    formData.append("proxyToken", proxyTokenValue)
-    formData.append("csrfToken", currentCsrfToken)
-    if (burnOnRead) formData.append("burnOnRead", "true")
-    if (noteValue) formData.append("note", noteValue)
-    if (filenameValue) formData.append("customFilename", filenameValue)
-
-    const proxyKey = await getProxyKey()
-    const xhr = await uploadWithXHR(`${API_BASE}/upload-proxy`, "POST", formData, (pct) => {
-      onProgress(Math.min(90, pct))
-    }, { headers: { [PROXY_HEADER]: proxyKey }, withCredentials: true })
-
-    const response = JSON.parse(xhr.responseText)
-    if (!response.success) {
-      throw new Error(response.error || "Proxy upload failed")
-    }
-    return response.shareUrl
-  }
-
-  const handleSingleUpload = async (
-    fileToUpload: File,
-    currentCsrfToken: string,
-    finalFilename: string | null,
-    finalNote: string | null,
-    filePath?: string,
-    finalSlug?: string | null
-  ): Promise<string> => {
-    const { key: encKey, keyBase64 } = await generateEncryptionKey()
-
-    const plaintext = await fileToUpload.arrayBuffer()
-    const { encryptChunk } = await import("@/lib/storage/multipart")
-    const encrypted = await encryptChunk(encKey, plaintext)
-    const encryptedBlob = new File([encrypted], fileToUpload.name, {
-      type: fileToUpload.type || "application/octet-stream",
-    })
-
-    const initResponse = await apiFetch("/api/v2/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fileName: fileToUpload.name,
-        fileSize: encrypted.byteLength,
-        contentType: "application/octet-stream",
-        burnOnRead,
-        turnstileToken,
-        csrfToken: currentCsrfToken,
-        customFilename: finalFilename,
-        customSlug: finalSlug,
-        expiresInMinutes: expirationMinutes,
-        note: finalNote,
-        path: filePath || (fileToUpload as any).path,
-        folderId: currentFolderId,
-      }),
-    })
-
-    if (!initResponse.ok) {
-      const error = await initResponse.json()
-      if (initResponse.status === 409) {
-        const e: any = new Error(error.error || "Custom link already taken")
-        e.slugConflict = { suggestions: error.suggestions || [] }
-        throw e
-      }
-      throw new Error(error.error || "Failed to initialize upload")
-    }
-
-    const { fileId, uploadUrl, shareUrl: url, proxyToken } = await initResponse.json()
-
-    try {
-      await uploadWithXHR(uploadUrl, "PUT", encryptedBlob, (pct) => setProgress(pct))
-      setProgress(100)
-
-      const completeResponse = await apiFetch("/api/v2/upload-complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId }),
-      })
-
-      if (!completeResponse.ok) {
-        const error = await completeResponse.json()
-        throw new Error(error.error || "Upload validation failed")
-      }
-
-      return `${url}#${keyBase64}`
-    } catch (fetchError: any) {
-      const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
-      if (isCORSError) {
-        setProgress(0)
-        const proxyUrl = await uploadViaProxy(
-          encryptedBlob,
-          finalNote,
-          finalFilename,
-          fileId,
-          proxyToken,
-          currentCsrfToken,
-          (pct) => setProgress(pct)
-        )
-        setProgress(100)
-        return `${proxyUrl}#${keyBase64}`
-      } else {
-        throw fetchError
-      }
-    }
-  }
-
-  const handleMultipartUpload = async (
-    fileToUpload: File,
-    currentCsrfToken: string,
-    finalFilename: string | null,
-    finalNote: string | null,
-    filePath?: string,
-    finalSlug?: string | null
-  ): Promise<string> => {
-    const { key: encKey, keyBase64 } = await generateEncryptionKey()
-
-    const initResponse = await apiFetch("/api/v2/upload-multipart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fileName: fileToUpload.name,
-        fileSize: fileToUpload.size,
-        contentType: fileToUpload.type || "application/octet-stream",
-        burnOnRead,
-        turnstileToken,
-        csrfToken: currentCsrfToken,
-        customFilename: finalFilename,
-        customSlug: finalSlug,
-        expiresInMinutes: expirationMinutes,
-        note: finalNote,
-        chunkSize: DEFAULT_CHUNK_SIZE,
-        path: filePath || (fileToUpload as any).path,
-        folderId: currentFolderId,
-      }),
-    })
-
-    if (!initResponse.ok) {
-      const error = await initResponse.json()
-      if (initResponse.status === 409) {
-        const e: any = new Error(error.error || "Custom link already taken")
-        e.slugConflict = { suggestions: error.suggestions || [] }
-        throw e
-      }
-      throw new Error(error.error || "Failed to initialize multipart upload")
-    }
-
-    const { fileId, uploadId, presignedUrls, shareUrl: url } = await initResponse.json()
-    const totalParts = presignedUrls.length
-
-    const sessionInfo: InterruptedSession = {
-      fileId,
-      uploadId,
-      r2Key: "",
-      totalParts,
-      chunkSize: DEFAULT_CHUNK_SIZE,
-      fileName: fileToUpload.name,
-      fileSize: fileToUpload.size,
-      keyBase64,
-      shareUrl: `${url}#${keyBase64}`,
-    }
-    setInterruptedSession(sessionInfo)
-    localStorage.setItem(STORAGE_KEY_INTERRUPTED_UPLOAD, JSON.stringify(sessionInfo))
-
-    try {
-      let etags: any[]
-
-      const tauriInternals = (window as any).__TAURI_INTERNALS__
-      const nativeFilePath = (fileToUpload as any).path as string | undefined
-
-      if (tauriInternals && nativeFilePath) {
-        const { invoke } = await import("@tauri-apps/api/core")
-        const { listen } = await import("@tauri-apps/api/event")
-
-        const unlisten = await listen<{
-          percent: number
-          bytes_uploaded: number
-          total_bytes: number
-          phase: string
-          parts_done: number
-          total_parts: number
-        }>("upload-progress", (event) => {
-          setProgress(Math.min(95, event.payload.percent))
-        })
-
-        try {
-          etags = await invoke<string[]>("native_upload_multipart", {
-            filePath: nativeFilePath,
-            presignedUrls,
-            keyBase64,
-            chunkSize: DEFAULT_CHUNK_SIZE,
-          })
-        } finally {
-          unlisten()
-        }
-      } else {
-        const result = await uploadFileMultipart({
-          file: fileToUpload,
-          encryptionKey: encKey,
-          presignedUrls,
-          chunkSize: DEFAULT_CHUNK_SIZE,
-          onProgress: (pct) => setProgress(Math.min(95, pct)),
-          signal: abortControllerRef.current?.signal,
-        })
-        etags = result.etags
-      }
-
-      const completeResponse = await apiFetch("/api/v2/upload-complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId, uploadId, parts: etags }),
-      })
-
-      if (!completeResponse.ok) {
-        const error = await completeResponse.json()
-        throw new Error(error.error || "Multipart upload finalization failed")
-      }
-
-      setProgress(100)
-      setInterruptedSession(null)
-      return `${url}#${keyBase64}`
-    } catch (uploadError: any) {
-      if (uploadError.message === "Upload aborted") {
-        throw uploadError
-      }
-      console.error("[Upload] Multipart upload interrupted:", uploadError.message)
-      throw uploadError
-    }
-  }
-
   const handleCdnUpload = async (currentCsrfToken: string) => {
     const filesMeta = files.map(f => ({
       file: f.file,
@@ -549,75 +312,6 @@ export function useUpload({
     setShareUrl(urls.join("\n"))
   }
 
-  const uploadBatchSimple = async (
-    file: File,
-    init: { fileId: string; uploadUrl: string; proxyToken: string; shareUrl: string },
-    finalFilename: string | null,
-    finalNote: string | null,
-    currentCsrfToken: string
-  ): Promise<string> => {
-    const { key: encKey, keyBase64 } = await generateEncryptionKey()
-    const plaintext = await file.arrayBuffer()
-    const { encryptChunk } = await import("@/lib/storage/multipart")
-    const encrypted = await encryptChunk(encKey, plaintext)
-    const encryptedBlob = new File([encrypted], file.name, {
-      type: file.type || "application/octet-stream",
-    })
-
-    try {
-      await uploadWithXHR(init.uploadUrl, "PUT", encryptedBlob, (pct) => setProgress(pct))
-      setProgress(100)
-      const completeResponse = await apiFetch("/api/v2/upload-complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId: init.fileId }),
-      })
-      if (!completeResponse.ok) {
-        const error = await completeResponse.json()
-        throw new Error(error.error || "Upload validation failed")
-      }
-      return `${init.shareUrl}#${keyBase64}`
-    } catch (fetchError: any) {
-      const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
-      if (isCORSError) {
-        setProgress(0)
-        const proxyUrl = await uploadViaProxy(
-          encryptedBlob, finalNote, finalFilename, init.fileId, init.proxyToken, currentCsrfToken,
-          (pct) => setProgress(pct)
-        )
-        setProgress(100)
-        return `${proxyUrl}#${keyBase64}`
-      }
-      throw fetchError
-    }
-  }
-
-  const uploadBatchMultipart = async (
-    file: File,
-    init: { fileId: string; uploadId: string; presignedUrls: string[]; chunkSize: number; shareUrl: string }
-  ): Promise<string> => {
-    const { key: encKey, keyBase64 } = await generateEncryptionKey()
-    const { etags } = await uploadFileMultipart({
-      file,
-      encryptionKey: encKey,
-      presignedUrls: init.presignedUrls,
-      chunkSize: init.chunkSize,
-      onProgress: (pct) => setProgress(Math.min(95, pct)),
-      signal: abortControllerRef.current?.signal,
-    })
-    const completeResponse = await apiFetch("/api/v2/upload-complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fileId: init.fileId, uploadId: init.uploadId, parts: etags }),
-    })
-    if (!completeResponse.ok) {
-      const error = await completeResponse.json()
-      throw new Error(error.error || "Multipart upload finalization failed")
-    }
-    setProgress(100)
-    return `${init.shareUrl}#${keyBase64}`
-  }
-
   // Multiple files init as ONE batch so a single solved Turnstile token verifies
   // the whole upload (instead of once per file, which hit the token reuse cap and
   // 403'd after ~50). Returns false when a partial failure was already surfaced,
@@ -627,32 +321,8 @@ export function useUpload({
     finalFilename: string | null,
     finalNote: string | null
   ): Promise<boolean> => {
-    const initResponse = await apiFetch("/api/v2/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        files: files.map((f) => ({
-          fileName: f.file.name,
-          fileSize: f.file.size,
-          contentType: f.file.type || "application/octet-stream",
-          path: f.path || (f.file as any).path || f.file.name,
-        })),
-        burnOnRead,
-        turnstileToken,
-        csrfToken: currentCsrfToken,
-        customFilename: finalFilename,
-        expiresInMinutes: expirationMinutes,
-        note: finalNote,
-        folderId: currentFolderId,
-      }),
-    })
-
-    if (!initResponse.ok) {
-      const error = await initResponse.json()
-      throw new Error(error.error || "Failed to initialize upload")
-    }
-
-    const { files: initResults } = await initResponse.json()
+    const meta = { burnOnRead, turnstileToken, expirationMinutes, folderId: currentFolderId }
+    const initResults = await initBatchUpload(files, currentCsrfToken, meta, { finalFilename, finalNote })
 
     const urls: string[] = []
     for (let i = 0; i < files.length; i++) {
@@ -665,8 +335,8 @@ export function useUpload({
       const init = initResults[i]
       try {
         const url = init.kind === "multipart"
-          ? await uploadBatchMultipart(f.file, init)
-          : await uploadBatchSimple(f.file, init, finalFilename, finalNote, currentCsrfToken)
+          ? await uploadBatchMultipart(f.file, init, setProgress, abortControllerRef.current?.signal)
+          : await uploadBatchSimple(f.file, init, currentCsrfToken, { finalFilename, finalNote, burnOnRead }, setProgress)
         urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
       } catch (err: any) {
         if (err.message === "Upload aborted") return false
@@ -750,23 +420,20 @@ export function useUpload({
       if (uploadType === "cdn") {
         await handleCdnUpload(currentCsrfToken)
       } else {
+        const meta = { burnOnRead, turnstileToken, expirationMinutes, folderId: currentFolderId }
         if (shouldZip && fileToUpload) {
-          let url = ""
-          if (shouldUseMultipart(fileToUpload.size)) {
-            url = await handleMultipartUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote, undefined, finalSlug)
-          } else {
-            url = await handleSingleUpload(fileToUpload, currentCsrfToken, finalFilename, finalNote, undefined, finalSlug)
-          }
+          const opts = { finalFilename, finalNote, finalSlug }
+          const url = shouldUseMultipart(fileToUpload.size)
+            ? await uploadMultipart(fileToUpload, currentCsrfToken, meta, opts, setProgress, setInterruptedSession, abortControllerRef.current?.signal)
+            : await uploadSingle(fileToUpload, currentCsrfToken, meta, opts, setProgress)
           setShareUrl(url)
         } else if (files.length === 1) {
           // Single file keeps the proven single-init path (supports custom slug).
           const f = files[0]
-          let url = ""
-          if (shouldUseMultipart(f.file.size)) {
-            url = await handleMultipartUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path, finalSlug)
-          } else {
-            url = await handleSingleUpload(f.file, currentCsrfToken, finalFilename, finalNote, f.path, finalSlug)
-          }
+          const opts = { finalFilename, finalNote, filePath: f.path, finalSlug }
+          const url = shouldUseMultipart(f.file.size)
+            ? await uploadMultipart(f.file, currentCsrfToken, meta, opts, setProgress, setInterruptedSession, abortControllerRef.current?.signal)
+            : await uploadSingle(f.file, currentCsrfToken, meta, opts, setProgress)
           setShareUrl(url)
         } else {
           // Multiple files init as one Turnstile-verified batch.
