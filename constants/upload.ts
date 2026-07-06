@@ -52,8 +52,20 @@ export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
 /** Maximum number of concurrent chunk upload workers */
 export const MAX_CONCURRENT_CHUNKS = 10
 
+/** Concurrent chunk workers when resuming an interrupted multipart upload */
+export const RESUME_MAX_CONCURRENT_CHUNKS = 6
+
 /** Regex to detect previewable content types inline */
 export const PREVIEWABLE_MIME_REGEX = /^(image|video|audio)\//
+
+/** Cache-Control for immutable CDN assets (1-year public cache) */
+export const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable"
+
+/** Default base name for a multi-file zip archive (".zip" is appended) */
+export const DEFAULT_ARCHIVE_NAME = "hypastack-archive"
+
+/** CustomEvent the desktop app fires on the window to start a native upload */
+export const NATIVE_UPLOAD_EVENT = "hypadrive:upload"
 
 /** Min/max custom file expiration in minutes (1 minute … 30 days). Paid plans. */
 export const MIN_EXPIRATION_MINUTES = 1

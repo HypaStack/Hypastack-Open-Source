@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { isTauri } from "@/lib/tauri"
+import { NATIVE_UPLOAD_EVENT } from "@/constants/upload"
 
 export function ContextMenuUploader() {
   const unlistenRef = useRef<(() => void) | null>(null)
@@ -21,7 +22,7 @@ export function ContextMenuUploader() {
 
         // autoupload
         window.dispatchEvent(
-          new CustomEvent("hypadrive:upload", {
+          new CustomEvent(NATIVE_UPLOAD_EVENT, {
             detail: { filePath, name, size },
           })
         )

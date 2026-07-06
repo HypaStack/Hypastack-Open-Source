@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/http/fetch"
+import { IMMUTABLE_CACHE_CONTROL } from "@/constants/upload"
 import type { FileWithPreview } from "./types"
 
 interface CdnUploadDeps {
@@ -84,7 +85,7 @@ export async function runCdnUpload(
       xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")))
       xhr.open("PUT", uploadUrl)
       xhr.setRequestHeader("Content-Type", contentType)
-      xhr.setRequestHeader("Cache-Control", "public, max-age=31536000, immutable")
+      xhr.setRequestHeader("Cache-Control", IMMUTABLE_CACHE_CONTROL)
       xhr.send(file)
     })
 

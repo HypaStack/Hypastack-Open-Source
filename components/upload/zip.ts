@@ -1,4 +1,5 @@
 import JSZip from "jszip"
+import { DEFAULT_ARCHIVE_NAME } from "@/constants/upload"
 import type { FileWithPreview } from "./types"
 
 // Zips the selected files (preserving folder paths) into one archive. A lone
@@ -24,7 +25,7 @@ export async function createZipArchive(
 
   const safeName = archiveName?.trim()
     ? archiveName.trim().replace(/\.zip$/i, "") + ".zip"
-    : "hypastack-archive.zip"
+    : `${DEFAULT_ARCHIVE_NAME}.zip`
 
   return new File([content], safeName, { type: "application/zip" })
 }

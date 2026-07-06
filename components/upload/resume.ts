@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/http/fetch"
+import { RESUME_MAX_CONCURRENT_CHUNKS } from "@/constants/upload"
 import type { InterruptedSession } from "./types"
 
 // Re-uploads only the missing parts of an interrupted multipart upload with a
@@ -37,7 +38,6 @@ export async function resumeMultipartUpload(
   const baseProgress = (uploadedParts.length / session.totalParts) * 100
   onProgress(baseProgress)
 
-  const MAX_CONCURRENT = 6
   let nextIdx = 0
   const chunkProgress = new Float64Array(missingParts.length)
 
@@ -72,7 +72,7 @@ export async function resumeMultipartUpload(
     }
   }
 
-  const workerCount = Math.min(MAX_CONCURRENT, missingParts.length)
+  const workerCount = Math.min(RESUME_MAX_CONCURRENT_CHUNKS, missingParts.length)
   const workers: Promise<void>[] = []
   for (let i = 0; i < workerCount; i++) workers.push(worker())
   await Promise.all(workers)

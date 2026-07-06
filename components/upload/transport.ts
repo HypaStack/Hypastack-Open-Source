@@ -2,6 +2,7 @@ import { generateEncryptionKey, uploadFileMultipart, DEFAULT_CHUNK_SIZE } from "
 import { uploadWithXHR } from "./utils"
 import { apiFetch, getProxyKey } from "@/lib/http/fetch"
 import { API_BASE, PROXY_HEADER, STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
+import { isTauri } from "@/lib/tauri"
 import type { FileWithPreview, InterruptedSession } from "./types"
 
 // Per-upload metadata every init call needs beyond the file bytes themselves.
@@ -205,7 +206,7 @@ export async function uploadMultipart(
   try {
     let etags: any[]
 
-    const tauriInternals = (window as any).__TAURI_INTERNALS__
+    const tauriInternals = isTauri()
     const nativeFilePath = (file as any).path as string | undefined
 
     if (tauriInternals && nativeFilePath) {

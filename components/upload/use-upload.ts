@@ -7,7 +7,8 @@ import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier }
 import { formatFileSize } from "./utils"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
-import { MAX_EXPIRATION_MINUTES } from "@/constants/upload"
+import { MAX_EXPIRATION_MINUTES, NATIVE_UPLOAD_EVENT } from "@/constants/upload"
+import { isTauri } from "@/lib/tauri"
 import { apiFetch } from "@/lib/http/fetch"
 import { validateSlug } from "@/lib/validation/slug"
 import { formatUploadStats } from "./stats"
@@ -376,8 +377,8 @@ export function useUpload({
       setAutoStartArmed(true)
     }
 
-    window.addEventListener("hypadrive:upload", handleNativeUpload)
-    return () => window.removeEventListener("hypadrive:upload", handleNativeUpload)
+    window.addEventListener(NATIVE_UPLOAD_EVENT, handleNativeUpload)
+    return () => window.removeEventListener(NATIVE_UPLOAD_EVENT, handleNativeUpload)
   }, [])
 
   useEffect(() => {
@@ -391,7 +392,7 @@ export function useUpload({
   }, [autoStartArmed, state, isUploading, csrfToken, turnstileToken])
 
   useEffect(() => {
-    if (state === "done" && shareUrl && (window as any).__TAURI_INTERNALS__) {
+    if (state === "done" && shareUrl && isTauri()) {
       ;(async () => {
         try {
           const { sendNotification } = await import("@tauri-apps/plugin-notification")
@@ -413,7 +414,7 @@ export function useUpload({
   const handleCopy = async () => {
     if (!shareUrl) return
     try {
-      if ((window as any).__TAURI_INTERNALS__) {
+      if (isTauri()) {
         const { writeText } = await import("@tauri-apps/plugin-clipboard-manager")
         await writeText(shareUrl)
       } else {
