@@ -13,7 +13,7 @@ import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
-import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaProgress, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
 import { FILES_PER_PAGE, API_BASE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -279,11 +279,11 @@ function FilesPageInner() {
         })
       } else {
         const data = await res.json()
-        alert(data.error || "Failed to delete file")
+        hypaError(data.message ||"Failed to delete file")
       }
     } catch (err) {
       console.error("Delete error:", err)
-      alert("Failed to delete file")
+      hypaError("Failed to delete file")
     } finally {
       setDeleteLoading(null)
       setOpenMenuId(null)
@@ -351,11 +351,11 @@ function FilesPageInner() {
         setFiles(files.filter((f) => !deletedIds.has(f.id)))
         setSelectedFiles(new Set())
       } else {
-        alert("Failed to delete files")
+        hypaError("Failed to delete files")
       }
     } catch (err) {
       console.error("Delete error:", err)
-      alert("Failed to delete files")
+      hypaError("Failed to delete files")
     } finally {
       setDeleteLoading(null)
     }
@@ -380,7 +380,7 @@ function FilesPageInner() {
         setFolders([...folders, data.folder])
       } else {
         const data = await res.json()
-        alert(data.error || "Failed to create folder")
+        hypaError(data.message ||"Failed to create folder")
       }
     } catch (err) {
       console.error("Failed to create folder", err)
@@ -406,7 +406,7 @@ function FilesPageInner() {
         await refreshUser()
       } else {
         const data = await res.json()
-        alert(data.error || "Failed to delete folder")
+        hypaError(data.message ||"Failed to delete folder")
       }
     } catch (err) {
       console.error("Delete folder error", err)

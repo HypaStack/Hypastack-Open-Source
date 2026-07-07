@@ -80,6 +80,25 @@ export const hypaProgress = (options: HypaNotifOptions) => {
   }
 }
 
+// Fire-and-forget toast: a single-button notification that also auto-dismisses.
+// Use for non-blocking status/error feedback instead of the native alert().
+export const hypaToast = (options: HypaNotifOptions & { durationMs?: number }) => {
+  const id = Math.random().toString(36).slice(2, 9)
+  if (typeof window !== "undefined") {
+    const { durationMs, ...rest } = options
+    window.dispatchEvent(new CustomEvent("hypa-confirm", {
+      detail: { confirmOnly: true, confirmText: "Dismiss", confirmIcon: "close", ...rest, id, resolve: () => {} }
+    }))
+    const d = durationMs ?? 5000
+    if (d > 0) window.setTimeout(() => hypaUpdate(id, { _close: true }), d)
+  }
+  return { id, close: () => hypaUpdate(id, { _close: true }) }
+}
+
+/** Convenience error toast — the title carries the message, description is optional detail. */
+export const hypaError = (message: string, description?: string) =>
+  hypaToast({ title: message, description })
+
 function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: string, value: string | null) => void }) {
   const [value, setValue] = React.useState(notif.inputDefaultValue ?? "")
   const inputRef = React.useRef<HTMLInputElement>(null)

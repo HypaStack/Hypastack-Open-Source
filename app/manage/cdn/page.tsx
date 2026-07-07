@@ -1,6 +1,6 @@
 "use client"
 
-import { hypaConfirm, hypaProgress, hypaPrompt } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaProgress, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { Walkthrough } from "@/components/ui/walkthrough"
@@ -195,7 +195,7 @@ export default function CdnPage() {
       if (!res.ok || !res.body) {
         progress.close()
         const data = await res.json().catch(() => ({}))
-        alert(data.error || "Failed to delete folder")
+        hypaError(data.message ||"Failed to delete folder")
         return
       }
 
@@ -242,7 +242,7 @@ export default function CdnPage() {
     } catch (err) {
       progress.close()
       console.error("Failed to delete CDN folder:", err)
-      alert("Failed to delete folder")
+      hypaError("Failed to delete folder")
     }
   }
 
@@ -311,11 +311,11 @@ export default function CdnPage() {
         })
       } else {
         const data = await res.json()
-        alert(data.error || "Failed to delete")
+        hypaError(data.message ||"Failed to delete")
       }
     } catch (err) {
       console.error("Delete error:", err)
-      alert("Failed to delete asset")
+      hypaError("Failed to delete asset")
     } finally {
       setDeleteLoading(null)
     }
@@ -377,7 +377,7 @@ export default function CdnPage() {
 
       if (!initRes.ok) {
         const data = await initRes.json().catch(() => ({}))
-        alert(data.error || "Failed to initialize hot swap")
+        hypaError(data.message ||"Failed to initialize hot swap")
         return
       }
 
@@ -391,7 +391,7 @@ export default function CdnPage() {
       })
 
       if (!putRes.ok) {
-        alert("Upload to storage failed")
+        hypaError("Upload to storage failed")
         return
       }
 
@@ -404,7 +404,7 @@ export default function CdnPage() {
 
       if (!completeRes.ok) {
         const data = await completeRes.json().catch(() => ({}))
-        alert(data.error || "Failed to complete hot swap")
+        hypaError(data.message ||"Failed to complete hot swap")
         return
       }
 
@@ -431,7 +431,7 @@ export default function CdnPage() {
       }, 0)
     } catch (err) {
       console.error("Hot swap error:", err)
-      alert("Hot swap failed")
+      hypaError("Hot swap failed")
     } finally {
       setSwapLoading(null)
       swapTargetRef.current = null
@@ -520,11 +520,11 @@ export default function CdnPage() {
         setAssets((prev) => prev.filter((a) => !deletedIds.has(a.id)))
         setSelectedAssets(new Set())
       } else {
-        alert("Failed to delete assets")
+        hypaError("Failed to delete assets")
       }
     } catch (err) {
       console.error("Delete error:", err)
-      alert("Failed to delete assets")
+      hypaError("Failed to delete assets")
     } finally {
       setDeleteLoading(null)
     }
