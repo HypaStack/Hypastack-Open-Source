@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { readFile } from "fs/promises"
@@ -57,7 +58,7 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
             headline: post.title,

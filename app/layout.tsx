@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next"
+import { safeJsonLd } from "@/lib/seo/jsonLd"
 import Script from "next/script"
 import { headers } from "next/headers"
 import { ConsoleGreeting } from "@/components/console-greeting"
@@ -162,7 +163,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               "@context": "https://schema.org",
               "@graph": [
                 {

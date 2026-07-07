@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/seo/jsonLd";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 
@@ -42,7 +43,7 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "FAQPage",
             "@id": `${SITE_URL}/#faq`,
