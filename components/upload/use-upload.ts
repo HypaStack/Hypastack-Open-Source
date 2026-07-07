@@ -71,7 +71,7 @@ export function useUpload({
   const [showResumePopup, setShowResumePopup] = useState(false)
   const [resuming, setResuming] = useState(false)
 
-  const { user, files: accountFiles, cdnAssets } = useManage()
+  const { user, stats, files: accountFiles, cdnAssets } = useManage()
   const tierLimits = user?.tier ? getTierLimits(user.tier) : FREE_LIMITS
   const uploadDelayMs = getTierDelayMs(normalizeTier(user?.tier))
   const MAX_SIZE = uploadType === "cdn" ? tierLimits.maxCdnFileSize : tierLimits.maxNormalUploadSize
@@ -81,8 +81,13 @@ export function useUpload({
   // Account-wide link cap (the thing the server 403s on). Trim the selection to
   // the free slots the user actually has so we never let them pick more than
   // they can upload — MAX_FILES is only the per-upload ceiling.
+  // Count from the server-authoritative `stats` (the exact numbers the 403 gate
+  // checks: activeFiles / cdn totalAssets), falling back to the loaded arrays
+  // only before stats arrive — the arrays can lag/empty and would skip the trim.
   const accountLinkCap = uploadType === "cdn" ? tierLimits.maxCdnLinks : tierLimits.maxFileLinks
-  const accountLinksUsed = uploadType === "cdn" ? cdnAssets.length : accountFiles.length
+  const accountLinksUsed = uploadType === "cdn"
+    ? (stats?.cdnAssets ?? cdnAssets.length)
+    : (stats?.activeFiles ?? accountFiles.length)
   const remainingSlots = Math.max(0, accountLinkCap - accountLinksUsed)
   const effectiveMaxFiles = Math.min(MAX_FILES, remainingSlots)
 

@@ -26,6 +26,7 @@ export interface StorageStats {
   totalStorage: number
   maxStorage: number
   storagePercent: number
+  activeFiles?: number
   cdnAssets?: number
   cdnStorage?: number
   dailyDownloads?: { date: string; count: number }[]
