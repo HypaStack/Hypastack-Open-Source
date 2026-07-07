@@ -71,12 +71,20 @@ export function useUpload({
   const [showResumePopup, setShowResumePopup] = useState(false)
   const [resuming, setResuming] = useState(false)
 
-  const { user } = useManage()
+  const { user, files: accountFiles, cdnAssets } = useManage()
   const tierLimits = user?.tier ? getTierLimits(user.tier) : FREE_LIMITS
   const uploadDelayMs = getTierDelayMs(normalizeTier(user?.tier))
   const MAX_SIZE = uploadType === "cdn" ? tierLimits.maxCdnFileSize : tierLimits.maxNormalUploadSize
   const MAX_FILES = uploadType === "cdn" ? tierLimits.maxCdnFilesPerUpload : tierLimits.maxFilesPerUpload
   const maxSizeLabel = formatFileSize(MAX_SIZE)
+
+  // Account-wide link cap (the thing the server 403s on). Trim the selection to
+  // the free slots the user actually has so we never let them pick more than
+  // they can upload — MAX_FILES is only the per-upload ceiling.
+  const accountLinkCap = uploadType === "cdn" ? tierLimits.maxCdnLinks : tierLimits.maxFileLinks
+  const accountLinksUsed = uploadType === "cdn" ? cdnAssets.length : accountFiles.length
+  const remainingSlots = Math.max(0, accountLinkCap - accountLinksUsed)
+  const effectiveMaxFiles = Math.min(MAX_FILES, remainingSlots)
 
   const isMultiFile = files.length > 1 || files.some(f => f.path?.includes("/"))
 
@@ -150,10 +158,25 @@ export function useUpload({
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList) return
-      const sel = selectFiles(fileList, files, { maxFiles: MAX_FILES, maxSize: MAX_SIZE, maxSizeLabel })
+
+      const noun = uploadType === "cdn" ? "CDN link" : "file"
+
+      // No free slots left — surface it instead of letting the upload 403.
+      if (effectiveMaxFiles === 0) {
+        setErrorMessage(`You've reached your plan limit of ${accountLinkCap} ${noun}s. Delete some to free up space.`)
+        setState("error")
+        return
+      }
+
+      const sel = selectFiles(fileList, files, { maxFiles: effectiveMaxFiles, maxSize: MAX_SIZE, maxSizeLabel })
 
       if (sel.limitExceeded) {
-        setErrorMessage(`Maximum ${MAX_FILES} files allowed. Only the first ${MAX_FILES} files were selected.`)
+        setErrorMessage(
+          effectiveMaxFiles < MAX_FILES
+            // Trimmed to the account's remaining free space (avoids a server 403).
+            ? `You have room for ${remainingSlots} more ${noun}${remainingSlots !== 1 ? "s" : ""} — trimmed your selection to fit.`
+            : `Maximum ${MAX_FILES} files allowed. Only the first ${MAX_FILES} files were selected.`
+        )
       }
       if (sel.fileErrors.length > 0) {
         const e = sel.fileErrors
@@ -175,7 +198,7 @@ export function useUpload({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [files, MAX_FILES, MAX_SIZE, maxSizeLabel]
+    [files, MAX_FILES, MAX_SIZE, maxSizeLabel, effectiveMaxFiles, remainingSlots, accountLinkCap, uploadType]
   )
 
   // Multiple files init as ONE batch so a single solved Turnstile token verifies
