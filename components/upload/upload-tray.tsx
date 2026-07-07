@@ -420,7 +420,7 @@ export function UploadTray({
                   </span>
                   <div className="flex min-w-0 flex-col">
                     <span className="text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{footerTitle}</span>
-                    <span className="truncate text-[12px] text-[#8b8b90] dark:text-[#8b9099]">{footerSub}</span>
+                    <span className="line-clamp-2 text-[12px] text-[#8b8b90] dark:text-[#8b9099]">{footerSub}</span>
                   </div>
                 </div>
 
