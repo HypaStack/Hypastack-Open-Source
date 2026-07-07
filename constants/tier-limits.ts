@@ -108,3 +108,24 @@ export function getTierDelayMs(tier: Tier): number {
     default: return 3000
   }
 }
+
+/**
+ * Render a tier byte limit as its marketing-facing label (e.g. "2.5 GB",
+ * "300 GB", "1 TB"). This is the single formatter behind every size shown in
+ * the plans UI, the FAQ and the account modal — so those never drift from the
+ * numbers above.
+ *
+ * Per-file caps are authored in MiB and read decimally (1000 MiB → "1 GB",
+ * 2500 MiB → "2.5 GB"); storage caps are whole GiB and read as-is
+ * (300 GiB → "300 GB", 1000 GiB → "1 TB").
+ */
+export function formatTierSize(bytes: number): string {
+  const mib = Math.round(bytes / MB)
+  // Whole-GiB values are storage caps → group by 1000 into TB.
+  if (mib % 1024 === 0) {
+    const gib = mib / 1024
+    return gib % 1000 === 0 ? `${gib / 1000} TB` : `${gib} GB`
+  }
+  // Otherwise a per-file cap authored in MiB, read decimally.
+  return mib >= 1000 ? `${parseFloat((mib / 1000).toFixed(1))} GB` : `${mib} MB`
+}

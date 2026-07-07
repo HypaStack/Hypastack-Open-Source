@@ -11,7 +11,7 @@ import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
-import { type PreferencesTier, API_BASE } from "@/constants"
+import { type PreferencesTier, API_BASE, MAX_AVATAR_SIZE, MAX_BANNER_SIZE, AVATAR_MAX_DIMENSION } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
 import { apiFetch } from "@/lib/http/fetch"
 import { DISPLAY_NAME_CHANGE_COOLDOWN_MS, NICKNAME_CHANGE_COOLDOWN_MS } from "@/constants/profile"
@@ -363,7 +363,7 @@ function AvatarCropperModal({
         image.onerror = reject
       })
 
-      const MAX = 512
+      const MAX = AVATAR_MAX_DIMENSION
       let w = croppedAreaPixels.width
       let h = croppedAreaPixels.height
       if (w > MAX || h > MAX) {
@@ -595,7 +595,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
               accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={(e) => {
                 const f = e.target.files?.[0]
-                if (f && ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(f.type) && f.size <= 10 * 1024 * 1024) {
+                if (f && ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(f.type) && f.size <= MAX_AVATAR_SIZE) {
                   if (f.type === "image/gif") {
                     uploadRawAvatar(f)
                   } else {
@@ -755,7 +755,7 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
       setError("Only JPEG, PNG, GIF and AVIF are allowed.")
       return
     }
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > MAX_BANNER_SIZE) {
       setError("Banner must be 10 MB or smaller.")
       return
     }

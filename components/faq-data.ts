@@ -1,8 +1,11 @@
+import { FREE_LIMITS, ULTIMATE_LIMITS, formatTierSize } from "@/constants/tier-limits"
+
 /**
  * Landing page FAQ — single source of truth.
  * Rendered by components/faq.tsx and mirrored into FAQPage JSON-LD on the
  * homepage, so the visible answers and the structured data can never drift.
- * Keep the numbers in sync with constants/tier-limits.ts.
+ * Size numbers are interpolated from constants/tier-limits.ts, so they stay in
+ * sync with the enforced limits automatically.
  */
 export const faqs = [
   {
@@ -19,7 +22,7 @@ export const faqs = [
   },
   {
     q: "How big can my files be?",
-    a: "Free accounts share files up to 50MB and upload CDN assets up to 20MB, with 300MB of CDN storage. Ultimate goes up to 2.5GB per share, 1GB per CDN asset, and 1TB of CDN storage.",
+    a: `Free accounts share files up to ${formatTierSize(FREE_LIMITS.maxNormalUploadSize)} and upload CDN assets up to ${formatTierSize(FREE_LIMITS.maxCdnFileSize)}, with ${formatTierSize(FREE_LIMITS.maxCdnStorage)} of CDN storage. Ultimate goes up to ${formatTierSize(ULTIMATE_LIMITS.maxNormalUploadSize)} per share, ${formatTierSize(ULTIMATE_LIMITS.maxCdnFileSize)} per CDN asset, and ${formatTierSize(ULTIMATE_LIMITS.maxCdnStorage)} of CDN storage.`,
   },
   {
     q: "How long do these links last?",

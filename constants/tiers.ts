@@ -1,7 +1,9 @@
 /**
  * Tier display constants used across UI components.
- * For tier limits (storage bytes, upload caps, etc.) see lib/tier-limits.ts.
+ * For tier limits (storage bytes, upload caps, etc.) see constants/tier-limits.ts.
  */
+
+import { getTierLimits, formatTierSize } from "./tier-limits"
 
 export type PreferencesTier = "free" | "essential" | "premium" | "ultimate"
 
@@ -13,12 +15,13 @@ export const TIER_LABELS: Record<string, string> = {
   ultimate: "Ultimate",
 }
 
-/** Storage quota label shown in the plans/account UI */
+/** Storage quota label shown in the plans/account UI. Derived from the storage
+ *  caps in tier-limits.ts so the label can never drift from the enforced value. */
 export const TIER_STORAGE: Record<PreferencesTier, string> = {
-  free: "300 MB",
-  essential: "300 GB",
-  premium: "750 GB",
-  ultimate: "1 TB",
+  free: formatTierSize(getTierLimits("free").maxCdnStorage),
+  essential: formatTierSize(getTierLimits("essential").maxCdnStorage),
+  premium: formatTierSize(getTierLimits("premium").maxCdnStorage),
+  ultimate: formatTierSize(getTierLimits("ultimate").maxCdnStorage),
 }
 
 /** Ordered list of all tiers */

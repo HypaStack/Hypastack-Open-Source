@@ -14,7 +14,7 @@ import {
 } from "@/lib/security/zeroTrust"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
-import { API_ERRORS } from "@/constants"
+import { API_ERRORS, MAX_PROXY_UPLOAD_SIZE } from "@/constants"
 
 export async function handleUploadProxyPost(request: NextRequest) {
   try {
@@ -52,8 +52,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
         return apiError(400, API_ERRORS.BAD_REQUEST, "400 No File Provided")
     }
 
-    const MAX_PROXY_SIZE = 50 * 1024 * 1024; // 50MB
-    const limit = Math.min(tier.maxNormalUploadSize, MAX_PROXY_SIZE);
+    const limit = Math.min(tier.maxNormalUploadSize, MAX_PROXY_UPLOAD_SIZE);
     if (file.size > limit) {
       const limitMB = Math.round(limit / (1024 * 1024))
       return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Proxy Upload Limit Exceeded (Max ${limitMB}MB)")

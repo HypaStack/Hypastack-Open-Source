@@ -46,6 +46,11 @@ export const BURN_DELETE_RETRY_INTERVAL_MS = 7_500
 /** File size threshold above which multipart upload is used (50 MB) */
 export const MULTIPART_THRESHOLD = 50 * 1024 * 1024
 
+/** Hard ceiling for the buffered server-side upload proxy (50 MB). The proxy
+ *  reads the whole body into memory, so the effective cap is the smaller of
+ *  this and the user's per-file tier limit. */
+export const MAX_PROXY_UPLOAD_SIZE = 50 * 1024 * 1024
+
 /** Default chunk size for multipart uploads (10 MB) */
 export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
 

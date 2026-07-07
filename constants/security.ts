@@ -1,7 +1,13 @@
 /**
  * Security-related constants shared between API validation and client-side logic.
  */
-/** Maximum allowed file size for standard uploads (500 MB) */
+/**
+ * Defensive ceiling for buffered magic-byte validation (500 MB) — NOT a tier
+ * upload cap. Per-file upload limits live in constants/tier-limits.ts and are
+ * enforced in the API handlers. This guards the paths that read a file (or its
+ * head) into memory to sniff its type, so intentionally does not track tier
+ * sizes. Do not repurpose it as a plan limit.
+ */
 export const MAX_FILE_SIZE = 500 * 1024 * 1024
 
 /** Maximum characters allowed for an upload note */

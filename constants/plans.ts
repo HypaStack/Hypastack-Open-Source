@@ -1,4 +1,5 @@
 import { type PreferencesTier } from "@/constants"
+import { getTierLimits, formatTierSize } from "./tier-limits"
 
 export type PlanInfo = {
   key: PreferencesTier
@@ -9,65 +10,74 @@ export type PlanInfo = {
   details: string[]
 }
 
-export const PLAN_INFO: PlanInfo[] = [
-  {
-    key: "free",
+// Pricing + non-numeric feature copy per tier. Every size/link/expiry NUMBER is
+// derived from tier-limits.ts in buildDetails() below — that file is the single
+// source of truth, so these cards can never drift from the enforced limits.
+const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annual: string; features: string[] }> = {
+  free: {
     label: "Free",
-    size: "300 MB",
     monthly: "Free forever",
     annual: "Free forever",
-    details: [
-      "300 MB of storage",
-      "50 MB max single upload, 20 MB Max single CDN Upload",
-      "3 CDN links, 3 file links",
-      "Standard expiration",
-    ],
+    features: ["Standard expiration"],
   },
-  {
-    key: "essential",
+  essential: {
     label: "Essential",
-    size: "300GB",
     monthly: "13.99 € / month",
     annual: "139.99 € / year",
-    details: [
-      "300 GB of storage",
-      "Up to 500MB per file (200MB CDN)",
-      "45 CDN links, 45 file links",
-      "2x expiration windows",
-      "Custom share links (files + CDN)",
-      "Custom expiration up to 30 days",
-    ],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days"],
   },
-  {
-    key: "premium",
+  premium: {
     label: "Premium",
-    size: "750GB",
     monthly: "24.99 € / month",
     annual: "249.99 € / year",
-    details: [
-      "750 GB of storage",
-      "Up to 1GB per file (500MB CDN)",
-      "100 CDN links, 100 file links",
-      "3x expiration windows",
-      "Custom share links (files + CDN)",
-      "Custom expiration up to 30 days",
-      "Fast support",
-    ],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Fast support"],
   },
-  {
-    key: "ultimate",
+  ultimate: {
     label: "Ultimate",
-    size: "1TB",
     monthly: "32.99 € / month",
     annual: "329.99 € / year",
-    details: [
-      "1 TB of storage",
-      "Up to 2.5GB per file (1GB CDN)",
-      "125 CDN links, 125 file links",
-      "4x expiration",
-      "Custom share links (files + CDN)",
-      "Custom expiration up to 30 days",
-      "Priority support",
-    ],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Priority support"],
   },
-]
+}
+
+const TIER_KEYS: PreferencesTier[] = ["free", "essential", "premium", "ultimate"]
+
+function buildDetails(key: PreferencesTier): string[] {
+  const l = getTierLimits(key)
+  const storage = formatTierSize(l.maxCdnStorage)
+  const upload = formatTierSize(l.maxNormalUploadSize)
+  const cdn = formatTierSize(l.maxCdnFileSize)
+  const links = `${l.maxCdnLinks} CDN links, ${l.maxFileLinks} file links`
+  const { features } = PLAN_META[key]
+
+  if (key === "free") {
+    return [
+      `${storage} of storage`,
+      `${upload} max single upload, ${cdn} Max single CDN Upload`,
+      links,
+      ...features,
+    ]
+  }
+
+  // Ultimate says "4x expiration"; the other paid tiers say "…windows".
+  const expiry = key === "ultimate"
+    ? `${l.expirationMultiplier}x expiration`
+    : `${l.expirationMultiplier}x expiration windows`
+
+  return [
+    `${storage} of storage`,
+    `Up to ${upload} per file (${cdn} CDN)`,
+    links,
+    expiry,
+    ...features,
+  ]
+}
+
+export const PLAN_INFO: PlanInfo[] = TIER_KEYS.map((key) => ({
+  key,
+  label: PLAN_META[key].label,
+  size: formatTierSize(getTierLimits(key).maxCdnStorage),
+  monthly: PLAN_META[key].monthly,
+  annual: PLAN_META[key].annual,
+  details: buildDetails(key),
+}))
