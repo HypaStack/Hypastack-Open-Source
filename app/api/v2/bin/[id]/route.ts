@@ -1,17 +1,26 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getClient } from "@/lib/data/db"
 import { downloadHeadByKey } from "@/lib/storage/r2"
+import { checkApiRateLimit } from "@/lib/data/rateLimit"
+import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  
+
   if (!id || typeof id !== 'string') {
       return apiError(400, API_ERRORS.BAD_REQUEST, "Invalid ID")
+  }
+
+  // Public, unauthenticated endpoint that reads up to 5MB from R2 — rate-limit
+  // by hashed IP so it can't be hammered for scraping / cost amplification.
+  const rl = await checkApiRateLimit(getHashedIp(req))
+  if (!rl.allowed) {
+      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "Rate limit reached")
   }
 
   const client = await getClient()

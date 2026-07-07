@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getForumPostById, reportPost } from "@/lib/models/forumModel"
 import { checkForumReportRateLimit } from "@/lib/data/rateLimit"
+import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -20,7 +21,9 @@ export async function POST(
       return NextResponse.json({ error: API_ERRORS.NOT_FOUND }, { status: 404 })
     }
 
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous"
+    // Hashed IP (trusted-proxy aware, so it can't be spoofed via X-Forwarded-For)
+    // — also keeps us to our "no raw IP storage" promise since reportPost persists it.
+    const ip = getHashedIp(request)
 
     const rateLimit = await checkForumReportRateLimit(ip)
     if (!rateLimit.allowed) {

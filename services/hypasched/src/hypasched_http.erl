@@ -15,6 +15,9 @@
 -export([acceptor/1]).
 
 -define(RECV_TIMEOUT_MS, 5000).
+%% Schedule/burn payloads are a few hundred bytes; cap well above that so a
+%% caller can never make us buffer an unbounded body into memory.
+-define(MAX_BODY_BYTES, 65536).
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -99,6 +102,7 @@ read_request(Sock, Buf) ->
             [ReqLine | HeaderLines] = binary:split(Head, <<"\r\n">>, [global]),
             [Method, Path | _] = binary:split(ReqLine, <<" ">>, [global]),
             Len = content_length(HeaderLines),
+            Len =< ?MAX_BODY_BYTES orelse error(request_too_large),
             Body = read_body(Sock, Rest, Len),
             Parsed = case Body of
                 <<>> -> #{};
