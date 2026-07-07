@@ -100,7 +100,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       }
       if (f.fileSize <= 0 || f.fileSize > tier.maxCdnFileSize) {
         const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
-        return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "File Exceeds Limit (maximum ${limitMB}MB per file on your plan)")
+        return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File exceeds the ${limitMB}MB per-file limit on your plan.`)
       }
       if (isExtensionBlocked(f.fileName)) {
         return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, "File Type Not Allowed")

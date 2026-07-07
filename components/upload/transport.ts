@@ -64,7 +64,7 @@ export async function uploadViaProxy(
 
   const response = JSON.parse(xhr.responseText)
   if (!response.success) {
-    throw new Error(response.error || "Proxy upload failed")
+    throw new Error(response.message || "Proxy upload failed")
   }
   return response.shareUrl
 }
@@ -102,11 +102,11 @@ export async function uploadSingle(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.error || "Custom link already taken")
+      const e: any = new Error(error.message || "Custom link already taken")
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
-    throw new Error(error.error || "Failed to initialize upload")
+    throw new Error(error.message || "Failed to initialize upload")
   }
 
   const { fileId, uploadUrl, shareUrl: url, proxyToken } = await initResponse.json()
@@ -123,7 +123,7 @@ export async function uploadSingle(
 
     if (!completeResponse.ok) {
       const error = await completeResponse.json()
-      throw new Error(error.error || "Upload validation failed")
+      throw new Error(error.message || "Upload validation failed")
     }
 
     return `${url}#${keyBase64}`
@@ -179,11 +179,11 @@ export async function uploadMultipart(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.error || "Custom link already taken")
+      const e: any = new Error(error.message || "Custom link already taken")
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
-    throw new Error(error.error || "Failed to initialize multipart upload")
+    throw new Error(error.message || "Failed to initialize multipart upload")
   }
 
   const { fileId, uploadId, presignedUrls, shareUrl: url } = await initResponse.json()
@@ -254,7 +254,7 @@ export async function uploadMultipart(
 
     if (!completeResponse.ok) {
       const error = await completeResponse.json()
-      throw new Error(error.error || "Multipart upload finalization failed")
+      throw new Error(error.message || "Multipart upload finalization failed")
     }
 
     onProgress(100)
@@ -299,7 +299,7 @@ export async function initBatchUpload(
 
   if (!initResponse.ok) {
     const error = await initResponse.json()
-    throw new Error(error.error || "Failed to initialize upload")
+    throw new Error(error.message || "Failed to initialize upload")
   }
 
   const { files: initResults } = await initResponse.json()
@@ -326,7 +326,7 @@ export async function uploadBatchSimple(
     })
     if (!completeResponse.ok) {
       const error = await completeResponse.json()
-      throw new Error(error.error || "Upload validation failed")
+      throw new Error(error.message || "Upload validation failed")
     }
     return `${init.shareUrl}#${keyBase64}`
   } catch (fetchError: any) {
@@ -367,7 +367,7 @@ export async function uploadBatchMultipart(
   })
   if (!completeResponse.ok) {
     const error = await completeResponse.json()
-    throw new Error(error.error || "Multipart upload finalization failed")
+    throw new Error(error.message || "Multipart upload finalization failed")
   }
   onProgress(100)
   return `${init.shareUrl}#${keyBase64}`

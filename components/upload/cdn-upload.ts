@@ -46,11 +46,11 @@ export async function runCdnUpload(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.error || "Custom link already taken")
+      const e: any = new Error(error.message || "Custom link already taken")
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
-    throw new Error(error.error || "Failed to initialize CDN upload")
+    throw new Error(error.message || "Failed to initialize CDN upload")
   }
 
   const { files: initResults } = await initResponse.json()
@@ -109,11 +109,11 @@ export async function runCdnUpload(
   if (!completeRes.ok) {
     const error = await completeRes.json()
     if (completeRes.status === 409) {
-      const e: any = new Error(error.error || "Custom link already taken")
+      const e: any = new Error(error.message || "Custom link already taken")
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
-    throw new Error(error.error || "Failed to complete CDN upload")
+    throw new Error(error.message || "Failed to complete CDN upload")
   }
 
   const { files: completedAssets } = await completeRes.json()

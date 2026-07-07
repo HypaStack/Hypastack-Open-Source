@@ -23,7 +23,7 @@ export async function resumeMultipartUpload(
 
   if (!resumeRes.ok) {
     const err = await resumeRes.json()
-    throw new Error(err.error || "Resume failed")
+    throw new Error(err.message || "Resume failed")
   }
 
   const { uploadedParts, missingParts } = await resumeRes.json()
@@ -91,7 +91,7 @@ export async function resumeMultipartUpload(
 
   if (!completeRes.ok) {
     const err = await completeRes.json()
-    throw new Error(err.error || "Completion failed")
+    throw new Error(err.message || "Completion failed")
   }
 
   onProgress(100)

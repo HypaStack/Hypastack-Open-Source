@@ -55,7 +55,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const limit = Math.min(tier.maxNormalUploadSize, MAX_PROXY_UPLOAD_SIZE);
     if (file.size > limit) {
       const limitMB = Math.round(limit / (1024 * 1024))
-      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Proxy Upload Limit Exceeded (Max ${limitMB}MB)")
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File is too large (max ${limitMB}MB).`)
     }
 
     const bytes = await file.arrayBuffer()

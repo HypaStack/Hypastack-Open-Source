@@ -49,7 +49,7 @@ export async function handleHotSwapInit(request: NextRequest) {
 
     if (fileSize <= 0 || fileSize > tier.maxCdnFileSize) {
       const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
-      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "File is too large. Maximum ${limitMB}MB per file on your plan.")
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File is too large — the max is ${limitMB}MB per file on your plan.`)
     }
 
     // Storage quota: account for the size difference (new - old)
@@ -57,7 +57,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     if (sizeDelta > 0 && currentStorage + sizeDelta > tier.maxCdnStorage) {
       const remaining = Math.max(0, tier.maxCdnStorage - currentStorage)
       const remainingMB = Math.floor(remaining / (1024 * 1024))
-      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "Not enough storage. You have ${remainingMB}MB remaining.")
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `Not enough storage. You have ${remainingMB}MB remaining.`)
     }
 
     // Generate presigned PUT URL for the EXISTING R2 key (overwrites in-place)

@@ -77,7 +77,7 @@ export default function DownloadPage() {
         try {
           const r = await apiFetch(`/api/v2/files/${fileId}`);
           const d = await r.json();
-          if (!r.ok) { setError(d.error || "File not found"); return }
+          if (!r.ok) { setError(d.message || "File not found"); return }
           setFileInfo(d.file);
           setUploader(d.uploader ?? null);
           if (d.file?.name) document.title = `Download ${d.file.customFilename || d.file.name} - Hypastack`;
@@ -108,7 +108,7 @@ export default function DownloadPage() {
         return;
       }
       wasBurned = !!data.burned;
-      if (!r.ok) { setError(data.error || "Download failed"); setDownloading(false); return }
+      if (!r.ok) { setError(data.message || "Download failed"); setDownloading(false); return }
       downloadUrl = data.downloadUrl;
     } catch {
       setError("Failed to start download");
