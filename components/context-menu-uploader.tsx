@@ -18,7 +18,6 @@ export function ContextMenuUploader() {
       const unlisten = await listen<{ path: string; name: string; size: number }>("context-menu-upload", (event) => {
         if (cancelled) return
         const { path: filePath, name, size } = event.payload
-        console.log("[ContextMenu] Upload requested for:", filePath)
 
         // autoupload
         window.dispatchEvent(
