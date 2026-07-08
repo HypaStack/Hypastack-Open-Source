@@ -7,12 +7,11 @@ import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useManage } from "@/hooks/useManage"
 import { hypaToast, hypaError, hypaConfirm } from "@/components/ui/hypa-notif"
 import { getSessionKey } from "@/lib/security/cryptoClient"
-import { generateWrappedFunnelKeypair } from "@/lib/security/funnelCrypto"
 import { unwrapFunnelFileKey, decryptFunnelName, downloadAndDecryptFunnelFile } from "@/components/funnel/download"
+import { FunnelCreateTray } from "@/components/funnel/create-tray"
 import { apiFetch } from "@/lib/http/fetch"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 
-interface FunnelLink { id: string; slug: string; createdAt: string }
 interface FunnelFileDto {
   id: string
   nameEncrypted: string
@@ -33,26 +32,28 @@ function fmtBytes(bytes: number): string {
 }
 
 function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" })
 }
 
-async function getCsrf(): Promise<string> {
-  const res = await apiFetch("/api/v2/csrf")
-  const data = await res.json()
-  return data.token || ""
+function extOf(name: string): string {
+  return name.includes(".") ? name.split(".").pop()!.slice(0, 5).toUpperCase() : "FILE"
+}
+
+const gridVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.05 } } }
+const gridItemVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
 }
 
 export default function FunnelInboxPage() {
   const { user } = useManage()
   const paid = user ? isPaidTier(normalizeTier(user.tier)) : false
 
-  const [links, setLinks] = useState<FunnelLink[]>([])
   const [files, setFiles] = useState<FunnelFileDto[]>([])
   const [names, setNames] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [customSlug, setCustomSlug] = useState("")
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [trayOpen, setTrayOpen] = useState(false)
 
   const seenIds = useRef<Set<string> | null>(null)
 
@@ -79,7 +80,6 @@ export default function FunnelInboxPage() {
       if (!res.ok) return
       const data = await res.json()
       const nextFiles: FunnelFileDto[] = data.files || []
-      setLinks(data.funnels || [])
       setFiles(nextFiles)
 
       if (seenIds.current === null) {
@@ -89,8 +89,6 @@ export default function FunnelInboxPage() {
           const fresh = nextFiles.filter((f) => !seenIds.current!.has(f.id))
           fresh.forEach(() => hypaToast({ title: "New file received", description: "A file just landed in your funnel inbox." }))
         }
-        // Always reconcile to the latest set so deletions and non-notify reloads
-        // can't trigger a spurious toast on the next poll.
         seenIds.current = new Set(nextFiles.map((f) => f.id))
       }
       decryptNames(nextFiles)
@@ -106,54 +104,6 @@ export default function FunnelInboxPage() {
     const t = setInterval(() => load(true), 15000)
     return () => clearInterval(t)
   }, [load])
-
-  const funnelUrl = (slug: string) =>
-    typeof window !== "undefined" ? `${window.location.origin}/funnel/${slug}` : `/funnel/${slug}`
-
-  const createFunnel = async () => {
-    if (creating) return
-    setCreating(true)
-    try {
-      const master = await getSessionKey()
-      if (!master) { hypaError("Please sign in again to create a funnel."); return }
-
-      const { publicKey, wrappedPrivateKey } = await generateWrappedFunnelKeypair(master)
-      const csrfToken = await getCsrf()
-
-      const res = await apiFetch("/api/v2/funnel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ csrfToken, publicKey, wrappedPrivateKey, customSlug: customSlug.trim() || undefined }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) { hypaError(data.message || "Couldn't create the funnel."); return }
-
-      setCustomSlug("")
-      try { await navigator.clipboard.writeText(funnelUrl(data.slug)) } catch {}
-      hypaToast({ title: "Funnel created", description: "The drop link is copied to your clipboard." })
-      await load(false)
-    } catch {
-      hypaError("Couldn't create the funnel. Please try again.")
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  const copyLink = async (slug: string) => {
-    try { await navigator.clipboard.writeText(funnelUrl(slug)); hypaToast({ title: "Link copied", durationMs: 2500 }) }
-    catch { hypaError("Couldn't copy the link.") }
-  }
-
-  const deleteLink = async (slug: string) => {
-    const ok = await hypaConfirm({ title: "Delete this funnel link?", description: "The link will stop working immediately.", confirmText: "Delete", destructive: true })
-    if (!ok) return
-    setBusyId(slug)
-    try {
-      const res = await apiFetch(`/api/v2/funnel/${slug}`, { method: "DELETE" })
-      if (!res.ok) { hypaError("Couldn't delete the link."); return }
-      await load(false)
-    } finally { setBusyId(null) }
-  }
 
   const downloadFile = async (f: FunnelFileDto) => {
     setBusyId(f.id)
@@ -191,94 +141,83 @@ export default function FunnelInboxPage() {
   return (
     <div className="flex-1 flex flex-col relative">
       <div className={paid ? "flex-1 flex flex-col" : "flex-1 flex flex-col blur-[3px] opacity-70 pointer-events-none select-none"}>
-        <div className="mb-6">
+        <div className="flex items-center justify-between gap-4 mb-6 shrink-0">
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Funnel</h1>
-        </div>
-
-        <div className="rounded-[10px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0a0b0c] p-4 mb-6">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex items-center flex-1 rounded-[8px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-[#f7f7f7] dark:bg-[rgba(255,255,255,0.02)] px-3">
-              <span className="text-[13px] text-[#999] dark:text-[#6b7075] shrink-0">/funnel/</span>
-              <input
-                value={customSlug}
-                onChange={(e) => setCustomSlug(e.target.value)}
-                placeholder="custom-link (optional)"
-                className="flex-1 bg-transparent outline-none text-[13px] text-[#171717] dark:text-[#e3e3e3] py-2.5 px-1"
-              />
+          <button
+            type="button"
+            onClick={() => setTrayOpen(true)}
+            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 shrink-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
+            <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
+              <MIcon name="add_link" size={17} />
+              <span>Create funnel</span>
             </div>
-            <button
-              type="button"
-              onClick={createFunnel}
-              disabled={creating}
-              className="inline-flex items-center justify-center gap-2 h-[42px] px-4 rounded-[8px] bg-[#151616] text-[#f7f8f8] text-[14px] font-medium disabled:opacity-60 active:scale-[0.98] transition-transform"
-            >
-              {creating ? <LoadingSvg variant="white" size={16} /> : <MIcon name="add_link" size={18} />}
-              Create funnel
-            </button>
-          </div>
+          </button>
         </div>
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center py-20">
             <LoadingSvg size={28} />
           </div>
+        ) : files.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center py-20">
+            <div className="flex items-center justify-center h-14 w-14 rounded-[16px] bg-[#f2f2f4] dark:bg-[rgba(255,255,255,0.03)] mb-4">
+              <MIcon name="inbox" size={26} className="text-[#b5b5b5] dark:text-[#5c6169]" />
+            </div>
+            <h3 className="text-[16px] font-semibold text-[#171717] dark:text-[#e3e3e3]">No files yet</h3>
+            <p className="mt-1 text-[13px] text-[#666] dark:text-[#898e97] max-w-[300px]">
+              Create a funnel and share the link — files dropped through it show up here.
+            </p>
+          </div>
         ) : (
-          <div className="space-y-8">
-            {links.length > 0 && (
-            <section>
-              <h2 className="text-[13px] font-semibold text-[#666] dark:text-[#898e97] uppercase tracking-wide mb-2">Active links</h2>
-              <div className="space-y-2">
-                {links.map((l) => (
-                  <div key={l.id} className="flex items-center gap-3 rounded-[8px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0a0b0c] px-3 py-2.5">
-                    <MIcon name="link" size={18} className="text-[#999] dark:text-[#898e97] shrink-0" />
-                    <span className="flex-1 truncate text-[13px] text-[#171717] dark:text-[#e3e3e3]">/funnel/{l.slug}</span>
-                    <span className="hidden sm:block text-[12px] text-[#999] dark:text-[#6b7075]">{fmtDate(l.createdAt)}</span>
-                    <button type="button" onClick={() => copyLink(l.slug)} className="p-1.5 rounded-md hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors" title="Copy link">
-                      <MIcon name="content_copy" size={16} className="text-[#666] dark:text-[#898e97]" />
-                    </button>
-                    <button type="button" onClick={() => deleteLink(l.slug)} disabled={busyId === l.slug} className="p-1.5 rounded-md hover:bg-[rgba(239,68,68,0.1)] transition-colors disabled:opacity-50" title="Delete link">
-                      <MIcon name="delete" size={16} className="text-red-500" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
+            initial="hidden"
+            animate="visible"
+            variants={gridVariants}
+          >
+            {files.map((f) => {
+              const busy = busyId === f.id
+              const name = names[f.id]
+              return (
+                <motion.div key={f.id} variants={gridItemVariants} className="group relative">
+                  <div className="relative w-full aspect-square rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] flex flex-col items-center justify-center">
+                    <MIcon name="description" size={34} className="text-[#b5b5b5] dark:text-[#5c6169]" />
+                    <span className="mt-2 text-[10px] font-semibold tracking-wider text-[#999] dark:text-[#6b7075] bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,255,255,0.05)] px-1.5 py-0.5 rounded-[5px]">
+                      {name ? extOf(name) : "•••"}
+                    </span>
 
-          <section>
-            <h2 className="text-[13px] font-semibold text-[#666] dark:text-[#898e97] uppercase tracking-wide mb-2">Received files</h2>
-            {files.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-16">
-                <MIcon name="inbox" size={30} className="text-[#ccc] dark:text-[#3a3f45]" />
-                <p className="mt-3 text-[14px] font-medium text-[#171717] dark:text-[#e3e3e3]">No files yet</p>
-                <p className="mt-1 text-[13px] text-[#666] dark:text-[#898e97]">Files dropped through your funnel links show up here.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {files.map((f) => (
-                  <motion.div
-                    key={f.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-3 rounded-[8px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#0a0b0c] px-3 py-2.5"
-                  >
-                    <MIcon name="description" size={20} className="text-[#666] dark:text-[#898e97] shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-[13px] font-medium text-[#171717] dark:text-[#e3e3e3]">{names[f.id] || "Decrypting…"}</p>
-                      <p className="text-[12px] text-[#999] dark:text-[#6b7075]">{fmtBytes(f.fileSize)} · {fmtDate(f.createdAt)}</p>
+                    <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => downloadFile(f)}
+                        disabled={busy}
+                        className="flex items-center justify-center h-9 w-9 rounded-full bg-white/95 text-[#151616] hover:bg-white active:scale-95 transition disabled:opacity-60"
+                        title="Download"
+                      >
+                        {busy ? <LoadingSvg variant="dark" size={16} /> : <MIcon name="download" size={18} />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteFile(f)}
+                        disabled={busy}
+                        className="flex items-center justify-center h-9 w-9 rounded-full bg-white/95 text-red-500 hover:bg-white active:scale-95 transition disabled:opacity-60"
+                        title="Delete"
+                      >
+                        <MIcon name="delete" size={18} />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => downloadFile(f)} disabled={busyId === f.id} className="p-1.5 rounded-md hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors disabled:opacity-50" title="Download">
-                      {busyId === f.id ? <LoadingSvg size={16} /> : <MIcon name="download" size={18} className="text-[#666] dark:text-[#898e97]" />}
-                    </button>
-                    <button type="button" onClick={() => deleteFile(f)} disabled={busyId === f.id} className="p-1.5 rounded-md hover:bg-[rgba(239,68,68,0.1)] transition-colors disabled:opacity-50" title="Delete">
-                      <MIcon name="delete" size={16} className="text-red-500" />
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
+                  </div>
+
+                  <div className="mt-2 px-0.5">
+                    <p className="truncate text-[13px] font-medium text-[#171717] dark:text-[#e3e3e3]" title={name || ""}>{name || "Decrypting…"}</p>
+                    <p className="text-[11px] text-[#999] dark:text-[#6b7075]">{fmtBytes(f.fileSize)} · {fmtDate(f.createdAt)}</p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
         )}
       </div>
 
@@ -294,6 +233,8 @@ export default function FunnelInboxPage() {
           </div>
         </div>
       )}
+
+      <FunnelCreateTray open={trayOpen} onClose={() => setTrayOpen(false)} />
     </div>
   )
 }
