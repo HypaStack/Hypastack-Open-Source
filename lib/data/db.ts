@@ -433,6 +433,47 @@ export async function initDatabase(): Promise<void> {
       // Released display names are held (locked for everyone) for a period so they
       // can't be instantly re-registered; hypasched deletes rows once expired.
       { version: '2026-07-03-display-name-holds', sql: `CREATE TABLE IF NOT EXISTS display_name_holds (name_lower VARCHAR(64) PRIMARY KEY, released_by VARCHAR(36), expires_at TIMESTAMPTZ NOT NULL)` },
+      // Funnel: one-time inbound file-drop links. The keypair persists after the
+      // link is consumed so the received file stays decryptable by the owner; the
+      // private key is stored already-wrapped by the owner's master key.
+      { version: '2026-07-08-funnels', sql: `CREATE TABLE IF NOT EXISTS funnels (
+        id                  VARCHAR(12)  PRIMARY KEY,
+        slug                VARCHAR(64)  NOT NULL UNIQUE,
+        user_id             VARCHAR(36)  NOT NULL,
+        public_key          TEXT         NOT NULL,
+        private_key_wrapped TEXT         NOT NULL,
+        status              TEXT         NOT NULL DEFAULT 'active',
+        created_at          TIMESTAMPTZ  DEFAULT NOW(),
+        consumed_at         TIMESTAMPTZ
+      )` },
+      { version: '2026-07-08-funnels-user-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnels_user_id ON funnels(user_id)` },
+      { version: '2026-07-08-funnels-slug-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnels_slug ON funnels(slug)` },
+      { version: '2026-07-08-funnel-files', sql: `CREATE TABLE IF NOT EXISTS funnel_files (
+        id                      VARCHAR(12)  PRIMARY KEY,
+        funnel_id               VARCHAR(12)  NOT NULL,
+        user_id                 VARCHAR(36)  NOT NULL,
+        r2_key                  VARCHAR(500) NOT NULL,
+        name_encrypted          TEXT         NOT NULL,
+        file_size               BIGINT       NOT NULL,
+        content_type            VARCHAR(200) NOT NULL,
+        wrapped_key             TEXT         NOT NULL,
+        encryption_chunk_size   INTEGER,
+        encryption_total_parts  INTEGER,
+        created_at              TIMESTAMPTZ  DEFAULT NOW()
+      )` },
+      { version: '2026-07-08-funnel-files-user-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_user_id ON funnel_files(user_id)` },
+      { version: '2026-07-08-funnel-files-funnel-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_funnel_id ON funnel_files(funnel_id)` },
+      // Tracks in-flight drops (id = the pending file id) so an abandoned upload's
+      // R2 object gets swept, mirroring upload_staging. A row is written at init
+      // and cleared on complete; hypasched deletes the object for rows that never
+      // completed. The sweep skips ids that became a funnel_files row.
+      { version: '2026-07-08-funnel-staging', sql: `CREATE TABLE IF NOT EXISTS funnel_staging (
+        id         VARCHAR(12)  PRIMARY KEY,
+        funnel_id  VARCHAR(12)  NOT NULL,
+        r2_key     VARCHAR(500) NOT NULL,
+        created_at TIMESTAMPTZ  DEFAULT NOW()
+      )` },
+      { version: '2026-07-08-funnel-staging-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_staging_created_at ON funnel_staging(created_at)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

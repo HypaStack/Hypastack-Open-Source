@@ -18,6 +18,7 @@ import {
   type NavItem,
   SECTION_BUTTONS,
   DRIVE_SUBNAV,
+  FUNNEL_SUBNAV,
   CDN_SUBNAV,
   DUMPSTER_SUBNAV,
   SECTION_ORDER,
@@ -31,6 +32,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 
 function getSubNav(pathname: string): NavItem[] {
   if (pathname.startsWith("/manage/files")) return DRIVE_SUBNAV
+  if (pathname.startsWith("/manage/funnel")) return FUNNEL_SUBNAV
   if (pathname.startsWith("/manage/cdn")) return CDN_SUBNAV
   if (pathname.startsWith("/manage/dumpster")) return DUMPSTER_SUBNAV
   return DRIVE_SUBNAV
@@ -58,6 +60,7 @@ function formatStoragePct(pct: number): string {
 
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
+  if (pathname.startsWith("/manage/funnel")) return "Funnel"
   if (pathname.startsWith("/manage/cdn")) return "CDN"
   if (pathname.startsWith("/manage/dumpster")) return "Dumpster"
   return "Drive"
@@ -105,7 +108,7 @@ function NavRow({
 
 function SidebarNavContent({ section, pathname }: { section: string, pathname: string }) {
   // Use a fallback path if the section doesn't match the pathname to ensure we get the right nav items
-  const items = section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : DRIVE_SUBNAV
+  const items = section === "Funnel" ? FUNNEL_SUBNAV : section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : DRIVE_SUBNAV
 
   return (
     <>

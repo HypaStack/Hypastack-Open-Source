@@ -56,6 +56,8 @@ export function startCleanupScheduler(): NodeJS.Timeout {
     await cleanupExpiredFiles()
     await cleanupStaging()
     await cleanupDumpsterPastes()
+    await cleanupUnusedFunnels()
+    await cleanupFunnelStaging()
     await scheduleUpcomingExpiries()
   }
 
@@ -79,6 +81,76 @@ export async function cleanupStaging(): Promise<{
 
 export function stopCleanupScheduler(timer: NodeJS.Timeout): void {
   clearInterval(timer)
+}
+
+// Delete unused funnel links older than 7 days (never dropped into). There's no
+// R2 object for an unused link — just the row and its keypair. Consumed funnels
+// are kept so their received file stays decryptable.
+export async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string[] }> {
+  const errors: string[] = []
+  let cleaned = 0
+  const client = await getClient()
+
+  try {
+    const result = await client.query(
+      `DELETE FROM funnels WHERE status = 'active' AND created_at < NOW() - INTERVAL '7 days'`
+    )
+    cleaned = result.rowCount ?? 0
+    if (cleaned > 0) console.log(`[Cleanup] Unused funnels: cleaned=${cleaned}`)
+  } catch (error: any) {
+    console.error('[Cleanup] Fatal error in cleanupUnusedFunnels:', error)
+    errors.push(`Fatal error: ${error.message}`)
+  } finally {
+    client.release()
+  }
+
+  return { cleaned, errors }
+}
+
+// Sweep abandoned funnel drops (init wrote a funnel_staging row, complete never
+// cleared it). Rows past 2 hours never completed: delete the orphaned R2 object
+// and the row. Ids that became a live funnel_files row are skipped (object kept)
+// and their stale markers just dropped.
+export async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string[] }> {
+  const errors: string[] = []
+  let cleaned = 0
+  const client = await getClient()
+
+  try {
+    await client.query(`
+      DELETE FROM funnel_staging s
+      WHERE s.created_at < NOW() - INTERVAL '2 hours'
+        AND EXISTS (SELECT 1 FROM funnel_files f WHERE f.id = s.id)
+    `)
+
+    const { rows } = await client.query(`
+      SELECT id, r2_key FROM funnel_staging s
+      WHERE s.created_at < NOW() - INTERVAL '2 hours'
+        AND NOT EXISTS (SELECT 1 FROM funnel_files f WHERE f.id = s.id)
+      LIMIT 500
+    `)
+
+    for (const row of rows) {
+      try {
+        await deleteByKey(row.r2_key)
+        await client.query(`DELETE FROM funnel_staging WHERE id = $1`, [row.id])
+        cleaned++
+      } catch (error: any) {
+        const errorMsg = `Failed to delete funnel staging ${row.id}: ${error.message}`
+        console.error(`[Cleanup] ${errorMsg}`)
+        errors.push(errorMsg)
+      }
+    }
+
+    if (cleaned > 0) console.log(`[Cleanup] Funnel staging: cleaned=${cleaned}`)
+  } catch (error: any) {
+    console.error('[Cleanup] Fatal error in cleanupFunnelStaging:', error)
+    errors.push(`Fatal error: ${error.message}`)
+  } finally {
+    client.release()
+  }
+
+  return { cleaned, errors }
 }
 
 export async function cleanupDumpsterPastes(): Promise<{ cleaned: number; errors: string[] }> {

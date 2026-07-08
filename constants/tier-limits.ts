@@ -14,6 +14,8 @@ export interface TierLimits {
   maxCdnFilesPerUpload: number
   maxTotalFiles: number
   expirationMultiplier: number
+  maxFunnelUploadSize: number
+  maxFunnelLinks: number
 }
 
 const MB = 1024 * 1024
@@ -30,6 +32,8 @@ export const FREE_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 3,
   maxTotalFiles: 6, // 3 CDN + 3 Normal
   expirationMultiplier: 1,
+  maxFunnelUploadSize: 0, // Funnel not available on Free
+  maxFunnelLinks: 0,
 }
 
 export const ESSENTIAL_LIMITS: TierLimits = {
@@ -43,6 +47,8 @@ export const ESSENTIAL_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 45,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 2,
+  maxFunnelUploadSize: 100 * MB,
+  maxFunnelLinks: 10,
 }
 
 export const PREMIUM_LIMITS: TierLimits = {
@@ -56,6 +62,8 @@ export const PREMIUM_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 100,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 3,
+  maxFunnelUploadSize: 300 * MB,
+  maxFunnelLinks: 25,
 }
 
 export const ULTIMATE_LIMITS: TierLimits = {
@@ -69,6 +77,8 @@ export const ULTIMATE_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 125,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 4,
+  maxFunnelUploadSize: 1000 * MB,
+  maxFunnelLinks: 50,
 }
 
 const TIER_TO_LIMITS: Record<Tier, TierLimits> = {

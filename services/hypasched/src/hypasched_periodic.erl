@@ -3,7 +3,9 @@
 
 %% The cleanups that are inherently scans rather than timed events:
 %%  - upload staging rows older than 2 hours (abandoned uploads),
+%%  - funnel staging rows older than 2 hours (abandoned funnel drops),
 %%  - dumpster pastes untouched for 180 days,
+%%  - unused funnel links older than 7 days (never dropped into),
 %%  - expired display-name holds (released names past their reservation window),
 %%  - branding on accounts that are no longer on a paid plan (downgrade cleanup).
 %% Runs hourly, mirroring the batch limits of the old in-app sweep.
@@ -32,6 +34,8 @@ handle_info(tick, State) ->
     try cleanup_dumpster() catch C2:R2 -> logger:error("dumpster sweep crashed: ~p:~p", [C2, R2]) end,
     try cleanup_name_holds() catch C3:R3 -> logger:error("name-hold sweep crashed: ~p:~p", [C3, R3]) end,
     try reconcile_downgrades() catch C4:R4 -> logger:error("downgrade reconcile crashed: ~p:~p", [C4, R4]) end,
+    try cleanup_funnels() catch C5:R5 -> logger:error("funnel sweep crashed: ~p:~p", [C5, R5]) end,
+    try cleanup_funnel_staging() catch C6:R6 -> logger:error("funnel staging sweep crashed: ~p:~p", [C6, R6]) end,
     erlang:send_after(?TICK_MS, self(), tick),
     {noreply, State};
 handle_info(_Msg, State) ->
@@ -94,6 +98,44 @@ cleanup_name_holds() ->
     case hypasched_db:query(Sql, []) of
         {ok, _} -> ok;
         {error, Reason} -> logger:warning("name-hold sweep query failed: ~p", [Reason])
+    end.
+
+%% Delete unused funnel links older than 7 days. These were never dropped into,
+%% so there's no R2 object to remove — just the row (and its keypair). Consumed
+%% funnels are kept: their received file still needs the private key to decrypt.
+cleanup_funnels() ->
+    Sql = <<"DELETE FROM funnels WHERE status = 'active' AND created_at < NOW() - INTERVAL '7 days'">>,
+    case hypasched_db:query(Sql, []) of
+        {ok, _} -> ok;
+        {error, Reason} -> logger:warning("funnel sweep query failed: ~p", [Reason])
+    end.
+
+%% Sweep abandoned funnel drops: an init writes a funnel_staging row, complete
+%% clears it. Rows still present after 2 hours never completed. First drop the
+%% stale markers for drops that DID complete (their object is a live funnel_files
+%% row — must never be deleted), then delete the R2 object + row for the rest.
+cleanup_funnel_staging() ->
+    _ = hypasched_db:query(
+        <<"DELETE FROM funnel_staging s "
+          "WHERE s.created_at < NOW() - INTERVAL '2 hours' "
+          "AND EXISTS (SELECT 1 FROM funnel_files f WHERE f.id = s.id)">>, []),
+    Sql = <<"SELECT id, r2_key FROM funnel_staging s "
+            "WHERE s.created_at < NOW() - INTERVAL '2 hours' "
+            "AND NOT EXISTS (SELECT 1 FROM funnel_files f WHERE f.id = s.id) LIMIT 500">>,
+    case hypasched_db:query(Sql, []) of
+        {ok, Rows} when is_list(Rows) ->
+            N = lists:foldl(fun({Id, R2Key}, Acc) ->
+                _ = hypasched_r2:delete_object(R2Key),  %% best-effort
+                case hypasched_db:query(<<"DELETE FROM funnel_staging WHERE id = $1">>, [Id]) of
+                    {ok, _} -> Acc + 1;
+                    {error, Reason} ->
+                        logger:warning("funnel staging row ~s delete failed: ~p", [Id, Reason]),
+                        Acc
+                end
+            end, 0, Rows),
+            report("funnel-staging", N);
+        {error, Reason} ->
+            logger:warning("funnel staging sweep query failed: ~p", [Reason])
     end.
 
 %% Strip download-page branding from accounts that are no longer on a paid plan.
