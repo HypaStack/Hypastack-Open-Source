@@ -17,3 +17,6 @@ package-lock.json
 tsconfig.tsbuildinfo
 
 CLAUDE.md
+
+.claude/
+docs/
