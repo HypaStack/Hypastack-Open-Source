@@ -15,11 +15,11 @@ export async function StatusBanner() {
   const copy = COPY[status.state]
   return (
     <div className="fixed inset-x-0 top-[72px] z-[80] flex justify-center px-4">
-      <div className="w-full max-w-[880px]">
-        <AlertMessage tone={copy.tone} style={{ marginBottom: 0, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+      <a href="https://status.hypastack.com" className="w-full max-w-[880px] no-underline">
+        <AlertMessage tone={copy.tone} style={{ marginBottom: 0, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", cursor: "pointer" }}>
           {status.announcement ?? copy.text}
         </AlertMessage>
-      </div>
+      </a>
     </div>
   )
 }
