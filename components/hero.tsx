@@ -37,6 +37,9 @@ export function Hero() {
   const [pendingNav, setPendingNav] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  // Mobile opt-in: user tapped "Load regardless" to pull the heavy video anyway.
+  const [forceLoad, setForceLoad] = useState(false);
+  const showVideo = isMobile === false || forceLoad;
 
   // Navigate once auth resolves after button was clicked
   useEffect(() => {
@@ -125,7 +128,7 @@ export function Hero() {
             <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
               {/* Ambient glow: a blurred copy of the video bleeding its own colours
                   around the card edges, so the glow always matches and blends. */}
-              {isMobile === false && videoReady && (
+              {showVideo && videoReady && (
                 <video
                   src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
                   autoPlay
@@ -139,11 +142,14 @@ export function Hero() {
                 />
               )}
               <div className="absolute inset-0 z-10 rounded-[14px] overflow-hidden bg-[#0e0f10]">
-                {isMobile === true ? (
-                  <div className="absolute inset-0 flex items-center justify-center text-center px-8">
+                {isMobile === true && !forceLoad ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center gap-4 px-8">
                     <p className="text-[14px] leading-relaxed text-[#898e97] max-w-[320px]">
                       You're on mobile so we couldn't load this video for you to ensure a smooth experience
                     </p>
+                    <SecondaryButton size="sm" onClick={() => setForceLoad(true)}>
+                      Load regardless
+                    </SecondaryButton>
                   </div>
                 ) : (
                   <>
@@ -152,7 +158,7 @@ export function Hero() {
                         <Loader size={34} />
                       </div>
                     )}
-                    {isMobile === false && (
+                    {showVideo && (
                       <video
                         src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
                         autoPlay
