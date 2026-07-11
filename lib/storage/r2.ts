@@ -102,7 +102,7 @@ export function getBucketName(): string {
 export function generateFileId(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
   let result = ""
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 16; i++) {
     result += chars.charAt(crypto.randomInt(0, chars.length))
   }
   return result
