@@ -8,6 +8,7 @@ import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
+import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
@@ -32,9 +33,21 @@ export default function CreateAccountPage() {
   const [ageConfirmed, setAgeConfirmed] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
+  const [bioSupported, setBioSupported] = useState(false)
+  const [bioEnrolling, setBioEnrolling] = useState(false)
+  const [bioEnabled, setBioEnabled] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
   useEffect(() => { setIsDesktop(isTauri()) }, [])
+  useEffect(() => { isBiometricSupported().then(setBioSupported) }, [])
+
+  const handleEnrollBio = async () => {
+    if (!generatedKey) return
+    setBioEnrolling(true)
+    const ok = await enrollBiometric(generatedKey)
+    setBioEnrolling(false)
+    setBioEnabled(ok)
+  }
   useEffect(() => {
     if (!authLoading && isAuthenticated) window.location.href = "/manage/files"
   }, [isAuthenticated, authLoading])
@@ -147,6 +160,28 @@ export default function CreateAccountPage() {
                 {generatedKey}
               </div>
             </ShineCard>
+
+            {bioSupported && (
+              bioEnabled ? (
+                <div className="mb-3 flex items-center justify-center gap-2 text-[13px] text-[#4ade80]">
+                  <MIcon name="check_circle" size={16} />
+                  Biometric unlock enabled on this device
+                </div>
+              ) : (
+                <SecondaryButton
+                  onClick={handleEnrollBio}
+                  disabled={bioEnrolling}
+                  fullWidth
+                  size="lg"
+                  style={{ marginBottom: 12 }}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <MIcon name="fingerprint" size={18} />
+                    {bioEnrolling ? "Setting up…" : "Enable biometric unlock"}
+                  </span>
+                </SecondaryButton>
+              )
+            )}
 
             <ShineButton
               onClick={() => { window.location.href = "/manage/files" }}
