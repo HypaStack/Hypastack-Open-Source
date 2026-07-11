@@ -1,8 +1,12 @@
 "use client"
 
-import { hypaConfirm, hypaProgress, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { Loader } from "@/components/ui/loader"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Checkmark } from "@/components/ui/checkmark"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
 import { useManage } from "@/hooks/useManage"
@@ -171,79 +175,48 @@ export default function CdnPage() {
 
   const handleDeleteFolder = async (folderId: string) => {
     const folder = folders.find(f => f.id === folderId)
-    const confirmed = await hypaConfirm({
+    await hypaConfirm({
       title: `Delete folder "${folder?.name || "Unknown"}" and all its contents?`,
-      description: "This action cannot be undone.",
-      confirmText: "Wipe",
+      confirmText: "Delete",
       cancelText: "Cancel",
-    })
-    if (!confirmed) return
-
-    const progress = hypaProgress({
-      title: `Deleting "${folder?.name || "folder"}"...`,
-      progressText: "Preparing...",
-      progressPercent: 0,
-    })
-
-    try {
-      const res = await apiFetch("/api/v2/cdn/folders", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folderId }),
-      })
-
-      if (!res.ok || !res.body) {
-        progress.close()
-        const data = await res.json().catch(() => ({}))
-        hypaError(data.message ||"Failed to delete folder")
-        return
-      }
-
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ""
-      const deletedAssetIds = new Set<string>()
-      let deletedFolderIds: string[] = []
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split("\n")
-        buffer = lines.pop() || ""
-
-        for (const line of lines) {
-          if (!line.trim()) continue
-          try {
-            const data = JSON.parse(line)
-            if (data.done) {
-              deletedFolderIds = data.deletedFolderIds || []
-              progress.update({ progressText: "Cleaning up...", progressPercent: 100 })
-            } else if (data.success && data.id) {
-              deletedAssetIds.add(data.id)
-              progress.update({
-                progressText: `Deleting: ${data.name} (${data.index}/${data.total})`,
-                progressPercent: (data.index / data.total) * 100,
-              })
-            }
-          } catch { /* malformed line */ }
+      onConfirm: async () => {
+        const res = await apiFetch("/api/v2/cdn/folders", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ folderId }),
+        })
+        if (!res.ok || !res.body) {
+          const data = await res.json().catch(() => ({}))
+          throw new Error(data.message || "Failed to delete folder")
         }
-      }
-
-      progress.close()
-
-      // Remove deleted folders and assets from local state
-      const folderIdSet = new Set(deletedFolderIds.length > 0 ? deletedFolderIds : [folderId])
-      setFolders(prev => prev.filter(f => !folderIdSet.has(f.id)))
-      setAssets(prev => prev.filter(a => !deletedAssetIds.has(a.id) && (!a.folderId || !folderIdSet.has(a.folderId))))
-      if (currentFolderId && folderIdSet.has(currentFolderId)) {
-        setCurrentFolderId(folder?.parentId || null)
-      }
-    } catch (err) {
-      progress.close()
-      console.error("Failed to delete CDN folder:", err)
-      hypaError("Failed to delete folder")
-    }
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ""
+        const deletedAssetIds = new Set<string>()
+        let deletedFolderIds: string[] = []
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split("\n")
+          buffer = lines.pop() || ""
+          for (const line of lines) {
+            if (!line.trim()) continue
+            try {
+              const data = JSON.parse(line)
+              if (data.done) deletedFolderIds = data.deletedFolderIds || []
+              else if (data.success && data.id) deletedAssetIds.add(data.id)
+            } catch { /* malformed line */ }
+          }
+        }
+        const folderIdSet = new Set(deletedFolderIds.length > 0 ? deletedFolderIds : [folderId])
+        setFolders(prev => prev.filter(f => !folderIdSet.has(f.id)))
+        setAssets(prev => prev.filter(a => !deletedAssetIds.has(a.id) && (!a.folderId || !folderIdSet.has(a.folderId))))
+        if (currentFolderId && folderIdSet.has(currentFolderId)) {
+          setCurrentFolderId(folder?.parentId || null)
+        }
+      },
+    })
   }
 
   const copyToClipboard = async (text: string): Promise<boolean> => {
@@ -284,24 +257,21 @@ export default function CdnPage() {
 
   const handleDelete = async (assetId: string) => {
     const asset = assets.find((a) => a.id === assetId)
-    const confirmed = await hypaConfirm({
+    await hypaConfirm({
       title: "Are you sure you want to delete this asset forever?",
-      description: "This action cannot be undone.",
       items: asset ? [asset.name] : [],
-      confirmText: "Wipe",
+      confirmText: "Delete",
       cancelText: "Cancel",
-    })
-    if (!confirmed) return
-
-    setDeleteLoading(assetId)
-    try {
-      const res = await apiFetch("/api/v2/cdn/assets", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId }),
-      })
-
-      if (res.ok) {
+      onConfirm: async () => {
+        const res = await apiFetch("/api/v2/cdn/assets", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ assetId }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          throw new Error(data.message || "Failed to delete")
+        }
         setAssets((prev) => prev.filter((a) => a.id !== assetId))
         setWtStep(s => s === 4 ? 5 : s)
         setSelectedAssets((prev) => {
@@ -309,16 +279,8 @@ export default function CdnPage() {
           next.delete(assetId)
           return next
         })
-      } else {
-        const data = await res.json()
-        hypaError(data.message ||"Failed to delete")
-      }
-    } catch (err) {
-      console.error("Delete error:", err)
-      hypaError("Failed to delete asset")
-    } finally {
-      setDeleteLoading(null)
-    }
+      },
+    })
   }
 
   // ── Hot Swap ──
@@ -461,73 +423,42 @@ export default function CdnPage() {
   const handleBulkDelete = async () => {
     if (selectedAssets.size === 0) return
 
-    const assetNames = Array.from(selectedAssets).map(id => assets.find(a => a.id === id)?.name || "Unknown asset")
-    const confirmed = await hypaConfirm({
-      title: `Are you sure you want to delete ${selectedAssets.size} asset(s) forever?`,
-      description: "This action cannot be undone.",
+    const ids = Array.from(selectedAssets)
+    const assetNames = ids.map(id => assets.find(a => a.id === id)?.name || "Unknown asset")
+    await hypaConfirm({
+      title: `Are you sure you want to delete ${ids.length} asset(s) forever?`,
       items: assetNames,
-      confirmText: "Wipe",
+      confirmText: "Delete",
       cancelText: "Cancel",
-    })
-    if (!confirmed) return
-
-    setDeleteLoading('bulk')
-    try {
-      const progress = hypaProgress({
-        title: "Deleting assets...",
-        progressText: "Preparing to delete...",
-        progressPercent: 0
-      })
-
-      const res = await apiFetch("/api/v2/cdn/assets", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetIds: Array.from(selectedAssets) }),
-      })
-
-      if (res.ok && res.body) {
+      onConfirm: async () => {
+        const res = await apiFetch("/api/v2/cdn/assets", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ assetIds: ids }),
+        })
+        if (!res.ok || !res.body) throw new Error("Failed to delete assets")
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
         let buffer = ""
         const deletedIds = new Set<string>()
-
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
-          
           buffer += decoder.decode(value, { stream: true })
           const lines = buffer.split("\n")
           buffer = lines.pop() || ""
-          
           for (const line of lines) {
             if (!line.trim()) continue
             try {
               const data = JSON.parse(line)
-              if (data.success && data.id) {
-                deletedIds.add(data.id)
-              }
-              if (data.index) {
-                progress.update({ 
-                  progressText: `Deleting: ${data.name} (${data.index}/${data.total})`,
-                  progressPercent: (data.index / data.total) * 100 
-                })
-              }
-            } catch(e) {}
+              if (data.success && data.id) deletedIds.add(data.id)
+            } catch {}
           }
         }
-        
-        progress.close()
         setAssets((prev) => prev.filter((a) => !deletedIds.has(a.id)))
         setSelectedAssets(new Set())
-      } else {
-        hypaError("Failed to delete assets")
-      }
-    } catch (err) {
-      console.error("Delete error:", err)
-      hypaError("Failed to delete assets")
-    } finally {
-      setDeleteLoading(null)
-    }
+      },
+    })
   }
 
   const toggleSelect = (id: string, forceMode?: 'select' | 'deselect') => {
@@ -607,112 +538,108 @@ export default function CdnPage() {
             ))}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <motion.div layout className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedAssets.size > 0 ? (
               <>
-                <button
-                  type="button"
-                  onClick={handleSelectAll}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                    <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={17} className="shrink-0" />
+                <motion.div layout>
+                  <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                    <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={15} className="shrink-0" />
                     <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
-                  </div>
-                </button>
+                  </SecondaryButton>
+                </motion.div>
                 {/* Copy — all selected */}
-                <button
-                  type="button"
-                  onClick={handleCopySelected}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                >
-                  <div className={`absolute inset-0 transition-colors duration-300 ${copiedSelection ? "bg-gradient-to-tr from-[rgba(16,185,129,0.2)] to-[rgba(16,185,129,0.4)] group-hover:to-[rgba(16,185,129,0.6)]" : "bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)]"}`} />
-                  <div className={`relative rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[14px] font-medium ${copiedSelection ? "bg-[#0a1a14] text-emerald-400" : "bg-[#151616] text-[#f7f8f8]"}`}>
-                    <MIcon name={copiedSelection ? "check" : "content_copy"} size={16} className="shrink-0" />
+                <motion.div layout>
+                  <SecondaryButton
+                    size="md"
+                    onClick={handleCopySelected}
+                    style={{ gap: 8, ...(copiedSelection ? { color: "#34d399" } : {}) }}
+                  >
+                    <MIcon name={copiedSelection ? "check" : "content_copy"} size={14} className="shrink-0" />
                     <span className="hidden sm:inline">{copiedSelection ? "Copied!" : `Copy${selectedAssets.size > 1 ? ` (${selectedAssets.size})` : ""}`}</span>
-                  </div>
-                </button>
-                {/* View — single selection only */}
-                {selectedAssets.size === 1 && (
-                  <button
-                    type="button"
-                    onClick={handleViewSelected}
-                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                    <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                      <MIcon name="open_in_new" size={16} className="shrink-0" />
-                      <span className="hidden sm:inline">View</span>
-                    </div>
-                  </button>
-                )}
-                {/* Hot Swap — single selection only */}
-                {selectedAssets.size === 1 && (
-                  <button
-                    type="button"
-                    onClick={handleHotSwapClick}
-                    disabled={swapLoading !== null}
-                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(217,119,6,0.2)] to-[rgba(217,119,6,0.4)] group-hover:to-[rgba(217,119,6,0.6)] transition-colors duration-300" />
-                    <div className="relative bg-[#fffbeb] dark:bg-[#1a1200] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 text-[14px] font-medium">
-                      <MIcon name="swap_horiz" size={17} className="shrink-0" />
-                      <span className="hidden sm:inline">{swapLoading !== null ? "Swapping…" : "Swap"}</span>
-                    </div>
-                  </button>
-                )}
+                  </SecondaryButton>
+                </motion.div>
+                <AnimatePresence mode="popLayout">
+                  {/* View — single selection only */}
+                  {selectedAssets.size === 1 && (
+                    <motion.div key="view" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
+                      <SecondaryButton size="md" onClick={handleViewSelected} style={{ gap: 8 }}>
+                        <MIcon name="open_in_new" size={14} className="shrink-0" />
+                        <span className="hidden sm:inline">View</span>
+                      </SecondaryButton>
+                    </motion.div>
+                  )}
+                  {/* Hot Swap — single selection only */}
+                  {selectedAssets.size === 1 && (
+                    <motion.div key="swap" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
+                      <ShineButton
+                        size="md"
+                        onClick={handleHotSwapClick}
+                        disabled={swapLoading !== null}
+                        color="#d97706"
+                        hoverColor="#b45309"
+                        style={{ gap: 8 }}
+                      >
+                        {swapLoading !== null ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader size={16} color="#ffffff" />
+                            <span className="hidden sm:inline">Swapping…</span>
+                          </span>
+                        ) : (
+                          <>
+                            <MIcon name="swap_horiz" size={15} className="shrink-0" />
+                            <span className="hidden sm:inline">Swap</span>
+                          </>
+                        )}
+                      </ShineButton>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 {/* Delete */}
-                <button
-                  type="button"
-                  onClick={handleBulkDelete}
-                  disabled={deleteLoading === "bulk"}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.3)] to-[rgba(239,68,68,0.6)] group-hover:to-[rgba(239,68,68,0.8)] transition-colors duration-300" />
-                  <div className="relative bg-[#fef2f2] dark:bg-[#1a0808] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-[14px] font-medium">
-                    <MIcon name="delete" size={18} />
-                    {deleteLoading === "bulk" ? "Deleting…" : `Delete ${selectedAssets.size}`}
-                  </div>
-                </button>
+                <motion.div layout>
+                  <ShineButton
+                    size="md"
+                    onClick={handleBulkDelete}
+                    disabled={deleteLoading === "bulk"}
+                    color="#dc2626"
+                    hoverColor="#b91c1c"
+                    style={{ gap: 8 }}
+                  >
+                    {deleteLoading === "bulk" ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader size={16} color="#ffffff" />
+                        Deleting…
+                      </span>
+                    ) : (
+                      <>
+                        <MIcon name="delete" size={16} className="shrink-0" />
+                        Delete {selectedAssets.size}
+                      </>
+                    )}
+                  </ShineButton>
+                </motion.div>
               </>
             ) : (
               <>
                 {filteredAssets.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleSelectAll}
-                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                    <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                      <MIcon name="select_all" size={17} className="shrink-0" />
+                  <motion.div layout>
+                    <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                      <MIcon name="select_all" size={15} className="shrink-0" />
                       <span className="hidden sm:inline">Select all</span>
-                    </div>
-                  </button>
+                    </SecondaryButton>
+                  </motion.div>
                 )}
-                <button
-                  type="button"
-                  onClick={handleCreateFolder}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                    <MIcon name="create_new_folder" size={17} className="shrink-0" />
+                <motion.div layout>
+                  <SecondaryButton size="md" onClick={handleCreateFolder} style={{ gap: 8 }}>
+                    <MIcon name="create_new_folder" size={15} className="shrink-0" />
                     <span className="hidden sm:inline">New Folder</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                    <MIcon name="cloud_upload" size={15} className="shrink-0" />
+                  </SecondaryButton>
+                </motion.div>
+                <motion.div layout>
+                  <ShineButton size="md" onClick={() => fileInputRef.current?.click()} style={{ gap: 8 }}>
+                    <MIcon name="cloud_upload" size={14} className="shrink-0" />
                     <span>Upload files</span>
-                  </div>
-                </button>
+                  </ShineButton>
+                </motion.div>
               </>
             )}
 
@@ -731,7 +658,7 @@ export default function CdnPage() {
               onChange={handleHotSwapFileChange}
               className="hidden"
             />
-          </div>
+          </motion.div>
         </div>
 
         {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
@@ -740,16 +667,19 @@ export default function CdnPage() {
             <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
-            <button 
+            <SecondaryButton
+              variant="ghost"
+              iconOnly
+              size="xs"
               onClick={() => {
                 localStorage.setItem('hideCtrlHint', '1')
                 setHideCtrlHint(true)
               }}
-              className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#999] dark:text-[#898e97] hover:text-[#333] dark:text-[#f7f8f8] dark:hover:text-[#fff]"
+              className="absolute right-2 opacity-0 group-hover:opacity-100"
               aria-label="Dismiss hint"
             >
               <MIcon name="close" size={16} />
-            </button>
+            </SecondaryButton>
           </div>
         )}
       </div>
@@ -773,7 +703,7 @@ export default function CdnPage() {
           <EmptyState query="" username={user.nickname} />
         </div>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto mt-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
+        <div className="flex-1 min-h-0 overflow-y-auto mt-4 px-1.5 pt-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
             {currentFolders.length > 0 && (
               <div className="mb-4">
                 <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
@@ -788,15 +718,17 @@ export default function CdnPage() {
                       <div className="relative bg-[#f4f4f4] dark:bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
                         <MIcon name="folder" size={16} className="text-[#666] dark:text-[#898e97] shrink-0" />
                         <span className="text-[#111] dark:text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
-                        <button
-                          type="button"
+                        <SecondaryButton
+                          variant="ghost"
+                          danger
+                          iconOnly
                           onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id) }}
-                          className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#666] dark:text-[#898e97] hover:text-red-500 dark:hover:text-red-400"
-                          style={{ height: 26, width: 26 }}
+                          className="opacity-0 group-hover:opacity-100 focus:opacity-100"
+                          style={{ height: 26, width: 26, borderRadius: 9999 }}
                           aria-label="Delete folder"
                         >
                           <MIcon name="delete" size={13} />
-                        </button>
+                        </SecondaryButton>
                       </div>
                     </div>
                   ))}
@@ -809,16 +741,14 @@ export default function CdnPage() {
               <div className="flex flex-col items-center justify-center text-center min-h-[60vh] h-full">
                 <MIcon name="folder_open" size={40} style={{ color: '#555', marginBottom: 12 }} />
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
-                <button
+                <SecondaryButton
+                  size="md"
                   onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+                  style={{ gap: 8 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                  <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                    <MIcon name="arrow_back" size={14} />
-                    Go back
-                  </div>
-                </button>
+                  <MIcon name="arrow_back" size={14} />
+                  Go back
+                </SecondaryButton>
               </div>
             )}
 
@@ -872,25 +802,31 @@ export default function CdnPage() {
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">
-            <button
+            <SecondaryButton
+              variant="ghost"
+              iconOnly
+              size="xs"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center justify-center text-[#666] dark:text-[#a1a1aa] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Previous page"
               style={{ width: 28, height: 28, borderRadius: 6 }}
             >
-               <MIcon name="chevron_left" size={16} />
-            </button>
+              <MIcon name="chevron_left" size={16} />
+            </SecondaryButton>
             <span className="text-[#171717] dark:text-[#e3e3e3]" style={{ fontSize: 13, fontWeight: 500, minWidth: 40, textAlign: 'center' }}>
               {currentPage}/{totalPages}
             </span>
-            <button
+            <SecondaryButton
+              variant="ghost"
+              iconOnly
+              size="xs"
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center text-[#666] dark:text-[#a1a1aa] dark:text-[#aaa] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] active:scale-[0.97] transition-all duration-75 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Next page"
               style={{ width: 28, height: 28, borderRadius: 6 }}
             >
-               <MIcon name="chevron_right" size={16} />
-            </button>
+              <MIcon name="chevron_right" size={16} />
+            </SecondaryButton>
           </div>
         </div>
       )}
@@ -940,11 +876,24 @@ function CdnAssetTile({
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const [imgLoading, setImgLoading] = useState(true)
+  const [showSpinner, setShowSpinner] = useState(false)
+  const [hover, setHover] = useState(false)
   const isImage = asset.contentType.startsWith("image/")
   const showImage = isImage && !imgFailed
 
   // Privacy gate. images start hidden until user confirms
   const [revealed, setRevealed] = useState(!isImage)
+
+  // Only surface the spinner if the image is genuinely slow (>1s), so quick
+  // loads don't flash a loader.
+  useEffect(() => {
+    if (!(revealed && showImage && imgLoading)) {
+      setShowSpinner(false)
+      return
+    }
+    const t = setTimeout(() => setShowSpinner(true), 1000)
+    return () => clearTimeout(t)
+  }, [revealed, showImage, imgLoading])
   
   const ext = asset.name.includes(".") ? asset.name.split(".").pop()?.toLowerCase() || "file" : "file"
 
@@ -970,10 +919,12 @@ function CdnAssetTile({
         }}
         onContextMenu={(e) => onContextMenu(e, asset.id)}
         onMouseEnter={(e) => {
+          setHover(true)
           if (e.buttons === 1 && e.ctrlKey) {
             onDragAction('enter')
           }
         }}
+        onMouseLeave={() => setHover(false)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -982,10 +933,12 @@ function CdnAssetTile({
             onToggleSelect()
           }
         }}
-        className={`relative w-full aspect-square overflow-hidden bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] ${
-          selected ? "" : "hover:opacity-90"
-        }`}
-        style={{ borderRadius: 12 }}
+        className="relative w-full aspect-square overflow-hidden bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]"
+        style={{
+          borderRadius: 12,
+          outline: `3px solid ${selected ? "rgba(79,70,229,0.4)" : hover ? "rgba(79,70,229,0.15)" : "transparent"}`,
+          outlineOffset: 2,
+        }}
       >
         {!revealed && isImage && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)]">
@@ -995,25 +948,22 @@ function CdnAssetTile({
             <p className="text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, marginBottom: 10 }}>
               Preview <span className="text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>
             </p>
-            <button
-              type="button"
+            <SecondaryButton
+              size="xs"
               onClick={(e) => {
                 e.stopPropagation()
                 setRevealed(true)
               }}
-              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150"
+              style={{ borderRadius: 9999 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-              <div className="relative bg-[#151616] rounded-full px-3 h-[28px] flex items-center justify-center text-[#f7f8f8] text-[12px] font-medium">
-                Reveal
-              </div>
-            </button>
+              Reveal
+            </SecondaryButton>
           </div>
         )}
 
         {revealed && showImage ? (
           <>
-            {imgLoading && (
+            {imgLoading && showSpinner && (
               <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#0e0f10]">
                 <LoadingSvg size={28} />
               </div>
@@ -1041,18 +991,12 @@ function CdnAssetTile({
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <span
-            className={`inline-flex items-center justify-center h-5 w-5 transition-colors ${
-              selected
-                ? "bg-white text-black"
-                : "bg-black/40 backdrop-blur-sm"
-            }`}
-            style={{ borderRadius: 6 }}
-          >
-            {selected && (
-               <MIcon name="check" size={12} />
-            )}
-          </span>
+          <Checkmark
+            checked={selected}
+            onChange={() => onToggleSelect()}
+            size={20}
+            aria-label={`Select ${asset.name}`}
+          />
         </div>
 
 

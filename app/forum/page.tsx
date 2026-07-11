@@ -8,6 +8,8 @@ import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useAuth } from "@/hooks/useAuth"
 import { API_BASE } from "@/constants"
+import { TextInput } from "@/components/ui/text-input"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 
 interface ForumFile {
   id: string
@@ -117,16 +119,14 @@ function ForumCard({ post }: { post: ForumPost }) {
 
 function TagPill({ tag, active, onClick }: { tag: string; active: boolean; onClick: () => void }) {
   return (
-    <button
+    <SecondaryButton
+      variant={active ? "solid" : "ghost"}
+      size="xs"
       onClick={onClick}
-      className={`text-[12px] font-medium px-3 py-1.5 rounded-full transition-all duration-150 ${
-        active
-          ? "bg-[#f7f8f8]  text-[#08090a] "
-          : "bg-[rgba(255,255,255,0.04)]  text-[#444]  hover:bg-[rgba(255,255,255,0.08)] "
-      }`}
+      style={{ borderRadius: 9999 }}
     >
       {tag}
-    </button>
+    </SecondaryButton>
   )
 }
 
@@ -144,37 +144,45 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
 
   return (
     <div className="flex items-center justify-center gap-1.5 mt-10">
-      <button
+      <SecondaryButton
+        variant="ghost"
+        iconOnly
+        size="sm"
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#a1a1aa]  hover:bg-[rgba(255,255,255,0.04)]  disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        aria-label="Previous page"
+        style={{ height: 32, width: 32, borderRadius: 8 }}
       >
         <MIcon name="chevron_left" size={16} />
-      </button>
+      </SecondaryButton>
       {pages.map((p, i) =>
         p === "..." ? (
           <span key={`dots-${i}`} className="w-8 h-8 flex items-center justify-center text-[13px] text-[#999]">...</span>
         ) : (
-          <button
+          <SecondaryButton
             key={p}
+            variant={p === page ? "solid" : "ghost"}
+            iconOnly
+            size="sm"
             onClick={() => onPageChange(p)}
-            className={`w-8 h-8 rounded-lg text-[13px] font-medium transition-all duration-150 ${
-              p === page
-                ? "bg-[#f7f8f8]  text-[#08090a] "
-                : "text-[#444]  hover:bg-[rgba(255,255,255,0.04)] "
-            }`}
+            aria-label={`Page ${p}`}
+            style={{ height: 32, width: 32, borderRadius: 8 }}
           >
             {p}
-          </button>
+          </SecondaryButton>
         )
       )}
-      <button
+      <SecondaryButton
+        variant="ghost"
+        iconOnly
+        size="sm"
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="flex items-center justify-center w-8 h-8 rounded-lg text-[13px] text-[#a1a1aa]  hover:bg-[rgba(255,255,255,0.04)]  disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        aria-label="Next page"
+        style={{ height: 32, width: 32, borderRadius: 8 }}
       >
         <MIcon name="chevron_right" size={16} />
-      </button>
+      </SecondaryButton>
     </div>
   )
 }
@@ -267,20 +275,15 @@ export default function ForumPage() {
 
           {/* Search bar */}
           <form onSubmit={handleSearch} className="mb-5">
-            <div className="relative">
-              <MIcon
-                name="search"
-                size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#555]  pointer-events-none"
-              />
-              <input
-                type="text"
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-                placeholder="Search posts..."
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors"
-              />
-            </div>
+            <TextInput
+              type="text"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              placeholder="Search posts..."
+              fullWidth
+              size="md"
+              leading={<MIcon name="search" size={16} />}
+            />
           </form>
 
           {/* Tag filters */}
@@ -295,12 +298,14 @@ export default function ForumPage() {
                 />
               ))}
               {activeTag && (
-                <button
+                <SecondaryButton
+                  variant="ghost"
+                  size="xs"
                   onClick={() => { setActiveTag(null); setPage(1) }}
-                  className="text-[12px] text-[#898e97] hover:text-[#a1a1aa] transition-colors ml-1"
+                  className="ml-1"
                 >
                   Clear filter
-                </button>
+                </SecondaryButton>
               )}
             </div>
           )}

@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "motion/react"
 import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { apiFetch } from "@/lib/http/fetch"
 import { dropFile, type DropState } from "@/components/funnel/transport"
 
@@ -196,16 +199,20 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                             <p className="truncate text-[13px] font-medium">{file.name}</p>
                             <p className="text-[12px] text-[#6b7075]">{fmtBytes(file.size)}</p>
                           </div>
-                          <button type="button" onClick={() => selectFile(null)} className="p-1.5 rounded-md hover:bg-[rgba(255,255,255,0.06)] transition-colors shrink-0" aria-label="Remove file">
-                            <MIcon name="close" size={16} className="text-[#898e97]" />
-                          </button>
+                          <SecondaryButton variant="ghost" theme="dark" iconOnly size="xs" onClick={() => selectFile(null)} aria-label="Remove file" style={{ height: 28, width: 28, borderRadius: 6 }}>
+                            <MIcon name="close" size={16} />
+                          </SecondaryButton>
                         </div>
                       )}
 
                       <input ref={inputRef} type="file" className="hidden" onChange={(e) => selectFile(e.target.files?.[0] || null)} />
 
                       {fileError && <p className="mt-2.5 text-[12px] text-red-400">{fileError}</p>}
-                      {sendError && <p className="mt-2.5 text-[12px] text-red-400">{sendError}</p>}
+                      {sendError && (
+                        <AlertMessage tone="error" className="mt-2.5" style={{ marginBottom: 0 }}>
+                          {sendError}
+                        </AlertMessage>
+                      )}
 
                       {file && !isDev && (
                         <div className="mt-3 flex justify-center">
@@ -218,18 +225,18 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                         </div>
                       )}
 
-                      <button
-                        type="button"
+                      <ShineButton
+                        theme="dark"
+                        size="lg"
+                        fullWidth
                         onClick={handleSend}
                         disabled={!canSend}
-                        className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 w-full mt-3 disabled:opacity-45 disabled:cursor-not-allowed"
+                        className="mt-3"
+                        style={{ height: 46, borderRadius: 9999, gap: 8 }}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-                        <div className="relative bg-[#151616] rounded-full h-[46px] w-full flex items-center justify-center gap-2 text-[15px] font-medium">
-                          <MIcon name="send" size={17} />
-                          Send file
-                        </div>
-                      </button>
+                        <MIcon name="send" size={17} />
+                        Send file
+                      </ShineButton>
                     </div>
                   </motion.div>
                 )}

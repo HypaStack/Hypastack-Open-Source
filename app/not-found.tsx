@@ -1,9 +1,10 @@
 "use client"
 
-import Link from "next/link"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { MIcon } from "@/components/ui/material-icon"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 
 export default function NotFoundPage() {
   return (
@@ -14,47 +15,35 @@ export default function NotFoundPage() {
         transition={{ duration: 0.5 }}
         className="flex w-full max-w-md flex-col items-center"
       >
-        <Link href="/" className="mb-6 inline-block hover:opacity-80 transition-opacity">
-          <img
-            src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
-            alt="Hypastack"
-            className="w-[52px] h-auto object-contain select-none"
-            draggable={false}
-          />
-        </Link>
-
         <img
-          src="https://r2.hypastack.com/cdn/2m7ewrwiad94/404-not-found.svg"
-          alt="404"
-          className="w-[220px] max-w-full h-auto mb-6 select-none pointer-events-none"
+          src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+          alt="Hypastack"
+          className="w-[52px] h-auto object-contain select-none mb-6"
           draggable={false}
         />
 
-        <div className="w-full bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
-          <div className="flex items-center gap-2.5 mb-3">
-            <MIcon name="error" className="text-red-500" size={20} />
-            <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
-              404 Not Found
-            </h2>
-          </div>
-          <p className="text-[14px] text-[#898e97] mb-8 leading-relaxed text-left">
+        <div className="w-full">
+          <AlertMessage
+            tone="error"
+            icon={<MIcon name="info" size={16} style={{ flexShrink: 0, marginRight: 8, marginTop: 2 }} />}
+            style={{ marginBottom: 16 }}
+          >
             The page you're looking for doesn't exist or has been moved.
-          </p>
+          </AlertMessage>
           <div className="flex gap-3">
-            <Button
-              variant="landing-primary"
+            <ShineButton
               onClick={() => { window.location.href = "/manage/files" }}
               className="flex-1"
             >
               Upload a file
-            </Button>
-            <Button
-              variant="landing-secondary"
+            </ShineButton>
+            <SecondaryButton
+              size="lg"
               onClick={() => { window.location.href = "/" }}
               className="flex-1"
             >
               Home
-            </Button>
+            </SecondaryButton>
           </div>
         </div>
       </motion.div>

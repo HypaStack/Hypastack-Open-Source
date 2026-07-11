@@ -6,9 +6,14 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { Loader } from "@/components/ui/loader"
 import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/http/fetch"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
+import { TextInput } from "@/components/ui/text-input"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { AlertMessage } from "@/components/ui/alert-message"
 
 interface PendingFile {
   file: File
@@ -200,18 +205,21 @@ export default function ForumNewPage() {
               Files uploaded to the forum are <strong className="text-[#f7f8f8] ">not encrypted</strong> and will be <strong className="text-[#f7f8f8] ">publicly visible and freely downloadable</strong> by anyone. Do not upload private, sensitive, or confidential files here.
             </p>
             <div className="flex gap-3 justify-center">
-              <Link
+              <SecondaryButton
                 href="/forum"
-                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-medium text-[#a1a1aa]  bg-[rgba(255,255,255,0.04)]  hover:bg-[rgba(255,255,255,0.08)]  transition-colors"
+                as={Link}
+                size="md"
+                style={{ borderRadius: 9999 }}
               >
                 Go back
-              </Link>
-              <button
+              </SecondaryButton>
+              <ShineButton
+                size="md"
                 onClick={() => setWarningDismissed(true)}
-                className="h-10 px-5 rounded-full flex items-center justify-center text-[13px] font-semibold text-[#08090a] bg-[#f7f8f8]   hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75"
+                style={{ borderRadius: 9999 }}
               >
                 I understand, continue
-              </button>
+              </ShineButton>
             </div>
           </div>
         </section>
@@ -243,14 +251,15 @@ export default function ForumNewPage() {
               <label className="block text-[12px] font-medium text-[#444]  mb-1.5">
                 Title <span className="text-[#ef4444]">*</span>
               </label>
-              <input
+              <TextInput
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. 5 files you need for your project"
                 maxLength={200}
                 required
-                className="w-full h-10 px-4 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors"
+                fullWidth
+                size="md"
               />
             </div>
 
@@ -281,20 +290,21 @@ export default function ForumNewPage() {
                     className="inline-flex items-center gap-1 text-[11px] font-medium text-[#444]  bg-[rgba(255,255,255,0.04)]  px-2.5 py-1 rounded-full"
                   >
                     {tag}
-                    <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:text-[#ef4444] transition-colors">
+                    <SecondaryButton variant="ghost" danger iconOnly size="xs" onClick={() => handleRemoveTag(tag)} aria-label={`Remove ${tag}`} style={{ height: 14, width: 14, borderRadius: 9999 }}>
                       <MIcon name="close" size={10} />
-                    </button>
+                    </SecondaryButton>
                   </span>
                 ))}
               </div>
               {tags.length < 10 && (
-                <input
+                <TextInput
                   type="text"
                   value={tagInput}
                   onChange={e => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
                   placeholder="Add a tag..."
-                  className="w-full h-9 px-4 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[12px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors"
+                  fullWidth
+                  size="sm"
                 />
               )}
             </div>
@@ -338,21 +348,23 @@ export default function ForumNewPage() {
                       className="flex items-center gap-3 bg-[#08090a]  rounded-lg border border-[rgba(255,255,255,0.08)]  p-3"
                     >
                       <div className="w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.04)]  flex items-center justify-center flex-shrink-0">
-                        <MIcon
-                          name={
-                            pf.status === "done" ? "check_circle" :
-                            pf.status === "error" ? "error" :
-                            pf.status === "uploading" ? "sync" :
-                            "description"
-                          }
-                          size={14}
-                          className={
-                            pf.status === "done" ? "text-green-500" :
-                            pf.status === "error" ? "text-red-500" :
-                            pf.status === "uploading" ? "text-blue-500 animate-spin" :
-                            "text-[#999]"
-                          }
-                        />
+                        {pf.status === "uploading" ? (
+                          <Loader size={16} color="#3b82f6" />
+                        ) : (
+                          <MIcon
+                            name={
+                              pf.status === "done" ? "check_circle" :
+                              pf.status === "error" ? "error" :
+                              "description"
+                            }
+                            size={14}
+                            className={
+                              pf.status === "done" ? "text-green-500" :
+                              pf.status === "error" ? "text-red-500" :
+                              "text-[#999]"
+                            }
+                          />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[12px] font-medium text-[#e3e3e3]  truncate">{pf.file.name}</p>
@@ -362,13 +374,17 @@ export default function ForumNewPage() {
                         </p>
                       </div>
                       {pf.status === "pending" && (
-                        <button
-                          type="button"
+                        <SecondaryButton
+                          variant="ghost"
+                          danger
+                          iconOnly
+                          size="xs"
                           onClick={() => handleRemoveFile(i)}
-                          className="text-[#898e97] hover:text-[#ef4444] transition-colors flex-shrink-0"
+                          aria-label="Remove file"
+                          style={{ height: 24, width: 24, borderRadius: 6 }}
                         >
                           <MIcon name="close" size={14} />
-                        </button>
+                        </SecondaryButton>
                       )}
                     </div>
                   ))}
@@ -378,22 +394,22 @@ export default function ForumNewPage() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] p-3 rounded-[8px]">
-                <MIcon name="error" size={15} className="shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
+              <AlertMessage tone="error" style={{ marginBottom: 0 }}>
+                {error}
+              </AlertMessage>
             )}
 
             {/* Submit */}
             <div className="flex justify-end pt-2">
-              <button
+              <ShineButton
                 type="submit"
+                size="md"
                 disabled={!title.trim() || files.length === 0 || submitting}
-                className="h-10 px-6 rounded-full bg-[#f7f8f8]  text-[#08090a]  text-[13px] font-semibold disabled:opacity-40 hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75 flex items-center gap-2"
+                style={{ borderRadius: 9999, gap: 8 }}
               >
                 {submitting ? (
                   <>
-                    <LoadingSvg variant="dark" size={16} />
+                    <LoadingSvg variant="white" size={16} />
                     Publishing...
                   </>
                 ) : (
@@ -402,7 +418,7 @@ export default function ForumNewPage() {
                     Publish
                   </>
                 )}
-              </button>
+              </ShineButton>
             </div>
           </form>
         </div>

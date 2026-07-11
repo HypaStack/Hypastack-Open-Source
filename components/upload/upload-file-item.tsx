@@ -2,6 +2,7 @@
 
 import type { UploadState, FileWithPreview } from "./upload-types"
 import { formatFileSize } from "./upload-types"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 
 interface UploadFileItemProps {
   file: FileWithPreview
@@ -43,14 +44,13 @@ export function UploadFileItem({
       {/* Action */}
       {state === "done" && (
         <div className="shrink-0">
-          <button
-            type="button"
+          <SecondaryButton
+            size="xs"
             onClick={(e) => { e.stopPropagation(); onCopy(); }}
-            className="hover:bg-[#e2e2e8] active:scale-[0.97] transition-all duration-75"
-            style={{ height: 28, paddingLeft: 10, paddingRight: 10, borderRadius: 6, fontSize: 13, fontWeight: 500, color: '#0a0a0a', backgroundColor: '#ffffff' }}
+            style={{ borderRadius: 6, fontSize: 13 }}
           >
             {copied ? "Copied" : "Copy link"}
-          </button>
+          </SecondaryButton>
         </div>
       )}
 

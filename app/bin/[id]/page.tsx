@@ -2,7 +2,9 @@
 
 import { useEffect, useState, use } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@/components/ui/button"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { ShineCard } from "@/components/ui/shine-card"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import Link from "next/link"
 import { motion } from "motion/react"
@@ -76,7 +78,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
+            <ShineCard radius={16} className="p-6">
               <div className="flex items-center gap-3 mb-3">
                 <MIcon name="error" className="text-red-500" size={28} />
                 <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
@@ -87,24 +89,25 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 {error || "The paste you're looking for doesn't exist or has expired."}
               </p>
               <div className="flex gap-2">
-                <Button
+                <ShineButton
                   href="/manage/dumpster"
-                  variant="landing-primary"
+                  as={Link}
                   className="flex-1"
-                >New Paste</Button>
-                <Button
+                >New Paste</ShineButton>
+                <SecondaryButton
                   href="/"
-                  variant="landing-secondary"
+                  as={Link}
+                  size="lg"
                   className="flex-1"
-                >Home</Button>
+                >Home</SecondaryButton>
               </div>
-            </div>
+            </ShineCard>
           </motion.div>
         )}
 
         {content !== null && !error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] overflow-hidden">
+            <ShineCard radius={16} tilt={0}>
               <div className="p-5 pb-4">
                 <h1 className="text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 text-[#f7f8f8]">
                   {id}.txt
@@ -139,26 +142,27 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
               <div className="px-3 pb-3">
                 <div className="flex gap-2">
-                  <Button
+                  <ShineButton
                     onClick={copyToClipboard}
-                    variant="landing-primary"
-                    className="flex-1 flex items-center justify-center gap-2"
+                    className="flex-1"
+                    style={{ gap: 8 }}
                   >
                     <MIcon name={copied ? "check" : "content_copy"} size={16} />
                     {copied ? "Copied" : "Copy to Clipboard"}
-                  </Button>
-                  <Button
+                  </ShineButton>
+                  <SecondaryButton
                     onClick={handleRaw}
-                    variant="landing-secondary"
-                    className="w-[42px] px-0 flex items-center justify-center shrink-0"
+                    size="lg"
+                    iconOnly
                     title="View Raw"
+                    aria-label="View Raw"
                   >
                     <MIcon name="code" size={18} />
-                  </Button>
+                  </SecondaryButton>
                 </div>
               </div>
 
-            </div>
+            </ShineCard>
           </motion.div>
         )}
       </div>

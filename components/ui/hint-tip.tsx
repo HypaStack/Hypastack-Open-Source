@@ -1,6 +1,7 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
@@ -49,12 +50,17 @@ export function HintTip({ id, text, icon = "emoji_objects" }: HintTipProps) {
           <MIcon name={icon} size={18} className="text-[#555] dark:text-[#888] shrink-0" />
           <span className="mr-1">{text}</span>
           {id && (
-            <button
+            <SecondaryButton
+              variant="ghost"
+              iconOnly
+              size="xs"
               onClick={handleDismiss}
-              className="ml-1 flex items-center justify-center hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] dark:text-[#a1a1aa] hover:text-[#333] dark:hover:text-[#ccc]"
+              className="ml-1"
+              aria-label="Dismiss"
+              style={{ height: 24, width: 24, borderRadius: 9999 }}
             >
               <MIcon name="remove" size={16} />
-            </button>
+            </SecondaryButton>
           )}
         </motion.div>
       )}

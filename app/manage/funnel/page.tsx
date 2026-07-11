@@ -4,6 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { useManage } from "@/hooks/useManage"
 import { hypaToast, hypaError, hypaConfirm } from "@/components/ui/hypa-notif"
 import { getSessionKey } from "@/lib/security/cryptoClient"
@@ -143,17 +146,14 @@ export default function FunnelInboxPage() {
       <div className={paid ? "flex-1 flex flex-col" : "flex-1 flex flex-col blur-[3px] opacity-70 pointer-events-none select-none"}>
         <div className="flex items-center justify-between gap-4 mb-6 shrink-0">
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Funnel</h1>
-          <button
-            type="button"
+          <ShineButton
             onClick={() => setTrayOpen(true)}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 shrink-0"
+            size="md"
+            style={{ gap: 8 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-            <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-              <MIcon name="add_link" size={17} />
-              <span>Create funnel</span>
-            </div>
-          </button>
+            <MIcon name="add_link" size={17} />
+            <span>Create funnel</span>
+          </ShineButton>
         </div>
 
         {loading ? (
@@ -189,24 +189,30 @@ export default function FunnelInboxPage() {
                     </span>
 
                     <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
+                      <SecondaryButton
+                        theme="light"
+                        size="md"
+                        iconOnly
                         onClick={() => downloadFile(f)}
                         disabled={busy}
-                        className="flex items-center justify-center h-9 w-9 rounded-full bg-white/95 text-[#151616] hover:bg-white active:scale-95 transition disabled:opacity-60"
                         title="Download"
+                        aria-label="Download"
+                        style={{ borderRadius: 9999 }}
                       >
                         {busy ? <LoadingSvg variant="dark" size={16} /> : <MIcon name="download" size={18} />}
-                      </button>
-                      <button
-                        type="button"
+                      </SecondaryButton>
+                      <SecondaryButton
+                        theme="light"
+                        size="md"
+                        iconOnly
                         onClick={() => deleteFile(f)}
                         disabled={busy}
-                        className="flex items-center justify-center h-9 w-9 rounded-full bg-white/95 text-red-500 hover:bg-white active:scale-95 transition disabled:opacity-60"
                         title="Delete"
+                        aria-label="Delete"
+                        style={{ borderRadius: 9999, color: "#ef4444" }}
                       >
                         <MIcon name="delete" size={18} />
-                      </button>
+                      </SecondaryButton>
                     </div>
                   </div>
 
@@ -223,13 +229,15 @@ export default function FunnelInboxPage() {
 
       {!paid && (
         <div className="absolute inset-0 flex items-center justify-center p-4">
-          <div className="max-w-sm w-full rounded-[12px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.1)] bg-white dark:bg-[#0a0b0c] p-6 text-center" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.12)" }}>
-            <MIcon name="forward_to_inbox" size={30} className="text-[#171717] dark:text-[#e3e3e3]" />
-            <h3 className="mt-3 text-[17px] font-semibold text-[#171717] dark:text-[#e3e3e3] tracking-tight">Funnels are a paid feature</h3>
-            <p className="mt-1.5 text-[13px] text-[#666] dark:text-[#898e97] leading-relaxed">
-              Create one-time links and receive files straight to your inbox, encrypted so only you can open them. Available on the Essential plan and above.
-            </p>
-            <a href="/pricing" className="inline-block mt-4 text-[13px] font-medium underline text-[#171717] dark:text-[#f7f8f8]">See plans</a>
+          <div className="max-w-[440px] w-full rounded-[16px] bg-white dark:bg-[#0e0f10] p-6" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}>
+            <h3 className="text-[18px] font-semibold text-[#171717] dark:text-[#f7f8f8]" style={{ letterSpacing: '-0.02em', fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Funnels are a paid feature</h3>
+            <AlertMessage tone="info" icon={<MIcon name="warning" size={16} style={{ flexShrink: 0, marginRight: 8, marginTop: 2 }} />} className="mt-4" style={{ marginBottom: 0, fontSize: 13, lineHeight: "20px" }}>
+              Create one-time links and receive files straight to your inbox, encrypted so only you can open them.
+            </AlertMessage>
+            <ShineButton href="/pricing" size="md" fullWidth className="mt-5" aria-label="See plans">
+              See plans
+            </ShineButton>
+            <p className="mt-4 text-[11px] text-[#999] dark:text-[#6b7075]">Available on Essential, Pro, and Max Plans</p>
           </div>
         </div>
       )}

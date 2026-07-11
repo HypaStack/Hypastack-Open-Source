@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { MenuItem } from "@/components/ui/menu-item"
 import type { UseUploadReturn } from "./use-upload"
 
 type ResumePopupProps = Pick<
@@ -53,9 +55,16 @@ export function ResumePopup({
                 <p className="text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
                   Continue upload?
                 </p>
-                <button onClick={() => setShowResumePopup(false)} className="text-[#898e97] hover:text-[#f0f0f0] transition-colors">
+                <SecondaryButton
+                  variant="ghost"
+                  iconOnly
+                  size="xs"
+                  onClick={() => setShowResumePopup(false)}
+                  aria-label="Dismiss"
+                  style={{ height: 24, width: 24, borderRadius: 6 }}
+                >
                   <MIcon name="close" size={16} />
-                </button>
+                </SecondaryButton>
               </div>
               <p className="text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
                 You have an unfinished upload from a previous session. Resume it where you left off?
@@ -77,22 +86,22 @@ export function ResumePopup({
 
             {/* Actions */}
             <div className="bg-[#0e0f10] rounded-[10px] border border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
-              <button
+              <MenuItem
+                theme="dark"
                 onClick={handleResumeUpload}
-                className="w-full flex items-center gap-3 rounded-[8px] hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 text-[#f0f0f0]"
-                style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontSize: 14, fontWeight: 500 }}
+                icon={<MIcon name="play_arrow" size={15} />}
+                style={{ height: 36, borderRadius: 8, paddingLeft: 12, paddingRight: 12 }}
               >
-                <MIcon name="play_arrow" size={15} className="text-[#898e97]" />
                 Resume upload
-              </button>
-              <button
+              </MenuItem>
+              <MenuItem
+                theme="dark"
                 onClick={handleAbortUpload}
-                className="w-full flex items-center gap-3 rounded-[8px] hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 text-[#898e97]"
-                style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontSize: 14, fontWeight: 400 }}
+                icon={<MIcon name="delete_outline" size={15} />}
+                style={{ height: 36, borderRadius: 8, paddingLeft: 12, paddingRight: 12, fontWeight: 400 }}
               >
-                <MIcon name="delete_outline" size={15} className="text-[#898e97]" />
                 Cancel upload
-              </button>
+              </MenuItem>
             </div>
           </motion.div>
         )}

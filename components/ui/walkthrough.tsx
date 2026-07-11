@@ -1,6 +1,7 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
@@ -64,13 +65,18 @@ export function Walkthrough({ id, steps, currentStep }: WalkthroughProps) {
         </span>
 
         {/* Skip button */}
-        <button
+        <SecondaryButton
+          variant="ghost"
+          iconOnly
+          size="xs"
           onClick={handleSkip}
-          className="ml-0.5 flex items-center justify-center hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] h-6 w-6 rounded-full transition-colors active:scale-95 text-[#999] dark:text-[#777] hover:text-[#333] dark:hover:text-[#e3e3e3] shrink-0"
+          className="ml-0.5"
           title="Skip walkthrough"
+          aria-label="Skip walkthrough"
+          style={{ height: 24, width: 24, borderRadius: 9999 }}
         >
           <MIcon name="close" size={14} />
-        </button>
+        </SecondaryButton>
       </motion.div>
     </AnimatePresence>
   )

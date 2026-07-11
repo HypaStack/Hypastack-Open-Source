@@ -3,6 +3,7 @@
 import { useToast } from "@/hooks/useToast"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 
 export function Toaster() {
   const { toasts, removeToast } = useToast()
@@ -41,12 +42,16 @@ export function Toaster() {
                   <p className="text-[13px] text-[#888] mt-0.5 leading-snug">{toast.description}</p>
                 )}
               </div>
-              <button
+              <SecondaryButton
+                variant="ghost"
+                iconOnly
+                size="xs"
                 onClick={() => removeToast(toast.id)}
-                className="shrink-0 p-1 rounded-md hover:bg-[#f0f0f0] text-[#999] hover:text-[#333] transition-colors"
+                aria-label="Dismiss"
+                style={{ height: 24, width: 24, borderRadius: 6 }}
               >
                 <MIcon name="close" size={16} />
-              </button>
+              </SecondaryButton>
             </div>
             {/* Progress bar */}
             <motion.div

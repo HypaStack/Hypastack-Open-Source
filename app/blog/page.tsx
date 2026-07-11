@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { blogPosts } from "@/lib/blogPosts"
-import { Button } from "@/components/ui/button"
+import { ShineButton } from "@/components/ui/shine-button"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -57,13 +57,13 @@ export default function BlogPage() {
                 </p>
 
                 <div className="mt-4">
-                  <Button
+                  <ShineButton
                     href={`/blog/${post.slug}`}
-                    variant="landing-primary"
+                    as={Link}
                     size="sm"
                   >
                     Read post
-                  </Button>
+                  </ShineButton>
                 </div>
               </div>
             ))}

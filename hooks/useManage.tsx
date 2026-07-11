@@ -182,6 +182,10 @@ export function ManageProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await apiFetch("/api/v2/auth/logout", { method: "POST" })
+    } catch (error) {
+      console.error("Logout failed:", error)
+    } finally {
+      // never leave a stale master key behind, even if the request failed
       setUser(null)
       setStats(null)
       setFiles([])
@@ -189,8 +193,6 @@ export function ManageProvider({ children }: { children: ReactNode }) {
       setCdnFolders([])
       localStorage.removeItem("hpsk_e2e_master")
       window.location.href = "/"
-    } catch (error) {
-      console.error("Logout failed:", error)
     }
   }
 

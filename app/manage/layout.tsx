@@ -8,6 +8,10 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
+import { ShineButton } from "@/components/ui/shine-button"
+import { ProgressBar } from "@/components/ui/progress-bar"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { MenuItem } from "@/components/ui/menu-item"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
@@ -283,9 +287,6 @@ function ManageLayoutInner({
   const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
   const sharedPct = tierLimits.maxFileLinks > 0 ? (sharedUsed / tierLimits.maxFileLinks) * 100 : 0
   const cdnPct = tierLimits.maxCdnLinks > 0 ? (cdnUsed / tierLimits.maxCdnLinks) * 100 : 0
-  const usageBarColor = (pct: number) =>
-    pct >= 100 ? "bg-red-500" : pct >= 50 ? "bg-yellow-500" : "bg-gray-400 dark:bg-gray-500"
-
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#08090a] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -313,11 +314,12 @@ function ManageLayoutInner({
         </div>
 
         <div ref={menuRef} className="relative mb-2">
-          <button
-            type="button"
+          <SecondaryButton
+            variant="ghost"
+            iconOnly
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`relative flex items-center justify-center h-12 w-12 rounded-[14px] hover:bg-white dark:hover:bg-[rgba(255,255,255,0.04)] transition-colors shrink-0 cursor-pointer ${menuOpen ? 'bg-white dark:bg-[rgba(255,255,255,0.08)]' : ''}`}
             aria-label="Account menu"
+            style={{ height: 48, width: 48, borderRadius: 14, ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
           >
             <div className="h-7 w-7">
               <img
@@ -329,7 +331,7 @@ function ManageLayoutInner({
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
               />
             </div>
-          </button>
+          </SecondaryButton>
 
           <AnimatePresence>
             {menuOpen && (
@@ -339,57 +341,49 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white dark:bg-[#0a0b0c] rounded-[12px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
-                style={{ 
-                  bottom: '68px', 
-                  left: '8px', 
+                className="fixed z-[100] bg-white dark:bg-[#0e0f10] rounded-[12px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
+                style={{
+                  bottom: '68px',
+                  left: '8px',
                   width: 240,
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.4)'
                 }}
               >
                 <div className="px-3 pb-2">
-                  <p className="text-sm font-semibold text-[#171717] dark:text-[#e3e3e3]">{user.nickname}</p>
-                  <p className="text-xs text-[#666] dark:text-[#888] mt-0.5">{user.id}</p>
+                  <p className="text-sm font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
+                  <p className="text-xs text-[#666] dark:text-[#898e97] mt-0.5">{user.id}</p>
                 </div>
-                
-                <div className="mx-3 border-b border-[#f0f0f0] dark:border-[#2c2c2c] mb-1" />
+
+                <div className="mx-3 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)] mb-1" />
                 
                 <div className="px-1.5 space-y-0.5">
-                  <button
-                    type="button"
+                  <MenuItem
+                    icon={<MIcon name="person" size={18} />}
                     onClick={() => { setMenuOpen(false); openPreferences("account"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="person" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
-                    <span>Account settings</span>
-                  </button>
-                  
-                  <button
-                    type="button"
+                    Account settings
+                  </MenuItem>
+
+                  <MenuItem
+                    icon={<MIcon name="settings" size={18} />}
                     onClick={() => { setMenuOpen(false); openPreferences("general"); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="settings" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
-                    <span>Workspace settings</span>
-                  </button>
-                  
-                  <button
-                    type="button"
+                    Workspace settings
+                  </MenuItem>
+
+                  <MenuItem
+                    icon={<MIcon name="card_giftcard" size={18} />}
                     onClick={() => { setMenuOpen(false); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="card_giftcard" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
-                    <span>Refer and earn</span>
-                  </button>
-                  
-                  <button
-                    type="button"
+                    Refer and earn
+                  </MenuItem>
+
+                  <MenuItem
+                    icon={<MIcon name="logout" size={18} />}
                     onClick={() => { setMenuOpen(false); logout(); }}
-                    className="group w-full flex items-center gap-3 px-2.5 py-2 rounded-md text-sm font-medium text-[#333] dark:text-[#ccc] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.06)] hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors cursor-pointer"
                   >
-                    <MIcon name="logout" size={18} className="text-[#666] dark:text-[#888] group-hover:text-[#171717] dark:hover:text-[#f7f8f8] transition-colors" />
-                    <span>Log out</span>
-                  </button>
+                    Log out
+                  </MenuItem>
                 </div>
               </motion.div>
             )}
@@ -437,12 +431,7 @@ function ManageLayoutInner({
                 </div>
                 <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-[#171717] dark:bg-[#f7f8f8]"
-                  style={{ width: `${usedPct}%` }}
-                />
-              </div>
+              <ProgressBar value={usedPct} aria-label="Storage used" />
             </div>
 
             <div>
@@ -453,12 +442,7 @@ function ManageLayoutInner({
                 </div>
                 <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{tierLimits.maxFileLinks}</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${usageBarColor(sharedPct)}`}
-                  style={{ width: `${Math.min(100, sharedPct)}%` }}
-                />
-              </div>
+              <ProgressBar value={sharedPct} aria-label="Shared links used" />
             </div>
 
             <div>
@@ -469,25 +453,18 @@ function ManageLayoutInner({
                 </div>
                 <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
               </div>
-              <div className="h-[3px] rounded-full bg-[#ebebeb] dark:bg-[#2a2a2a] overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${usageBarColor(cdnPct)}`}
-                  style={{ width: `${Math.min(100, cdnPct)}%` }}
-                />
-              </div>
+              <ProgressBar value={cdnPct} aria-label="CDN assets used" />
             </div>
           </div>
           
-          <button
-            type="button"
+          <ShineButton
             onClick={() => openPreferences("plans")}
-            className="relative w-full inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 mt-4"
+            size="md"
+            fullWidth
+            className="mt-4"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-            <div className="relative bg-[#151616] rounded-full w-full h-[40px] flex items-center justify-center text-[#f7f8f8] text-[14px] font-medium">
-              Upgrade plan
-            </div>
-          </button>
+            Upgrade plan
+          </ShineButton>
         </div>
       </aside>
 
@@ -583,26 +560,26 @@ function ManageLayoutInner({
                   />
                 </div>
                 <span className="text-[15px] font-medium text-[#171717] dark:text-[#e3e3e3] truncate flex-1">{user.nickname}</span>
-                <button
-                  type="button"
+                <SecondaryButton
+                  variant="ghost"
+                  iconOnly
                   onClick={() => openPreferences("general")}
-                  className="flex items-center justify-center hover:bg-white dark:hover:bg-[#2a2a2a] active:scale-[0.95] transition-all duration-75"
-                  style={{ width: 40, height: 40, borderRadius: 6 }}
                   aria-label="Settings"
+                  style={{ width: 40, height: 40, borderRadius: 6 }}
                 >
-                  <MIcon name="settings" size={18} style={{ color: '#666' }} />
-                </button>
-                <button
-                  type="button"
+                  <MIcon name="settings" size={18} />
+                </SecondaryButton>
+                <SecondaryButton
+                  variant="ghost"
+                  danger
                   onClick={() => {
                     setDrawerOpen(false)
                     logout()
                   }}
-                  className="flex items-center justify-center hover:bg-[rgba(239,68,68,0.1)] active:scale-[0.95] transition-all duration-75"
-                  style={{ height: 40, paddingLeft: 12, paddingRight: 12, borderRadius: 6, fontSize: 14, fontWeight: 500, color: '#ef4444' }}
+                  style={{ height: 40, borderRadius: 6, fontSize: 14 }}
                 >
                   Sign out
-                </button>
+                </SecondaryButton>
               </div>
             </motion.div>
         )}
@@ -613,18 +590,18 @@ function ManageLayoutInner({
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#0a0b0c] lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
-          <button
-            type="button"
+          <SecondaryButton
+            variant="ghost"
+            iconOnly
             onClick={() => setDrawerOpen(true)}
-            className="flex items-center justify-center text-[#333] dark:text-[#ccc] hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a] active:scale-[0.95] transition-all duration-75"
-            style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: -4 }}
             aria-label="Open menu"
+            style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: -4 }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="4" y1="10" x2="20" y2="10"></line>
               <line x1="4" y1="15" x2="20" y2="15"></line>
             </svg>
-          </button>
+          </SecondaryButton>
         </header>
 
         <div className="flex-1 relative overflow-hidden">
@@ -683,16 +660,16 @@ function ManageLayoutInner({
               >
                 Donate
               </a>
-              <button
+              <SecondaryButton
                 onClick={() => {
                   setShowDonationNotice(false)
                   localStorage.setItem(STORAGE_KEY_DONATION_NOTICE, "true")
                 }}
-                className="inline-flex items-center justify-center bg-[#f5f5f5] dark:bg-[#2a2a2a] hover:bg-[#eaeaea] dark:hover:bg-[#333] text-[#171717] dark:text-[#e3e3e3] font-medium transition-colors active:scale-[0.97]"
-                style={{ height: 34, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13 }}
+                size="sm"
+                style={{ height: 34, borderRadius: 6 }}
               >
                 Hide notification
-              </button>
+              </SecondaryButton>
             </div>
           </div>
         </motion.div>

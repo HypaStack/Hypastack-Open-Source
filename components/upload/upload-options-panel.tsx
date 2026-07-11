@@ -2,6 +2,8 @@
 
 import { MIcon } from "@/components/ui/material-icon"
 import type { FileWithPreview } from "./upload-types"
+import { TextInput } from "@/components/ui/text-input"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 interface UploadOptionsPanelProps {
   burnOnRead: boolean
@@ -44,15 +46,9 @@ export function UploadOptionsPanel({
           <MIcon name="local_fire_department" size={14} style={{ color: 'rgba(255,255,255,0.5)' }} />
           <span style={{ fontSize: 13, color: '#ccc' }}>Burn after download</span>
         </div>
-        <div
-          className="relative shrink-0 transition-colors"
-          style={{ width: 34, height: 20, borderRadius: 6, backgroundColor: burnOnRead ? '#9b9b9b' : '#2a2a2a', border: burnOnRead ? 'none' : '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <div
-            className="absolute top-[3px] transition-transform bg-white"
-            style={{ width: 14, height: 14, borderRadius: 7, left: burnOnRead ? 17 : 3 }}
-          />
-        </div>
+        <span onClick={(e) => e.stopPropagation()} style={{ display: 'inline-flex' }}>
+          <ToggleSwitch checked={burnOnRead} onChange={setBurnOnRead} width={34} height={20} aria-label="Burn after download" />
+        </span>
       </div>
 
       {/* Divider */}
@@ -66,13 +62,13 @@ export function UploadOptionsPanel({
               <MIcon name="edit" size={13} style={{ color: 'rgba(255,255,255,0.4)' }} />
               <span style={{ fontSize: 12, fontWeight: 500, color: '#888' }}>Rename file</span>
             </div>
-            <input
+            <TextInput
               type="text"
               value={customFilename}
               onChange={(e) => { setCustomFilename(e.target.value); setFilenameError("") }}
               placeholder={files[0]?.file.name || "example.pdf"}
-              className="w-full placeholder:text-[#444] focus:outline-none focus:border-[rgba(255,255,255,0.12)]"
-              style={{ height: 34, paddingLeft: 10, paddingRight: 10, borderRadius: 6, backgroundColor: '#1f1f1f', border: '1px solid rgba(255,255,255,0.06)', fontSize: 13, color: '#e3e3e3' }}
+              fullWidth
+              size="sm"
             />
             {filenameError && <p className="mt-1 text-[11px] text-red-500" style={{ paddingLeft: 4 }}>{filenameError}</p>}
           </div>

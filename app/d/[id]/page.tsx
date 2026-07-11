@@ -7,7 +7,10 @@ import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/storage/multipart";
 import { motion } from "motion/react";
 import { apiFetch } from "@/lib/http/fetch"
-import { Button } from "@/components/ui/button"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { ShineCard } from "@/components/ui/shine-card"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 
 interface FileInfo {
@@ -196,13 +199,14 @@ export default function DownloadPage() {
   const baseName = dotIndex > 0 ? displayName.slice(0, dotIndex) : displayName;
   const extSuffix = dotIndex > 0 ? displayName.slice(dotIndex) : "";
 
-  // Primary action button, placed top-right of the card (X-post style).
+  // Primary action button, full-width at the bottom of the card.
   const downloadButton = downloaded ? (
-    <Button
+    <SecondaryButton
       onClick={!burned ? handleDownload : undefined}
       disabled={burned || downloadCooldown > 0}
-      variant="landing-secondary"
-      className="flex items-center justify-center gap-2 whitespace-nowrap"
+      size="lg"
+      fullWidth
+      style={{ gap: 8 }}
     >
       {burned ? (
         <><MIcon name="local_fire_department" className="text-red-400" size={16} />Burned</>
@@ -211,16 +215,17 @@ export default function DownloadPage() {
       ) : (
         <><MIcon name="download" size={16} />Download again</>
       )}
-    </Button>
+    </SecondaryButton>
   ) : (
-    <Button
+    <SecondaryButton
       onClick={handleDownload}
       disabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
-      variant="landing-primary"
-      className="flex items-center justify-center gap-2 whitespace-nowrap"
+      size="lg"
+      fullWidth
+      style={{ gap: 8 }}
     >
       {downloading && !forceLocked ? (
-        <><LoadingSvg variant="white" size={16} />Downloading…</>
+        <><LoadingSvg size={16} />Downloading…</>
       ) : downloadCooldown > 0 ? (
         <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
       ) : !encryptionKeyBase64 || forceLocked ? (
@@ -228,7 +233,7 @@ export default function DownloadPage() {
       ) : (
         <><MIcon name="download" size={16} />Download</>
       )}
-    </Button>
+    </SecondaryButton>
   );
 
   if (missingKey) {
@@ -239,16 +244,10 @@ export default function DownloadPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="absolute inset-0 flex flex-col justify-center items-center px-4"
         >
-          <div className="max-w-[440px] w-full text-center flex flex-col items-center">
-            <div className="flex items-center gap-3 mb-3">
-              <MIcon name="key_off" style={{ color: '#ef4444' }} size={28} />
-              <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
-                Locked
-              </h2>
-            </div>
-            <p className="text-[14px] text-[#898e97] leading-relaxed">
-              You are missing the decryption key (the part after the # in the URL). Viewing and downloading is completely disabled.
-            </p>
+          <div className="max-w-[440px] w-full">
+            <AlertMessage tone="error" style={{ marginBottom: 0 }}>
+              This file either doesn't exist or you're missing the # fragment
+            </AlertMessage>
           </div>
         </motion.div>
       </main>
@@ -272,7 +271,7 @@ export default function DownloadPage() {
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
+            <ShineCard radius={16} className="p-6">
               <div className="flex items-center gap-3 mb-3">
                 <MIcon name="error" className="text-red-500" size={28} />
                 <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
@@ -283,24 +282,23 @@ export default function DownloadPage() {
                 {error === "File has expired" ? "This file has been permanently deleted from our servers." : "The file you're looking for doesn't exist or has been removed."}
               </p>
               <div className="flex gap-2">
-                <Button
-                  variant="landing-primary"
+                <ShineButton
                   onClick={() => { window.location.href = "/manage/files" }}
                   className="flex-1"
-                >Upload a file</Button>
-                <Button
-                  variant="landing-secondary"
+                >Upload a file</ShineButton>
+                <SecondaryButton
+                  size="lg"
                   onClick={() => { window.location.href = "/" }}
                   className="flex-1"
-                >Home</Button>
+                >Home</SecondaryButton>
               </div>
-            </div>
+            </ShineCard>
           </motion.div>
         )}
 
         {fileInfo && !error && !missingKey && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <div className="bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[14px] overflow-hidden">
+            <ShineCard radius={16} tilt={0}>
               {uploader && (
                 <div className="h-[150px] w-full bg-[#151616]">
                   <img src={uploader.bannerUrl} alt="" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
@@ -308,20 +306,17 @@ export default function DownloadPage() {
               )}
 
               <div className="px-5 pt-4 pb-4">
-                <div className="flex items-start justify-between gap-3">
-                  {uploader ? (
+                {uploader && (
+                  <div className="flex items-start">
                     <img
                       src={uploader.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
                       alt=""
-                      className="-mt-[59px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#0a0b0c] bg-[#151616] select-none pointer-events-none"
+                      className="-mt-[59px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#1a1a1a] bg-[#151616] select-none pointer-events-none"
                       draggable={false}
                       onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
                     />
-                  ) : <div />}
-                  <div className="shrink-0">
-                    {downloadButton}
                   </div>
-                </div>
+                )}
 
                 {uploader?.displayName && (
                   <div className="mt-3 flex items-center gap-1.5 min-w-0">
@@ -353,40 +348,38 @@ export default function DownloadPage() {
               </div>
 
               {fileInfo.note && fileInfo.note.trim() && encryptionKeyBase64 && (
-                <div className="mx-3 mb-3 p-3.5 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
+                <div className="mx-3 mb-3 p-4 rounded-[10px] bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.08)]">
                   <p className="text-[13px] font-medium text-[#f7f8f8] break-words leading-relaxed">{fileInfo.note}</p>
-                  <p className="text-[11px] text-[#898e97] mt-2">This note was attached by the uploader. Hypastack is not responsible for its content.</p>
+                  <p className="text-[11px] text-[#898e97] mt-2.5 leading-relaxed">This note and file were attached by the uploader. Hypastack isn't responsible for their content.</p>
                 </div>
               )}
 
-              <div className="mx-3 mb-3 p-1 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
+              <div className="mx-3 mb-3 rounded-[10px] bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.08)] overflow-hidden">
                 {[
                   { icon: "schedule", label: "Expires", value: encryptionKeyBase64 ? timeLeft(fileInfo.expiresAt) : "Unavailable", show: true, color: !encryptionKeyBase64 ? "text-[#898e97]" : "text-[#f7f8f8]" },
-                  { icon: "local_fire_department", label: "Burn on read", value: burned ? "Burned" : "Active", show: !!fileInfo.burnOnRead && !!encryptionKeyBase64, color: burned ? "text-red-500" : "text-amber-500" },
-                  { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-[#f7f8f8] underline underline-offset-2" : "text-[#898e97]" },
+                  { icon: "local_fire_department", label: "Burn after download", value: burned ? "Burned" : "Active", show: !!fileInfo.burnOnRead && !!encryptionKeyBase64, color: burned ? "text-red-500" : "text-[#f7f8f8]" },
+                  { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-[#f7f8f8]" : "text-[#898e97]" },
                 ].filter(r => r.show).map((r, i, arr) => (
                   <div key={i}>
-                    <div
-                      className="flex items-center justify-between hover:bg-[rgba(255,255,255,0.04)] transition-all duration-75 px-3 rounded-[6px] h-[38px]"
-                    >
+                    <div className="flex items-center justify-between px-4 h-[44px]">
                       <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
-                        <MIcon name={r.icon} size={14} className="text-[#898e97]" />{r.label}
+                        <MIcon name={r.icon} size={15} className="text-[#898e97]" />
+                        {r.label}
                       </span>
-                      <span className={`text-[13px] font-medium ${r.color || "text-[#f7f8f8]"}`}>{r.value}</span>
+                      <span className={`text-[13px] font-semibold ${r.color || "text-[#f7f8f8]"}`}>{r.value}</span>
                     </div>
-                    {i < arr.length - 1 && <div className="h-px mx-2 bg-[rgba(255,255,255,0.08)]" />}
+                    {i < arr.length - 1 && <div className="h-px mx-4 bg-[rgba(255,255,255,0.07)]" />}
                   </div>
                 ))}
               </div>
 
-              {downloadPhase === 'downloading' && (
-                <div className="mx-3 mb-3 p-3.5 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
-                  <div className="flex gap-2">
-                    <MIcon name="info" size={16} className="text-[#898e97] shrink-0 mt-0.5" />
-                    <p className="text-[12px] text-[#898e97] leading-relaxed">
-                      Your file is downloading securely in the background. It will automatically save to your device once finished, this may take a moment depending on your connection speed.
-                    </p>
-                  </div>
+              {downloadPhase !== 'idle' && (
+                <div className="mx-3 mb-3">
+                  <AlertMessage tone={downloadPhase === 'done' ? 'success' : 'info'} style={{ marginBottom: 0 }}>
+                    {downloadPhase === 'done'
+                      ? "Your file finished downloading and should be saved to your device now."
+                      : "Your file is downloading securely in the background. It will automatically save to your device once finished, this may take a moment depending on your connection speed."}
+                  </AlertMessage>
                 </div>
               )}
 
@@ -402,17 +395,21 @@ export default function DownloadPage() {
               {(rateLimitError || downloadCooldown > 0 || (downloaded && burned)) && (
                 <div className="mx-3 mb-3">
                   {(rateLimitError || downloadCooldown > 0) && (
-                    <div className="text-center flex flex-col items-center gap-1 text-[13px] text-[#f59e0b] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.15)] px-4 py-3 rounded-[10px]">
+                    <AlertMessage tone="error" style={{ marginBottom: 0 }}>
                       <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
-                      <span className="text-[11px] opacity-70">Try again in {downloadCooldown}s</span>
-                    </div>
+                      <span className="block text-[11px] opacity-70 mt-0.5">Try again in {downloadCooldown}s</span>
+                    </AlertMessage>
                   )}
                   {downloaded && burned && (
                     <p className="text-[12px] text-[#898e97] text-center mt-3">This file has been permanently deleted after download.</p>
                   )}
                 </div>
               )}
-            </div>
+
+              <div className="px-3 pb-3">
+                {downloadButton}
+              </div>
+            </ShineCard>
 
             {uploader && (
               <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7079] text-center">

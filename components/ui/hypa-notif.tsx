@@ -2,6 +2,12 @@
 import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "./material-icon"
+import { TextInput } from "./text-input"
+import { ShineButton } from "./shine-button"
+import { SecondaryButton } from "./secondary-button"
+import { ProgressBar } from "./progress-bar"
+import { AlertMessage } from "./alert-message"
+import { Loader } from "./loader"
 
 export interface HypaNotifOptions {
   title: string
@@ -19,6 +25,13 @@ export interface HypaNotifOptions {
   inputDefaultValue?: string
   /** When true, only the confirm button is shown (no cancel). Use for info/success notifications. */
   confirmOnly?: boolean
+  /** Warning shown above the actions. Defaults to a permanent-delete note when destructive. */
+  alertText?: string
+  /** Async action run inside the dialog on confirm: the button shows a spinner,
+   *  then the dialog closes. Errors show inline. */
+  onConfirm?: () => Promise<void>
+  /** Button label while onConfirm runs. Defaults to confirmText. */
+  loadingText?: string
 }
 
 type PromiseResolvers = {
@@ -117,62 +130,97 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
 
   return (
     <>
-      <div className="bg-[#f8f8f8] dark:bg-[rgba(255,255,255,0.05)] rounded-[10px] mb-1" style={{ padding: 10 }}>
-        <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>
+      <div style={{ padding: '8px 8px 2px' }}>
+        <p className="text-[#111] dark:text-[#f7f8f8]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>
           {notif.title}
         </p>
-        <input
+        <TextInput
           ref={inputRef}
           type="text"
+          size="md"
+          fullWidth
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel() }}
           placeholder={notif.inputPlaceholder ?? ""}
-          className="w-full focus:outline-none bg-white dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.08)] text-[#111] dark:text-[#f0f0f0] rounded-[8px]"
-          style={{ height: 36, paddingLeft: 10, paddingRight: 10, fontSize: 13 }}
         />
       </div>
-      <div className="flex gap-1.5 mt-1">
-        <button
-          onClick={handleCancel}
-          className="flex-1 flex items-center justify-center rounded-full hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 text-[#666] dark:text-[#898e97] text-[13px] font-medium"
-          style={{ height: 36 }}
-        >
-          {notif.cancelText ?? "Cancel"}
-        </button>
-        <button
-          onClick={handleConfirm}
-          disabled={!value.trim()}
-          className="relative flex-1 inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ height: 36 }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-          <div className="relative bg-[#151616] rounded-full w-full h-full flex items-center justify-center text-[#f7f8f8] text-[13px] font-semibold">
+      <div className="flex gap-2 mt-1.5">
+        <div className="flex-1">
+          <SecondaryButton size="md" fullWidth onClick={handleCancel}>
+            {notif.cancelText ?? "Cancel"}
+          </SecondaryButton>
+        </div>
+        <div className="flex-1">
+          <ShineButton size="md" fullWidth onClick={handleConfirm} disabled={!value.trim()}>
             {notif.confirmText ?? "Create"}
-          </div>
-        </button>
+          </ShineButton>
+        </div>
       </div>
     </>
   )
 }
 
-/** Maps common confirmText values to a fitting Material icon name */
-function inferConfirmIcon(confirmText?: string, destructive?: boolean): string {
-  if (destructive) return "delete_forever"
-  const t = (confirmText ?? "").toLowerCase()
-  if (t.includes("wipe") || t.includes("delete") || t.includes("remove")) return "delete_forever"
-  if (t.includes("swap") || t.includes("replace")) return "swap_horiz"
-  if (t.includes("create") || t.includes("add") || t.includes("new")) return "add"
-  if (t.includes("save") || t.includes("update")) return "save"
-  if (t.includes("move")) return "drive_file_move"
-  if (t.includes("close") || t.includes("dismiss")) return "check"
-  if (t.includes("confirm") || t.includes("yes")) return "check"
-  if (t.includes("download")) return "download"
-  if (t.includes("upload")) return "upload"
-  if (t.includes("copy")) return "content_copy"
-  if (t.includes("rename")) return "edit"
-  if (t.includes("restore")) return "restore"
-  return "check"
+/** Treat delete/wipe-style confirmations as destructive even if the caller
+ *  didn't set the flag, so they get the red button + permanent-delete warning. */
+function isDestructiveNotif(n: NotifState): boolean {
+  if (n.destructive) return true
+  const t = `${n.confirmText ?? ""} ${n.title ?? ""}`.toLowerCase()
+  return /\b(wipe|delete|remove|erase|destroy)\b/.test(t) || t.includes("forever")
+}
+
+function ConfirmNotif({ notif, destructive, onResolve }: { notif: NotifState; destructive: boolean; onResolve: (id: string, value: boolean) => void }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const confirm = async () => {
+    if (!notif.onConfirm) { onResolve(notif.id, true); return }
+    setLoading(true)
+    setError(null)
+    try {
+      await notif.onConfirm()
+      onResolve(notif.id, true) // just close, no success popup
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong")
+      setLoading(false)
+    }
+  }
+
+  const warning = error ?? notif.alertText ?? (destructive ? "This permanently deletes it and can't be recovered." : null)
+
+  return (
+    <>
+      {warning && (
+        <div style={{ padding: '0 6px 6px' }}>
+          <AlertMessage tone="error" style={{ marginBottom: 0 }}>{warning}</AlertMessage>
+        </div>
+      )}
+      <div className="flex gap-2" style={{ padding: 4 }}>
+        <div className="flex-1">
+          <SecondaryButton size="md" fullWidth disabled={loading} onClick={() => onResolve(notif.id, false)}>
+            {notif.cancelText || "Cancel"}
+          </SecondaryButton>
+        </div>
+        <div className="flex-1">
+          <ShineButton
+            size="md"
+            fullWidth
+            disabled={loading}
+            onClick={confirm}
+            color={destructive ? "#dc2626" : undefined}
+            hoverColor={destructive ? "#b91c1c" : undefined}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader size={16} color="#ffffff" />
+                {notif.loadingText ?? notif.confirmText ?? "Confirm"}
+              </span>
+            ) : (notif.confirmText || "Confirm")}
+          </ShineButton>
+        </div>
+      </div>
+    </>
+  )
 }
 
 export function HypaNotifProvider() {
@@ -213,16 +261,18 @@ export function HypaNotifProvider() {
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none max-sm:bottom-4 max-sm:left-4 max-sm:right-4">
       <AnimatePresence>
-        {notifs.map((notif) => (
+        {notifs.map((notif) => {
+          const destructive = isDestructiveNotif(notif)
+          return (
           <motion.div
             key={notif.id}
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden bg-white dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
+          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden bg-white/95 dark:bg-[rgba(14,15,16,0.92)] backdrop-blur-xl border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
             style={{
-              boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)',
               padding: 6,
             }}
           >
@@ -243,8 +293,8 @@ export function HypaNotifProvider() {
             {/* File list */}
             {notif.items && notif.items.length > 0 && (
               <div
-                className="bg-[#f8f8f8] dark:bg-[rgba(255,255,255,0.04)] rounded-[10px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
-                style={{ margin: '0 0 6px 0', padding: 4, maxHeight: 140, overflowY: 'auto' }}
+                className="bg-[#f4f4f5] dark:bg-[rgba(0,0,0,0.22)] rounded-[10px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)]"
+                style={{ margin: '0 6px 6px', padding: 4, maxHeight: 140, overflowY: 'auto' }}
               >
                 {notif.items.map((item, i) => (
                   <div key={i} className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 6 }}>
@@ -257,52 +307,27 @@ export function HypaNotifProvider() {
 
             {/* Actions or Progress */}
             {notif.isProgress ? (
-              <div className="bg-[#f8f8f8] dark:bg-[rgba(255,255,255,0.04)] rounded-[10px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]" style={{ padding: '10px 14px' }}>
+              <div style={{ padding: '6px 8px 8px' }}>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13 }}>{notif.progressText || "Processing..."}</span>
                   <span className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 13, fontWeight: 500 }}>{Math.round(notif.progressPercent || 0)}%</span>
                 </div>
-                <div className="bg-[rgba(0,0,0,0.08)] dark:bg-[rgba(255,255,255,0.08)]" style={{ height: 5, borderRadius: 3, overflow: 'hidden' }}>
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${notif.progressPercent || 0}%` }}
-                    transition={{ ease: "linear", duration: 0.2 }}
-                    className="bg-[#151616] dark:bg-[#f7f8f8]"
-                    style={{ height: '100%', borderRadius: 3 }}
-                  />
-                </div>
+                <ProgressBar value={notif.progressPercent || 0} height={5} aria-label={notif.progressText || "Progress"} />
               </div>
             ) : notif.isInput ? (
               <InputNotif notif={notif} onResolve={handleResolve} />
-            ) : (
-              <div className="bg-[#f8f8f8] dark:bg-[#0e0f10] rounded-[10px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
-                <button
-                  onClick={() => handleResolve(notif.id, true)}
-                  className={`w-full flex items-center gap-3 rounded-[8px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 ${notif.destructive ? 'text-red-500 dark:text-red-400' : 'text-[#111] dark:text-[#f0f0f0]'}`}
-                  style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontSize: 14, fontWeight: 500 }}
-                >
-                  <MIcon
-                    name={notif.confirmIcon ?? inferConfirmIcon(notif.confirmText, notif.destructive)}
-                    size={15}
-                    style={{ color: notif.destructive ? '#ef4444' : undefined }}
-                    className={notif.destructive ? '' : 'text-[#666] dark:text-[#898e97]'}
-                  />
-                  {notif.confirmText || "Confirm"}
-                </button>
-                {!notif.confirmOnly && (
-                  <button
-                    onClick={() => handleResolve(notif.id, false)}
-                    className="w-full flex items-center gap-3 rounded-[8px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] active:scale-[0.97] transition-all duration-150 text-[#666] dark:text-[#898e97]"
-                    style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontSize: 14, fontWeight: 400 }}
-                  >
-                    <MIcon name="close" size={15} className="text-[#666] dark:text-[#898e97]" />
-                    {notif.cancelText || "Cancel"}
-                  </button>
-                )}
+            ) : notif.confirmOnly ? (
+              <div style={{ padding: 4 }}>
+                <SecondaryButton size="md" fullWidth onClick={() => handleResolve(notif.id, true)}>
+                  {notif.confirmText || "Dismiss"}
+                </SecondaryButton>
               </div>
+            ) : (
+              <ConfirmNotif notif={notif} destructive={destructive} onResolve={handleResolve} />
             )}
           </motion.div>
-        ))}
+          )
+        })}
       </AnimatePresence>
     </div>
   )

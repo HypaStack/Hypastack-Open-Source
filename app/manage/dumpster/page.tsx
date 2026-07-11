@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -61,42 +64,34 @@ export default function DumpsterPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-          <button
-            type="button"
+          <SecondaryButton
             onClick={() => setContent("")}
             disabled={saving || !content}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
+            style={{ gap: 8 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-            <div className="relative bg-[#151616] rounded-full h-[38px] px-5 flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-              <MIcon name="clear_all" size={17} className="shrink-0" />
-              <span className="hidden sm:inline">Clear</span>
-            </div>
-          </button>
-          <button
-            type="button"
+            <MIcon name="clear_all" size={17} className="shrink-0" />
+            <span className="hidden sm:inline">Clear</span>
+          </SecondaryButton>
+          <ShineButton
             onClick={handleSave}
             disabled={saving || !content.trim()}
-            className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            size="md"
+            style={{ gap: 8 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.25)] group-hover:to-[rgba(255,255,255,0.35)] transition-colors duration-300" />
-            <div className="relative bg-[#f7f8f8] rounded-full h-[38px] px-6 flex items-center justify-center gap-2 text-[#111111] text-[14px] font-medium">
-              {saving ? (
-                <LoadingSvg variant="dark" size={16} className="shrink-0" />
-              ) : (
-                <MIcon name="save" size={15} className="shrink-0" />
-              )}
-              <span>Save Paste</span>
-            </div>
-          </button>
+            {saving ? (
+              <LoadingSvg variant="white" size={16} className="shrink-0" />
+            ) : (
+              <MIcon name="save" size={15} className="shrink-0" />
+            )}
+            <span>Save Paste</span>
+          </ShineButton>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] px-4 py-3 rounded-full mb-6 items-center">
-          <MIcon name="error" size={15} className="shrink-0" />
-          <span className="font-medium">{error}</span>
-        </div>
+        <AlertMessage tone="error" className="mb-6">
+          {error}
+        </AlertMessage>
       )}
 
       <div className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.02)] rounded-[16px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] overflow-hidden flex flex-col">

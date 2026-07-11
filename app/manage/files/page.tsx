@@ -2,6 +2,7 @@
 
 import { UploadZone } from "@/components/upload"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { Loader } from "@/components/ui/loader"
 
 import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "react"
 import Link from "next/link"
@@ -11,9 +12,12 @@ import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextMenuLink } fro
 import { type FileItem } from "@/hooks/useManage"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Checkmark } from "@/components/ui/checkmark"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { HintTip } from "@/components/ui/hint-tip"
-import { hypaConfirm, hypaProgress, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
 import { FILES_PER_PAGE, API_BASE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -254,111 +258,72 @@ function FilesPageInner() {
 
   const handleDelete = async (fileId: string) => {
     const file = files.find(f => f.id === fileId)
-    const confirmed = await hypaConfirm({
+    await hypaConfirm({
       title: "Are you sure you want to delete this file forever?",
-      description: "This action cannot be undone.",
       items: file ? [file.name] : [],
-      confirmText: "Wipe",
+      confirmText: "Delete",
       cancelText: "Cancel",
-    })
-    if (!confirmed) return
-    setDeleteLoading(fileId)
-    try {
-      const res = await apiFetch("/api/v2/files", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId }),
-      })
-      if (res.ok) {
-        setFiles(files.filter((f) => f.id !== fileId))
+      onConfirm: async () => {
+        const res = await apiFetch("/api/v2/files", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileId }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          throw new Error(data.message || "Failed to delete file")
+        }
+        setFiles((prev) => prev.filter((f) => f.id !== fileId))
         setWtStep(s => s === 5 ? 6 : s)
         setSelectedFiles((prev) => {
           const next = new Set(prev)
           next.delete(fileId)
           return next
         })
-      } else {
-        const data = await res.json()
-        hypaError(data.message ||"Failed to delete file")
-      }
-    } catch (err) {
-      console.error("Delete error:", err)
-      hypaError("Failed to delete file")
-    } finally {
-      setDeleteLoading(null)
-      setOpenMenuId(null)
-    }
+      },
+    })
+    setOpenMenuId(null)
   }
 
   const handleBulkDelete = async () => {
     if (selectedFiles.size === 0) return
     
-    const fileNames = Array.from(selectedFiles).map(id => files.find(f => f.id === id)?.name || "Unknown file")
-    const confirmed = await hypaConfirm({
-      title: `Are you sure you want to delete ${selectedFiles.size} file(s) forever?`,
-      description: "This action cannot be undone.",
+    const ids = Array.from(selectedFiles)
+    const fileNames = ids.map(id => files.find(f => f.id === id)?.name || "Unknown file")
+    await hypaConfirm({
+      title: `Are you sure you want to delete ${ids.length} file(s) forever?`,
       items: fileNames,
-      confirmText: "Wipe",
+      confirmText: "Delete",
       cancelText: "Cancel",
-    })
-    if (!confirmed) return
-    setDeleteLoading("bulk")
-    try {
-      const progress = hypaProgress({
-        title: "Deleting files...",
-        progressText: "Preparing to delete...",
-        progressPercent: 0
-      })
-
-      const res = await apiFetch("/api/v2/files", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileIds: Array.from(selectedFiles) }),
-      })
-
-      if (res.ok && res.body) {
+      onConfirm: async () => {
+        const res = await apiFetch("/api/v2/files", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileIds: ids }),
+        })
+        if (!res.ok || !res.body) throw new Error("Failed to delete files")
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
         let buffer = ""
         const deletedIds = new Set<string>()
-
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
-          
           buffer += decoder.decode(value, { stream: true })
           const lines = buffer.split("\n")
           buffer = lines.pop() || ""
-          
           for (const line of lines) {
             if (!line.trim()) continue
             try {
               const data = JSON.parse(line)
-              if (data.success && data.id) {
-                deletedIds.add(data.id)
-              }
-              if (data.index) {
-                progress.update({ 
-                  progressText: `Deleting: ${data.name} (${data.index}/${data.total})`,
-                  progressPercent: (data.index / data.total) * 100 
-                })
-              }
-            } catch(e) {}
+              if (data.success && data.id) deletedIds.add(data.id)
+            } catch {}
           }
         }
-        
-        progress.close()
-        setFiles(files.filter((f) => !deletedIds.has(f.id)))
+        setFiles((prev) => prev.filter((f) => !deletedIds.has(f.id)))
         setSelectedFiles(new Set())
-      } else {
-        hypaError("Failed to delete files")
-      }
-    } catch (err) {
-      console.error("Delete error:", err)
-      hypaError("Failed to delete files")
-    } finally {
-      setDeleteLoading(null)
-    }
+      },
+    })
   }
 
   const handleCreateFolder = async () => {
@@ -472,42 +437,44 @@ function FilesPageInner() {
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedFiles.size > 0 ? (
-            <button
-              type="button"
+            <ShineButton
+              size="md"
               onClick={handleBulkDelete}
               disabled={deleteLoading === "bulk"}
-              className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-50"
+              color="#dc2626"
+              hoverColor="#b91c1c"
+              style={{ gap: 8 }}
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(239,68,68,0.3)] to-[rgba(239,68,68,0.6)] group-hover:to-[rgba(239,68,68,0.8)] transition-colors duration-300" />
-              <div className="relative bg-[#fef2f2] dark:bg-[#1a0808] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-red-600 dark:text-red-400 text-[14px] font-medium">
-                <MIcon name="delete" size={18} />
-                {deleteLoading === "bulk" ? "Deleting" : `Delete ${selectedFiles.size}`}
-              </div>
-            </button>
+              {deleteLoading === "bulk" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader size={16} color="#ffffff" />
+                  Deleting…
+                </span>
+              ) : (
+                <>
+                  <MIcon name="delete" size={16} className="shrink-0" />
+                  Delete {selectedFiles.size}
+                </>
+              )}
+            </ShineButton>
           ) : (
             <>
-              <button
-                type="button"
+              <SecondaryButton
+                size="md"
                 onClick={handleCreateFolder}
-                className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+                style={{ gap: 8 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(255,255,255,0.05)] to-[rgba(255,255,255,0.15)] group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                  <MIcon name="create_new_folder" size={17} className="shrink-0" />
-                  <span className="hidden sm:inline">New Folder</span>
-                </div>
-              </button>
-              <button
-                type="button"
+                <MIcon name="create_new_folder" size={17} className="shrink-0" />
+                <span className="hidden sm:inline">New Folder</span>
+              </SecondaryButton>
+              <ShineButton
+                size="md"
                 onClick={triggerFilePicker}
-                className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150"
+                style={{ gap: 8 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-                <div className="relative bg-[#151616] rounded-full px-5 h-[40px] flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                  <MIcon name="cloud_upload" size={15} className="shrink-0" />
-                  <span>Upload files</span>
-                </div>
-              </button>
+                <MIcon name="cloud_upload" size={15} className="shrink-0" />
+                <span>Upload files</span>
+              </ShineButton>
             </>
           )}
 
@@ -543,14 +510,17 @@ function FilesPageInner() {
                     <div className="relative bg-[#f4f4f4] dark:bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
                       <MIcon name="folder" size={16} className="text-[#666] dark:text-[#898e97] shrink-0" />
                       <span className="text-[#111] dark:text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
-                      <button
+                      <SecondaryButton
+                        variant="ghost"
+                        danger
+                        iconOnly
                         onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
-                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center shrink-0 transition-all focus:opacity-100 rounded-full hover:bg-[rgba(239,68,68,0.2)] text-[#666] dark:text-[#898e97] hover:text-red-500 dark:hover:text-red-400"
-                        style={{ height: 26, width: 26 }}
+                        className="opacity-0 group-hover:opacity-100 focus:opacity-100"
+                        style={{ height: 26, width: 26, borderRadius: 9999 }}
                         aria-label="Delete folder"
                       >
                         <MIcon name="delete" size={13} />
-                      </button>
+                      </SecondaryButton>
                     </div>
                   </div>
                 ))}
@@ -612,22 +582,22 @@ function FilesPageInner() {
             Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
-            <button
-              type="button"
+            <SecondaryButton
+              size="md"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-5 py-2 rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[15px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ borderRadius: 6 }}
             >
               Previous
-            </button>
-            <button
-              type="button"
+            </SecondaryButton>
+            <SecondaryButton
+              size="md"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-5 py-2 rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] text-[15px] font-medium text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2c2c2c] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ borderRadius: 6 }}
             >
               Next
-            </button>
+            </SecondaryButton>
           </div>
         </div>
       )}
@@ -667,14 +637,15 @@ function FilesPageInner() {
               >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] shrink-0">
                   <h2 className="text-[18px] font-semibold text-[#171717] dark:text-[#e3e3e3]">Upload files</h2>
-                  <button
-                    type="button"
+                  <SecondaryButton
+                    variant="ghost"
+                    iconOnly
+                    size="sm"
                     onClick={closeUpload}
-                    className="p-1.5 rounded-md text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] hover:text-[#111] dark:text-white dark:hover:text-[#f0f0f0] hover:bg-[#f0f0f0] dark:hover:bg-[#2a2a2a] transition-colors"
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
-                  </button>
+                  </SecondaryButton>
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 bg-transparent">
                   <UploadZone 
@@ -901,10 +872,9 @@ function ListView({
   return (
     <div className="bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.04)] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-[14px]" style={{ padding: 1, boxShadow: 'none' }}>
       <div className="grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3 py-2">
-        <input
-          type="checkbox"
+        <Checkmark
           checked={allSelected}
-          onChange={onToggleSelectAll}
+          onChange={() => onToggleSelectAll()}
           aria-label="Select all"
         />
         <SortLabel label="Name" field="name" current={sortField} direction={sortDirection} onClick={onToggleSort} />
@@ -938,13 +908,13 @@ function ListView({
               }}
               onContextMenu={(e) => onContextMenu(e, file.id)}
             >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => onToggleSelect(file.id)}
-                onClick={(e) => e.stopPropagation()}
-                aria-label={`Select ${file.name}`}
-              />
+              <span onClick={(e) => e.stopPropagation()}>
+                <Checkmark
+                  checked={isSelected}
+                  onChange={() => onToggleSelect(file.id)}
+                  aria-label={`Select ${file.name}`}
+                />
+              </span>
 
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="relative h-8 w-8 rounded-md overflow-hidden shrink-0 flex items-center justify-center text-[#444] dark:text-[#ccc]">
@@ -1076,22 +1046,28 @@ function GridView({
                     <MIcon name="local_fire_department" size={12} />
                   </span>
                 )}
-                <button
-                  type="button"
+                <SecondaryButton
+                  variant="ghost"
+                  theme="dark"
+                  iconOnly
                   onClick={(e) => {
                     e.stopPropagation()
                     onToggleStar(file.id, file.starred)
                   }}
                   disabled={starLoading === file.id}
-                  className={`inline-flex h-6 w-6 items-center justify-center rounded-md backdrop-blur-sm transition-all ${
-                    file.starred
-                      ? "bg-black/40 text-yellow-500"
-                      : "bg-black/40 text-zinc-300 opacity-0 group-hover:opacity-100"
-                  }`}
+                  className={file.starred ? "" : "opacity-0 group-hover:opacity-100"}
+                  style={{
+                    height: 24,
+                    width: 24,
+                    borderRadius: 6,
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    backdropFilter: "blur(4px)",
+                    color: file.starred ? "#eab308" : "#d4d4d8",
+                  }}
                   aria-label={file.starred ? "Unstar" : "Star"}
                 >
-                  <MIcon name="star" size={14} className={file.starred ? "" : ""} />
-                </button>
+                  <MIcon name="star" size={14} />
+                </SecondaryButton>
               </div>
 
               <div
@@ -1099,32 +1075,42 @@ function GridView({
                 className="absolute inset-x-0 bottom-0 px-2 pb-2 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <div className="flex items-center gap-1 rounded-md bg-black/40 backdrop-blur-md p-1">
-                  <button
-                    type="button"
+                  <SecondaryButton
+                    variant="ghost"
+                    theme="dark"
+                    size="xs"
                     onClick={() => onCopyLink(file.shareUrl, file.id)}
-                    className={`flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                      copiedId === file.id ? "text-emerald-400" : "text-white/90 hover:bg-white/10"
-                    }`}
+                    className="flex-1"
+                    style={{ gap: 6, borderRadius: 6, ...(copiedId === file.id ? { color: "#34d399" } : {}) }}
                   >
-                     {copiedId === file.id ? <MIcon name="check" size={12} /> : <MIcon name="content_copy" size={12} />}
+                    {copiedId === file.id ? <MIcon name="check" size={12} /> : <MIcon name="content_copy" size={12} />}
                     {copiedId === file.id ? "Copied" : "Copy"}
-                  </button>
-                  <Link
+                  </SecondaryButton>
+                  <SecondaryButton
+                    variant="ghost"
+                    theme="dark"
+                    size="xs"
                     href={`/d/${file.id}`}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
+                    as={Link}
+                    className="flex-1"
+                    style={{ gap: 6, borderRadius: 6 }}
                   >
-                     <MIcon name="visibility" size={12} />
+                    <MIcon name="visibility" size={12} />
                     View
-                  </Link>
-                  <button
-                    type="button"
+                  </SecondaryButton>
+                  <SecondaryButton
+                    variant="ghost"
+                    theme="dark"
+                    danger
+                    size="xs"
                     onClick={() => onDelete(file.id)}
                     disabled={deleteLoading === file.id}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium text-red-400 hover:bg-red-500/15 transition-colors disabled:opacity-50"
+                    className="flex-1"
+                    style={{ gap: 6, borderRadius: 6 }}
                   >
-                     <MIcon name="delete" size={12} />
+                    <MIcon name="delete" size={12} />
                     {deleteLoading === file.id ? "€" : "Delete"}
-                  </button>
+                  </SecondaryButton>
                 </div>
               </div>
           </div>

@@ -80,7 +80,7 @@ export async function handleLoginPost(request: NextRequest) {
     }
 
     if (!matchedUserId) {
-      return apiError(401, API_ERRORS.UNAUTHORIZED, "Invalid identifier")
+      return apiError(401, API_ERRORS.INVALID_IDENTIFIER, "Invalid identifier")
     }
 
     await updateLastLogin(matchedUserId)

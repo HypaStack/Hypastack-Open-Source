@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { getSessionKey } from "@/lib/security/cryptoClient"
+import { TextInput } from "@/components/ui/text-input"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 import { generateWrappedFunnelKeypair } from "@/lib/security/funnelCrypto"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -90,9 +93,9 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                 </div>
                 <span className="text-[15px] font-semibold text-[#171717] dark:text-[#e3e3e3]">New funnel</span>
               </div>
-              <button type="button" onClick={onClose} className="p-1.5 rounded-md hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors" aria-label="Close">
-                <MIcon name="close" size={18} className="text-[#666] dark:text-[#898e97]" />
-              </button>
+              <SecondaryButton onClick={onClose} size="xs" iconOnly aria-label="Close">
+                <MIcon name="close" size={18} />
+              </SecondaryButton>
             </div>
 
             {!link ? (
@@ -101,31 +104,31 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                   Creates a one-time link. Whoever opens it can drop a single file into your inbox — encrypted so only you can open it.
                 </p>
 
-                <div className="flex items-center rounded-[10px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.03)] px-3 mb-2">
-                  <span className="text-[13px] text-[#999] dark:text-[#6b7075] shrink-0">/funnel/</span>
-                  <input
-                    value={customSlug}
-                    onChange={(e) => setCustomSlug(e.target.value)}
-                    placeholder="custom-link (optional)"
-                    onKeyDown={(e) => { if (e.key === "Enter") create() }}
-                    className="flex-1 bg-transparent outline-none text-[13px] text-[#171717] dark:text-[#e3e3e3] py-2.5 px-1"
-                  />
-                </div>
+                <TextInput
+                  size="md"
+                  fullWidth
+                  wrapperClassName="mb-2"
+                  value={customSlug}
+                  onChange={(e) => setCustomSlug(e.target.value)}
+                  placeholder="custom-link (optional)"
+                  onKeyDown={(e) => { if (e.key === "Enter") create() }}
+                  leading={<span className="text-[13px] shrink-0">/funnel/</span>}
+                  style={{ paddingLeft: 4 }}
+                />
 
                 {error && <p className="text-[12px] text-red-500 mb-2 px-0.5">{error}</p>}
 
-                <button
-                  type="button"
+                <ShineButton
                   onClick={create}
                   disabled={creating}
-                  className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 disabled:opacity-70 w-full mt-1"
+                  size="md"
+                  fullWidth
+                  className="mt-1"
+                  style={{ gap: 8 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98] transition-colors duration-300" />
-                  <div className="relative bg-[#151616] rounded-full h-[42px] w-full flex items-center justify-center gap-2 text-[#f7f8f8] text-[14px] font-medium">
-                    {creating ? <LoadingSvg variant="white" size={16} /> : <MIcon name="add_link" size={18} />}
-                    Create funnel
-                  </div>
-                </button>
+                  {creating ? <LoadingSvg variant="white" size={16} /> : <MIcon name="add_link" size={18} />}
+                  Create funnel
+                </ShineButton>
               </>
             ) : (
               <>
@@ -137,24 +140,23 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                   <span className="flex-1 truncate text-[13px] text-[#171717] dark:text-[#e3e3e3]">{link}</span>
                 </div>
                 <div className="flex gap-2">
-                  <button
-                    type="button"
+                  <ShineButton
                     onClick={copy}
-                    className="relative inline-flex items-center justify-center p-[1px] rounded-full overflow-hidden group active:scale-[0.98] transition-transform duration-150 flex-1"
+                    size="md"
+                    className="flex-1"
+                    style={{ gap: 8 }}
+                    color={copied ? "#059669" : undefined}
+                    hoverColor={copied ? "#047857" : undefined}
                   >
-                    <div className={`absolute inset-0 transition-colors duration-300 ${copied ? "bg-gradient-to-tr from-[rgba(16,185,129,0.2)] to-[rgba(16,185,129,0.45)] group-hover:to-[rgba(16,185,129,0.6)]" : "bg-gradient-to-tr from-[#242526] via-[#242526] to-[#666c73] group-hover:to-[#888f98]"}`} />
-                    <div className={`relative rounded-full h-[42px] w-full flex items-center justify-center gap-2 text-[14px] font-medium ${copied ? "bg-[#0a1a14] text-emerald-400" : "bg-[#151616] text-[#f7f8f8]"}`}>
-                      <MIcon name={copied ? "check" : "content_copy"} size={16} />
-                      {copied ? "Copied" : "Copy link"}
-                    </div>
-                  </button>
-                  <button
-                    type="button"
+                    <MIcon name={copied ? "check" : "content_copy"} size={16} />
+                    {copied ? "Copied" : "Copy link"}
+                  </ShineButton>
+                  <SecondaryButton
                     onClick={() => { setLink(""); setCustomSlug(""); setCopied(false) }}
-                    className="inline-flex items-center justify-center h-[42px] px-4 rounded-full border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.1)] text-[14px] font-medium text-[#171717] dark:text-[#e3e3e3] hover:bg-[#f5f5f5] dark:hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+                    size="md"
                   >
                     New
-                  </button>
+                  </SecondaryButton>
                 </div>
               </>
             )}

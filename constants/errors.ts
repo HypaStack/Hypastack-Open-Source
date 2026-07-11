@@ -18,4 +18,5 @@ export const API_ERRORS = {
   BAD_GATEWAY: "We're having trouble reaching our servers. Please try again shortly.",
   SERVICE_UNAVAILABLE: "We're having trouble reaching our servers. Please try again shortly.",
   GATEWAY_TIMEOUT: "We're having trouble reaching our servers. Please try again shortly.",
+  INVALID_IDENTIFIER: "Seems like the identifier is invalid, check if it's correct and try again",
 } as const;

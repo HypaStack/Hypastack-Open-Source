@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
+import { ShineButton } from "@/components/ui/shine-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
+import { Loader } from "@/components/ui/loader";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
+import { PLAN_INFO } from "@/constants/plans";
 import { apiFetch } from "@/lib/http/fetch"
 
 export function TierAnnouncementModal() {
@@ -21,6 +25,7 @@ export function TierAnnouncementModal() {
   }, [user]);
 
   const tierLabel = user ? (TIER_LABELS[user.tier] ?? user.tier) : "";
+  const benefits = user ? (PLAN_INFO.find((p) => p.key === user.tier)?.details ?? []) : [];
 
   const handleDismiss = async () => {
     if (closing) return;
@@ -61,45 +66,65 @@ export function TierAnnouncementModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[420px] rounded-md overflow-hidden"
-            style={{ backgroundColor: '#171717', padding: 4, boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
+            className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[720px] rounded-[20px] overflow-hidden"
+            style={{ backgroundColor: '#0e0f10', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
-            <div className="flex items-center justify-end px-4 pt-3 pb-1">
-              <button
-                type="button"
-                onClick={handleDismiss}
-                className="flex items-center justify-center hover:bg-[#222] hover:text-white transition-all duration-75 active:scale-[0.95] shrink-0"
-                style={{ height: 32, width: 32, borderRadius: 6, color: '#a1a1aa' }}
-              >
-                <MIcon name="close" size={16} />
-              </button>
-            </div>
+            <SecondaryButton
+              iconOnly
+              size="xs"
+              onClick={handleDismiss}
+              aria-label="Dismiss"
+              style={{ position: 'absolute', top: 14, right: 14, zIndex: 10 }}
+            >
+              <MIcon name="close" size={18} />
+            </SecondaryButton>
 
-            <div className="px-5 pt-2 pb-6 flex flex-col items-center text-center">
-              <div className="flex size-14 items-center justify-center rounded-full bg-[#222] mb-5">
-                <MIcon name="auto_awesome" className="text-[#a1a1aa]" size={28} />
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="flex flex-col items-start text-left px-8 pt-11 pb-10">
+                <div className="flex size-14 items-center justify-center mb-6">
+                  <MIcon name="auto_awesome" className="text-[#f7f8f8]" size={28} />
+                </div>
+
+                <h2
+                  id="tier-announcement-title"
+                  className="text-[26px] tracking-tight text-[#f7f8f8] mb-2"
+                  style={{ fontWeight: 600, letterSpacing: '-0.02em', fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+                >
+                  You're now on {tierLabel}
+                </h2>
+                <p className="text-[14px] leading-relaxed text-[#898e97] mb-8">
+                  Thanks for supporting us! Your new limits are unlocked everywhere,
+                  uploads, CDN storage, and retention windows.
+                </p>
+
+                <ShineButton
+                  theme="dark"
+                  size="md"
+                  fullWidth
+                  className="mt-auto"
+                  onClick={handleDismiss}
+                  disabled={closing}
+                >
+                  {closing ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader size={16} stroke={2} />
+                      Closing..
+                    </span>
+                  ) : "Alright"}
+                </ShineButton>
               </div>
 
-              <h2
-                id="tier-announcement-title"
-                className="text-[22px] tracking-tight text-white mb-2"
-                style={{ fontWeight: 600, letterSpacing: '-0.02em' }}
-              >
-                You're now on {tierLabel}
-              </h2>
-              <p className="text-[14px] leading-relaxed text-[#888] mb-6">
-                Thanks for supporting us! Your new limits are unlocked everywhere,
-                uploads, CDN storage, and retention windows.
-              </p>
-
-              <button
-                onClick={handleDismiss}
-                disabled={closing}
-                className="w-full hover:bg-[#222] hover:text-white active:scale-[0.97] transition-all duration-75 flex items-center justify-center"
-                style={{ height: 40, borderRadius: 6, fontSize: 14, fontWeight: 500, color: '#e3e3e3', backgroundColor: '#1f1f1f' }}
-              >
-                {closing ? "Closing.." : "Alright"}
-              </button>
+              <div className="px-8 py-11 border-t sm:border-t-0 sm:border-l border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
+                <p className="text-[13px] font-semibold text-[#f7f8f8] mb-5">What's included</p>
+                <ul className="space-y-4">
+                  {benefits.map((b) => (
+                    <li key={b} className="flex items-start gap-3">
+                      <MIcon name="check" size={17} className="shrink-0 mt-0.5 text-[#a5b4fc]" />
+                      <span className="text-[14px] leading-snug text-[#d4d6d9]">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </motion.div>
         </div>

@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 import type { InterruptedSession } from "./upload-types"
 
 interface UploadResumePopupProps {
@@ -63,20 +65,22 @@ export function UploadResumePopup({
               </div>
 
               <div className="flex gap-3">
-                <button
-                  type="button"
+                <SecondaryButton
+                  size="md"
                   onClick={onAbort}
-                  className="flex-1 px-4 py-2.5 rounded-md bg-[#171717] hover:bg-[#313131] text-[14px] font-semibold text-foreground transition-colors"
+                  className="flex-1"
+                  style={{ borderRadius: 6 }}
                 >
                   Abort
-                </button>
-                <button
-                  type="button"
+                </SecondaryButton>
+                <ShineButton
+                  size="md"
                   onClick={onResume}
-                  className="flex-1 px-4 py-2.5 rounded-md bg-white text-black text-[14px] font-semibold hover:bg-[#e2e2e8] transition-colors"
+                  className="flex-1"
+                  style={{ borderRadius: 6 }}
                 >
                   Continue
-                </button>
+                </ShineButton>
               </div>
             </div>
           </motion.div>

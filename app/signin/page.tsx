@@ -10,8 +10,11 @@ import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
-import { Button } from "@/components/ui/button"
-import { LoadingSvg } from "@/components/ui/loading-svg"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
+import { AlertMessage } from "@/components/ui/alert-message"
+import { TextInput } from "@/components/ui/text-input"
+import { Loader } from "@/components/ui/loader"
 export default function SignInPage() {
   const router = useRouter()
   const [showKey, setShowKey] = useState(false)
@@ -60,76 +63,72 @@ export default function SignInPage() {
 
   return (
     <>
-      <div className="flex min-h-screen bg-[#08090a]">
+      <div className="flex min-h-screen bg-[#151515]">
         <div className="relative flex flex-1 flex-col items-center lg:items-start lg:pl-[12%] xl:pl-[16%] justify-center px-8 py-12">
-          <div
-            className="absolute inset-0 pointer-events-none opacity-100"
-            style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-          />
           <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
               <img 
                 src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
                 alt="Hypastack" 
-                className={`w-[44px] h-[44px] object-contain ${isLoading ? 'animate-pulse' : ''}`} 
+                className="w-[44px] h-[44px] object-contain"
               />
             </div>
             <h1
-              className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-1"
+              className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-6"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
               Sign in
             </h1>
-            <p className="text-[14px] text-[#898e97] mb-8">Enter your identifier to continue.</p>
-            {error && (
-              <div className="flex items-center gap-2.5 text-[13px] text-[#ff6b6b] bg-[rgba(255,107,107,0.08)] border border-[rgba(255,107,107,0.2)] px-4 py-3 rounded-full mb-5">
-                <MIcon name="error" size={15} className="shrink-0" />
-                <span className="font-medium">{error}</span>
-              </div>
-            )}
-            {!isLoading ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
                   <label className="block text-[13px] font-medium text-[#f7f8f8] mb-2 pl-1">Identifier</label>
-                  <div
-                    className="flex items-center border border-[rgba(255,255,255,0.08)] bg-[#0a0b0c] focus-within:border-[rgba(255,255,255,0.2)] transition-colors rounded-full"
-                  >
-                    <div className="pl-4 flex items-center justify-center text-[#898e97] h-full"><MIcon name="key" size={16} /></div>
-                    <input
-                      type={showKey ? "text" : "password"}
-                      value={accessKey}
-                      onChange={(e) => setAccessKey(e.target.value)}
-                      placeholder="cid_..."
-                      autoComplete="new-password"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                      spellCheck={false}
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                      required
-                      className="flex-1 bg-transparent pl-2.5 pr-2 py-3 text-[14px] text-[#f7f8f8] placeholder:text-[#898e97] focus:outline-none font-mono rounded-full"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowKey(!showKey)}
-                      className="pr-4 flex items-center justify-center text-[#898e97] hover:text-[#f7f8f8] transition-colors outline-none h-full"
-                      aria-label={showKey ? "Hide" : "Show"}
-                    >
-                      {showKey ? <MIcon name="visibility_off" size={18} /> : <MIcon name="visibility" size={18} />}
-                    </button>
+                  <TextInput
+                    type={showKey ? "text" : "password"}
+                    value={accessKey}
+                    disabled={isLoading}
+                    onChange={(e) => setAccessKey(e.target.value)}
+                    placeholder="cid_..."
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    required
+                    fullWidth
+                    style={{ fontFamily: "var(--font-mono, monospace)" }}
+                    leading={<MIcon name="key" size={16} />}
+                    trailing={
+                      <SecondaryButton
+                        iconOnly
+                        size="xs"
+                        onClick={() => setShowKey(!showKey)}
+                        aria-label={showKey ? "Hide" : "Show"}
+                      >
+                        {showKey ? <MIcon name="visibility_off" size={18} /> : <MIcon name="visibility" size={18} />}
+                      </SecondaryButton>
+                    }
+                  />
+
+                </div>
+                {error && (
+                  <div>
+                    <AlertMessage tone="error" style={{ marginBottom: 0 }}>{error}</AlertMessage>
                   </div>
-                </div>
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    disabled={!accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
-                    variant="landing-primary"
-                    size="lg"
-                    className="w-full"
-                  >
-                    Sign in
-                  </Button>
-                </div>
+                )}
+                <ShineButton
+                  type="submit"
+                  disabled={isLoading || !accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
+                  fullWidth
+                  variant="primary"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader size={18} color="#ffffff" />
+                      Signing in…
+                    </span>
+                  ) : "Sign in"}
+                </ShineButton>
                 {process.env.NODE_ENV !== "development" && (
                   <div className="flex justify-center pt-1">
                     <Turnstile
@@ -139,51 +138,37 @@ export default function SignInPage() {
                     />
                   </div>
                 )}
-              </form>
-            ) : (
-              <div className="flex items-center gap-2 text-[14px] text-[#898e97] py-4 pl-1">
-                <LoadingSvg variant="white" size={16} />
-                Signing in…
-              </div>
-            )}
-            <p className="mt-8 text-[13px] text-[#898e97] pl-1">
+            </form>
+            <p className="mt-4 text-[13px] text-[#898e97] pl-1">
               No account?{" "}
               <Link href="/new" className="text-[#f7f8f8] font-semibold hover:underline">
                 Create one
               </Link>
             </p>
-            {!isDesktop && (
-              <div className="mt-12 flex gap-5 text-[12px] text-[#898e97] pl-1">
-                <Link href="/terms" className="hover:text-[#f7f8f8] transition-colors">Terms</Link>
-                <Link href="/privacy" className="hover:text-[#f7f8f8] transition-colors">Privacy</Link>
-                <Link href="/help" className="hover:text-[#f7f8f8] transition-colors">Help</Link>
-              </div>
-            )}
           </div>
         </div>
         {!isDesktop && (
           <div
-            className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#0a0b0c] border-l border-[rgba(255,255,255,0.05)] relative overflow-hidden"
+            className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#1e1e20] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)] pointer-events-none" />
             <div className="w-full relative z-10">
               <img 
                 src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png" 
                 alt="Behind the scenes" 
-                className="w-full h-auto mb-8 object-cover rounded-md border border-[rgba(255,255,255,0.08)] shadow-2xl" 
+                className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
               />
-              <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-6 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
-                Hey! If you found any bugs or vulnerabilities, please inform us!
+              <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+                Found a bug or vulnerability? Let us know.
               </h2>
-              <Button
+              <SecondaryButton
                 href="https://github.com/HypaStack/Hypastack-Open-Source"
                 target="_blank"
                 rel="noopener noreferrer"
-                variant="landing-secondary"
                 size="md"
               >
                 Source code
-              </Button>
+              </SecondaryButton>
             </div>
           </div>
         )}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { safeJsonLd } from "@/lib/seo/jsonLd";
 import { Navbar } from "@/components/navbar";
+import { StatusBanner } from "@/components/status-banner";
 import { Hero } from "@/components/hero";
 
 import { HowItWorks } from "@/components/how-it-works";
@@ -57,6 +59,9 @@ export default function Home() {
       />
       <Navbar />
       <main className="relative min-h-screen bg-[#08090a] text-foreground w-full overflow-hidden">
+        <Suspense fallback={null}>
+          <StatusBanner />
+        </Suspense>
         <Hero />
         <div className="flex flex-col gap-[80px] sm:gap-[120px] lg:gap-[180px] pb-[100px] sm:pb-[150px]">
           <HowItWorks />

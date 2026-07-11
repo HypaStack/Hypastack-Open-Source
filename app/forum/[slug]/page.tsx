@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/http/fetch"
 import { API_BASE } from "@/constants"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
+import { TextInput } from "@/components/ui/text-input"
+import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 
 interface ForumFile {
   id: string
@@ -167,20 +170,14 @@ function CommentComponent({
         {!comment.deleted && (
           <div className="flex items-center gap-3 mt-1.5">
             {userId && depth === 0 && (
-              <button
-                onClick={() => setReplying(!replying)}
-                className="text-[11px] text-[#898e97] hover:text-[#444]  transition-colors"
-              >
+              <SecondaryButton variant="ghost" size="xs" onClick={() => setReplying(!replying)} style={{ height: 20, padding: "0 6px", fontSize: 11, borderRadius: 6 }}>
                 Reply
-              </button>
+              </SecondaryButton>
             )}
             {userId === comment.user_id && (
-              <button
-                onClick={handleDelete}
-                className="text-[11px] text-[#898e97] hover:text-[#ef4444] transition-colors"
-              >
+              <SecondaryButton variant="ghost" danger size="xs" onClick={handleDelete} style={{ height: 20, padding: "0 6px", fontSize: 11, borderRadius: 6 }}>
                 Delete
-              </button>
+              </SecondaryButton>
             )}
           </div>
         )}
@@ -188,21 +185,23 @@ function CommentComponent({
         {/* Reply form */}
         {replying && (
           <form onSubmit={handleReply} className="mt-3 flex gap-2">
-            <input
+            <TextInput
               type="text"
               value={replyBody}
               onChange={e => setReplyBody(e.target.value)}
               placeholder="Write a reply..."
-              className="flex-1 h-8 px-3 rounded-lg bg-[#f5f5f5]  border border-[rgba(255,255,255,0.08)]  text-[12px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none"
+              className="flex-1"
+              size="sm"
               maxLength={2000}
             />
-            <button
+            <ShineButton
               type="submit"
+              size="sm"
               disabled={!replyBody.trim() || submitting}
-              className="h-8 px-3 rounded-lg bg-[#f7f8f8]  text-[#08090a]  text-[12px] font-medium disabled:opacity-40 hover:bg-[#e3e3e3]  transition-colors"
+              style={{ height: 32, borderRadius: 8, fontSize: 12 }}
             >
               Reply
-            </button>
+            </ShineButton>
           </form>
         )}
       </div>
@@ -428,22 +427,15 @@ export default function ForumPostPage() {
 
           {/* Actions */}
           <div className="flex items-center gap-3 mb-10 pb-8 border-b border-[rgba(255,255,255,0.08)] ">
-            <button
-              onClick={handleReport}
-              className="flex items-center gap-1.5 text-[12px] text-[#898e97] hover:text-[#ef4444] transition-colors"
-            >
+            <SecondaryButton variant="ghost" size="xs" onClick={handleReport} style={{ gap: 6, borderRadius: 6 }}>
               <MIcon name="flag" size={13} />
               Report
-            </button>
+            </SecondaryButton>
             {userId === post.user_id && (
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex items-center gap-1.5 text-[12px] text-[#ef4444] hover:text-[#dc2626] transition-colors disabled:opacity-50"
-              >
+              <SecondaryButton variant="ghost" danger size="xs" onClick={handleDelete} disabled={deleting} style={{ gap: 6, borderRadius: 6 }}>
                 <MIcon name="delete" size={13} />
                 {deleting ? "Deleting..." : "Delete post"}
-              </button>
+              </SecondaryButton>
             )}
           </div>
 
@@ -465,13 +457,14 @@ export default function ForumPostPage() {
                   className="w-full px-4 py-3 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors resize-none"
                 />
                 <div className="flex justify-end mt-2">
-                  <button
+                  <ShineButton
                     type="submit"
+                    size="sm"
                     disabled={!commentBody.trim() || submitting}
-                    className="h-8 px-4 rounded-lg bg-[#f7f8f8]  text-[#08090a]  text-[12px] font-semibold disabled:opacity-40 hover:bg-[#e3e3e3]  active:scale-[0.97] transition-all duration-75"
+                    style={{ height: 32, borderRadius: 8, fontSize: 12 }}
                   >
                     {submitting ? "Posting..." : "Post comment"}
-                  </button>
+                  </ShineButton>
                 </div>
               </form>
             ) : (
