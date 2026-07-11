@@ -11,6 +11,8 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { MenuItem } from "@/components/ui/menu-item"
 import { TextInput } from "@/components/ui/text-input"
+import { Loader } from "@/components/ui/loader"
+import { AlertMessage } from "@/components/ui/alert-message"
 import { useManage } from "@/hooks/useManage"
 import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
@@ -956,51 +958,52 @@ function EditProfileDialog({
               if (e.key === "Enter" && !saving) handleSave()
             }}
           >
-            <div className="relative w-full flex flex-col bg-[#f8f8f8] dark:bg-[rgba(255,255,255,0.04)] rounded-[12px]">
-              <div className="p-5 space-y-3">
-                <div>
-                  <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-1.5">Username</p>
-                  <TextInput
-                    type="text"
-                    size="md"
-                    fullWidth
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    autoFocus
-                    style={{ height: 36, fontWeight: 500 }}
-                  />
-                </div>
-
-                {nicknameError && (
-                  <p className="text-[11px] text-red-500">{nicknameError}</p>
-                )}
-                {!nicknameError && nickCooldownMs > 0 && (
-                  <p className="text-[11px] text-[#888] dark:text-[#898e97]">You can change your username again in {nickCooldownDays === 1 ? "1 day" : `${nickCooldownDays} days`}.</p>
-                )}
-                {error && (
-                  <p className="text-[11px] text-red-500">{error}</p>
-                )}
-              </div>
+            <div style={{ padding: '10px 14px 6px' }}>
+              <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingBottom: 8 }}>Username</p>
+              <TextInput
+                type="text"
+                size="md"
+                fullWidth
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                autoFocus
+                style={{ height: 46, fontWeight: 500, fontSize: 15 }}
+              />
+              {nicknameError && (
+                <p className="text-[11px] text-red-500 mt-2">{nicknameError}</p>
+              )}
+              {!nicknameError && nickCooldownMs > 0 && (
+                <p className="text-[11px] text-[#888] dark:text-[#898e97] mt-2">You can change your username again in {nickCooldownDays === 1 ? "1 day" : `${nickCooldownDays} days`}.</p>
+              )}
             </div>
 
-            <div className="flex gap-1.5" style={{ marginTop: 6 }}>
-              <SecondaryButton
-                variant="ghost"
-                onClick={onClose}
-                disabled={saving}
-                className="flex-1"
-                style={{ height: 38, borderRadius: 9999, fontSize: 14 }}
-              >
-                Cancel
-              </SecondaryButton>
-              <ShineButton
-                onClick={handleSave}
-                disabled={saving || !isNicknameValid || nickCooldownLocked}
-                className="flex-1"
-                style={{ height: 38, borderRadius: 9999, fontSize: 14 }}
-              >
-                {saving ? "Saving..." : "Save"}
-              </ShineButton>
+            {error && (
+              <div style={{ padding: '0 6px 6px' }}>
+                <AlertMessage tone="error" style={{ marginBottom: 0 }}>{error}</AlertMessage>
+              </div>
+            )}
+
+            <div className="flex gap-2" style={{ padding: 4 }}>
+              <div className="flex-1">
+                <SecondaryButton size="md" fullWidth onClick={onClose} disabled={saving}>
+                  Cancel
+                </SecondaryButton>
+              </div>
+              <div className="flex-1">
+                <ShineButton
+                  size="md"
+                  fullWidth
+                  onClick={handleSave}
+                  disabled={saving || !isNicknameValid || nickCooldownLocked}
+                >
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader size={16} color="#ffffff" />
+                      Saving...
+                    </span>
+                  ) : "Save"}
+                </ShineButton>
+              </div>
             </div>
           </motion.div>
         </div>
