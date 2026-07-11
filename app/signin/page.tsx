@@ -113,20 +113,19 @@ export default function SignInPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#151515] px-8">
         <div className="w-full max-w-[360px]">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[#f7f8f8]">
-              <MIcon name="fingerprint" size={28} />
-            </div>
-          </div>
           <h1
-            className="text-center text-[22px] font-semibold tracking-tight text-[#f7f8f8] mb-2"
+            className="text-[22px] font-semibold tracking-tight text-[#f7f8f8] mb-4"
             style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
           >
             Enable biometric unlock?
           </h1>
-          <p className="text-center text-[13px] text-[#898e97] mb-7 leading-relaxed">
+          <AlertMessage
+            tone="info"
+            icon={<MIcon name="fingerprint" size={18} style={{ flexShrink: 0, marginRight: 8, marginTop: 1 }} />}
+            style={{ marginBottom: 24 }}
+          >
             Sign in on this device with Face ID, Touch ID or your fingerprint instead of pasting your identifier. It stays on this device and never reaches the server.
-          </p>
+          </AlertMessage>
           <ShineButton onClick={handleEnroll} disabled={enrolling} fullWidth size="lg" variant="primary">
             {enrolling ? "Setting up…" : "Enable"}
           </ShineButton>
