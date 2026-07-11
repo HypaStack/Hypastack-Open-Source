@@ -1,0 +1,21 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://hypastack.com/api/v2",
+      "service-doc": [
+        {
+          "href": "https://github.com/HypaStack/Hypastack-Open-Source#the-stack",
+          "type": "text/html",
+          "title": "Hypastack API — source and documentation"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://status.hypastack.com",
+          "type": "text/html",
+          "title": "Hypastack status"
+        }
+      ]
+    }
+  ]
+}

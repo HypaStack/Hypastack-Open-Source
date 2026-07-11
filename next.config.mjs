@@ -119,6 +119,31 @@ const nextConfig = {
         ],
       },
       {
+        // RFC 9727 API catalog — served as a linkset
+        source: "/.well-known/api-catalog",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/linkset+json",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=3600",
+          },
+        ],
+      },
+      {
+        // RFC 8288 discovery links so agents can find the API catalog and docs
+        source: "/",
+        headers: [
+          {
+            key: "Link",
+            value:
+              '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://github.com/HypaStack/Hypastack-Open-Source#the-stack>; rel="service-doc"',
+          },
+        ],
+      },
+      {
         // Manifest caching
         source: "/manifest.json",
         headers: [
