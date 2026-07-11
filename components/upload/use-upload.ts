@@ -18,6 +18,7 @@ import { copyToClipboard, notifyDesktopUploadComplete } from "./desktop"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 import { runCdnUpload } from "./cdn-upload"
 import { resumeMultipartUpload } from "./resume"
+import { dispatchUploadLinks } from "@/lib/integrations/discordWebhook"
 
 export function useUpload({
   initialFiles,
@@ -415,6 +416,18 @@ export function useUpload({
         .catch((e) => console.error("[Desktop] Failed to trigger native notification/clipboard", e))
     }
   }, [state, shareUrl])
+
+  // Notify the user's Discord webhook once per completed upload (keyless link;
+  // no-op unless they've configured it in Integrations settings).
+  const webhookSentRef = useRef(false)
+  useEffect(() => {
+    if (state !== "done") { webhookSentRef.current = false; return }
+    if (webhookSentRef.current) return
+    const links = shareUrls.length ? shareUrls : (shareUrl ? shareUrl.split("\n").filter(Boolean) : [])
+    if (!links.length) return
+    webhookSentRef.current = true
+    dispatchUploadLinks(links)
+  }, [state, shareUrl, shareUrls])
 
   const handleCopy = async () => {
     if (!shareUrl) return
