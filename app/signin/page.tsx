@@ -25,7 +25,7 @@ export default function SignInPage() {
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
   const [bioEnrolled, setBioEnrolled] = useState(false)
-  const [bioBusy, setBioBusy] = useState(false)
+  const [bioStage, setBioStage] = useState<null | "verifying" | "success">(null)
   const [showEnroll, setShowEnroll] = useState(false)
   const [pendingKey, setPendingKey] = useState("")
   const [enrolling, setEnrolling] = useState(false)
@@ -89,16 +89,19 @@ export default function SignInPage() {
 
   const handleBiometricUnlock = async () => {
     setError("")
-    setBioBusy(true)
+    setBioStage("verifying")
     try {
       const key = await unlockWithBiometric()
-      if (!key) { setBioBusy(false); return } // cancelled or unavailable
+      if (!key) { setBioStage(null); return } // cancelled or unavailable
+      // Flash "Success" before handing off to the normal sign-in spinner.
+      setBioStage("success")
+      await new Promise((r) => setTimeout(r, 650))
       setIsLoading(true)
       await runLogin(key)
       goToApp()
     } catch (err: any) {
       setError(err.message || "Biometric sign-in failed")
-      setBioBusy(false)
+      setBioStage(null)
       setIsLoading(false)
     }
   }
@@ -213,13 +216,13 @@ export default function SignInPage() {
                   <SecondaryButton
                     type="button"
                     onClick={handleBiometricUnlock}
-                    disabled={bioBusy || isLoading || (!turnstileToken && process.env.NODE_ENV !== "development")}
+                    disabled={bioStage !== null || isLoading || (!turnstileToken && process.env.NODE_ENV !== "development")}
                     fullWidth
                     size="lg"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      {bioBusy ? <Loader size={16} /> : <MIcon name="fingerprint" size={18} />}
-                      {bioBusy ? "Verifying…" : "Unlock with biometrics"}
+                      {bioStage === "verifying" ? <Loader size={16} /> : bioStage === "success" ? <MIcon name="check" size={18} /> : <MIcon name="fingerprint" size={18} />}
+                      {bioStage === "verifying" ? "Verifying…" : bioStage === "success" ? "Success" : "Unlock with biometrics"}
                     </span>
                   </SecondaryButton>
                 )}
