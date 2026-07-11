@@ -30,7 +30,7 @@ import {
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
-import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -285,8 +285,8 @@ function ManageLayoutInner({
   const tierLimits = getTierLimits(normalizeTier(user.tier))
   const sharedUsed = files?.length ?? 0
   const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
-  const sharedPct = tierLimits.maxFileLinks > 0 ? (sharedUsed / tierLimits.maxFileLinks) * 100 : 0
-  const cdnPct = tierLimits.maxCdnLinks > 0 ? (cdnUsed / tierLimits.maxCdnLinks) * 100 : 0
+  const sharedPct = isUnlimited(tierLimits.maxFileLinks) || tierLimits.maxFileLinks <= 0 ? 0 : (sharedUsed / tierLimits.maxFileLinks) * 100
+  const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#08090a] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -440,7 +440,7 @@ function ManageLayoutInner({
                   <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
                   <span>Shared Links</span>
                 </div>
-                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{tierLimits.maxFileLinks}</span>
+                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
               </div>
               <ProgressBar value={sharedPct} aria-label="Shared links used" />
             </div>
@@ -451,7 +451,7 @@ function ManageLayoutInner({
                   <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
                   <span>CDN Assets</span>
                 </div>
-                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
+                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
               </div>
               <ProgressBar value={cdnPct} aria-label="CDN assets used" />
             </div>

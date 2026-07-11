@@ -1,5 +1,5 @@
 import { type PreferencesTier } from "@/constants"
-import { getTierLimits, formatTierSize } from "./tier-limits"
+import { getTierLimits, formatTierSize, isUnlimited } from "./tier-limits"
 
 export type PlanInfo = {
   key: PreferencesTier
@@ -47,7 +47,8 @@ function buildDetails(key: PreferencesTier): string[] {
   const storage = formatTierSize(l.maxCdnStorage)
   const upload = formatTierSize(l.maxNormalUploadSize)
   const cdn = formatTierSize(l.maxCdnFileSize)
-  const links = `${l.maxCdnLinks} CDN links, ${l.maxFileLinks} file links`
+  const fileLinks = isUnlimited(l.maxFileLinks) ? "Unlimited share links" : `${l.maxFileLinks} share links`
+  const cdnLinks = isUnlimited(l.maxCdnLinks) ? "Unlimited CDN Assets" : `${l.maxCdnLinks} CDN Assets`
   const { features } = PLAN_META[key]
 
   if (key === "free") {
@@ -55,7 +56,8 @@ function buildDetails(key: PreferencesTier): string[] {
       `${storage} of storage`,
       `Up to ${upload} per file`,
       `Up to ${cdn} per CDN Asset`,
-      links,
+      fileLinks,
+      cdnLinks,
       ...features,
     ]
   }
@@ -69,7 +71,8 @@ function buildDetails(key: PreferencesTier): string[] {
     `${storage} of storage`,
     `Up to ${upload} per file`,
     `Up to ${cdn} per CDN Asset`,
-    links,
+    fileLinks,
+    cdnLinks,
     expiry,
     ...features,
   ]

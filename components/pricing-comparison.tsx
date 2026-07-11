@@ -1,5 +1,5 @@
 import { MIcon } from "@/components/ui/material-icon"
-import { getTierLimits, formatTierSize, type PreferencesTier, type TierLimits } from "@/constants"
+import { getTierLimits, formatTierSize, isUnlimited, type PreferencesTier, type TierLimits } from "@/constants"
 
 // Columns align with the three plan cards above (Essential, Pro, Max).
 const TIERS: PreferencesTier[] = ["essential", "premium", "ultimate"]
@@ -34,8 +34,8 @@ const SECTIONS: Section[] = [
       derive((l) => f(l.maxCdnStorage), "storage"),
       derive((l) => f(l.maxNormalUploadSize), "per file"),
       derive((l) => f(l.maxCdnFileSize), "per CDN file"),
-      derive((l) => String(l.maxFileLinks), "file links"),
-      derive((l) => String(l.maxCdnLinks), "CDN links"),
+      derive((l) => isUnlimited(l.maxFileLinks) ? "Unlimited" : String(l.maxFileLinks), "file links"),
+      derive((l) => isUnlimited(l.maxCdnLinks) ? "Unlimited" : String(l.maxCdnLinks), "CDN links"),
       derive((l) => `${l.expirationMultiplier}×`, "expiration windows"),
     ],
   },

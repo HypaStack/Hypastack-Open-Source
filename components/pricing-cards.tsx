@@ -8,7 +8,7 @@ import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { ShineCard } from "@/components/ui/shine-card"
-import { TIER_ORDER, getTierLimits, formatTierSize, type PreferencesTier } from "@/constants"
+import { TIER_ORDER, getTierLimits, formatTierSize, isUnlimited, type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 
 const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
@@ -37,7 +37,9 @@ function bullets(tier: PreferencesTier): string[] {
   const l = getTierLimits(tier)
   const upload = formatTierSize(l.maxNormalUploadSize)
   const cdn = formatTierSize(l.maxCdnFileSize)
-  const links = `${l.maxFileLinks} file + ${l.maxCdnLinks} CDN links`
+  const links = isUnlimited(l.maxFileLinks) && isUnlimited(l.maxCdnLinks)
+    ? "Unlimited share links & CDN assets"
+    : `${l.maxFileLinks} file + ${l.maxCdnLinks} CDN links`
 
   switch (tier) {
     case "essential":

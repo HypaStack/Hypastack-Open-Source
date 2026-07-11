@@ -21,6 +21,12 @@ export interface TierLimits {
 const MB = 1024 * 1024
 const GB = 1024 * MB
 
+// Sentinel for an uncapped countable limit (file links / CDN assets). Large
+// enough that every quota check and the atomic insert guard pass as-is, so the
+// uncap needs no changes to enforcement — only the UI formats it as "Unlimited".
+export const UNLIMITED = Number.MAX_SAFE_INTEGER
+export const isUnlimited = (n: number): boolean => n >= UNLIMITED
+
 export const FREE_LIMITS: TierLimits = {
   label: "Free",
   maxNormalUploadSize: 50 * MB,
@@ -71,8 +77,8 @@ export const ULTIMATE_LIMITS: TierLimits = {
   maxNormalUploadSize: 100 * GB,
   maxCdnFileSize: 2 * GB,
   maxCdnStorage: 1000 * GB, // Adjusted to exactly 1TB
-  maxCdnLinks: 125,
-  maxFileLinks: 125,
+  maxCdnLinks: UNLIMITED,
+  maxFileLinks: UNLIMITED,
   maxFilesPerUpload: 125,
   maxCdnFilesPerUpload: 125,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
