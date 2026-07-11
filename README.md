@@ -31,7 +31,7 @@
     <img src="https://img.shields.io/badge/Tauri_v2-24C8D8?logo=tauri&logoColor=white" alt="Tauri v2">
     <img src="https://img.shields.io/badge/Cloudflare_R2-F38020?logo=cloudflare&logoColor=white" alt="Cloudflare R2">
   </p>
-  <img src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=3" alt="The Hypastack dashboard">
+  <img src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=4" alt="The Hypastack dashboard">
 </div>
 
 Hypastack is a file sharing site that can't read the files it hosts. Everything you upload is locked inside your browser before it leaves your device, and the key never reaches the server. I run the server, and even I can't open your files. That's the entire idea.
