@@ -12,7 +12,7 @@ const legalClass =
 
 export function Footer() {
   return (
-    <footer className="max-w-[1200px] p-2 mx-auto">
+    <footer className="w-full max-w-[1200px] p-2 mx-auto">
       <div className="rounded-2xl bg-[rgba(15,15,15,0.65)] border border-[rgba(38,38,38,0.6)] px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
           {/* Brand */}
