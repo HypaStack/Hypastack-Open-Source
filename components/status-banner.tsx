@@ -14,7 +14,7 @@ export async function StatusBanner() {
 
   const copy = COPY[status.state]
   return (
-    <div className="w-full flex justify-center px-4 pt-20 sm:pt-24">
+    <div className="absolute inset-x-0 top-[72px] z-[80] flex justify-center px-4">
       <div className="w-full max-w-[880px]">
         <AlertMessage tone={copy.tone} style={{ marginBottom: 0 }}>
           {status.announcement ?? copy.text}
