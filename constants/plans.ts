@@ -27,13 +27,13 @@ const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annua
     features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels"],
   },
   premium: {
-    label: "Premium",
+    label: "Pro",
     monthly: "24.99 € / month",
     annual: "249.99 € / year",
     features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Fast support"],
   },
   ultimate: {
-    label: "Ultimate",
+    label: "Max",
     monthly: "32.99 € / month",
     annual: "329.99 € / year",
     features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Priority support"],

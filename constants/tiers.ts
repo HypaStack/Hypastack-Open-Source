@@ -11,8 +11,8 @@ export type PreferencesTier = "free" | "essential" | "premium" | "ultimate"
 export const TIER_LABELS: Record<string, string> = {
   free: "Free",
   essential: "Essential",
-  premium: "Premium",
-  ultimate: "Ultimate",
+  premium: "Pro",
+  ultimate: "Max",
 }
 
 /** Storage quota label shown in the plans/account UI. Derived from the storage

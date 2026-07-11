@@ -1,7 +1,7 @@
 import { MIcon } from "@/components/ui/material-icon"
 import { getTierLimits, formatTierSize, type PreferencesTier, type TierLimits } from "@/constants"
 
-// Columns align with the three plan cards above (Essential, Pro, Ultimate).
+// Columns align with the three plan cards above (Essential, Pro, Max).
 const TIERS: PreferencesTier[] = ["essential", "premium", "ultimate"]
 const LIMITS = TIERS.map(getTierLimits)
 

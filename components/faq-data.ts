@@ -22,7 +22,7 @@ export const faqs = [
   },
   {
     q: "How big can my files be?",
-    a: `Free accounts share files up to ${formatTierSize(FREE_LIMITS.maxNormalUploadSize)} and upload CDN assets up to ${formatTierSize(FREE_LIMITS.maxCdnFileSize)}, with ${formatTierSize(FREE_LIMITS.maxCdnStorage)} of CDN storage. Ultimate goes up to ${formatTierSize(ULTIMATE_LIMITS.maxNormalUploadSize)} per share, ${formatTierSize(ULTIMATE_LIMITS.maxCdnFileSize)} per CDN asset, and ${formatTierSize(ULTIMATE_LIMITS.maxCdnStorage)} of CDN storage.`,
+    a: `Free accounts share files up to ${formatTierSize(FREE_LIMITS.maxNormalUploadSize)} and upload CDN assets up to ${formatTierSize(FREE_LIMITS.maxCdnFileSize)}, with ${formatTierSize(FREE_LIMITS.maxCdnStorage)} of CDN storage. Max goes up to ${formatTierSize(ULTIMATE_LIMITS.maxNormalUploadSize)} per share, ${formatTierSize(ULTIMATE_LIMITS.maxCdnFileSize)} per CDN asset, and ${formatTierSize(ULTIMATE_LIMITS.maxCdnStorage)} of CDN storage.`,
   },
   {
     q: "How long do these links last?",
