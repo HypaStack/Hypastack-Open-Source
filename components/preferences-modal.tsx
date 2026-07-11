@@ -832,7 +832,6 @@ function BrandingSection({ user }: { user: PreferencesUser }) {
           size="sm"
           onClick={handleSaveName}
           disabled={savingName || !nameChanged || nameCooldownMs > 0}
-          style={{ borderRadius: 9999 }}
         >
           {savingName ? "Saving..." : "Save"}
         </ShineButton>
