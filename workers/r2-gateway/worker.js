@@ -125,6 +125,13 @@ async function serveFromR2(env, key, corsHeaders, opts = {}) {
   headers.set("Content-Length", object.size.toString());
   headers.set("ETag", object.httpEtag || `"${object.etag}"`);
   headers.set("X-Robots-Tag", "noindex");
+  // Content-type is client-supplied at upload and the CDN allows svg/html/xml,
+  // so an object could be text/html or image/svg+xml carrying script. `nosniff`
+  // stops content-type guessing and `sandbox` neutralizes any script when the
+  // object is navigated to or framed (subresource loads like <img> are
+  // unaffected, so image/video/font hotlinking still works).
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Content-Security-Policy", "sandbox");
   if (opts.cacheControl) headers.set("Cache-Control", opts.cacheControl);
 
   return new Response(object.body, { status: 200, headers });
