@@ -53,7 +53,8 @@ function buildDetails(key: PreferencesTier): string[] {
   if (key === "free") {
     return [
       `${storage} of storage`,
-      `${upload} max single upload, ${cdn} Max single CDN Upload`,
+      `Up to ${upload} per file`,
+      `Up to ${cdn} per CDN Asset`,
       links,
       ...features,
     ]
@@ -66,7 +67,8 @@ function buildDetails(key: PreferencesTier): string[] {
 
   return [
     `${storage} of storage`,
-    `Up to ${upload} per file (${cdn} CDN)`,
+    `Up to ${upload} per file`,
+    `Up to ${cdn} per CDN Asset`,
     links,
     expiry,
     ...features,

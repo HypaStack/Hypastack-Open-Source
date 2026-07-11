@@ -42,7 +42,8 @@ function bullets(tier: PreferencesTier): string[] {
   switch (tier) {
     case "essential":
       return [
-        `Up to ${upload} per file (${cdn} CDN)`,
+        `Up to ${upload} per file`,
+        `Up to ${cdn} per CDN Asset`,
         links,
         "Custom share links",
         "Custom expiration up to 30 days",
@@ -51,7 +52,8 @@ function bullets(tier: PreferencesTier): string[] {
       ]
     case "premium":
       return [
-        `Up to ${upload} per file (${cdn} CDN)`,
+        `Up to ${upload} per file`,
+        `Up to ${cdn} per CDN Asset`,
         links,
         `${l.expirationMultiplier}× expiration windows`,
         `${l.maxFunnelLinks} funnel links`,
@@ -59,7 +61,8 @@ function bullets(tier: PreferencesTier): string[] {
       ]
     case "ultimate":
       return [
-        `Up to ${upload} per file (${cdn} CDN)`,
+        `Up to ${upload} per file`,
+        `Up to ${cdn} per CDN Asset`,
         links,
         `${l.expirationMultiplier}× expiration windows`,
         `${l.maxFunnelLinks} funnel links`,
