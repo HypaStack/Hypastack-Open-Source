@@ -15,6 +15,7 @@ import { useManage } from "@/hooks/useManage"
 import { useTheme } from "@/hooks/useTheme"
 import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
+import { isBiometricSupported, isBiometricEnrolled, clearBiometric } from "@/lib/security/biometric"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { type PreferencesTier, API_BASE, MAX_AVATAR_SIZE, MAX_BANNER_SIZE, AVATAR_MAX_DIMENSION } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
@@ -1188,6 +1189,28 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
   const [purgeSaved, setPurgeSaved] = useState(false)
   const [purgeError, setPurgeError] = useState<string | null>(null)
 
+  const [bioSupported, setBioSupported] = useState(false)
+  const [bioEnrolled, setBioEnrolled] = useState(false)
+
+  useEffect(() => {
+    isBiometricSupported().then((ok) => {
+      setBioSupported(ok)
+      setBioEnrolled(ok && isBiometricEnrolled())
+    })
+  }, [])
+
+  const handleRemoveBio = async () => {
+    const confirmed = await hypaConfirm({
+      title: "Remove biometric unlock?",
+      description: "You'll need your identifier to sign in on this device again. Your account isn't affected.",
+      confirmText: "Remove",
+      cancelText: "Cancel",
+    })
+    if (!confirmed) return
+    clearBiometric()
+    setBioEnrolled(false)
+  }
+
   useEffect(() => {
     if (user.inactivityPurgeDays) {
       setPurgeDays(user.inactivityPurgeDays)
@@ -1232,6 +1255,27 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
           If you want me to change something up, lmk, i can think of something.
         </p>
       </div>
+
+      {bioSupported && (
+        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4" style={{ borderRadius: 12, padding: '16px 20px' }}>
+          <div className="flex items-start gap-3">
+            <MIcon name="fingerprint" size={20} className="mt-0.5 text-[#666] dark:text-[#898e97]" />
+            <div>
+              <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Biometric unlock</p>
+              <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-relaxed">
+                {bioEnrolled
+                  ? "Enabled on this device."
+                  : "Enable it the next time you sign in on this device."}
+              </p>
+            </div>
+          </div>
+          {bioEnrolled && (
+            <SecondaryButton danger size="sm" onClick={handleRemoveBio} style={{ flexShrink: 0 }}>
+              Remove
+            </SecondaryButton>
+          )}
+        </div>
+      )}
 
       <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div>
