@@ -4,7 +4,10 @@
 # The disallowed paths below are private user content (share links, pastes,
 # the dashboard) and API endpoints — nothing there is meant to be indexed.
 
+# Content preferences (contentsignals.org): index us for search, but don't
+# train models on our content and don't feed it into AI answer/input pipelines.
 User-agent: *
+Content-Signal: search=yes, ai-train=no, ai-input=no
 Allow: /
 Disallow: /api/
 Disallow: /manage
