@@ -2,7 +2,11 @@
 // a notification with the link *minus its key fragment* — the decryption key
 // (after `#`) is never included, so the webhook only tells you an upload
 // happened, it doesn't hand out access. Config + a small activity log live in
-// localStorage (per device).
+// localStorage (per device). The actual POST to Discord is relayed through our
+// own API (`/api/v2/integrations/discord`) because browsers can't call Discord
+// webhooks directly (no CORS); the relay only forwards validated Discord URLs.
+
+import { apiFetch } from "@/lib/http/fetch"
 
 const CONFIG_KEY = "hpsk_discord_webhook"
 const LOG_KEY = "hpsk_discord_webhook_log"
@@ -75,13 +79,14 @@ async function post(url: string, content: string, retries = 3): Promise<void> {
   let lastErr: unknown
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(url, {
+      const res = await apiFetch("/api/v2/integrations/discord", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ url, content }),
       })
-      // Discord rate-limits with 429 — retryable like any transient error.
-      if (!res.ok) throw new Error(`Discord responded ${res.status}`)
+      const data = await res.json().catch(() => ({ ok: false, status: 0 }))
+      // Discord rate-limits with 429; any non-ok is retryable transient error.
+      if (!res.ok || !data.ok) throw new Error(`Discord webhook failed (${data.status ?? res.status})`)
       return
     } catch (e) {
       lastErr = e
