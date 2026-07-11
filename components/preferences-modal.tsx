@@ -684,15 +684,15 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
           </p>
         </div>
         <div className="pt-4 flex justify-end">
-          <SecondaryButton
-            danger
+          <ShineButton
             size="sm"
             onClick={handleDeleteAccount}
             disabled={deleteAccountLoading}
-            style={{ borderRadius: 9999 }}
+            color="#dc2626"
+            hoverColor="#b91c1c"
           >
             {deleteAccountLoading ? "Deleting..." : "Delete account"}
-          </SecondaryButton>
+          </ShineButton>
         </div>
       </div>
     </div>
