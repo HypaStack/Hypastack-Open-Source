@@ -9,6 +9,7 @@ import { isTauri } from "@/lib/tauri"
 import { PageLogo } from "@/components/page-logo"
 import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/security/cryptoClient"
+import { isBiometricSupported, isBiometricEnrolled, enrollBiometric, unlockWithBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
@@ -23,42 +24,122 @@ export default function SignInPage() {
   const [accessKey, setAccessKey] = useState("")
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [isDesktop, setIsDesktop] = useState(false)
+  const [bioEnrolled, setBioEnrolled] = useState(false)
+  const [bioBusy, setBioBusy] = useState(false)
+  const [showEnroll, setShowEnroll] = useState(false)
+  const [pendingKey, setPendingKey] = useState("")
+  const [enrolling, setEnrolling] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
   useEffect(() => { setIsDesktop(isTauri()) }, [])
   useEffect(() => {
+    isBiometricSupported().then((ok) => setBioEnrolled(ok && isBiometricEnrolled()))
+  }, [])
+  useEffect(() => {
     if (!authLoading && isAuthenticated) window.location.href = "/manage/files"
   }, [isAuthenticated, authLoading])
+
+  const goToApp = () => {
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get("redirect")
+    const allowedRedirects = new Set(["/manage/files"])
+    window.location.href = redirect && allowedRedirects.has(redirect) ? redirect : "/manage/files"
+  }
+
+  // Shared login path: recover a session from an access key, whether the user
+  // typed it or a biometric unwrapped it.
+  const runLogin = async (key: string) => {
+    const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
+    const csrfData = await csrfRes.json()
+    const csrfToken: string = csrfData.token
+    const response = await apiFetch("/api/v2/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessKey: key, turnstileToken, csrfToken }),
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || "Failed to sign in")
+    // cid_ identifiers don't embed the id, so the server returns it; legacy
+    // hpsk_ keys fall back to extracting it locally.
+    const userId = data.userId || extractUserIdFromAccessKey(key)
+    if (!userId) throw new Error("Invalid identifier format")
+    const masterKey = await deriveMasterKey(key, userId)
+    await storeSessionKey(masterKey)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setIsLoading(true)
     try {
-      const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
-      const csrfData = await csrfRes.json()
-      const csrfToken: string = csrfData.token
-      const response = await apiFetch("/api/v2/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accessKey, turnstileToken, csrfToken }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "Failed to sign in")
-      // cid_ identifiers don't embed the id, so the server returns it; legacy
-      // hpsk_ keys fall back to extracting it locally.
-      const userId = data.userId || extractUserIdFromAccessKey(accessKey)
-      if (!userId) throw new Error("Invalid identifier format")
-      const masterKey = await deriveMasterKey(accessKey, userId)
-      await storeSessionKey(masterKey)
-      const params = new URLSearchParams(window.location.search)
-      const redirect = params.get("redirect")
-      const allowedRedirects = new Set(["/manage/files"])
-      window.location.href = redirect && allowedRedirects.has(redirect) ? redirect : "/manage/files"
+      await runLogin(accessKey)
+      // First sign-in on a device that can do biometrics -> offer to enroll.
+      if (!isBiometricEnrolled() && (await isBiometricSupported())) {
+        setPendingKey(accessKey)
+        setShowEnroll(true)
+        setIsLoading(false)
+        return
+      }
+      goToApp()
     } catch (err: any) {
       setError(err.message)
       setIsLoading(false)
     }
+  }
+
+  const handleBiometricUnlock = async () => {
+    setError("")
+    setBioBusy(true)
+    try {
+      const key = await unlockWithBiometric()
+      if (!key) { setBioBusy(false); return } // cancelled or unavailable
+      setIsLoading(true)
+      await runLogin(key)
+      goToApp()
+    } catch (err: any) {
+      setError(err.message || "Biometric sign-in failed")
+      setBioBusy(false)
+      setIsLoading(false)
+    }
+  }
+
+  const handleEnroll = async () => {
+    setEnrolling(true)
+    await enrollBiometric(pendingKey)
+    goToApp()
+  }
+
+  if (showEnroll) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#151515] px-8">
+        <div className="w-full max-w-[360px]">
+          <div className="mb-6 flex justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[#f7f8f8]">
+              <MIcon name="fingerprint" size={28} />
+            </div>
+          </div>
+          <h1
+            className="text-center text-[22px] font-semibold tracking-tight text-[#f7f8f8] mb-2"
+            style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+          >
+            Enable biometric unlock?
+          </h1>
+          <p className="text-center text-[13px] text-[#898e97] mb-7 leading-relaxed">
+            Sign in on this device with Face ID, Touch ID or your fingerprint instead of pasting your identifier. It stays on this device and never reaches the server.
+          </p>
+          <ShineButton onClick={handleEnroll} disabled={enrolling} fullWidth size="lg" variant="primary">
+            {enrolling ? "Setting up…" : "Enable"}
+          </ShineButton>
+          <button
+            onClick={goToApp}
+            disabled={enrolling}
+            className="mt-3 w-full text-[13px] text-[#898e97] transition-colors hover:text-[#f7f8f8] disabled:opacity-50"
+          >
+            Not now
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -129,6 +210,20 @@ export default function SignInPage() {
                     </span>
                   ) : "Sign in"}
                 </ShineButton>
+                {bioEnrolled && (
+                  <SecondaryButton
+                    type="button"
+                    onClick={handleBiometricUnlock}
+                    disabled={bioBusy || isLoading || (!turnstileToken && process.env.NODE_ENV !== "development")}
+                    fullWidth
+                    size="lg"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      {bioBusy ? <Loader size={16} /> : <MIcon name="fingerprint" size={18} />}
+                      {bioBusy ? "Verifying…" : "Unlock with biometrics"}
+                    </span>
+                  </SecondaryButton>
+                )}
                 {process.env.NODE_ENV !== "development" && (
                   <div className="flex justify-center pt-1">
                     <Turnstile
