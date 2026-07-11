@@ -1276,15 +1276,13 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
         </div>
       )}
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '16px 20px' }}>
-        <div>
-          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-3">Inactivity purge</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '12px 20px' }}>
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Inactivity purge</p>
+          <div className="flex items-center gap-2">
             <TextInput
               type="number"
-              size="sm"
+              size="md"
               min={7}
               max={365}
               value={purgeInput}
@@ -1294,21 +1292,21 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                 setPurgeSaved(false)
               }}
               disabled={!isPaid}
-              style={{ width: 70, height: 28, textAlign: "right", fontWeight: 500 }}
+              style={{ width: 88, height: 38, textAlign: "left", fontWeight: 500 }}
               placeholder="7"
             />
+            <span className="text-[12px] text-[#aaa] mr-1">days</span>
+            <ShineButton
+              size="sm"
+              onClick={handlePurgeSave}
+              disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
+              color={purgeSaved ? "#16a34a" : undefined}
+              hoverColor={purgeSaved ? "#15803d" : undefined}
+              style={{ height: 38 }}
+            >
+              {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
+            </ShineButton>
           </div>
-          <span className="text-[12px] text-[#aaa] mr-2">days</span>
-          <ShineButton
-            size="xs"
-            onClick={handlePurgeSave}
-            disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
-            color={purgeSaved ? "#16a34a" : undefined}
-            hoverColor={purgeSaved ? "#15803d" : undefined}
-            style={{ height: 26 }}
-          >
-            {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
-          </ShineButton>
         </div>
         {purgeError && (
           <p className="text-[11px] text-red-500 pt-3">{purgeError}</p>
