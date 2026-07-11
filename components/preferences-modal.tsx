@@ -1294,7 +1294,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
                 setPurgeSaved(false)
               }}
               disabled={!isPaid}
-              style={{ width: 70, height: 28, textAlign: "right", borderRadius: 9999, fontWeight: 500 }}
+              style={{ width: 70, height: 28, textAlign: "right", fontWeight: 500 }}
               placeholder="7"
             />
           </div>
@@ -1305,7 +1305,7 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
             disabled={!isPaid || purgeSaving || purgeInput === String(purgeDays)}
             color={purgeSaved ? "#16a34a" : undefined}
             hoverColor={purgeSaved ? "#15803d" : undefined}
-            style={{ height: 26, borderRadius: 9999 }}
+            style={{ height: 26 }}
           >
             {purgeSaved ? "Saved" : purgeSaving ? "..." : "Save"}
           </ShineButton>
