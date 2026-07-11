@@ -16,7 +16,7 @@ export async function StatusBanner() {
   return (
     <div className="fixed inset-x-0 top-[72px] z-[80] flex justify-center px-4">
       <div className="w-full max-w-[880px]">
-        <AlertMessage tone={copy.tone} style={{ marginBottom: 0 }}>
+        <AlertMessage tone={copy.tone} style={{ marginBottom: 0, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
           {status.announcement ?? copy.text}
         </AlertMessage>
       </div>
