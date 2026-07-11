@@ -1269,9 +1269,9 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
             </div>
           </div>
           {bioEnrolled && (
-            <SecondaryButton danger size="sm" onClick={handleRemoveBio} style={{ flexShrink: 0 }}>
+            <ShineButton size="sm" onClick={handleRemoveBio} color="#dc2626" hoverColor="#b91c1c" style={{ flexShrink: 0 }}>
               Remove
-            </SecondaryButton>
+            </ShineButton>
           )}
         </div>
       )}
