@@ -139,10 +139,16 @@ export function generateAccessKeyClient(userId: string): string {
 export function generateIdentifierClient(): string {
   assertWebCrypto()
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  const bytes = crypto.getRandomValues(new Uint8Array(32))
+  // Rejection sampling: discard bytes at or above the largest multiple of the
+  // alphabet size so the modulo mapping stays uniform (256 % 62 != 0 would
+  // otherwise bias the first few characters).
+  const limit = 256 - (256 % alphabet.length)
   let out = ""
-  for (let i = 0; i < bytes.length; i++) {
-    out += alphabet[bytes[i] % alphabet.length]
+  while (out.length < 32) {
+    const bytes = crypto.getRandomValues(new Uint8Array(32))
+    for (let i = 0; i < bytes.length && out.length < 32; i++) {
+      if (bytes[i] < limit) out += alphabet[bytes[i] % alphabet.length]
+    }
   }
   return `cid_${out}`
 }
