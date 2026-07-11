@@ -67,7 +67,7 @@ export function Hero() {
   return (
     <section className="relative w-full">
       <link rel="preload" as="video" href="https://r2.hypastack.com/cdn/heroassets/hero.mp4" />
-      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[10vh] sm:pt-[15vh]">
+      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
         <div className="hidden md:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <SideRays
             speed={3.4}
