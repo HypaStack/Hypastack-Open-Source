@@ -68,8 +68,8 @@ export const PREMIUM_LIMITS: TierLimits = {
 
 export const ULTIMATE_LIMITS: TierLimits = {
   label: "Max",
-  maxNormalUploadSize: 2500 * MB,
-  maxCdnFileSize: 1000 * MB,
+  maxNormalUploadSize: 100 * GB,
+  maxCdnFileSize: 2 * GB,
   maxCdnStorage: 1000 * GB, // Adjusted to exactly 1TB
   maxCdnLinks: 125,
   maxFileLinks: 125,
