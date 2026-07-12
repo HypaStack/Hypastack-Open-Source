@@ -3,8 +3,10 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
 import { getSessionKey, decryptE2E } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
+import { SESSION_FETCH_MAX_RETRIES, SESSION_FETCH_RETRY_DELAY_MS, STORAGE_KEY_E2E_MASTER } from "@/constants"
+import { resumeWebhookQueue } from "@/lib/integrations/discordWebhook"
 
-export type Tier = "free" | "essential" | "premium" | "ultimate"
+type Tier = "free" | "essential" | "premium" | "ultimate"
 
 interface User {
   id: string
@@ -90,8 +92,8 @@ interface ManageContextType {
 
 const ManageContext = createContext<ManageContextType | undefined>(undefined)
 
-const MAX_RETRIES = 3
-const RETRY_DELAY_MS = 800
+const MAX_RETRIES = SESSION_FETCH_MAX_RETRIES
+const RETRY_DELAY_MS = SESSION_FETCH_RETRY_DELAY_MS
 
 export function ManageProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -177,6 +179,8 @@ export function ManageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchData()
+    // Flush webhook messages left queued by a tab closed mid-send.
+    resumeWebhookQueue()
   }, [fetchData])
 
   const logout = async () => {
@@ -191,7 +195,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
       setFiles([])
       setCdnAssets([])
       setCdnFolders([])
-      localStorage.removeItem("hpsk_e2e_master")
+      localStorage.removeItem(STORAGE_KEY_E2E_MASTER)
       window.location.href = "/"
     }
   }

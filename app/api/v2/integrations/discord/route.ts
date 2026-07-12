@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { withAuth } from "@/lib/http/route"
 import { apiError } from "@/lib/http/apiError"
 import { isValidDiscordWebhook } from "@/lib/integrations/discordWebhook"
-import { API_ERRORS } from "@/constants"
+import { API_ERRORS, DISCORD_MAX_CONTENT_LENGTH } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -17,7 +17,7 @@ export const POST = withAuth(async ({ request }) => {
   if (typeof url !== "string" || !isValidDiscordWebhook(url)) {
     return apiError(400, API_ERRORS.BAD_REQUEST, "Invalid webhook URL")
   }
-  if (typeof content !== "string" || content.length === 0 || content.length > 2000) {
+  if (typeof content !== "string" || content.length === 0 || content.length > DISCORD_MAX_CONTENT_LENGTH) {
     return apiError(400, API_ERRORS.BAD_REQUEST, "Invalid content")
   }
 

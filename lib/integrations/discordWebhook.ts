@@ -7,11 +7,15 @@
 // webhooks directly (no CORS); the relay only forwards validated Discord URLs.
 
 import { apiFetch } from "@/lib/http/fetch"
-
-const CONFIG_KEY = "hpsk_discord_webhook"
-const LOG_KEY = "hpsk_discord_webhook_log"
-const MAX_LOG = 8
-export const WEBHOOK_LOG_EVENT = "hpsk-webhook-log"
+import {
+  STORAGE_KEY_DISCORD_WEBHOOK,
+  STORAGE_KEY_DISCORD_WEBHOOK_LOG,
+  STORAGE_KEY_DISCORD_WEBHOOK_QUEUE,
+  WEBHOOK_LOG_EVENT,
+  WEBHOOK_LOG_MAX_ENTRIES,
+  WEBHOOK_BATCH_DELAY_MS,
+  DISCORD_MAX_CONTENT_LENGTH,
+} from "@/constants"
 
 export interface WebhookConfig {
   url: string
@@ -28,7 +32,7 @@ export interface WebhookLogEntry {
 export function getWebhookConfig(): WebhookConfig {
   if (typeof window === "undefined") return { url: "", enabled: false }
   try {
-    const raw = localStorage.getItem(CONFIG_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY_DISCORD_WEBHOOK)
     if (!raw) return { url: "", enabled: false }
     const p = JSON.parse(raw)
     return { url: typeof p.url === "string" ? p.url : "", enabled: !!p.enabled }
@@ -39,13 +43,13 @@ export function getWebhookConfig(): WebhookConfig {
 
 export function setWebhookConfig(cfg: WebhookConfig): void {
   if (typeof window === "undefined") return
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg))
+  localStorage.setItem(STORAGE_KEY_DISCORD_WEBHOOK, JSON.stringify(cfg))
 }
 
 export function getWebhookLog(): WebhookLogEntry[] {
   if (typeof window === "undefined") return []
   try {
-    const raw = localStorage.getItem(LOG_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY_DISCORD_WEBHOOK_LOG)
     return raw ? JSON.parse(raw) : []
   } catch {
     return []
@@ -54,14 +58,14 @@ export function getWebhookLog(): WebhookLogEntry[] {
 
 export function clearWebhookLog(): void {
   if (typeof window === "undefined") return
-  localStorage.removeItem(LOG_KEY)
+  localStorage.removeItem(STORAGE_KEY_DISCORD_WEBHOOK_LOG)
   window.dispatchEvent(new CustomEvent(WEBHOOK_LOG_EVENT))
 }
 
 function pushLog(entry: WebhookLogEntry): void {
   if (typeof window === "undefined") return
-  const log = [entry, ...getWebhookLog()].slice(0, MAX_LOG)
-  localStorage.setItem(LOG_KEY, JSON.stringify(log))
+  const log = [entry, ...getWebhookLog()].slice(0, WEBHOOK_LOG_MAX_ENTRIES)
+  localStorage.setItem(STORAGE_KEY_DISCORD_WEBHOOK_LOG, JSON.stringify(log))
   window.dispatchEvent(new CustomEvent(WEBHOOK_LOG_EVENT))
 }
 
@@ -96,34 +100,106 @@ async function post(url: string, content: string, retries = 3): Promise<void> {
   throw lastErr
 }
 
-// Notify about one upload (keyless link), retrying with backoff, and record the
-// outcome to the activity log. Throws on total failure.
-export async function sendLink(url: string, link: string): Promise<void> {
-  const safe = stripKey(link)
-  try {
-    await post(url, `📤 New Hypastack upload — ${safe}`)
-    pushLog({ ts: Date.now(), ok: true, link: safe })
-  } catch (e) {
-    pushLog({ ts: Date.now(), ok: false, link: safe, error: e instanceof Error ? e.message : "Failed" })
-    throw e
-  }
-}
-
 // One-off connectivity check for the settings UI. Not logged.
 export async function sendTest(url: string): Promise<void> {
   await post(url, "✅ Hypastack webhook connected — you'll get a ping here on each upload.")
 }
 
+// ── Persistent send queue ────────────────────────────────────────────────────
+// Messages wait in localStorage until actually delivered, so closing the tab
+// mid-drain loses nothing — the queue resumes on the next visit
+// (resumeWebhookQueue). Messages are spaced WEBHOOK_BATCH_DELAY_MS apart to
+// stay clear of Discord's rate limit.
+
+interface QueueEntry {
+  content: string
+  label: string
+}
+
+function getQueue(): QueueEntry[] {
+  if (typeof window === "undefined") return []
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_DISCORD_WEBHOOK_QUEUE)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function setQueue(q: QueueEntry[]): void {
+  if (typeof window === "undefined") return
+  if (q.length === 0) localStorage.removeItem(STORAGE_KEY_DISCORD_WEBHOOK_QUEUE)
+  else localStorage.setItem(STORAGE_KEY_DISCORD_WEBHOOK_QUEUE, JSON.stringify(q))
+}
+
+let _draining = false
+
+async function drainQueue(url: string): Promise<void> {
+  if (_draining) return
+  _draining = true
+  try {
+    while (true) {
+      const q = getQueue()
+      if (q.length === 0) break
+      const head = q[0]
+      try {
+        await post(url, head.content)
+        pushLog({ ts: Date.now(), ok: true, link: head.label })
+      } catch (e) {
+        pushLog({ ts: Date.now(), ok: false, link: head.label, error: e instanceof Error ? e.message : "Failed" })
+      }
+      // Re-read: new entries may have been enqueued while sending.
+      setQueue(getQueue().slice(1))
+      if (getQueue().length > 0) await new Promise((r) => setTimeout(r, WEBHOOK_BATCH_DELAY_MS))
+    }
+  } finally {
+    _draining = false
+  }
+}
+
+// Kick a stalled queue (e.g. the tab was closed mid-drain). Call once when the
+// app loads; a no-op when the queue is empty or the webhook is off.
+export function resumeWebhookQueue(): void {
+  const cfg = getWebhookConfig()
+  if (!cfg.enabled || !isValidDiscordWebhook(cfg.url)) return
+  if (getQueue().length > 0) void drainQueue(cfg.url)
+}
+
 // Fire-and-forget for a completed upload. Never throws — a webhook problem must
-// not affect the upload UX; the failure is recorded in the log instead.
+// not affect the upload UX; failures are recorded in the activity log instead.
+// Multi-file uploads are packed into a single message, split only when
+// Discord's 2000-char content cap forces it.
 export async function dispatchUploadLinks(links: string[]): Promise<void> {
   const cfg = getWebhookConfig()
   if (!cfg.enabled || !isValidDiscordWebhook(cfg.url) || links.length === 0) return
-  for (const link of links) {
-    try {
-      await sendLink(cfg.url, link)
-    } catch {
-      // already logged
+  const safe = links.map(stripKey)
+
+  const entries: QueueEntry[] = []
+  if (safe.length === 1) {
+    entries.push({ content: `📤 New Hypastack upload — ${safe[0]}`, label: safe[0] })
+  } else {
+    const batches: string[][] = []
+    let current: string[] = []
+    let length = 0
+    for (const link of safe) {
+      // +1 for the newline; keep 40 chars of headroom for the header line.
+      if (current.length > 0 && length + link.length + 1 > DISCORD_MAX_CONTENT_LENGTH - 40) {
+        batches.push(current)
+        current = []
+        length = 0
+      }
+      current.push(link)
+      length += link.length + 1
+    }
+    if (current.length > 0) batches.push(current)
+    for (const batch of batches) {
+      entries.push({
+        content: `📤 ${batch.length} new Hypastack uploads\n${batch.join("\n")}`,
+        label: batch.length === 1 ? batch[0] : `${batch[0]} +${batch.length - 1} more`,
+      })
     }
   }
+
+  setQueue([...getQueue(), ...entries])
+  await drainQueue(cfg.url)
 }
