@@ -1,5 +1,6 @@
 import { Pool, PoolClient, QueryResult } from 'pg'
 import { readFileSync } from 'fs'
+import { errorMessage } from "@/lib/errors"
 
 declare global {
   var __basedropDbPool: Pool | undefined
@@ -64,6 +65,13 @@ export function getPool(): Pool {
         ssl: process.env.DB_SSL === 'true' ? getDbSsl() : undefined,
       })
     }
+
+    // An idle client dropping (db restart, network blip) emits 'error' on the
+    // pool; without a listener that's an uncaught exception that kills the
+    // process. The pool discards the client and recovers on its own.
+    globalThis.__basedropDbPool.on('error', (err) => {
+      console.error('[DB] Idle client error (pool will recover):', err.message)
+    })
 
     globalThis.__basedropDbPool
       .connect()
@@ -485,9 +493,9 @@ export async function initDatabase(): Promise<void> {
 
     globalThis.__basedropDbInitialized = true
     console.log('[DB] PostgreSQL database initialized successfully')
-  } catch (error: any) {
+  } catch (error) {
     _initFailed = true
-    console.error('[DB] Failed to initialize database:', error.message)
+    console.error('[DB] Failed to initialize database:', errorMessage(error))
     throw error
   } finally {
     client.release()
@@ -507,4 +515,4 @@ export async function getClient(): Promise<PoolClient> {
   return pool.connect()
 }
 
-export type { QueryResult, PoolClient }
+export type { PoolClient }
