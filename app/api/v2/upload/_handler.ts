@@ -15,6 +15,7 @@ import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limit
 import { validateSlug } from "@/lib/validation/slug"
 import { API_ERRORS } from "@/constants"
 import { handleUploadBatch } from "@/app/api/v2/upload/_batch"
+import { errorCode } from "@/lib/errors"
 
 export async function handleUploadPost(request: NextRequest) {
   try {
@@ -145,9 +146,9 @@ export async function handleUploadPost(request: NextRequest) {
         folder_id: finalFolderId,
         slug: finalSlug,
       }, tier.maxFileLinks)
-    } catch (e: any) {
+    } catch (e) {
       // Race: the slug was claimed between the pre-check and the insert.
-      if (e?.code === "23505" && finalSlug) {
+      if (errorCode(e) === "23505" && finalSlug) {
         const suggestions = await suggestAvailableSlugs(finalSlug)
         return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: finalSlug, suggestions })
       }
@@ -169,7 +170,7 @@ export async function handleUploadPost(request: NextRequest) {
       shareUrl,
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Upload] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to generate upload URL")
   }

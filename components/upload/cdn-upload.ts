@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/http/fetch"
 import { IMMUTABLE_CACHE_CONTROL } from "@/constants/upload"
-import type { FileWithPreview } from "./types"
+import type { FileWithPreview, SlugConflictError } from "./types"
+import type { CdnAssetItem } from "@/hooks/useManage"
 
 interface CdnUploadDeps {
   turnstileToken: string
@@ -9,7 +10,7 @@ interface CdnUploadDeps {
   uploadDelayMs: number
   onFileIndex: (i: number) => void
   onProgress: (pct: number) => void
-  onUploadComplete?: (asset: any) => void
+  onUploadComplete?: (asset: CdnAssetItem | null) => void
 }
 
 // Uploads the selected files to the CDN: one batched init (a single Turnstile
@@ -46,7 +47,7 @@ export async function runCdnUpload(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.message || "Custom link already taken")
+      const e = new Error(error.message || "Custom link already taken") as SlugConflictError
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
@@ -109,7 +110,7 @@ export async function runCdnUpload(
   if (!completeRes.ok) {
     const error = await completeRes.json()
     if (completeRes.status === 409) {
-      const e: any = new Error(error.message || "Custom link already taken")
+      const e = new Error(error.message || "Custom link already taken") as SlugConflictError
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
@@ -129,6 +130,7 @@ export async function runCdnUpload(
         name: asset.fileName,
         size: asset.fileSize,
         contentType: asset.contentType,
+        folderId: asset.folderId ?? deps.folderId,
         cdnUrl: asset.cdnUrl,
         createdAt: new Date().toISOString(),
       })

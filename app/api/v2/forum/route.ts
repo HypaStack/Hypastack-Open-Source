@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const result = await getForumPosts({ page, limit: 30, tag, q })
 
     return NextResponse.json(result)
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum] GET error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }

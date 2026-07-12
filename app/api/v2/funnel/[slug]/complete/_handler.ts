@@ -53,7 +53,7 @@ export async function handleFunnelComplete(
     // Finalize the multipart object before we can HEAD it.
     if (uploadId && Array.isArray(parts)) {
       const normalized = parts
-        .map((p: any) => ({ partNumber: Number(p.partNumber), etag: String(p.etag) }))
+        .map((p: { partNumber?: unknown; etag?: unknown }) => ({ partNumber: Number(p.partNumber), etag: String(p.etag) }))
         .filter((p) => Number.isInteger(p.partNumber) && p.etag)
       if (normalized.length === 0) return apiError(400, API_ERRORS.BAD_REQUEST, "Missing upload parts")
       await completeMultipartUpload({ r2Key, uploadId, parts: normalized })

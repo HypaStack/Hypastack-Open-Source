@@ -74,7 +74,7 @@ export async function handleHotSwapInit(request: NextRequest) {
       assetId: asset.id,
       originalName: asset.original_name,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[CDN Hot Swap Init] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to initialize hot swap")
   }
@@ -146,7 +146,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
       fileSize: head.size,
       contentType: head.contentType,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[CDN Hot Swap Complete] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to complete hot swap")
   }

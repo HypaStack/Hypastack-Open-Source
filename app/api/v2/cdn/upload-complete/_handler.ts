@@ -9,6 +9,7 @@ import { getCdnFoldersByUserId } from "@/lib/models/cdnFolderModel"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
+import { errorCode } from "@/lib/errors"
 
 interface FileCompleteInput {
   cdnId: string
@@ -125,14 +126,14 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
 
     try {
       await createCdnAssetsBatch(assetInputs)
-    } catch (e: any) {
+    } catch (e) {
       // Slug already taken (lost the race, or the client supplied another user's
       // slug). We deliberately DO NOT delete the R2 object here: slug, cdnId and
       // filename are all client-supplied and public, so `cdn/<slug>/<name>` may
       // be the slug owner's existing object — deleting it would let one user wipe
       // another's asset. A rare orphan from a legitimate race is the safe trade.
       const taken = assetInputs.find(a => a.slug)?.slug ?? null
-      if (e?.code === "23505" && taken) {
+      if (errorCode(e) === "23505" && taken) {
         const suggestions = await suggestAvailableCdnSlugs(taken)
         return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: taken, suggestions })
       }
@@ -165,7 +166,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       success: true,
       files: completedAssets,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[CDN Complete] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to complete upload")
   }

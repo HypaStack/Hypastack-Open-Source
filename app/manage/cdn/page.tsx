@@ -9,11 +9,12 @@ import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Checkmark } from "@/components/ui/checkmark"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
-import { useManage } from "@/hooks/useManage"
+import { useManage, type CdnAssetItem } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
 import { apiFetch } from "@/lib/http/fetch"
+import { STORAGE_KEY_HIDE_CTRL_HINT } from "@/constants"
 
 interface CdnAsset {
   id: string
@@ -83,7 +84,7 @@ export default function CdnPage() {
   const [hideCtrlHint, setHideCtrlHint] = useState(true)
 
   useEffect(() => {
-    setHideCtrlHint(localStorage.getItem('hideCtrlHint') === '1')
+    setHideCtrlHint(localStorage.getItem(STORAGE_KEY_HIDE_CTRL_HINT) === '1')
   }, [])
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
@@ -123,7 +124,7 @@ export default function CdnPage() {
     e.target.value = ""
   }, [])
 
-  const handleUploadComplete = (newAsset: any) => {
+  const handleUploadComplete = (newAsset: CdnAssetItem | null) => {
     if (newAsset) {
       setAssets((prev) => [newAsset, ...prev])
     }
@@ -672,7 +673,7 @@ export default function CdnPage() {
               iconOnly
               size="xs"
               onClick={() => {
-                localStorage.setItem('hideCtrlHint', '1')
+                localStorage.setItem(STORAGE_KEY_HIDE_CTRL_HINT, '1')
                 setHideCtrlHint(true)
               }}
               className="absolute right-2 opacity-0 group-hover:opacity-100"
@@ -969,13 +970,12 @@ function CdnAssetTile({
               </div>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <img loading="lazy" decoding="async"
               src={asset.cdnUrl}
               alt={asset.name}
               className={`w-full h-full object-cover pointer-events-none transition-opacity duration-300 ${imgLoading ? 'opacity-0' : 'opacity-100'}`}
               onLoad={() => setImgLoading(false)}
               onError={() => { setImgFailed(true); setImgLoading(false) }}
-              loading="lazy"
             />
           </>
         ) : revealed && !showImage ? (

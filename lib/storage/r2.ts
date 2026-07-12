@@ -14,7 +14,7 @@ function getEnvVar(name: string): string {
   return value.trim()
 }
 
-export function getEndpoint(): string {
+function getEndpoint(): string {
   const accountId = getEnvVar("R2_ACCOUNT_ID").replace(/^https?:\/\//, '')
   const jurisdiction = process.env.R2_JURISDICTION?.trim().toLowerCase()
   
@@ -92,7 +92,6 @@ export function getR2Client(): S3Client {
   return _r2Client
 }
 
-export { getEndpoint as getR2Endpoint }
 
 export function getBucketName(): string {
   return getEnvVar("R2_BUCKET_NAME")
@@ -131,31 +130,9 @@ export function getCustomExpirationDate(minutes: number): Date {
   return new Date(Date.now() + clamped * 60 * 1000)
 }
 
-export function getDaysUntilExpiration(expiresAt: Date): number {
-  const now = new Date()
-  const diff = expiresAt.getTime() - now.getTime()
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
-}
-
 // ============================================================================
 // URL Generation
 // ============================================================================
-
-export async function getPresignedUploadUrl(fileId: string, fileName: string, contentType?: string): Promise<string> {
-  const bucketName = getBucketName()
-  const key = `uploads/${fileId}/${fileName}`
-
-  console.log("[R2] Generating upload URL for:", key)
-
-  const command = new PutObjectCommand({
-    Bucket: bucketName,
-    Key: key,
-    ...(contentType ? { ContentType: contentType } : {}),
-  })
-
-  const url = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
-  return url
-}
 
 export async function getPresignedCdnUploadUrl(
   cdnId: string,
@@ -278,57 +255,15 @@ export async function deleteFileFromR2(fileId: string, fileName: string): Promis
   console.log("[R2] Delete successful:", key)
 }
 
-export async function fileExists(fileId: string, fileName: string): Promise<boolean> {
-  const bucketName = getBucketName()
-  const key = `uploads/${fileId}/${fileName}`
-  
-  try {
-    const command = new HeadObjectCommand({
-      Bucket: bucketName,
-      Key: key,
-    })
-    await getR2Client().send(command)
-    return true
-  } catch (error: any) {
-    if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
-      return false
-    }
-    throw error
-  }
-}
-
-export async function downloadFileHead(fileId: string, fileName: string, bytes: number = 65536): Promise<Buffer> {
-  const bucketName = getBucketName()
-  const key = `uploads/${fileId}/${fileName}`
-  
-  const command = new GetObjectCommand({
-    Bucket: bucketName,
-    Key: key,
-    Range: `bytes=0-${bytes - 1}`,
-  })
-  
-  const response = await getR2Client().send(command)
-  
-  if (!response.Body) {
-    throw new Error('Empty response body')
-  }
-  
-  const chunks: Buffer[] = []
-  for await (const chunk of response.Body as any) {
-    chunks.push(Buffer.from(chunk))
-  }
-  
-  return Buffer.concat(chunks)
-}
-
 
 export async function fileExistsByKey(r2Key: string): Promise<boolean> {
   try {
     const command = new HeadObjectCommand({ Bucket: getBucketName(), Key: r2Key })
     await getR2Client().send(command)
     return true
-  } catch (error: any) {
-    if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) return false
+  } catch (error) {
+    const notFound = error as { name?: string; $metadata?: { httpStatusCode?: number } }
+    if (notFound.name === 'NotFound' || notFound.$metadata?.httpStatusCode === 404) return false
     throw error
   }
 }

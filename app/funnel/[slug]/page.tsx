@@ -11,6 +11,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { apiFetch } from "@/lib/http/fetch"
 import { dropFile, type DropState } from "@/components/funnel/transport"
+import { errorMessage } from "@/lib/errors"
 
 interface FunnelMeta {
   publicKey: string
@@ -76,10 +77,10 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
     setSendError("")
     try {
       await dropFile({ slug, file, publicKeySpki: meta.publicKey, csrfToken, turnstileToken, onState: setDropState })
-    } catch (err: any) {
+    } catch (err) {
       setDropState(null)
       setTurnstileToken("")
-      setSendError(err?.message || "Something went wrong. Please try again.")
+      setSendError(errorMessage(err, "Something went wrong. Please try again."))
     }
   }
 

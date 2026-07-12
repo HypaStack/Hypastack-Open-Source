@@ -129,7 +129,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
       shareUrl,
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[UploadProxy] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Proxy Upload Failed")
   }

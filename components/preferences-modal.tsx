@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
-import Cropper from "react-easy-crop"
+import Cropper, { type Area } from "react-easy-crop"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { ShineButton } from "@/components/ui/shine-button"
@@ -21,7 +21,6 @@ import {
   clearWebhookLog,
   sendTest,
   isValidDiscordWebhook,
-  WEBHOOK_LOG_EVENT,
   type WebhookLogEntry,
 } from "@/lib/integrations/discordWebhook"
 import { useManage } from "@/hooks/useManage"
@@ -30,15 +29,15 @@ import { useLanguage } from "@/hooks/useLanguage"
 import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, isBiometricEnrolled, clearBiometric } from "@/lib/security/biometric"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
-import { type PreferencesTier, API_BASE, MAX_AVATAR_SIZE, MAX_BANNER_SIZE, AVATAR_MAX_DIMENSION } from "@/constants"
+import { type PreferencesTier, API_BASE, MAX_AVATAR_SIZE, MAX_BANNER_SIZE, AVATAR_MAX_DIMENSION, WEBHOOK_LOG_EVENT } from "@/constants"
 import { PLAN_INFO, type PlanInfo } from "@/constants/plans"
 import { apiFetch } from "@/lib/http/fetch"
 import { DISPLAY_NAME_CHANGE_COOLDOWN_MS, NICKNAME_CHANGE_COOLDOWN_MS } from "@/constants/profile"
+import { errorMessage } from "@/lib/errors"
 
-export type { PreferencesTier }
 export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
 
-export interface PreferencesUser {
+interface PreferencesUser {
   id: string
   nickname: string
   avatarUrl: string | null
@@ -56,7 +55,7 @@ function resolveTier(user: PreferencesUser): PreferencesTier {
   return user.tier ?? (user.premium ? "essential" : "free")
 }
 
-export interface PreferencesStorage {
+interface PreferencesStorage {
   totalStorage: number
   maxStorage: number
   storagePercent: number
@@ -358,7 +357,7 @@ function AvatarCropperModal({
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
 
-  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
   }, [])
 
@@ -406,7 +405,7 @@ function AvatarCropperModal({
       })
 
       const ext = file.type === "image/png" ? "png" : "webp"
-      const uuid = (typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c: any) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
+      const uuid = (typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c: string) => (Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16))
       const cleanFile = new File([blob], `${uuid}.${ext}`, { type: blob.type })
       const fd = new FormData()
       fd.append("avatar", cleanFile)
@@ -574,7 +573,7 @@ function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; sto
       <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '16px 20px' }}>
         <div className="relative h-[84px] w-[84px] shrink-0">
           <div className="absolute inset-0 rounded-full overflow-hidden">
-            <img
+            <img decoding="async"
               src={avatarSrc}
               alt={user.nickname}
               className="absolute inset-0 w-full h-full object-cover rounded-full select-none pointer-events-none"
@@ -935,8 +934,8 @@ function EditProfileDialog({
       }
       await refreshUser()
       onClose()
-    } catch (err: any) {
-      setError(err?.message || "Well.. something got tangled up, try again later.")
+    } catch (err) {
+      setError(errorMessage(err, "Well.. something got tangled up, try again later."))
     } finally {
       setSaving(false)
     }
@@ -1388,8 +1387,8 @@ function SecurityTab({ user }: { user: PreferencesUser }) {
       setPurgeDays(val)
       setPurgeSaved(true)
       setTimeout(() => setPurgeSaved(false), 2000)
-    } catch (err: any) {
-      setPurgeError(err.message)
+    } catch (err) {
+      setPurgeError(errorMessage(err))
     } finally {
       setPurgeSaving(false)
     }

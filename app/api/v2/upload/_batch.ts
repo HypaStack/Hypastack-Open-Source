@@ -45,7 +45,18 @@ async function rollback(created: Created[]) {
  * single PUT URL; files over the multipart threshold get multipart init data.
  * This is the multi-file counterpart to the single-file handler in _handler.ts.
  */
-export async function handleUploadBatch(body: any, userId: string) {
+interface UploadBatchBody {
+  files?: BatchFileInput[]
+  burnOnRead?: boolean
+  turnstileToken?: string
+  csrfToken?: string
+  customFilename?: string
+  expiresInMinutes?: number
+  note?: string
+  folderId?: string
+}
+
+export async function handleUploadBatch(body: UploadBatchBody, userId: string) {
   const files: BatchFileInput[] = Array.isArray(body.files) ? body.files : []
   const { burnOnRead, turnstileToken, csrfToken, customFilename, expiresInMinutes, note, folderId } = body
 
@@ -53,7 +64,7 @@ export async function handleUploadBatch(body: any, userId: string) {
     return apiError(400, API_ERRORS.BAD_REQUEST, "No files provided")
   }
 
-  const csrfValid = await validateCsrfToken(csrfToken)
+  const csrfValid = await validateCsrfToken(csrfToken ?? "")
   if (!csrfValid) {
     return apiError(403, API_ERRORS.FORBIDDEN, "Invalid security token. Please refresh the page and try again.")
   }
@@ -71,7 +82,7 @@ export async function handleUploadBatch(body: any, userId: string) {
   }
 
   if (process.env.NODE_ENV !== "development") {
-    const turnstileResult = await verifyTurnstileToken(turnstileToken)
+    const turnstileResult = await verifyTurnstileToken(turnstileToken ?? "")
     if (!turnstileResult.success) {
       return apiError(403, API_ERRORS.FORBIDDEN, turnstileResult.error || "Security verification failed")
     }
@@ -109,7 +120,10 @@ export async function handleUploadBatch(body: any, userId: string) {
   const encryptedCustomFilename = sanitizedCustomFilename ? encryptFilename(sanitizedCustomFilename) : null
 
   const created: Created[] = []
-  const results: any[] = []
+  type BatchResult =
+    | { fileId: string; kind: "multipart"; uploadId: string; presignedUrls: string[]; totalParts: number; chunkSize: number; shareUrl: string; expiresAt: string }
+    | { fileId: string; kind: "simple"; uploadUrl: string; proxyToken: string; shareUrl: string; expiresAt: string }
+  const results: BatchResult[] = []
 
   try {
     for (const f of files) {

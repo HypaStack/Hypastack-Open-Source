@@ -37,7 +37,7 @@ export async function GET(
           'Cache-Control': 'no-store, max-age=0',
         }
       })
-    } catch (e: any) {
+    } catch (e) {
       console.error("[Dumpster] Error reading from R2:", e)
       return new Response("Failed to read paste content", { status: 500 })
     }

@@ -37,7 +37,7 @@ export async function POST(
       message: "Report submitted. You can also contact me directly.",
       contact: "https://t.me/t_usekiko",
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum Report] POST error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }

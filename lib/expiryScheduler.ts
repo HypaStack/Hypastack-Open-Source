@@ -1,6 +1,7 @@
 import { deleteByKey } from '@/lib/storage/r2'
 import { bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
+import { errorMessage } from "@/lib/errors"
 
 /**
  * Precise, in-process expiry deletion for short-lived files.
@@ -28,8 +29,8 @@ async function deleteExpiredNow(fileId: string, r2Key: string, userId: string | 
   try {
     const { deleteFileRecord } = await import('@/lib/models/fileModel')
     await deleteFileRecord(fileId)
-  } catch (e: any) {
-    console.error(`[Expiry] Failed to delete expired file ${fileId}:`, e?.message)
+  } catch (e) {
+    console.error(`[Expiry] Failed to delete expired file ${fileId}:`, errorMessage(e))
   }
   if (userId) {
     await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
@@ -86,7 +87,7 @@ export async function scheduleUpcomingExpiries(): Promise<void> {
     for (const row of rows) {
       scheduleLocalExpiry(row.id, row.r2_key, row.user_id ?? null, row.expires_at)
     }
-  } catch (e: any) {
-    console.error('[Expiry] Failed to schedule upcoming expiries:', e?.message)
+  } catch (e) {
+    console.error('[Expiry] Failed to schedule upcoming expiries:', errorMessage(e))
   }
 }

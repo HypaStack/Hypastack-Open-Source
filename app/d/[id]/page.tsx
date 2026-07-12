@@ -135,8 +135,8 @@ export default function DownloadPage() {
           try {
             const h = await (window as any).showSaveFilePicker({ suggestedName: dn });
             fs = await h.createWritable();
-          } catch (e: any) {
-            if (e.name === 'AbortError') { setDownloadPhase('done'); setDownloading(false); return }
+          } catch (e) {
+            if (e instanceof Error && e.name === 'AbortError') { setDownloadPhase('done'); setDownloading(false); return }
             fs = null;
           }
         }
@@ -301,7 +301,7 @@ export default function DownloadPage() {
             <ShineCard radius={16} tilt={0}>
               {uploader && (
                 <div className="h-[150px] w-full bg-[#151616]">
-                  <img src={uploader.bannerUrl} alt="" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
+                  <img decoding="async" src={uploader.bannerUrl} alt="" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
                 </div>
               )}
 

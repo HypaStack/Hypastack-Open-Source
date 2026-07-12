@@ -84,7 +84,7 @@ export async function PATCH(
       fileSize: file.file_size,
       contentType: file.content_type,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum Files] PATCH error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }

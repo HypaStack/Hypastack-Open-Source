@@ -16,6 +16,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { TextInput } from "@/components/ui/text-input"
 import { Loader } from "@/components/ui/loader"
+import { errorMessage } from "@/lib/errors"
 export default function SignInPage() {
   const router = useRouter()
   const [showKey, setShowKey] = useState(false)
@@ -81,8 +82,8 @@ export default function SignInPage() {
         return
       }
       goToApp()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(errorMessage(err))
       setIsLoading(false)
     }
   }
@@ -99,8 +100,8 @@ export default function SignInPage() {
       setIsLoading(true)
       await runLogin(key)
       goToApp()
-    } catch (err: any) {
-      setError(err.message || "Biometric sign-in failed")
+    } catch (err) {
+      setError(errorMessage(err, "Biometric sign-in failed"))
       setBioStage(null)
       setIsLoading(false)
     }

@@ -8,6 +8,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/http/fetch"
+import { errorMessage } from "@/lib/errors"
 
 export default function DumpsterPage() {
   const [content, setContent] = useState("")
@@ -35,8 +36,8 @@ export default function DumpsterPage() {
       
       // Redirect to the public bin page
       router.push(`/bin/${data.id}`)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(errorMessage(err))
       setSaving(false)
     }
   }

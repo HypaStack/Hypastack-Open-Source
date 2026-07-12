@@ -153,7 +153,7 @@ function CommentComponent({
       <div className="py-3">
         <div className="flex items-center gap-2 mb-1">
           {comment.author_avatar_url ? (
-            <img src={comment.author_avatar_url} alt="" className="w-5 h-5 rounded-full" />
+            <img loading="lazy" decoding="async" src={comment.author_avatar_url} alt="" className="w-5 h-5 rounded-full" />
           ) : (
             <div className="w-5 h-5 rounded-full bg-[rgba(255,255,255,0.08)]  flex items-center justify-center">
               <MIcon name="person" size={10} className="text-[#999]" />

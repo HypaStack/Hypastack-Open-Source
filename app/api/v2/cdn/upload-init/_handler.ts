@@ -185,7 +185,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       success: true,
       files: results,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[CDN Init] Error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Upload Failed")
   }

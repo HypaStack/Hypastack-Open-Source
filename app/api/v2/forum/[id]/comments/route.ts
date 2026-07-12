@@ -3,6 +3,7 @@ import { withAuth } from "@/lib/http/route"
 import { validateCsrfToken } from "@/lib/security/security"
 import { getForumPostById, addComment, getCommentsByPostId } from "@/lib/models/forumModel"
 import { API_ERRORS } from "@/constants"
+import { errorMessage } from "@/lib/errors"
 
 export const dynamic = "force-dynamic"
 
@@ -21,7 +22,7 @@ export async function GET(
 
     const comments = await getCommentsByPostId(postId)
     return NextResponse.json({ comments })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum Comments] GET error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
@@ -63,8 +64,8 @@ export const POST = withAuth<{ id: string }>(async ({ request, user: currentUser
     })
 
     return NextResponse.json({ success: true, comment })
-  } catch (error: any) {
-    if (error.message === "Parent comment not found") {
+  } catch (error) {
+    if (errorMessage(error) === "Parent comment not found") {
       return NextResponse.json({ error: "Parent comment not found" }, { status: 404 })
     }
     console.error("[Forum Comments] POST error:", error)

@@ -16,6 +16,7 @@ import { DEFAULT_CHUNK_SIZE } from "@/lib/storage/multipart"
 import { encryptFilename, generateOpaqueStorageName } from "@/lib/security/filenameCrypto"
 import { resolveUploadFolder } from "@/lib/models/folderModel"
 import { API_ERRORS } from "@/constants"
+import { errorMessage, errorCode } from "@/lib/errors"
 
 export async function handleUploadMultipartPost(request: NextRequest) {
   try {
@@ -163,9 +164,9 @@ export async function handleUploadMultipartPost(request: NextRequest) {
         folder_id: finalFolderId,
         slug: finalSlug,
       }, tier.maxFileLinks)
-    } catch (e: any) {
+    } catch (e) {
       // Race: the slug was claimed between the pre-check and the insert.
-      if (e?.code === "23505" && finalSlug) {
+      if (errorCode(e) === "23505" && finalSlug) {
         await abortMultipartUpload({ r2Key, uploadId }).catch(() => {})
         const suggestions = await suggestAvailableSlugs(finalSlug)
         return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: finalSlug, suggestions })
@@ -191,8 +192,8 @@ export async function handleUploadMultipartPost(request: NextRequest) {
       totalParts,
       chunkSize,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Upload Multipart] Error:", error)
-    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, error.message || "500 Multipart Upload Failed")
+    return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, errorMessage(error, "500 Multipart Upload Failed"))
   }
 }

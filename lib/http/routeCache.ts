@@ -16,11 +16,11 @@ export interface RouteCacheOptions {
  * Caches the entire JSON response to skip controller logic completely.
  * Securely scopes the cache key to the authenticated user's ID.
  */
-export function withRouteCache(
-  handler: (req: NextRequest, params: any) => Promise<NextResponse>,
+export function withRouteCache<P = unknown>(
+  handler: (req: NextRequest, params: P) => Promise<NextResponse>,
   opts: RouteCacheOptions
 ) {
-  return async (req: NextRequest, params: any): Promise<NextResponse> => {
+  return async (req: NextRequest, params: P): Promise<NextResponse> => {
     let userId = 'public'
 
     const requireAuth = opts.requireAuth !== false

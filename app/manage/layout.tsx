@@ -322,7 +322,7 @@ function ManageLayoutInner({
             style={{ height: 48, width: 48, borderRadius: 14, ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
           >
             <div className="h-7 w-7">
-              <img
+              <img decoding="async"
                 src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
                 alt={user.nickname}
                 className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"

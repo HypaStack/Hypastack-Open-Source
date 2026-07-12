@@ -46,7 +46,7 @@ export async function GET(
         content,
         createdAt: paste.created_at,
       })
-    } catch (e: any) {
+    } catch (e) {
       console.error("[Dumpster] Error reading from R2:", e)
       return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to read paste content")
     }

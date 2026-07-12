@@ -34,7 +34,7 @@ export async function GET(
     }
 
     return NextResponse.json({ post })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum] GET [id] error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }

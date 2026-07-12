@@ -3,6 +3,7 @@ import { cached, bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
 import { scheduleFileExpiry } from '@/lib/expiryScheduler'
 import { randomUUID, webcrypto } from 'node:crypto'
+import { errorMessage, errorCode } from "@/lib/errors"
 
 export interface FileRecord {
   id: string
@@ -230,15 +231,15 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
         try {
           await pool.query(`DELETE FROM upload_staging WHERE id = $1`, [record.id])
           cleaned++
-        } catch (error: any) {
-          errors.push(`Failed to cleanup staging ${record.id}: ${error.message}`)
+        } catch (error) {
+          errors.push(`Failed to cleanup staging ${record.id}: ${errorMessage(error)}`)
         }
       }
     }
 
     return { cleaned, errors }
-  } catch (error: any) {
-    return { cleaned, errors: [`Staging cleanup failed: ${error.message}`] }
+  } catch (error) {
+    return { cleaned, errors: [`Staging cleanup failed: ${errorMessage(error)}`] }
   }
 }
 
@@ -290,12 +291,12 @@ export async function getFileById(id: string, retries = 2): Promise<FileRecord |
       folder_id: row.folder_id,
       slug: row.slug,
     }
-  } catch (error: any) {
-    if (retries > 0 && (error.code === 'ECONNREFUSED' || error.code === 'ECONNRESET' || error.code === '57P01')) {
+  } catch (error) {
+    if (retries > 0 && (errorCode(error) === 'ECONNREFUSED' || errorCode(error) === 'ECONNRESET' || errorCode(error) === '57P01')) {
       await new Promise(r => setTimeout(r, 100))
       return getFileById(id, retries - 1)
     }
-    console.error(`[DB] Error getting file:`, error.message, '- Code:', error.code)
+    console.error(`[DB] Error getting file:`, errorMessage(error), '- Code:', errorCode(error))
     return null
   }
 }
@@ -341,12 +342,12 @@ export async function getFileBySlugOrId(value: string, retries = 2): Promise<Fil
       folder_id: row.folder_id,
       slug: row.slug,
     }
-  } catch (error: any) {
-    if (retries > 0 && (error.code === 'ECONNREFUSED' || error.code === 'ECONNRESET' || error.code === '57P01')) {
+  } catch (error) {
+    if (retries > 0 && (errorCode(error) === 'ECONNREFUSED' || errorCode(error) === 'ECONNRESET' || errorCode(error) === '57P01')) {
       await new Promise(r => setTimeout(r, 100))
       return getFileBySlugOrId(value, retries - 1)
     }
-    console.error(`[DB] Error resolving file by slug/id:`, error.message, '- Code:', error.code)
+    console.error(`[DB] Error resolving file by slug/id:`, errorMessage(error), '- Code:', errorCode(error))
     return null
   }
 }
@@ -404,30 +405,6 @@ export async function markUploadComplete(id: string, fileHash?: string): Promise
   }
 }
 
-export async function getIncompleteUploads(olderThanMinutes: number = 60): Promise<FileRecord[]> {
-  await ensureDatabase()
-  const pool = getPool()
-  const result = await pool.query(
-    `SELECT * FROM basedrop_files WHERE upload_completed = FALSE AND upload_started_at < NOW() - INTERVAL '1 minute' * $1`,
-    [olderThanMinutes]
-  )
-
-  return result.rows.map(row => ({
-    id: row.id,
-    r2_key: row.r2_key,
-    original_name: row.original_name,
-    file_size: Number(row.file_size),
-    content_type: row.content_type,
-    upload_date: row.upload_date,
-    expires_at: row.expires_at,
-    burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
-    upload_completed: row.upload_completed,
-    upload_started_at: row.upload_started_at,
-    file_hash: row.file_hash,
-    folder_id: row.folder_id,
-  }))
-}
-
 export async function getExpiredFiles(limit = 500): Promise<FileRecord[]> {
   await ensureDatabase()
   const pool = getPool()
@@ -481,64 +458,6 @@ export async function deleteFileRecord(id: string): Promise<void> {
     `DELETE FROM basedrop_files WHERE id = $1`,
     [id]
   )
-}
-
-export async function isFileValid(id: string): Promise<{ valid: boolean; record?: FileRecord }> {
-  const record = await getFileById(id)
-
-  if (!record) {
-    return { valid: false }
-  }
-
-  if (!record.upload_completed) {
-    return { valid: false, record }
-  }
-
-  const now = new Date()
-  if (now > record.expires_at) {
-    return { valid: false, record }
-  }
-
-  return { valid: true, record }
-}
-
-export async function getFileStats(): Promise<{
-  totalFiles: number
-  totalSize: number
-  activeFiles: number
-  expiredFiles: number
-}> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  const result = await pool.query(`
-    SELECT
-      COUNT(*) as total_files,
-      COALESCE(SUM(file_size), 0) as total_size,
-      COUNT(*) FILTER (WHERE expires_at > NOW()) as active_files,
-      COUNT(*) FILTER (WHERE expires_at <= NOW()) as expired_files
-    FROM basedrop_files
-  `)
-
-  const row = result.rows[0]
-  return {
-    totalFiles: Number(row.total_files),
-    totalSize: Number(row.total_size),
-    activeFiles: Number(row.active_files),
-    expiredFiles: Number(row.expired_files),
-  }
-}
-
-export async function getFileHash(fileId: string): Promise<string | null> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  const result = await pool.query(
-    `SELECT file_hash FROM basedrop_files WHERE id = $1`,
-    [fileId]
-  )
-
-  return result.rows.length > 0 ? result.rows[0].file_hash : null
 }
 
 export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
@@ -612,20 +531,6 @@ export async function getUserFileStats(userId: string): Promise<{
       storageUsed: Number(row.storage_used),
     }
   })
-}
-
-export async function deleteFileById(fileId: string, userId: string): Promise<boolean> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  const result = await pool.query(
-    `DELETE FROM basedrop_files WHERE id = $1 AND user_id = $2`,
-    [fileId, userId]
-  )
-
-  await bustCache(`user:${userId}:files`, `user:${userId}:file-stats`, `user:${userId}:storage`)
-  await bustRouteCache(userId, 'files:list')
-  return (result.rowCount ?? 0) > 0
 }
 
 export async function getFilesByIds(ids: string[], userId: string): Promise<FileRecord[]> {
@@ -712,45 +617,6 @@ export async function markFileBurned(fileId: string): Promise<{ success: boolean
   } catch (error) {
     await client.query('ROLLBACK')
     throw error
-  } finally {
-    client.release()
-  }
-}
-
-export async function getFileByIdForUpdate(fileId: string): Promise<FileRecord | null> {
-  await ensureDatabase()
-  const client = await getClient()
-
-  try {
-    const result = await client.query(
-      `SELECT * FROM basedrop_files WHERE id = $1 FOR UPDATE`,
-      [fileId]
-    )
-
-    if (result.rows.length === 0) {
-      return null
-    }
-
-    const row = result.rows[0]
-    return {
-      id: row.id,
-      r2_key: row.r2_key,
-      original_name: row.original_name,
-      file_size: Number(row.file_size),
-      content_type: row.content_type,
-      upload_date: row.upload_date,
-      expires_at: row.expires_at,
-      burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
-      upload_completed: row.upload_completed,
-      upload_started_at: row.upload_started_at,
-      file_hash: row.file_hash,
-      custom_filename: row.custom_filename,
-      note: row.note,
-      user_id: row.user_id,
-      encryption_iv: row.encryption_iv,
-      encryption_auth_tag: row.encryption_auth_tag,
-      folder_id: row.folder_id,
-    }
   } finally {
     client.release()
   }

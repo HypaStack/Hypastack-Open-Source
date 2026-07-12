@@ -1,3 +1,4 @@
+import { errorMessage } from "@/lib/errors"
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY
 
 // A solved token may legitimately back a single user action that fans out to a
@@ -57,8 +58,8 @@ export async function verifyTurnstileToken(token: string): Promise<{ success: bo
     }
 
     return { success: true }
-  } catch (error: any) {
-    console.error('[Turnstile] Error:', error.message)
+  } catch (error) {
+    console.error('[Turnstile] Error:', errorMessage(error))
     return { success: false, error: 'Turnstile verification error' }
   }
 }

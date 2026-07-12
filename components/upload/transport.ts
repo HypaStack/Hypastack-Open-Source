@@ -3,7 +3,8 @@ import { uploadWithXHR } from "./utils"
 import { apiFetch, getProxyKey } from "@/lib/http/fetch"
 import { API_BASE, PROXY_HEADER, STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
 import { isTauri } from "@/lib/tauri"
-import type { FileWithPreview, InterruptedSession } from "./types"
+import type { FileWithPreview, InterruptedSession, SlugConflictError } from "./types"
+import { errorMessage } from "@/lib/errors"
 
 // Per-upload metadata every init call needs beyond the file bytes themselves.
 export interface UploadMeta {
@@ -38,7 +39,7 @@ async function encryptWholeFile(file: File): Promise<{ encryptedBlob: File; keyB
 
 // CORS fallback: stream the encrypted blob through our own proxy when a direct
 // PUT to R2 is blocked by the browser.
-export async function uploadViaProxy(
+async function uploadViaProxy(
   file: File,
   note: string | null,
   filename: string | null,
@@ -102,7 +103,7 @@ export async function uploadSingle(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.message || "Custom link already taken")
+      const e = new Error(error.message || "Custom link already taken") as SlugConflictError
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
@@ -127,8 +128,8 @@ export async function uploadSingle(
     }
 
     return `${url}#${keyBase64}`
-  } catch (fetchError: any) {
-    const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
+  } catch (fetchError) {
+    const isCORSError = errorMessage(fetchError) === "Failed to fetch" || (fetchError instanceof Error && fetchError.name === "TypeError")
     if (isCORSError) {
       onProgress(0)
       const proxyUrl = await uploadViaProxy(
@@ -179,7 +180,7 @@ export async function uploadMultipart(
   if (!initResponse.ok) {
     const error = await initResponse.json()
     if (initResponse.status === 409) {
-      const e: any = new Error(error.message || "Custom link already taken")
+      const e = new Error(error.message || "Custom link already taken") as SlugConflictError
       e.slugConflict = { suggestions: error.suggestions || [] }
       throw e
     }
@@ -204,7 +205,7 @@ export async function uploadMultipart(
   localStorage.setItem(STORAGE_KEY_INTERRUPTED_UPLOAD, JSON.stringify(sessionInfo))
 
   try {
-    let etags: any[]
+    let etags: string[] | { partNumber: number; etag: string }[]
 
     const tauriInternals = isTauri()
     const nativeFilePath = (file as any).path as string | undefined
@@ -260,11 +261,11 @@ export async function uploadMultipart(
     onProgress(100)
     onSession(null)
     return `${url}#${keyBase64}`
-  } catch (uploadError: any) {
-    if (uploadError.message === "Upload aborted") {
+  } catch (uploadError) {
+    if (errorMessage(uploadError) === "Upload aborted") {
       throw uploadError
     }
-    console.error("[Upload] Multipart upload interrupted:", uploadError.message)
+    console.error("[Upload] Multipart upload interrupted:", errorMessage(uploadError))
     throw uploadError
   }
 }
@@ -329,8 +330,8 @@ export async function uploadBatchSimple(
       throw new Error(error.message || "Upload validation failed")
     }
     return `${init.shareUrl}#${keyBase64}`
-  } catch (fetchError: any) {
-    const isCORSError = fetchError.message === "Failed to fetch" || fetchError.name === "TypeError"
+  } catch (fetchError) {
+    const isCORSError = errorMessage(fetchError) === "Failed to fetch" || (fetchError instanceof Error && fetchError.name === "TypeError")
     if (isCORSError) {
       onProgress(0)
       const proxyUrl = await uploadViaProxy(

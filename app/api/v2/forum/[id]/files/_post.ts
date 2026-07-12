@@ -129,7 +129,7 @@ export async function POST(
       sanitizedName,
       contentType,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Forum Files] POST error:", error)
     return NextResponse.json({ error: API_ERRORS.INTERNAL_SERVER_ERROR }, { status: 500 })
   }

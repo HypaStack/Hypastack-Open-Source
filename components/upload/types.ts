@@ -1,3 +1,5 @@
+import type { CdnAssetItem } from "@/hooks/useManage"
+
 export type UploadState =
   | "idle"
   | "selected"
@@ -14,11 +16,13 @@ export interface FileWithPreview {
   path?: string
 }
 
+export type SlugConflictError = Error & { slugConflict: { suggestions: string[] } }
+
 export interface UploadZoneProps {
   initialFiles?: FileList | File[] | null
   autoStart?: boolean
   uploadType?: "files" | "cdn"
-  onUploadComplete?: (asset: any) => void
+  onUploadComplete?: (asset: CdnAssetItem | null) => void
   onUploadStateChange?: (state: UploadState) => void
   currentFolderId?: string | null
 }

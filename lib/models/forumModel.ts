@@ -51,7 +51,7 @@ export interface ForumComment {
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
-export function generateForumId(): string {
+function generateForumId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
   let result = ''
   for (let i = 0; i < 12; i++) {
@@ -60,7 +60,7 @@ export function generateForumId(): string {
   return result
 }
 
-export function slugify(title: string): string {
+function slugify(title: string): string {
   return title
     .toLowerCase()
     .normalize('NFD')
@@ -178,7 +178,7 @@ export async function getForumPosts(opts: {
     )
 
     // Fetch files and comment counts for these posts in batch
-    const postIds = postsResult.rows.map((r: any) => r.id)
+    const postIds = postsResult.rows.map((r: { id: string }) => r.id)
 
     let filesMap: Record<string, ForumFile[]> = {}
     let commentCountMap: Record<string, number> = {}
@@ -203,7 +203,7 @@ export async function getForumPosts(opts: {
       }
     }
 
-    const posts: ForumPostWithFiles[] = postsResult.rows.map((row: any) => ({
+    const posts: ForumPostWithFiles[] = postsResult.rows.map((row: PostRow & { author_nickname_encrypted: string; author_avatar_url: string | null }) => ({
       ...mapPostRow(row),
       files: filesMap[row.id] ?? [],
       comment_count: commentCountMap[row.id] ?? 0,
@@ -312,16 +312,6 @@ export async function addForumFile(input: {
   return mapFileRow(result.rows[0])
 }
 
-export async function getForumFilesByPostId(postId: string): Promise<ForumFile[]> {
-  await ensureDatabase()
-  const pool = getPool()
-  const result = await pool.query(
-    'SELECT * FROM forum_files WHERE post_id = $1 ORDER BY created_at ASC',
-    [postId]
-  )
-  return result.rows.map(mapFileRow)
-}
-
 export async function getForumFileCountForPost(postId: string): Promise<number> {
   await ensureDatabase()
   const pool = getPool()
@@ -363,7 +353,7 @@ export async function getForumFileR2KeysByPostId(postId: string): Promise<string
     'SELECT r2_key FROM forum_files WHERE post_id = $1',
     [postId]
   )
-  return result.rows.map((r: any) => r.r2_key)
+  return result.rows.map((r: { r2_key: string }) => r.r2_key)
 }
 
 // ── Comments ──────────────────────────────────────────────────────────────
@@ -414,7 +404,7 @@ export async function getCommentsByPostId(postId: string): Promise<ForumComment[
       [postId]
     )
 
-    const all = result.rows.map((row: any) => ({
+    const all = result.rows.map((row: CommentRow & { author_nickname_encrypted: string; author_avatar_url: string | null }) => ({
       ...mapCommentRow(row),
       author_nickname_encrypted: row.author_nickname_encrypted,
       author_avatar_url: row.author_avatar_url,
@@ -456,7 +446,19 @@ export async function reportPost(postId: string, ip: string | null, reason: stri
 
 // ── Row mappers ───────────────────────────────────────────────────────────
 
-function mapPostRow(row: any): ForumPost {
+interface PostRow {
+  id: string
+  user_id: string
+  slug: string
+  title: string
+  description: string
+  tags: string[] | null
+  views: string | number
+  created_at: Date
+  updated_at: Date
+}
+
+function mapPostRow(row: PostRow): ForumPost {
   return {
     id: row.id,
     user_id: row.user_id,
@@ -470,7 +472,19 @@ function mapPostRow(row: any): ForumPost {
   }
 }
 
-function mapFileRow(row: any): ForumFile {
+interface FileRow {
+  id: string
+  post_id: string
+  user_id: string
+  r2_key: string
+  original_name: string
+  file_size: string | number
+  content_type: string
+  public_url: string
+  created_at: Date
+}
+
+function mapFileRow(row: FileRow): ForumFile {
   return {
     id: row.id,
     post_id: row.post_id,
@@ -484,7 +498,18 @@ function mapFileRow(row: any): ForumFile {
   }
 }
 
-function mapCommentRow(row: any): ForumComment {
+interface CommentRow {
+  id: string | number
+  post_id: string
+  user_id: string
+  parent_id: string | number | null
+  body: string
+  created_at: Date
+  updated_at: Date
+  deleted: boolean
+}
+
+function mapCommentRow(row: CommentRow): ForumComment {
   return {
     id: Number(row.id),
     post_id: row.post_id,

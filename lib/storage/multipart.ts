@@ -1,4 +1,5 @@
 import { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE, MAX_CONCURRENT_CHUNKS, CHUNK_UPLOAD_MAX_ATTEMPTS, CHUNK_UPLOAD_RETRY_DELAY_MS } from '@/constants'
+import { errorMessage } from "@/lib/errors"
 
 export { MULTIPART_THRESHOLD, DEFAULT_CHUNK_SIZE }
 
@@ -46,7 +47,7 @@ export async function decryptChunk(
   )
 }
 
-export function* chunkFile(
+function* chunkFile(
   file: File,
   chunkSize: number = DEFAULT_CHUNK_SIZE
 ): Generator<{ index: number; start: number; end: number; total: number }> {
@@ -73,8 +74,8 @@ export async function uploadChunkToR2(
   for (let attempt = 1; ; attempt++) {
     try {
       return await putChunk(presignedUrl, data, onProgress, signal)
-    } catch (err: any) {
-      if (err.message === "Upload aborted" || attempt >= CHUNK_UPLOAD_MAX_ATTEMPTS) throw err
+    } catch (err) {
+      if (errorMessage(err) === "Upload aborted" || attempt >= CHUNK_UPLOAD_MAX_ATTEMPTS) throw err
       onProgress?.(0, data.byteLength)
       await new Promise((r) => setTimeout(r, CHUNK_UPLOAD_RETRY_DELAY_MS * attempt))
       if (signal?.aborted) throw new Error("Upload aborted")

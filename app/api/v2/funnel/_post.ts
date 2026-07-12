@@ -11,6 +11,7 @@ import {
   suggestAvailableFunnelSlugs,
 } from "@/lib/models/funnelModel"
 import { API_ERRORS } from "@/constants"
+import { errorCode } from "@/lib/errors"
 
 // The keypair is generated in the owner's browser; we only ever receive the
 // public key and the already-wrapped private key. Cap their sizes so a client
@@ -71,9 +72,9 @@ export async function handleFunnelCreate({
     if (result === "cap") {
       return apiError(403, API_ERRORS.FORBIDDEN, "You've reached your active funnel link limit.")
     }
-  } catch (e: any) {
+  } catch (e) {
     // Lost a slug race.
-    if (e?.code === "23505") {
+    if (errorCode(e) === "23505") {
       const suggestions = await suggestAvailableFunnelSlugs(slug)
       return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug, suggestions })
     }

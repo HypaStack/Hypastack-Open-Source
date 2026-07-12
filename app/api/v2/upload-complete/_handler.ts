@@ -35,7 +35,7 @@ export const handleUploadCompletePost = withAuth(async ({ request, user: current
           uploadId,
           parts,
         })
-      } catch (mpError: any) {
+      } catch (mpError) {
         console.error(`[UploadComplete] Multipart completion failed:`, mpError)
         await abortMultipartUpload({ r2Key: record.r2_key, uploadId }).catch(() => {})
         return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to finalize multipart upload. Please try again.")

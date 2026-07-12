@@ -10,6 +10,7 @@ import { decryptFilename } from "@/lib/security/filenameCrypto"
 import { checkApiRateLimit } from "@/lib/data/rateLimit"
 import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
+import { errorMessage } from "@/lib/errors"
 
 // Build the uploader's download-page branding (banner + pfp + @name). Only paid
 // plans with a banner set get a header; anonymous and free uploads return null.
@@ -65,8 +66,8 @@ export async function handleFileGet(
     let record
     try {
       record = await getFileBySlugOrId(id)
-    } catch (dbError: any) {
-      console.error("[File] Database error:", dbError.message)
+    } catch (dbError) {
+      console.error("[File] Database error:", errorMessage(dbError))
       return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Database error")
     }
 
@@ -124,7 +125,7 @@ export async function handleFileGet(
       uploader,
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[File] Unexpected error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "Failed to get file")
   }

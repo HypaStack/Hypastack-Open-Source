@@ -14,6 +14,7 @@ import { TextInput } from "@/components/ui/text-input"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
+import { errorMessage } from "@/lib/errors"
 
 interface PendingFile {
   file: File
@@ -175,15 +176,15 @@ export default function ForumNewPage() {
 
           const { publicUrl } = await completeRes.json()
           setFiles(prev => prev.map((f, idx) => idx === i ? { ...f, status: "done", progress: 100, fileId, publicUrl } : f))
-        } catch (err: any) {
-          setFiles(prev => prev.map((f, idx) => idx === i ? { ...f, status: "error", error: err.message } : f))
+        } catch (err) {
+          setFiles(prev => prev.map((f, idx) => idx === i ? { ...f, status: "error", error: errorMessage(err) } : f))
         }
       }
 
       // 3. Navigate to the new post
       router.push(`/forum/${slug}`)
-    } catch (err: any) {
-      setError(err.message || "Something went wrong")
+    } catch (err) {
+      setError(errorMessage(err, "Something went wrong"))
       setSubmitting(false)
     }
   }

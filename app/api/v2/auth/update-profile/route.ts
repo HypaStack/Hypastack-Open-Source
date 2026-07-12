@@ -13,6 +13,7 @@ import {
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 import { NICKNAME_CHANGE_COOLDOWN_MS, DISPLAY_NAME_CHANGE_COOLDOWN_MS } from "@/constants/profile"
 import { API_ERRORS } from "@/constants"
+import { errorCode } from "@/lib/errors"
 
 // Strict ciphertext format: base64(iv):base64(ciphertext), max 500 chars total
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
@@ -100,9 +101,9 @@ export const POST = withAuth(async ({ request, user: auth }) => {
 
         try {
           await updateDisplayName(auth.userId, newVal)
-        } catch (e: any) {
+        } catch (e) {
           // Unique-index race: someone claimed it a moment earlier.
-          if (e?.code === "23505") {
+          if (errorCode(e) === "23505") {
             return friendly(409, API_ERRORS.CONFLICT, "That display name was just taken. Try another.")
           }
           throw e

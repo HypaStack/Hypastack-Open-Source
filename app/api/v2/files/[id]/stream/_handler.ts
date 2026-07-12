@@ -80,7 +80,7 @@ export async function handleStreamGet(
         'Cache-Control': 'no-cache',
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error(`[DownloadProxy] Error for file ${fileId}:`, error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Download Failed")
   }

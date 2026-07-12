@@ -2,6 +2,7 @@ import { getExpiredFiles, deleteFileRecord, cleanupExpiredStaging } from '@/lib/
 import { deleteByKey } from '@/lib/storage/r2'
 import { getClient } from '@/lib/data/db'
 import { scheduleUpcomingExpiries } from '@/lib/expiryScheduler'
+import { errorMessage } from "@/lib/errors"
 
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number
@@ -26,8 +27,8 @@ export async function cleanupExpiredFiles(): Promise<{
           await deleteByKey(file.r2_key)
           await deleteFileRecord(file.id)
           cleaned++
-        } catch (error: any) {
-          const errorMsg = `Failed to delete ${file.id}: ${error.message}`
+        } catch (error) {
+          const errorMsg = `Failed to delete ${file.id}: ${errorMessage(error)}`
           console.error(`[Cleanup] ${errorMsg}`)
           errors.push(errorMsg)
         }
@@ -37,9 +38,9 @@ export async function cleanupExpiredFiles(): Promise<{
     if (cleaned > 0 || errors.length > 0) {
       console.log(`[Cleanup] Expired files: cleaned=${cleaned}, errors=${errors.length}`)
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupExpiredFiles:', error)
-    errors.push(`Fatal error: ${error.message}`)
+    errors.push(`Fatal error: ${errorMessage(error)}`)
   }
 
   return { cleaned, errors }
@@ -79,14 +80,10 @@ export async function cleanupStaging(): Promise<{
   return result
 }
 
-export function stopCleanupScheduler(timer: NodeJS.Timeout): void {
-  clearInterval(timer)
-}
-
 // Delete unused funnel links older than 7 days (never dropped into). There's no
 // R2 object for an unused link — just the row and its keypair. Consumed funnels
 // are kept so their received file stays decryptable.
-export async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string[] }> {
+async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0
   const client = await getClient()
@@ -97,9 +94,9 @@ export async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors:
     )
     cleaned = result.rowCount ?? 0
     if (cleaned > 0) console.log(`[Cleanup] Unused funnels: cleaned=${cleaned}`)
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupUnusedFunnels:', error)
-    errors.push(`Fatal error: ${error.message}`)
+    errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()
   }
@@ -111,7 +108,7 @@ export async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors:
 // cleared it). Rows past 2 hours never completed: delete the orphaned R2 object
 // and the row. Ids that became a live funnel_files row are skipped (object kept)
 // and their stale markers just dropped.
-export async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string[] }> {
+async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0
   const client = await getClient()
@@ -135,17 +132,17 @@ export async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors:
         await deleteByKey(row.r2_key)
         await client.query(`DELETE FROM funnel_staging WHERE id = $1`, [row.id])
         cleaned++
-      } catch (error: any) {
-        const errorMsg = `Failed to delete funnel staging ${row.id}: ${error.message}`
+      } catch (error) {
+        const errorMsg = `Failed to delete funnel staging ${row.id}: ${errorMessage(error)}`
         console.error(`[Cleanup] ${errorMsg}`)
         errors.push(errorMsg)
       }
     }
 
     if (cleaned > 0) console.log(`[Cleanup] Funnel staging: cleaned=${cleaned}`)
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupFunnelStaging:', error)
-    errors.push(`Fatal error: ${error.message}`)
+    errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()
   }
@@ -170,8 +167,8 @@ export async function cleanupDumpsterPastes(): Promise<{ cleaned: number; errors
         await deleteByKey(paste.r2_key)
         await client.query(`DELETE FROM dumpster_pastes WHERE id = $1`, [paste.id])
         cleaned++
-      } catch (error: any) {
-        const errorMsg = `Failed to delete paste ${paste.id}: ${error.message}`
+      } catch (error) {
+        const errorMsg = `Failed to delete paste ${paste.id}: ${errorMessage(error)}`
         console.error(`[Cleanup] ${errorMsg}`)
         errors.push(errorMsg)
       }
@@ -180,9 +177,9 @@ export async function cleanupDumpsterPastes(): Promise<{ cleaned: number; errors
     if (cleaned > 0 || errors.length > 0) {
       console.log(`[Cleanup] Dumpster pastes: cleaned=${cleaned}, errors=${errors.length}`)
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupDumpsterPastes:', error)
-    errors.push(`Fatal error: ${error.message}`)
+    errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()
   }

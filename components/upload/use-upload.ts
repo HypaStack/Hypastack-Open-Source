@@ -19,6 +19,7 @@ import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uplo
 import { runCdnUpload } from "./cdn-upload"
 import { resumeMultipartUpload } from "./resume"
 import { dispatchUploadLinks } from "@/lib/integrations/discordWebhook"
+import { errorMessage as errMsg } from "@/lib/errors"
 
 export function useUpload({
   initialFiles,
@@ -235,12 +236,12 @@ export function useUpload({
           : await uploadBatchSimple(f.file, init, currentCsrfToken, { finalFilename, finalNote, burnOnRead }, setProgress)
         rawUrls[i] = url
         urls.push(files.length === 1 ? url : `${f.file.name}: ${url}`)
-      } catch (err: any) {
-        if (err.message === "Upload aborted") return false
+      } catch (err) {
+        if (errMsg(err) === "Upload aborted") return false
         if (urls.length > 0) {
           setShareUrls(rawUrls)
           setShareUrl(urls.join("\n"))
-          setErrorMessage(err.message || "Upload partially failed.")
+          setErrorMessage(errMsg(err, "Upload partially failed."))
           setState("error")
           return false
         }
@@ -356,21 +357,22 @@ export function useUpload({
       if (onUploadComplete && uploadType !== "cdn") {
         onUploadComplete(null)
       }
-    } catch (error: any) {
-      if (error.message === "Upload aborted") {
+    } catch (error) {
+      if (errMsg(error) === "Upload aborted") {
         return
       }
-      if (error.slugConflict) {
+      const slugConflict = (error as { slugConflict?: { suggestions?: string[] } }).slugConflict
+      if (slugConflict) {
         // The link was taken — drop back to the editable state so the user can
         // pick another. Turnstile tokens are single-use, so force a re-verify.
-        setSlugError({ message: "That custom link is already taken. Try one of these:", suggestions: error.slugConflict.suggestions || [] })
+        setSlugError({ message: "That custom link is already taken. Try one of these:", suggestions: slugConflict.suggestions || [] })
         setState("selected")
         setTurnstileToken("")
         setTurnstileReady(process.env.NODE_ENV === "development")
         if (turnstileRef.current) turnstileRef.current.reset()
         return
       }
-      setErrorMessage(error.message || "Upload failed. Please try again.")
+      setErrorMessage(errMsg(error, "Upload failed. Please try again."))
       setState("error")
     } finally {
       setIsUploading(false)
@@ -547,9 +549,9 @@ export function useUpload({
       setInterruptedSession(null)
       setResuming(false)
       if (onUploadComplete && uploadType !== "cdn") onUploadComplete(null)
-    } catch (err: any) {
+    } catch (err) {
       console.error("[Upload] Resume failed:", err)
-      setErrorMessage(err.message || "Resume failed")
+      setErrorMessage(errMsg(err, "Resume failed"))
       setState("error")
       setIsUploading(false)
       setResuming(false)

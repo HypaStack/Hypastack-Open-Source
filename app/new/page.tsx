@@ -16,6 +16,7 @@ import { TextInput } from "@/components/ui/text-input"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { ShineCard } from "@/components/ui/shine-card"
 import { Checkmark } from "@/components/ui/checkmark"
+import { errorMessage } from "@/lib/errors"
 
 const FEATURES = [
   { icon: "shield", label: "Zero-knowledge encryption" },
@@ -85,8 +86,8 @@ export default function CreateAccountPage() {
       if (!response.ok) throw new Error(data.error || "Failed to create account")
       await storeSessionKey(masterKey)
       setGeneratedKey(accessKey)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(errorMessage(err))
     } finally {
       setIsLoading(false)
     }
