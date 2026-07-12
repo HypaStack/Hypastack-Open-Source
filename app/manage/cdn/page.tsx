@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ContextMenu, ContextMenuItem } from "@/components/ui/context-menu"
 import { apiFetch } from "@/lib/http/fetch"
+import { errorMessage } from "@/lib/errors"
 import { STORAGE_KEY_HIDE_CTRL_HINT } from "@/constants"
 import { type CdnAsset, type CdnFolder, formatBytes, formatDate, gridVariants, gridItemVariants, getFileIcon } from "./_helpers"
 import { CdnAssetTile } from "./_asset-tile"
@@ -338,7 +339,7 @@ export default function CdnPage() {
       }, 0)
     } catch (err) {
       console.error("Hot swap error:", err)
-      hypaError("Hot swap failed")
+      hypaError("Hot swap failed", errorMessage(err))
     } finally {
       setSwapLoading(null)
       swapTargetRef.current = null
