@@ -1,8 +1,6 @@
 
 export type Tier = "free" | "essential" | "premium" | "ultimate"
 
-export const TIERS: readonly Tier[] = ["free", "essential", "premium", "ultimate"] as const
-
 export interface TierLimits {
   label: string
   maxNormalUploadSize: number
@@ -24,7 +22,7 @@ const GB = 1024 * MB
 // Sentinel for an uncapped countable limit (file links / CDN assets). Large
 // enough that every quota check and the atomic insert guard pass as-is, so the
 // uncap needs no changes to enforcement — only the UI formats it as "Unlimited".
-export const UNLIMITED = Number.MAX_SAFE_INTEGER
+const UNLIMITED = Number.MAX_SAFE_INTEGER
 export const isUnlimited = (n: number): boolean => n >= UNLIMITED
 
 export const FREE_LIMITS: TierLimits = {
@@ -42,7 +40,7 @@ export const FREE_LIMITS: TierLimits = {
   maxFunnelLinks: 0,
 }
 
-export const ESSENTIAL_LIMITS: TierLimits = {
+const ESSENTIAL_LIMITS: TierLimits = {
   label: "Essential",
   maxNormalUploadSize: 500 * MB,
   maxCdnFileSize: 200 * MB,
@@ -57,7 +55,7 @@ export const ESSENTIAL_LIMITS: TierLimits = {
   maxFunnelLinks: 10,
 }
 
-export const PREMIUM_LIMITS: TierLimits = {
+const PREMIUM_LIMITS: TierLimits = {
   label: "Pro",
   maxNormalUploadSize: 5 * GB,
   maxCdnFileSize: 500 * MB,
@@ -79,8 +77,8 @@ export const ULTIMATE_LIMITS: TierLimits = {
   maxCdnStorage: 1000 * GB, // Adjusted to exactly 1TB
   maxCdnLinks: UNLIMITED,
   maxFileLinks: UNLIMITED,
-  maxFilesPerUpload: 125,
-  maxCdnFilesPerUpload: 125,
+  maxFilesPerUpload: UNLIMITED,
+  maxCdnFilesPerUpload: UNLIMITED,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 4,
   maxFunnelUploadSize: 1000 * MB,
@@ -109,10 +107,6 @@ export function getTierLimits(tier: Tier | boolean): TierLimits {
 
 export function isPaidTier(tier: Tier): boolean {
   return tier !== "free"
-}
-
-export function getTierLabel(tier: Tier): string {
-  return TIER_TO_LIMITS[tier]?.label ?? "Free"
 }
 
 export function getTierDelayMs(tier: Tier): number {
