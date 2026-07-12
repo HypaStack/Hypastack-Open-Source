@@ -17,7 +17,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
           {/* Brand */}
           <div className="flex flex-col items-start gap-3 max-w-[300px]">
-            <img
+            <img loading="lazy" decoding="async"
               src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
               alt="Hypastack"
               className="h-8 w-auto object-contain select-none pointer-events-none"
