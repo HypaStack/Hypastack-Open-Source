@@ -10,5 +10,20 @@ export const STORAGE_KEY_INTERRUPTED_UPLOAD = "hypa_interrupted_upload"
 /** Whether the donation/support notice banner has been dismissed */
 export const STORAGE_KEY_DONATION_NOTICE = "hypastack_donation_notice_hidden"
 
-/** Whether the TOS / demo banner has been dismissed */
-export const STORAGE_KEY_BANNER_DISMISSED = "hypastack-tos-dismissed"
+/** Exported E2E master key for the active session */
+export const STORAGE_KEY_E2E_MASTER = "hpsk_e2e_master"
+
+/** Biometric unlock vault (credential id + wrapped access key) */
+export const STORAGE_KEY_BIOMETRIC = "hpsk_bio_v1"
+
+/** Discord webhook integration config */
+export const STORAGE_KEY_DISCORD_WEBHOOK = "hpsk_discord_webhook"
+
+/** Discord webhook recent activity log */
+export const STORAGE_KEY_DISCORD_WEBHOOK_LOG = "hpsk_discord_webhook_log"
+
+/** Pending (unsent) Discord webhook messages, drained with rate-limit spacing */
+export const STORAGE_KEY_DISCORD_WEBHOOK_QUEUE = "hpsk_discord_webhook_queue"
+
+/** Whether the CDN page's Ctrl-click multi-select hint has been dismissed */
+export const STORAGE_KEY_HIDE_CTRL_HINT = "hideCtrlHint"

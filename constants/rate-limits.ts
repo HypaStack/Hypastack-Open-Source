@@ -24,6 +24,12 @@ export const MAX_ATTEMPTS = {
   funnelUpload:   { free: 20 },
 } as const
 
+/** Retries for the session bootstrap fetch (auth/me, manage data) after a 429 */
+export const SESSION_FETCH_MAX_RETRIES = 3
+
+/** Delay in ms between session bootstrap retry attempts */
+export const SESSION_FETCH_RETRY_DELAY_MS = 800
+
 /** Max page refreshes allowed before triggering a lockout (Tauri desktop) */
 export const DESKTOP_MAX_REFRESHES = 3
 

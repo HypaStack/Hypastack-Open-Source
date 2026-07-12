@@ -4,13 +4,11 @@ import { useEffect, useState, useCallback } from "react"
 import {
   SUPPORTED_LANGUAGES,
   DEFAULT_LANGUAGE_CODE,
+  STORAGE_KEY_LANGUAGE,
   type Language,
 } from "@/constants"
 
-export type { Language }
-export { SUPPORTED_LANGUAGES }
-
-const STORAGE_KEY = "hypa-language"
+const STORAGE_KEY = STORAGE_KEY_LANGUAGE
 const DEFAULT_CODE = DEFAULT_LANGUAGE_CODE
 
 function readStored(): string {

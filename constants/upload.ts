@@ -78,8 +78,7 @@ export const DEFAULT_ARCHIVE_NAME = "hypastack-archive"
 /** CustomEvent the desktop app fires on the window to start a native upload */
 export const NATIVE_UPLOAD_EVENT = "hypadrive:upload"
 
-/** Min/max custom file expiration in minutes (1 minute … 30 days). Paid plans. */
-export const MIN_EXPIRATION_MINUTES = 1
+/** Max custom file expiration in minutes (30 days). Paid plans. */
 export const MAX_EXPIRATION_MINUTES = 30 * 24 * 60 // 43200
 
 /**

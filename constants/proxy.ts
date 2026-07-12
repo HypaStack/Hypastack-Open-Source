@@ -15,6 +15,9 @@ export const AUTH_ROUTES: Array<{ prefix: string; fallback: string }> = [
   { prefix: '/experience', fallback: '/new'    },
 ]
 
+/** Default timeout in ms for client API calls (apiFetch); pass a `signal` to override */
+export const API_FETCH_TIMEOUT_MS = 30_000
+
 /** Header name used to pass the short-lived proxy HMAC token */
 export const PROXY_HEADER = 'x-hypastack-proxy-key'
 

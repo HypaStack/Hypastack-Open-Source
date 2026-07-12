@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
 import { apiFetch } from "@/lib/http/fetch"
+import { SESSION_FETCH_MAX_RETRIES, SESSION_FETCH_RETRY_DELAY_MS, STORAGE_KEY_E2E_MASTER } from "@/constants"
 
 interface AuthContextType {
   userId: string | null
@@ -12,8 +13,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const MAX_RETRIES = 3
-const RETRY_DELAY_MS = 800
+const MAX_RETRIES = SESSION_FETCH_MAX_RETRIES
+const RETRY_DELAY_MS = SESSION_FETCH_RETRY_DELAY_MS
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null)
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       // never leave a stale master key behind, even if the request failed
       setUserId(null)
-      localStorage.removeItem("hpsk_e2e_master")
+      localStorage.removeItem(STORAGE_KEY_E2E_MASTER)
       window.location.href = "/"
     }
   }

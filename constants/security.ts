@@ -13,6 +13,13 @@ export const MAX_FILE_SIZE = 500 * 1024 * 1024
 /** Maximum characters allowed for an upload note */
 export const MAX_NOTE_LENGTH = 100
 
+/**
+ * Fixed PRF salt label for the biometric unlock passkey. Changing it changes
+ * every credential's PRF output and orphans all enrolled vaults — never bump
+ * without a migration.
+ */
+export const BIOMETRIC_PRF_SALT_LABEL = "hypastack-prf-v1"
+
 /** MIME types that are always blocked from upload regardless of extension */
 export const BLOCKED_MIME_TYPES = new Set([
   "application/x-msdownload",

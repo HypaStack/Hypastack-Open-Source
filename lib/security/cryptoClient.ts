@@ -1,3 +1,5 @@
+import { STORAGE_KEY_E2E_MASTER } from "@/constants"
+
 function assertWebCrypto(): void {
   if (typeof crypto === "undefined" || !crypto.subtle) {
     throw new Error(
@@ -94,7 +96,7 @@ export async function storeSessionKey(key: CryptoKey): Promise<void> {
     assertWebCrypto()
     const rawKey = await crypto.subtle.exportKey("raw", key)
     const keyBase64 = arrayBufferToBase64(rawKey)
-    localStorage.setItem("hpsk_e2e_master", keyBase64)
+    localStorage.setItem(STORAGE_KEY_E2E_MASTER, keyBase64)
   } catch (err) {
     console.error("Failed to store session key:", err)
   }
@@ -103,7 +105,7 @@ export async function storeSessionKey(key: CryptoKey): Promise<void> {
 export async function getSessionKey(): Promise<CryptoKey | null> {
   try {
     assertWebCrypto()
-    const keyBase64 = localStorage.getItem("hpsk_e2e_master")
+    const keyBase64 = localStorage.getItem(STORAGE_KEY_E2E_MASTER)
     if (!keyBase64) return null
 
     const rawKey = base64ToArrayBuffer(keyBase64)
@@ -123,14 +125,6 @@ export async function getSessionKey(): Promise<CryptoKey | null> {
 export function generateUserIdClient(): string {
   assertWebCrypto()
   return crypto.randomUUID()
-}
-
-export function generateAccessKeyClient(userId: string): string {
-  assertWebCrypto()
-  const secretBytes = crypto.getRandomValues(new Uint8Array(32))
-  const secretHex = Array.from(secretBytes).map(b => b.toString(16).padStart(2, '0')).join('')
-  const cleanId = userId.replace(/-/g, "")
-  return `hpsk_${cleanId}_${secretHex}`
 }
 
 // New identifier scheme: cid_<32 random alphanumerics>. Carries no embedded

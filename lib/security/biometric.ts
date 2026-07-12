@@ -5,9 +5,11 @@
 // access key -> the caller replays the normal login. Nothing new reaches the
 // server, so the zero-knowledge model is untouched.
 
-const STORAGE_KEY = "hpsk_bio_v1"
+import { STORAGE_KEY_BIOMETRIC, BIOMETRIC_PRF_SALT_LABEL } from "@/constants"
+
+const STORAGE_KEY = STORAGE_KEY_BIOMETRIC
 // Fixed salt -> stable PRF output for a given credential across unlocks.
-const PRF_SALT = new TextEncoder().encode("hypastack-prf-v1")
+const PRF_SALT = new TextEncoder().encode(BIOMETRIC_PRF_SALT_LABEL)
 
 function bufToB64(buf: ArrayBuffer | Uint8Array): string {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf)
