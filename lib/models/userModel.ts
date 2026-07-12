@@ -37,10 +37,6 @@ export async function getUserTier(userId: string): Promise<Tier> {
   return normalizeTier(result.rows[0]?.tier)
 }
 
-export async function getUserPremium(userId: string): Promise<boolean> {
-  return isPaidTier(await getUserTier(userId))
-}
-
 export async function acknowledgeUserTier(userId: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
@@ -302,23 +298,6 @@ export async function revokeSession(sessionId: string): Promise<void> {
     `UPDATE user_sessions SET revoked = TRUE WHERE id = $1`,
     [sessionId]
   )
-}
-
-export async function revokeAllUserSessions(userId: string, exceptSessionId?: string): Promise<void> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  if (exceptSessionId) {
-    await pool.query(
-      `UPDATE user_sessions SET revoked = TRUE WHERE user_id = $1 AND id != $2`,
-      [userId, exceptSessionId]
-    )
-  } else {
-    await pool.query(
-      `UPDATE user_sessions SET revoked = TRUE WHERE user_id = $1`,
-      [userId]
-    )
-  }
 }
 
 

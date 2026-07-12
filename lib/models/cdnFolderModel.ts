@@ -4,7 +4,7 @@ import { deleteObjectsBatch } from '@/lib/storage/r2'
 import { deleteCdnAssetsByIds } from '@/lib/models/cdnModel'
 import { cached, bustCache } from '@/lib/data/cache'
 
-export interface CdnFolder {
+interface CdnFolder {
   id: string
   user_id: string
   name: string

@@ -1,4 +1,3 @@
-import { z } from "zod"
 import { JSDOM } from "jsdom"
 import DOMPurify from "dompurify"
 import { fileTypeFromBuffer } from "file-type"
@@ -9,36 +8,6 @@ import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTE
 
 const window = new JSDOM("").window
 const purify = DOMPurify(window)
-
-export const UploadRequestSchema = z.object({
-  fileName: z
-    .string()
-    .min(1, "Filename is required")
-    .max(255, "Filename too long")
-    .regex(/^[^\\/:*?"<>|]+$/, "Invalid characters in filename"),
-  fileSize: z
-    .number()
-    .int()
-    .positive("File size must be positive")
-    .max(MAX_FILE_SIZE, `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`),
-  contentType: z.string().min(1, "Content type is required"),
-  burnOnRead: z.boolean().default(false),
-  customFilename: z
-    .string()
-    .max(100, "Custom filename too long")
-    .regex(/^[^\\/:*?"<>|]*$/, "Invalid characters in custom filename")
-    .nullable()
-    .optional(),
-  note: z
-    .string()
-    .max(MAX_NOTE_LENGTH, `Note exceeds ${MAX_NOTE_LENGTH} characters`)
-    .nullable()
-    .optional(),
-  turnstileToken: z.string().min(1, "Turnstile token required"),
-  csrfToken: z.string().min(1, "CSRF token required"),
-})
-
-export type UploadRequest = z.infer<typeof UploadRequestSchema>
 
 function stripInjectionPatterns(input: string): string {
   return input
@@ -75,73 +44,6 @@ export function sanitizeNote(note: string | null | undefined): string | null {
   if (sanitized.length > MAX_NOTE_LENGTH) sanitized = sanitized.substring(0, MAX_NOTE_LENGTH)
 
   return sanitized.length > 0 ? sanitized : null
-}
-
-export function sanitizeString(
-  input: string | null | undefined,
-  maxLength: number = 500,
-): string | null {
-  if (!input || input.trim().length === 0) return null
-
-  let sanitized = purify.sanitize(input.trim(), {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-    KEEP_CONTENT: true,
-    SANITIZE_DOM: true,
-    SAFE_FOR_TEMPLATES: true,
-    SAFE_FOR_XML: true,
-  })
-
-  sanitized = stripInjectionPatterns(sanitized)
-  if (sanitized.length > maxLength) sanitized = sanitized.substring(0, maxLength)
-
-  return sanitized.length > 0 ? sanitized : null
-}
-
-export function sanitizeUrl(url: string | null | undefined): string | null {
-  if (!url || url.trim().length === 0) return null
-
-  const trimmed = url.trim()
-
-  // Block dangerous protocols
-  if (/^(javascript|data|vbscript|file|ftp)\s*:/i.test(trimmed)) return null
-
-  // Must be valid URL
-  try {
-    const parsed = new URL(trimmed)
-    if (!["http:", "https:"].includes(parsed.protocol)) return null
-
-    // Block URLs with credentials embedded
-    if (parsed.username || parsed.password) return null
-
-    // Block localhost/internal IPs (SSRF)
-    const host = parsed.hostname.toLowerCase()
-    // Strip IPv4-mapped IPv6 prefix (e.g. ::ffff:127.0.0.1) and brackets so the
-    // ranges below catch them too.
-    const bareHost = host.replace(/^\[/, "").replace(/\]$/, "").replace(/^::ffff:/i, "")
-    const PRIVATE_RANGES = [
-      /^127\./,                                   // loopback
-      /^10\./,                                    // RFC1918
-      /^192\.168\./,                              // RFC1918
-      /^172\.(1[6-9]|2\d|3[01])\./,               // RFC1918 172.16-31
-      /^169\.254\./,                              // link-local / cloud metadata
-      /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./, // CGNAT 100.64/10
-      /^0\./,                                     // "this network"
-    ]
-    if (
-      host === "localhost" ||
-      bareHost === "127.0.0.1" ||
-      bareHost === "0.0.0.0" ||
-      bareHost === "::1" ||
-      host === "[::1]" ||
-      host.endsWith(".local") ||
-      PRIVATE_RANGES.some(r => r.test(bareHost))
-    ) return null
-
-    return parsed.href
-  } catch {
-    return null
-  }
 }
 
 
@@ -406,22 +308,6 @@ export function encryptFile(buffer: Buffer): {
   }
 }
 
-export function decryptFile(
-  encrypted: Buffer,
-  iv: string,
-  authTag: string
-): Buffer {
-  const key = getEncryptionKey()
-  const decipher = crypto.createDecipheriv(
-    "aes-256-gcm",
-    key,
-    Buffer.from(iv, "base64")
-  )
-  decipher.setAuthTag(Buffer.from(authTag, "base64"))
-
-  return Buffer.concat([decipher.update(encrypted), decipher.final()])
-}
-
 export function createDecryptStream(iv: string, authTag: string): crypto.DecipherGCM {
   const key = getEncryptionKey()
   const decipher = crypto.createDecipheriv(
@@ -431,76 +317,4 @@ export function createDecryptStream(iv: string, authTag: string): crypto.Deciphe
   )
   decipher.setAuthTag(Buffer.from(authTag, "base64"))
   return decipher
-}
-
-export async function processFileUpload(
-  buffer: Buffer,
-  claimedMimeType: string,
-  filename: string
-): Promise<{
-  success: boolean
-  processedBuffer: Buffer
-  detectedMimeType: string
-  sanitizedFilename: string
-  metadata: {
-    originalSize: number
-    processedSize: number
-    encryptionIv?: string
-    encryptionAuthTag?: string
-  }
-  error?: string
-}> {
-  const originalSize = buffer.length
-
-  try {
-    const typeVerification = await verifyFileType(buffer)
-    if (!typeVerification.valid) {
-      return {
-        success: false,
-        processedBuffer: Buffer.alloc(0),
-        detectedMimeType: "",
-        sanitizedFilename: "",
-        metadata: { originalSize, processedSize: 0 },
-        error: typeVerification.error,
-      }
-    }
-
-    const filenameSanitization = sanitizeFilename(filename)
-    if (!filenameSanitization.isValid) {
-      return {
-        success: false,
-        processedBuffer: Buffer.alloc(0),
-        detectedMimeType: "",
-        sanitizedFilename: "",
-        metadata: { originalSize, processedSize: 0 },
-        error: filenameSanitization.error,
-      }
-    }
-
-    let processedBuffer = await stripMetadata(buffer, typeVerification.mimeType!)
-    const encryption = encryptFile(processedBuffer)
-    processedBuffer = encryption.encrypted
-
-    return {
-      success: true,
-      processedBuffer,
-      detectedMimeType: typeVerification.mimeType!,
-      sanitizedFilename: filenameSanitization.sanitized,
-      metadata: {
-        originalSize,
-        processedSize: processedBuffer.length,
-        encryptionIv: encryption.iv,
-        encryptionAuthTag: encryption.authTag,
-      },
-    }
-  } catch (error) {
-    return {
-      success: false,
-      processedBuffer: Buffer.alloc(0),
-      detectedMimeType: "",
-      sanitizedFilename: "",
-      metadata: { originalSize, processedSize: 0 },
-      error: "File processing failed",
-    }
-  }
 }

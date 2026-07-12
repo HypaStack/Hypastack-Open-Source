@@ -40,7 +40,7 @@ export function verifyProxyToken(token: string, fileId: string): boolean {
   }
 }
 
-export function generateSalt(): string {
+function generateSalt(): string {
   return crypto.randomBytes(16).toString("hex")
 }
 
@@ -64,7 +64,7 @@ export function hashPassword(password: string, salt?: string): { hash: string; s
   }
 }
 
-export function verifyPassword(password: string, storedHash: string): boolean {
+function verifyPassword(password: string, storedHash: string): boolean {
   const [salt] = storedHash.split(":")
   if (!salt) return false
   const { hash } = hashPassword(password, salt)
@@ -107,15 +107,6 @@ export async function verifyPasswordAsync(password: string, storedHash: string):
   if (hashBuf.length !== storedBuf.length) return false
 
   return crypto.timingSafeEqual(hashBuf, storedBuf)
-}
-
-export function generateAccessKey(userId?: string): string {
-  const secret = crypto.randomBytes(32).toString("hex")
-  if (userId) {
-    const cleanId = userId.replace(/-/g, "")
-    return `hpsk_${cleanId}_${secret}`
-  }
-  return `hpsk_${secret}`
 }
 
 export function generateToken(payload: { userId: string; sessionId: string }): string {
@@ -225,8 +216,4 @@ export async function getCurrentUser(request: NextRequest): Promise<{ userId: st
   }
 
   return payload
-}
-
-export function generateUserId(): string {
-  return crypto.randomUUID()
 }

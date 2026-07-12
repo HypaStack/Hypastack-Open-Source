@@ -3,10 +3,6 @@
 // Legacy objects used the raw user id as the namespace; both are accepted when
 // validating that a stored key really belongs to the acting user.
 
-export function profileKeyPrefix(storageToken: string): string {
-  return `profiles/${storageToken}/`
-}
-
 export function isOwnProfileKey(
   key: string | null | undefined,
   userId: string,

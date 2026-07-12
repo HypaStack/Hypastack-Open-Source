@@ -3,7 +3,6 @@ import {
   encryptChunk,
   uploadFileMultipart,
   DEFAULT_CHUNK_SIZE,
-  MULTIPART_THRESHOLD,
 } from "@/lib/storage/multipart"
 import { encryptE2E } from "@/lib/security/cryptoClient"
 import { importFunnelPublicKey, wrapAesKey } from "@/lib/security/funnelCrypto"
@@ -112,4 +111,3 @@ async function initUpload(
   return res.json()
 }
 
-export { MULTIPART_THRESHOLD }

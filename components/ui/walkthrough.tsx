@@ -5,7 +5,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button"
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
-export interface WalkthroughStep {
+interface WalkthroughStep {
   text: string
   icon?: string
 }

@@ -13,8 +13,8 @@
  * can never equal an existing slug. No collision is possible in either direction.
  */
 
-export const SLUG_MIN = 9
-export const SLUG_MAX = 64
+const SLUG_MIN = 9
+const SLUG_MAX = 64
 
 // lowercase alphanumerics in hyphen-separated groups: no leading/trailing
 // hyphen and no consecutive hyphens.

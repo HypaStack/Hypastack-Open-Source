@@ -159,18 +159,6 @@ export async function getCdnAssetById(id: string): Promise<CdnAsset | null> {
   }
 }
 
-export async function deleteCdnAsset(id: string, userId: string): Promise<boolean> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  const result = await pool.query(
-    `DELETE FROM cdn_assets WHERE id = $1 AND user_id = $2`,
-    [id, userId]
-  )
-
-  return (result.rowCount ?? 0) > 0
-}
-
 export async function getCdnAssetsByIds(ids: string[], userId: string): Promise<CdnAsset[]> {
   if (ids.length === 0) return []
   await ensureDatabase()

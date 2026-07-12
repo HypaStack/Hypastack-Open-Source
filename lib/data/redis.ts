@@ -77,9 +77,4 @@ export function getRedis(): Redis | null {
   return globalThis.__hypaRedis
 }
 
-/**
- * Health check for monitoring endpoints.
- */
-export function isRedisHealthy(): boolean {
-  return !_redisDown && globalThis.__hypaRedis?.status === 'ready'
-}
+

@@ -72,24 +72,9 @@ export const hypaPrompt = (options: HypaNotifOptions): Promise<string | null> =>
   })
 }
 
-export const hypaUpdate = (id: string, options: Partial<HypaNotifOptions> & { _close?: boolean }) => {
+const hypaUpdate = (id: string, options: Partial<HypaNotifOptions> & { _close?: boolean }) => {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("hypa-update", { detail: { id, ...options } }))
-  }
-}
-
-export const hypaProgress = (options: HypaNotifOptions) => {
-  const id = Math.random().toString(36).slice(2, 9)
-  if (typeof window !== "undefined") {
-    const event = new CustomEvent("hypa-confirm", {
-      detail: { ...options, isProgress: true, id, resolve: () => {} }
-    })
-    window.dispatchEvent(event)
-  }
-  return {
-    id,
-    update: (opts: Partial<HypaNotifOptions>) => hypaUpdate(id, opts),
-    close: () => hypaUpdate(id, { _close: true }),
   }
 }
 

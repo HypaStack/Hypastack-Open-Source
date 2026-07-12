@@ -7,7 +7,7 @@ import { getUserTier } from '@/lib/models/userModel'
 import { getTierDelayMs } from '@/constants/tier-limits'
 import { cached, bustCache } from '@/lib/data/cache'
 
-export interface FolderRecord {
+interface FolderRecord {
   id: string
   user_id: string
   name_encrypted: string
@@ -65,7 +65,7 @@ export async function createFolder(userId: string, plaintextName: string, parent
   }
 }
 
-export async function ensureFolderPath(userId: string, path: string, baseFolderId: string | null = null): Promise<string | null> {
+async function ensureFolderPath(userId: string, path: string, baseFolderId: string | null = null): Promise<string | null> {
   if (!path || path === '.' || path === '/') return baseFolderId
 
   const parts = path.split('/').filter(p => p.trim().length > 0)
