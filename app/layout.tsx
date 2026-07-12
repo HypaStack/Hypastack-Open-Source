@@ -19,6 +19,7 @@ import {
   PREVIEW_URL
 } from "@/constants"
 import "./globals.css"
+import "material-symbols/rounded.css"
 
 
 
