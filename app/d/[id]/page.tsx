@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/storage/multipart";
@@ -45,6 +45,7 @@ function timeLeft(d: string): string {
 }
 
 export default function DownloadPage() {
+  const router = useRouter();
   const { id: fileId } = useParams() as { id: string };
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
   const [uploader, setUploader] = useState<Uploader | null>(null);
@@ -283,12 +284,12 @@ export default function DownloadPage() {
               </p>
               <div className="flex gap-2">
                 <ShineButton
-                  onClick={() => { window.location.href = "/manage/files" }}
+                  onClick={() => router.push("/manage/files")}
                   className="flex-1"
                 >Upload a file</ShineButton>
                 <SecondaryButton
                   size="lg"
-                  onClick={() => { window.location.href = "/" }}
+                  onClick={() => router.push("/")}
                   className="flex-1"
                 >Home</SecondaryButton>
               </div>

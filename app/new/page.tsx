@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
 import { isTauri } from "@/lib/tauri"
@@ -26,6 +27,7 @@ const FEATURES = [
 ]
 
 export default function CreateAccountPage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [nickname, setNickname] = useState("")
@@ -50,7 +52,7 @@ export default function CreateAccountPage() {
     setBioEnabled(ok)
   }
   useEffect(() => {
-    if (!authLoading && isAuthenticated) window.location.href = "/manage/files"
+    if (!authLoading && isAuthenticated) router.replace("/manage/files")
   }, [isAuthenticated, authLoading])
 
   // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.

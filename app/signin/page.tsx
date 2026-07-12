@@ -37,7 +37,7 @@ export default function SignInPage() {
     isBiometricSupported().then((ok) => setBioEnrolled(ok && isBiometricEnrolled()))
   }, [])
   useEffect(() => {
-    if (!authLoading && isAuthenticated) window.location.href = "/manage/files"
+    if (!authLoading && isAuthenticated) router.replace("/manage/files")
   }, [isAuthenticated, authLoading])
 
   const goToApp = () => {

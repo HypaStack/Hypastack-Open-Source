@@ -3,10 +3,12 @@
 import { AlertMessage } from "@/components/ui/alert-message"
 import { MIcon } from "@/components/ui/material-icon"
 import { motion } from "motion/react"
+import { useRouter } from "next/navigation"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 
 export default function NotFoundPage() {
+  const router = useRouter()
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#08090a] px-4 sm:px-6 py-12">
       <motion.div
@@ -32,14 +34,14 @@ export default function NotFoundPage() {
           </AlertMessage>
           <div className="flex gap-3">
             <ShineButton
-              onClick={() => { window.location.href = "/manage/files" }}
+              onClick={() => router.push("/manage/files")}
               className="flex-1"
             >
               Upload a file
             </ShineButton>
             <SecondaryButton
               size="lg"
-              onClick={() => { window.location.href = "/" }}
+              onClick={() => router.push("/")}
               className="flex-1"
             >
               Home
