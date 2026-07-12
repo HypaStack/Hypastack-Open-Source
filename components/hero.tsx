@@ -137,7 +137,8 @@ export function Hero() {
                   playsInline
                   aria-hidden="true"
                   tabIndex={-1}
-                  className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                  draggable={false}
+                  className="pointer-events-none select-none absolute inset-0 h-full w-full object-cover"
                   style={{ filter: "blur(55px) saturate(1.7) brightness(1.5)", transform: "scale(1.08)", opacity: 0.6, zIndex: 0 }}
                 />
               )}
