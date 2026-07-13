@@ -68,7 +68,6 @@ export function Hero() {
   }
   return (
     <section className="relative w-full">
-      <link rel="preload" as="video" href="https://r2.hypastack.com/cdn/heroassets/hero.mp4" />
       <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
         </svg>
