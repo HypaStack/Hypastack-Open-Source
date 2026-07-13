@@ -46,7 +46,7 @@ Hypastack is what I wanted instead: drop a file, get a link, send it, done. The 
 
 ## What it does
 
-- **Share files privately.** Drop a file, get a link. The link carries the only key, and whoever you send it to can preview images, video and audio right in the browser. When the link expires, the file is deleted. Small files last a week by default, bigger ones less; paid plans can pick any lifetime from one minute to thirty days and give the link a custom name.
+- **Share files privately.** Drop a file, get a link. The link carries the only key, and whoever you send it to can download and decrypt the file right in the browser. When the link expires, the file is deleted. Small files last a week by default, bigger ones less; paid plans can pick any lifetime from one minute to thirty days and give the link a custom name.
 
 - **Burn on read.** A file can delete itself right after the first download. For things that should be seen exactly once.
 
