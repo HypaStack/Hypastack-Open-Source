@@ -16,8 +16,6 @@ export function GridView({
   copiedId,
   onDelete,
   deleteLoading,
-  onToggleStar,
-  starLoading,
   onContextMenu,
 }: {
   files: FileItem[]
@@ -27,8 +25,6 @@ export function GridView({
   copiedId: string | null
   onDelete: (id: string) => void
   deleteLoading: string | null
-  onToggleStar: (id: string, current: boolean) => void
-  starLoading: string | null
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   return (
@@ -61,28 +57,6 @@ export function GridView({
                     <MIcon name="local_fire_department" size={12} />
                   </span>
                 )}
-                <SecondaryButton
-                  variant="ghost"
-                  theme="dark"
-                  iconOnly
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleStar(file.id, file.starred)
-                  }}
-                  disabled={starLoading === file.id}
-                  className={file.starred ? "" : "opacity-0 group-hover:opacity-100"}
-                  style={{
-                    height: 24,
-                    width: 24,
-                    borderRadius: 6,
-                    backgroundColor: "rgba(0,0,0,0.4)",
-                    backdropFilter: "blur(4px)",
-                    color: file.starred ? "#eab308" : "#d4d4d8",
-                  }}
-                  aria-label={file.starred ? "Unstar" : "Star"}
-                >
-                  <MIcon name="star" size={14} />
-                </SecondaryButton>
               </div>
 
               <div

@@ -55,8 +55,6 @@ export function ListView({
   copiedId,
   onDelete,
   deleteLoading,
-  onToggleStar,
-  starLoading,
   onContextMenu,
 }: {
   files: FileItem[]
@@ -71,8 +69,6 @@ export function ListView({
   copiedId: string | null
   onDelete: (id: string) => void
   deleteLoading: string | null
-  onToggleStar: (id: string, current: boolean) => void
-  starLoading: string | null
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   return (
@@ -135,11 +131,6 @@ export function ListView({
                     {!!file.burnOnRead && (
                       <span title="Burn on read" className="text-orange-400 shrink-0">
                         <MIcon name="local_fire_department" size={13} />
-                      </span>
-                    )}
-                    {!!file.starred && (
-                      <span title="Starred" className="text-yellow-500 shrink-0">
-                        <MIcon name="star" size={13} />
                       </span>
                     )}
                   </div>

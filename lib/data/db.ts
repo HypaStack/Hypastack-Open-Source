@@ -154,7 +154,6 @@ export async function initDatabase(): Promise<void> {
         user_id VARCHAR(36),
         encryption_iv VARCHAR(32),
         encryption_auth_tag VARCHAR(32),
-        starred BOOLEAN DEFAULT FALSE,
         burned_at TIMESTAMPTZ,
         encryption_chunk_size INTEGER,
         encryption_total_parts INTEGER

@@ -22,7 +22,6 @@ export interface FileRecord {
   user_id?: string | null
   encryption_iv?: string | null
   encryption_auth_tag?: string | null
-  starred?: boolean
   encryption_chunk_size?: number | null
   encryption_total_parts?: number | null
   folder_id?: string | null
@@ -468,7 +467,7 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
     const result = await pool.query(
       `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
               burn_on_read, upload_completed, upload_started_at,
-              custom_filename, note, starred, folder_id
+              custom_filename, note, folder_id
        FROM basedrop_files WHERE user_id = $1 AND expires_at > NOW() ORDER BY upload_date DESC`,
       [userId]
     )
@@ -487,23 +486,9 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
       file_hash: null,
       custom_filename: row.custom_filename,
       note: row.note,
-      starred: row.starred,
       folder_id: row.folder_id,
     }))
   })
-}
-
-export async function toggleFileStarred(fileId: string, userId: string, starred: boolean): Promise<boolean> {
-  await ensureDatabase()
-  const pool = getPool()
-
-  const result = await pool.query(
-    `UPDATE basedrop_files SET starred = $1 WHERE id = $2 AND user_id = $3`,
-    [starred, fileId, userId]
-  )
-
-  await bustCache(`user:${userId}:files`)
-  return (result.rowCount ?? 0) > 0
 }
 
 export async function getUserFileStats(userId: string): Promise<{
@@ -563,7 +548,6 @@ export async function getFilesByIds(ids: string[], userId: string): Promise<File
     encryption_chunk_size: row.encryption_chunk_size ? Number(row.encryption_chunk_size) : null,
     encryption_total_parts: row.encryption_total_parts ? Number(row.encryption_total_parts) : null,
     folder_id: row.folder_id,
-    starred: row.starred,
   }))
 }
 

@@ -29,8 +29,6 @@ function FilesPageInner() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "")
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
-  const [starLoading, setStarLoading] = useState<string | null>(null)
-  const lastStarTime = useRef<number>(0)
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [currentPage, setCurrentPage] = useState(1)
@@ -168,29 +166,6 @@ function FilesPageInner() {
     setTimeout(() => setCopiedId(null), 2000)
     // Step 2->3 is now handled by the UploadZone's internal copy button, but we keep this as a fallback
     setWtStep(s => s === 2 ? 3 : s)
-  }
-
-  const handleToggleStar = async (fileId: string, currentStarred: boolean) => {
-    const now = Date.now()
-    if (now - lastStarTime.current < 500) return
-    lastStarTime.current = now
-
-    setStarLoading(fileId)
-    try {
-      const res = await apiFetch("/api/v2/files", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId, starred: !currentStarred }),
-      })
-      if (res.ok) {
-        setFiles(files.map((f) => (f.id === fileId ? { ...f, starred: !currentStarred } : f)))
-        setWtStep(s => s === 3 ? 4 : s)
-      }
-    } catch (err) {
-      console.error("Star toggle error:", err)
-    } finally {
-      setStarLoading(null)
-    }
   }
 
   const handleDelete = async (fileId: string) => {
@@ -482,8 +457,6 @@ function FilesPageInner() {
                   copiedId={copiedId}
                   onDelete={handleDelete}
                   deleteLoading={deleteLoading}
-                  onToggleStar={handleToggleStar}
-                  starLoading={starLoading}
                   onContextMenu={(e, id) => {
                     e.preventDefault();
                     setOpenMenuId(id);
@@ -499,8 +472,6 @@ function FilesPageInner() {
                   copiedId={copiedId}
                   onDelete={handleDelete}
                   deleteLoading={deleteLoading}
-                  onToggleStar={handleToggleStar}
-                  starLoading={starLoading}
                   onContextMenu={(e, id) => {
                     e.preventDefault();
                     setOpenMenuId(id);
@@ -614,12 +585,6 @@ function FilesPageInner() {
               target="_blank"
             />
             <ContextMenuDivider />
-            <ContextMenuItem
-              icon="star"
-              label={activeContextMenuFile.starred ? "Unstar" : "Star"}
-              onClick={() => { handleToggleStar(activeContextMenuFile.id, activeContextMenuFile.starred); setOpenMenuId(null); setContextMenuPos(null) }}
-              disabled={starLoading === activeContextMenuFile.id}
-            />
             <ContextMenuItem
               icon="delete"
               label="Delete"

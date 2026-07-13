@@ -16,7 +16,6 @@ export const GET = withAuth(async ({ user }) => {
       expiresAt: f.expires_at,
 
       burnOnRead: f.burn_on_read,
-      starred: !!f.starred,
       shareUrl: `${process.env.NEXT_PUBLIC_APP_URL}/d/${f.id}`,
     }))
   })

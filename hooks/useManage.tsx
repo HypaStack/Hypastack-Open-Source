@@ -45,7 +45,6 @@ export interface FileItem {
   downloads: number
   hasPin: boolean
   burnOnRead: boolean
-  starred: boolean
   shareUrl: string
   folderId: string | null
 }
