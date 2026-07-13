@@ -150,9 +150,9 @@ function buildCsp(nonce: string | null): string {
   return [
     "default-src 'self'",
     scriptSrc,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data: blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com${API_ORIGIN_SUFFIX}`,
-    "font-src 'self' https://r2.hypastack.com https://fonts.gstatic.com",
+    "font-src 'self' https://r2.hypastack.com",
     `connect-src 'self' https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com https://challenges.cloudflare.com https://cloudflareinsights.com${API_ORIGIN_SUFFIX}`,
     "frame-src https://challenges.cloudflare.com",
     "media-src 'self' blob: https://r2.hypastack.com https://*.r2.cloudflarestorage.com https://*.eu.r2.cloudflarestorage.com",
