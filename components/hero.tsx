@@ -8,7 +8,6 @@ import { AlertMessage } from "@/components/ui/alert-message";
 import { Loader } from "@/components/ui/loader";
 import { ShineButton } from "@/components/ui/shine-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { SideRays } from "@/components/ui/side-rays";
 import { useAuth } from "@/hooks/useAuth";
 
 // One-time bouncy blur-in on mount. Driven by a useSpring MotionValue (0 -> 1)
@@ -71,21 +70,6 @@ export function Hero() {
     <section className="relative w-full">
       <link rel="preload" as="video" href="https://r2.hypastack.com/cdn/heroassets/hero.mp4" />
       <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
-        <div className="hidden md:block absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <SideRays
-            speed={3.4}
-            rayColor1="#eab308"
-            rayColor2="#96c8ff"
-            intensity={1.8}
-            spread={3}
-            origin="top-left"
-            tilt={0}
-            saturation={0.45}
-            blend={1}
-            falloff={1.6}
-            opacity={0.28}
-          />
-        </div>
         <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
         </svg>
 
