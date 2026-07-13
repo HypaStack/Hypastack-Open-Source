@@ -15,7 +15,8 @@ import { MIcon } from "@/components/ui/material-icon"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Walkthrough } from "@/components/ui/walkthrough"
-import { hypaConfirm, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
+import { errorMessage } from "@/lib/errors"
 import { FILES_PER_PAGE, API_BASE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
@@ -200,43 +201,56 @@ function FilesPageInner() {
 
   const handleBulkDelete = async () => {
     if (selectedFiles.size === 0) return
-    
+
     const ids = Array.from(selectedFiles)
     const fileNames = ids.map(id => files.find(f => f.id === id)?.name || "Unknown file")
-    await hypaConfirm({
+    const confirmed = await hypaConfirm({
       title: `Are you sure you want to delete ${ids.length} file(s) forever?`,
       items: fileNames,
       confirmText: "Delete",
       cancelText: "Cancel",
-      onConfirm: async () => {
-        const res = await apiFetch("/api/v2/files", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileIds: ids }),
-        })
-        if (!res.ok || !res.body) throw new Error("Failed to delete files")
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ""
-        const deletedIds = new Set<string>()
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split("\n")
-          buffer = lines.pop() || ""
-          for (const line of lines) {
-            if (!line.trim()) continue
-            try {
-              const data = JSON.parse(line)
-              if (data.success && data.id) deletedIds.add(data.id)
-            } catch {}
-          }
-        }
-        setFiles((prev) => prev.filter((f) => !deletedIds.has(f.id)))
-        setSelectedFiles(new Set())
-      },
     })
+    if (!confirmed) return
+
+    setDeleteLoading("bulk")
+    // The endpoint streams one NDJSON line per deleted file, so report the real count.
+    const progress = hypaProgress({ title: "Deleting files", progressText: `0 of ${ids.length}` })
+    try {
+      const res = await apiFetch("/api/v2/files", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileIds: ids }),
+      })
+      if (!res.ok || !res.body) throw new Error("Failed to delete files")
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      const deletedIds = new Set<string>()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+        for (const line of lines) {
+          if (!line.trim()) continue
+          try {
+            const data = JSON.parse(line)
+            if (data.success && data.id) deletedIds.add(data.id)
+            if (data.index && data.total) {
+              progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+            }
+          } catch {}
+        }
+      }
+      setFiles((prev) => prev.filter((f) => !deletedIds.has(f.id)))
+      setSelectedFiles(new Set())
+    } catch (err) {
+      hypaError("Failed to delete files", errorMessage(err))
+    } finally {
+      progress.close()
+      setDeleteLoading(null)
+    }
   }
 
   const handleBulkMove = async (folderId: string | null) => {
@@ -286,6 +300,7 @@ function FilesPageInner() {
       }
     } catch (err) {
       console.error("Failed to create folder", err)
+      hypaError("Failed to create folder", errorMessage(err))
     }
   }
 
@@ -312,6 +327,7 @@ function FilesPageInner() {
       }
     } catch (err) {
       console.error("Delete folder error", err)
+      hypaError("Failed to delete folder", errorMessage(err))
     }
   }
 

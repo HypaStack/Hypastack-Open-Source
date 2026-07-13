@@ -1,6 +1,6 @@
 "use client"
 
-import { hypaConfirm, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
+import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
 import { ShineButton } from "@/components/ui/shine-button"
@@ -116,56 +116,74 @@ export default function CdnPage() {
       if (res.ok) {
         const data = await res.json()
         setFolders(prev => [...prev, data.folder])
+      } else {
+        const data = await res.json().catch(() => ({}))
+        hypaError(data.message || "Failed to create folder")
       }
     } catch (err) {
       console.error("Failed to create CDN folder:", err)
+      hypaError("Failed to create folder", errorMessage(err))
     }
   }
 
   const handleDeleteFolder = async (folderId: string) => {
     const folder = folders.find(f => f.id === folderId)
-    await hypaConfirm({
+    const confirmed = await hypaConfirm({
       title: `Delete folder "${folder?.name || "Unknown"}" and all its contents?`,
       confirmText: "Delete",
       cancelText: "Cancel",
-      onConfirm: async () => {
-        const res = await apiFetch("/api/v2/cdn/folders", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ folderId }),
-        })
-        if (!res.ok || !res.body) {
-          const data = await res.json().catch(() => ({}))
-          throw new Error(data.message || "Failed to delete folder")
-        }
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ""
-        const deletedAssetIds = new Set<string>()
-        let deletedFolderIds: string[] = []
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split("\n")
-          buffer = lines.pop() || ""
-          for (const line of lines) {
-            if (!line.trim()) continue
-            try {
-              const data = JSON.parse(line)
-              if (data.done) deletedFolderIds = data.deletedFolderIds || []
-              else if (data.success && data.id) deletedAssetIds.add(data.id)
-            } catch { /* malformed line */ }
-          }
-        }
-        const folderIdSet = new Set(deletedFolderIds.length > 0 ? deletedFolderIds : [folderId])
-        setFolders(prev => prev.filter(f => !folderIdSet.has(f.id)))
-        setAssets(prev => prev.filter(a => !deletedAssetIds.has(a.id) && (!a.folderId || !folderIdSet.has(a.folderId))))
-        if (currentFolderId && folderIdSet.has(currentFolderId)) {
-          setCurrentFolderId(folder?.parentId || null)
-        }
-      },
     })
+    if (!confirmed) return
+
+    // Wiping a folder can take out a lot of assets, and the endpoint streams one
+    // line per asset — so show how far along it actually is.
+    const progress = hypaProgress({ title: "Wiping folder", progressText: "Starting…" })
+    try {
+      const res = await apiFetch("/api/v2/cdn/folders", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folderId }),
+      })
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || "Failed to delete folder")
+      }
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      const deletedAssetIds = new Set<string>()
+      let deletedFolderIds: string[] = []
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+        for (const line of lines) {
+          if (!line.trim()) continue
+          try {
+            const data = JSON.parse(line)
+            if (data.done) deletedFolderIds = data.deletedFolderIds || []
+            else if (data.success && data.id) {
+              deletedAssetIds.add(data.id)
+              if (data.index && data.total) {
+                progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+              }
+            }
+          } catch { /* malformed line */ }
+        }
+      }
+      const folderIdSet = new Set(deletedFolderIds.length > 0 ? deletedFolderIds : [folderId])
+      setFolders(prev => prev.filter(f => !folderIdSet.has(f.id)))
+      setAssets(prev => prev.filter(a => !deletedAssetIds.has(a.id) && (!a.folderId || !folderIdSet.has(a.folderId))))
+      if (currentFolderId && folderIdSet.has(currentFolderId)) {
+        setCurrentFolderId(folder?.parentId || null)
+      }
+    } catch (err) {
+      hypaError("Failed to delete folder", errorMessage(err))
+    } finally {
+      progress.close()
+    }
   }
 
   const copyToClipboard = async (text: string): Promise<boolean> => {
@@ -398,40 +416,53 @@ export default function CdnPage() {
 
     const ids = Array.from(selectedAssets)
     const assetNames = ids.map(id => assets.find(a => a.id === id)?.name || "Unknown asset")
-    await hypaConfirm({
+    const confirmed = await hypaConfirm({
       title: `Are you sure you want to delete ${ids.length} asset(s) forever?`,
       items: assetNames,
       confirmText: "Delete",
       cancelText: "Cancel",
-      onConfirm: async () => {
-        const res = await apiFetch("/api/v2/cdn/assets", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ assetIds: ids }),
-        })
-        if (!res.ok || !res.body) throw new Error("Failed to delete assets")
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ""
-        const deletedIds = new Set<string>()
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split("\n")
-          buffer = lines.pop() || ""
-          for (const line of lines) {
-            if (!line.trim()) continue
-            try {
-              const data = JSON.parse(line)
-              if (data.success && data.id) deletedIds.add(data.id)
-            } catch {}
-          }
-        }
-        setAssets((prev) => prev.filter((a) => !deletedIds.has(a.id)))
-        setSelectedAssets(new Set())
-      },
     })
+    if (!confirmed) return
+
+    setDeleteLoading("bulk")
+    // The endpoint streams one NDJSON line per deleted asset, so report the real count.
+    const progress = hypaProgress({ title: "Deleting assets", progressText: `0 of ${ids.length}` })
+    try {
+      const res = await apiFetch("/api/v2/cdn/assets", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assetIds: ids }),
+      })
+      if (!res.ok || !res.body) throw new Error("Failed to delete assets")
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      const deletedIds = new Set<string>()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+        for (const line of lines) {
+          if (!line.trim()) continue
+          try {
+            const data = JSON.parse(line)
+            if (data.success && data.id) deletedIds.add(data.id)
+            if (data.index && data.total) {
+              progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+            }
+          } catch {}
+        }
+      }
+      setAssets((prev) => prev.filter((a) => !deletedIds.has(a.id)))
+      setSelectedAssets(new Set())
+    } catch (err) {
+      hypaError("Failed to delete assets", errorMessage(err))
+    } finally {
+      progress.close()
+      setDeleteLoading(null)
+    }
   }
 
   const toggleSelect = (id: string, forceMode?: 'select' | 'deselect') => {

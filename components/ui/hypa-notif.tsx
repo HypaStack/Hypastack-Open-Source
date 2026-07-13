@@ -78,6 +78,23 @@ const hypaUpdate = (id: string, options: Partial<HypaNotifOptions> & { _close?: 
   }
 }
 
+// Live progress notification. Returns handles to push updates and close it, so a
+// long streaming job (bulk delete, folder wipe) can report where it's actually at.
+export const hypaProgress = (options: HypaNotifOptions) => {
+  const id = Math.random().toString(36).slice(2, 9)
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("hypa-confirm", {
+      detail: { ...options, isProgress: true, progressPercent: 0, id, resolve: () => {} }
+    }))
+  }
+  return {
+    id,
+    update: (progressPercent: number, progressText?: string) =>
+      hypaUpdate(id, { progressPercent, ...(progressText ? { progressText } : {}) }),
+    close: () => hypaUpdate(id, { _close: true }),
+  }
+}
+
 // Fire-and-forget toast: a single-button notification that also auto-dismisses.
 // Use for non-blocking status/error feedback instead of the native alert().
 export const hypaToast = (options: HypaNotifOptions & { durationMs?: number }) => {
