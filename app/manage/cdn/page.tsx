@@ -17,12 +17,11 @@ import { STORAGE_KEY_HIDE_CTRL_HINT } from "@/constants"
 import { type CdnAsset, type CdnFolder, formatBytes, formatDate, gridVariants, gridItemVariants, getFileIcon } from "./_helpers"
 import { CdnAssetTile } from "./_asset-tile"
 import { EmptyState } from "./_empty-state"
-import { GridSkeleton } from "./_grid-skeleton"
 import { MoveDialog } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
 export default function CdnPage() {
-  const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser, isLoading } = useManage()
+  const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useManage()
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [copiedSelection, setCopiedSelection] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
@@ -526,9 +525,7 @@ export default function CdnPage() {
 
   const breadcrumbs = getBreadcrumbs()
 
-  // Keep rendering while the user is still loading so the skeleton can show
-  // instead of a blank page that pops in.
-  if (!user && !isLoading) return null
+  if (!user) return null
 
   return (
     <div className="w-full flex-1 min-h-0 flex flex-col">
@@ -712,13 +709,9 @@ export default function CdnPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="flex-1 min-h-0 overflow-hidden mt-4 px-1.5 pt-1.5 animate-in fade-in duration-200">
-          <GridSkeleton />
-        </div>
-      ) : currentFolders.length === 0 && filteredAssets.length === 0 && !currentFolderId ? (
+      {currentFolders.length === 0 && filteredAssets.length === 0 && !currentFolderId ? (
         <div className="flex-1 flex items-center justify-center">
-          <EmptyState query="" username={user?.nickname ?? ""} />
+          <EmptyState query="" username={user.nickname} />
         </div>
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto mt-4 px-1.5 pt-1.5 animate-in fade-in duration-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>

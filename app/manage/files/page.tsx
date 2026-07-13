@@ -21,13 +21,12 @@ import { apiFetch } from "@/lib/http/fetch"
 import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
-import { ListSkeleton } from "./_list-skeleton"
 import { MoveDialog } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
 
 function FilesPageInner() {
-  const { user, files, folders, setFiles, setFolders, refreshUser, isLoading } = useManage()
+  const { user, files, folders, setFiles, setFolders, refreshUser } = useManage()
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "")
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
@@ -451,11 +450,7 @@ function FilesPageInner() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="animate-in fade-in duration-200">
-          <ListSkeleton />
-        </div>
-      ) : isEmpty ? (
+      {isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />
       ) : (
         <div className="flex flex-col gap-6 animate-in fade-in duration-300">

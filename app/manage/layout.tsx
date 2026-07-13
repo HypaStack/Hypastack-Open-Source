@@ -18,6 +18,7 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { PageLogo } from "@/components/page-logo"
 import { UploadZone } from "@/components/upload"
+import { ManageSkeleton } from "./_skeleton"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -273,7 +274,11 @@ function ManageLayoutInner({
     }
   }, [])
 
-  if (isLoading || !isAuthenticated || !user) {
+  if (isLoading) {
+    return <ManageSkeleton pathname={pathname} />
+  }
+
+  if (!isAuthenticated || !user) {
     return null
   }
 
