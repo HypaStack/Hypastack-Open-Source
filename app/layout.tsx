@@ -258,7 +258,6 @@ export default async function RootLayout({
           }}
         />
         
-        {/* Atlas Grotesk fonts loaded via @font-face in globals.css */}
         {/* Tauri detection for pure black background */}
         <Script id="tauri-detect" strategy="afterInteractive">{`
           if (window.__TAURI_INTERNALS__) document.documentElement.classList.add('is-tauri');
