@@ -22,6 +22,7 @@ import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, f
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
 import { MoveDialog } from "../_move-dialog"
+import { FolderTile } from "../_folder-tile"
 
 
 function FilesPageInner() {
@@ -447,28 +448,12 @@ function FilesPageInner() {
               <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {filteredFolders.map(folder => (
-                  <div
+                  <FolderTile
                     key={folder.id}
-                    onClick={() => setCurrentFolderId(folder.id)}
-                    className="relative flex items-center p-[1px] rounded-full overflow-hidden group active:scale-[0.97] transition-transform duration-150 cursor-pointer"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(0,0,0,0.05)] to-[rgba(0,0,0,0.12)] group-hover:to-[rgba(0,0,0,0.18)] dark:from-[rgba(255,255,255,0.05)] dark:to-[rgba(255,255,255,0.15)] dark:group-hover:to-[rgba(255,255,255,0.25)] transition-colors duration-300" />
-                    <div className="relative bg-[#f4f4f4] dark:bg-[#151616] rounded-full h-[40px] px-4 flex items-center gap-2.5 w-full min-w-0">
-                      <MIcon name="folder" size={16} className="text-[#666] dark:text-[#898e97] shrink-0" />
-                      <span className="text-[#111] dark:text-[#f7f8f8] min-w-0 truncate flex-1 text-[14px] font-normal">{folder.name}</span>
-                      <SecondaryButton
-                        variant="ghost"
-                        danger
-                        iconOnly
-                        onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name); }}
-                        className="opacity-0 group-hover:opacity-100 focus:opacity-100"
-                        style={{ height: 26, width: 26, borderRadius: 9999 }}
-                        aria-label="Delete folder"
-                      >
-                        <MIcon name="delete" size={13} />
-                      </SecondaryButton>
-                    </div>
-                  </div>
+                    name={folder.name}
+                    onOpen={() => setCurrentFolderId(folder.id)}
+                    onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
+                  />
                 ))}
               </div>
             </div>
