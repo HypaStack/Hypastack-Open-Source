@@ -199,6 +199,23 @@ export async function deleteCdnAssetsByIds(ids: string[], userId: string): Promi
   return result.rowCount ?? 0
 }
 
+// folderId of null moves the assets back to the CDN root.
+export async function moveCdnAssetsToFolder(ids: string[], userId: string, folderId: string | null): Promise<number> {
+  if (ids.length === 0) return 0
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `UPDATE cdn_assets SET folder_id = $1 WHERE id = ANY($2) AND user_id = $3`,
+    [folderId, ids, userId]
+  )
+
+  await bustCache(`user:${userId}:cdn-assets`)
+  await bustRouteCache(userId, 'cdn:assets')
+
+  return result.rowCount ?? 0
+}
+
 export async function getUserCdnStats(userId: string): Promise<{
   totalAssets: number
   totalSize: number

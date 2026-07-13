@@ -566,6 +566,22 @@ export async function deleteFilesByIds(ids: string[], userId: string): Promise<n
   return result.rowCount ?? 0
 }
 
+// folderId of null moves the files back to the drive root.
+export async function moveFilesToFolder(ids: string[], userId: string, folderId: string | null): Promise<number> {
+  if (ids.length === 0) return 0
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `UPDATE basedrop_files SET folder_id = $1 WHERE id = ANY($2) AND user_id = $3`,
+    [folderId, ids, userId]
+  )
+
+  await bustCache(`user:${userId}:files`)
+  await bustRouteCache(userId, 'files:list')
+  return result.rowCount ?? 0
+}
+
 
 export async function markFileBurned(fileId: string): Promise<{ success: boolean }> {
   await ensureDatabase()
