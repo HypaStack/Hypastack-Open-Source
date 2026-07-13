@@ -62,6 +62,5 @@ export function formatDate(dateStr: string | Date): string {
 }
 
 
-export type ViewMode = "list" | "grid"
 export type SortField = "name" | "size" | "date"
 export type SortDirection = "asc" | "desc"

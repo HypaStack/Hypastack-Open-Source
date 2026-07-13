@@ -18,10 +18,9 @@ import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError } from "@/components/ui/hypa-notif"
 import { FILES_PER_PAGE, API_BASE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
-import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type ViewMode, type SortField, type SortDirection } from "./_helpers"
+import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
-import { GridView } from "./_grid-view"
 
 
 function FilesPageInner() {
@@ -34,7 +33,6 @@ function FilesPageInner() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
   const activeContextMenuFile = files.find(f => f.id === openMenuId)
@@ -443,42 +441,25 @@ function FilesPageInner() {
           {filteredFiles.length > 0 && (
             <div>
               {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Files</h2>}
-              {viewMode === "list" ? (
-                <ListView
-                  files={paginatedFiles}
-                  selectedFiles={selectedFiles}
-                  allSelected={allSelected}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onToggleSort={toggleSort}
-                  onToggleSelect={toggleSelect}
-                  onToggleSelectAll={toggleSelectAll}
-                  onCopyLink={handleCopyLink}
-                  copiedId={copiedId}
-                  onDelete={handleDelete}
-                  deleteLoading={deleteLoading}
-                  onContextMenu={(e, id) => {
-                    e.preventDefault();
-                    setOpenMenuId(id);
-                    setContextMenuPos({ x: e.clientX, y: e.clientY });
-                  }}
-                />
-              ) : (
-                <GridView
-                  files={paginatedFiles}
-                  selectedFiles={selectedFiles}
-                  onToggleSelect={toggleSelect}
-                  onCopyLink={handleCopyLink}
-                  copiedId={copiedId}
-                  onDelete={handleDelete}
-                  deleteLoading={deleteLoading}
-                  onContextMenu={(e, id) => {
-                    e.preventDefault();
-                    setOpenMenuId(id);
-                    setContextMenuPos({ x: e.clientX, y: e.clientY });
-                  }}
-                />
-              )}
+              <ListView
+                files={paginatedFiles}
+                selectedFiles={selectedFiles}
+                allSelected={allSelected}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onToggleSort={toggleSort}
+                onToggleSelect={toggleSelect}
+                onToggleSelectAll={toggleSelectAll}
+                onCopyLink={handleCopyLink}
+                copiedId={copiedId}
+                onDelete={handleDelete}
+                deleteLoading={deleteLoading}
+                onContextMenu={(e, id) => {
+                  e.preventDefault();
+                  setOpenMenuId(id);
+                  setContextMenuPos({ x: e.clientX, y: e.clientY });
+                }}
+              />
             </div>
           )}
         </div>
