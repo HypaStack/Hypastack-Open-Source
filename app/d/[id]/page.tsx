@@ -96,6 +96,24 @@ export default function DownloadPage() {
 
   const handleDownload = async () => {
     if (!fileInfo || burned || downloadCooldown > 0) return;
+
+    const dn = fileInfo.customFilename || fileInfo.name || "download";
+
+    // Ask for the save location up front, while the click's user activation is
+    // still fresh and — crucially — before the server consumes a burn-on-read
+    // file. Cancelling the picker used to burn the file anyway.
+    let fs: FileSystemWritableFileStream | null = null;
+    if (encryptionKeyBase64 && 'showSaveFilePicker' in window && fileInfo.size > MULTIPART_THRESHOLD) {
+      try {
+        const h = await (window as any).showSaveFilePicker({ suggestedName: dn });
+        fs = await h.createWritable();
+      } catch (e) {
+        if (e instanceof Error && e.name === 'AbortError') return;
+        fs = null;
+      }
+    }
+    const discard = async () => { try { await fs?.abort() } catch { /* already gone */ } };
+
     setDownloading(true); setRateLimitError(null); setDownloadProgress(0); setDecryptProgress(0);
     setDownloadPhase('idle');
 
@@ -108,14 +126,16 @@ export default function DownloadPage() {
       if (r.status === 429) {
         setRateLimitError({ message: data.message || "Too many downloads.", retryAfter: Math.ceil(data.retryAfter || 60) });
         setDownloadCooldown(Math.ceil(data.retryAfter || 60));
+        await discard();
         setDownloading(false);
         return;
       }
       wasBurned = !!data.burned;
-      if (!r.ok) { setError(data.message || "Download failed"); setDownloading(false); return }
+      if (!r.ok) { setError(data.message || "Download failed"); await discard(); setDownloading(false); return }
       downloadUrl = data.downloadUrl;
     } catch {
       setError("Failed to start download");
+      await discard();
       setDownloading(false);
       return;
     } try {
@@ -123,44 +143,67 @@ export default function DownloadPage() {
         const encKey = await importKeyFromBase64(encryptionKeyBase64);
         setDownloadPhase('downloading');
         const encR = await fetch(downloadUrl);
-        if (!encR.ok) throw new Error(`HTTP ${encR.status}`);
-        const encData = await encR.arrayBuffer();
-        setDownloadProgress(100); setDownloadPhase('decrypting');
-        const OH = 28, tp = fileInfo?.encryptionTotalParts ?? null, cs = fileInfo?.encryptionChunkSize ?? null;
+        if (!encR.ok || !encR.body) throw new Error(`HTTP ${encR.status}`);
+
+        // AES-GCM overhead per chunk: 12-byte IV + 16-byte tag.
+        const OH = 28, tp = fileInfo.encryptionTotalParts ?? null, cs = fileInfo.encryptionChunkSize ?? null;
         const isMP = tp !== null && tp > 1 && cs !== null;
-        let parts: ArrayBuffer[] = [];
-        const dn = fileInfo?.customFilename || fileInfo?.name || "download";
-        const canStream = 'showSaveFilePicker' in window && encData.byteLength > MULTIPART_THRESHOLD;
-        let fs: FileSystemWritableFileStream | null = null;
-        if (canStream) {
-          try {
-            const h = await (window as any).showSaveFilePicker({ suggestedName: dn });
-            fs = await h.createWritable();
-          } catch (e) {
-            if (e instanceof Error && e.name === 'AbortError') { setDownloadPhase('done'); setDownloading(false); return }
-            fs = null;
+        const efc = isMP ? cs! + OH : 0;
+
+        const totalBytes = Number(encR.headers.get("content-length")) || 0;
+        const reader = encR.body.getReader();
+        const parts: ArrayBuffer[] = [];
+        const rawChunks: Uint8Array[] = [];
+        let pending = new Uint8Array(0);
+        let received = 0, decrypted = 0;
+
+        const decryptInto = async (buf: Uint8Array) => {
+          const dec = await decryptChunk(encKey, buf.slice().buffer);
+          if (fs) await fs.write(dec); else parts.push(dec);
+          decrypted += buf.byteLength;
+          if (totalBytes) setDecryptProgress(Math.min(100, Math.round((decrypted / totalBytes) * 100)));
+        };
+
+        // Stream the ciphertext instead of buffering it all, and for multipart
+        // files decrypt each chunk the moment its bytes have fully arrived.
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          received += value.byteLength;
+          if (totalBytes) setDownloadProgress(Math.min(100, Math.round((received / totalBytes) * 100)));
+
+          if (isMP) {
+            const merged = new Uint8Array(pending.byteLength + value.byteLength);
+            merged.set(pending, 0); merged.set(value, pending.byteLength);
+            pending = merged;
+            while (pending.byteLength >= efc) {
+              await decryptInto(pending.subarray(0, efc));
+              pending = pending.slice(efc);
+            }
+          } else {
+            rawChunks.push(value);
           }
         }
+        setDownloadProgress(100);
+        setDownloadPhase('decrypting');
+
         if (isMP) {
-          const efc = cs! + OH; let off = 0, tb = encData.byteLength;
-          while (off < tb) {
-            const sz = Math.min(efc, tb - off);
-            const dec = await decryptChunk(encKey, encData.slice(off, off + sz));
-            if (fs) await fs.write(dec); else parts.push(dec);
-            off += sz;
-            setDecryptProgress(Math.min(99, Math.round((off / tb) * 100)));
-          }
+          if (pending.byteLength > 0) await decryptInto(pending);
         } else {
-          const dec = await decryptChunk(encKey, encData);
-          if (fs) await fs.write(dec); else parts.push(dec);
+          const size = rawChunks.reduce((a, c) => a + c.byteLength, 0);
+          const all = new Uint8Array(size);
+          let wo = 0;
+          for (const c of rawChunks) { all.set(c, wo); wo += c.byteLength }
+          await decryptInto(all);
         }
         setDecryptProgress(100);
+
         if (fs) {
           await fs.close();
         } else {
           const total = parts.reduce((a, p) => a + p.byteLength, 0), buf = new Uint8Array(total); let wo = 0;
           for (const p of parts) { buf.set(new Uint8Array(p), wo); wo += p.byteLength }
-          const blob = new Blob([buf], { type: fileInfo?.contentType || "application/octet-stream" });
+          const blob = new Blob([buf], { type: fileInfo.contentType || "application/octet-stream" });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a"); a.href = url; a.download = dn; a.rel = "noopener";
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -179,6 +222,7 @@ export default function DownloadPage() {
         setTimeout(() => window.location.reload(), 5000);
       }
     } catch {
+      await discard();
       if (wasBurned) {
         // Download failed but the file is already marked burned server-side.
         // Show a specific error so the user knows the file is gone.
@@ -384,11 +428,16 @@ export default function DownloadPage() {
                 </div>
               )}
 
-              {downloadPhase === 'decrypting' && (
+              {(downloadPhase === 'downloading' || downloadPhase === 'decrypting') && (
                 <div className="mx-3 mb-3 p-3.5 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
-                  <p className="text-[12px] text-[#898e97] mb-1.5">Decrypting... {decryptProgress}%</p>
+                  <p className="text-[12px] text-[#898e97] mb-1.5">
+                    {downloadPhase === 'downloading' ? `Downloading... ${downloadProgress}%` : `Decrypting... ${decryptProgress}%`}
+                  </p>
                   <div className="w-full h-1.5 rounded-full bg-[rgba(255,255,255,0.08)] overflow-hidden">
-                    <div className="h-full bg-[#f7f8f8] rounded-full transition-all duration-300" style={{ width: `${decryptProgress}%` }} />
+                    <div
+                      className="h-full bg-[#f7f8f8] rounded-full transition-all duration-300"
+                      style={{ width: `${downloadPhase === 'downloading' ? downloadProgress : decryptProgress}%` }}
+                    />
                   </div>
                 </div>
               )}
