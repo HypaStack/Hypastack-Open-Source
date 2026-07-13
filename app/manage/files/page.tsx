@@ -21,6 +21,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
+import { MoveDialog } from "../_move-dialog"
 
 
 function FilesPageInner() {
@@ -32,6 +33,7 @@ function FilesPageInner() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
+  const [moveOpen, setMoveOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
@@ -236,6 +238,30 @@ function FilesPageInner() {
     })
   }
 
+  const handleBulkMove = async (folderId: string | null) => {
+    const ids = Array.from(selectedFiles)
+    if (ids.length === 0) return
+    try {
+      const res = await apiFetch("/api/v2/files", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileIds: ids, folderId }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        hypaError(data.message || "Failed to move files")
+        return
+      }
+      const movedIds = new Set(ids)
+      setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
+      setSelectedFiles(new Set())
+      setMoveOpen(false)
+    } catch (err) {
+      console.error("Move error:", err)
+      hypaError("Failed to move files")
+    }
+  }
+
   const handleCreateFolder = async () => {
     const name = await hypaPrompt({
       title: "New Folder",
@@ -347,26 +373,36 @@ function FilesPageInner() {
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedFiles.size > 0 ? (
-            <ShineButton
-              size="md"
-              onClick={handleBulkDelete}
-              disabled={deleteLoading === "bulk"}
-              color="#dc2626"
-              hoverColor="#b91c1c"
-              style={{ gap: 8 }}
-            >
-              {deleteLoading === "bulk" ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader size={16} color="#ffffff" />
-                  Deleting…
-                </span>
-              ) : (
-                <>
-                  <MIcon name="delete" size={16} className="shrink-0" />
-                  Delete {selectedFiles.size}
-                </>
-              )}
-            </ShineButton>
+            <>
+              <SecondaryButton
+                size="md"
+                onClick={() => setMoveOpen(true)}
+                style={{ gap: 8 }}
+              >
+                <MIcon name="drive_file_move" size={16} className="shrink-0" />
+                <span className="hidden sm:inline">Move</span>
+              </SecondaryButton>
+              <ShineButton
+                size="md"
+                onClick={handleBulkDelete}
+                disabled={deleteLoading === "bulk"}
+                color="#dc2626"
+                hoverColor="#b91c1c"
+                style={{ gap: 8 }}
+              >
+                {deleteLoading === "bulk" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader size={16} color="#ffffff" />
+                    Deleting…
+                  </span>
+                ) : (
+                  <>
+                    <MIcon name="delete" size={16} className="shrink-0" />
+                    Delete {selectedFiles.size}
+                  </>
+                )}
+              </ShineButton>
+            </>
           ) : (
             <>
               <SecondaryButton
@@ -548,6 +584,17 @@ function FilesPageInner() {
           </>
         )}
       </AnimatePresence>
+
+      {moveOpen && (
+        <MoveDialog
+          count={selectedFiles.size}
+          folders={folders}
+          currentFolderId={currentFolderId}
+          rootLabel="Drive"
+          onCancel={() => setMoveOpen(false)}
+          onMove={handleBulkMove}
+        />
+      )}
 
       <ContextMenu isOpen={!!activeContextMenuFile} pos={contextMenuPos} onClose={() => { setOpenMenuId(null); setContextMenuPos(null) }}>
         {activeContextMenuFile && (

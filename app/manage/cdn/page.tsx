@@ -17,6 +17,7 @@ import { STORAGE_KEY_HIDE_CTRL_HINT } from "@/constants"
 import { type CdnAsset, type CdnFolder, formatBytes, formatDate, gridVariants, gridItemVariants, getFileIcon } from "./_helpers"
 import { CdnAssetTile } from "./_asset-tile"
 import { EmptyState } from "./_empty-state"
+import { MoveDialog } from "../_move-dialog"
 
 export default function CdnPage() {
   const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useManage()
@@ -25,6 +26,7 @@ export default function CdnPage() {
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
+  const [moveOpen, setMoveOpen] = useState(false)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
   const [hideCtrlHint, setHideCtrlHint] = useState(true)
 
@@ -366,6 +368,30 @@ export default function CdnPage() {
     if (asset) window.open(asset.cdnUrl, "_blank", "noopener,noreferrer")
   }
 
+  const handleBulkMove = async (folderId: string | null) => {
+    const ids = Array.from(selectedAssets)
+    if (ids.length === 0) return
+    try {
+      const res = await apiFetch("/api/v2/cdn/assets", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assetIds: ids, folderId }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        hypaError(data.message || "Failed to move assets")
+        return
+      }
+      const movedIds = new Set(ids)
+      setAssets((prev) => prev.map((a) => (movedIds.has(a.id) ? { ...a, folderId } : a)))
+      setSelectedAssets(new Set())
+      setMoveOpen(false)
+    } catch (err) {
+      console.error("Move error:", err)
+      hypaError("Failed to move assets")
+    }
+  }
+
   const handleBulkDelete = async () => {
     if (selectedAssets.size === 0) return
 
@@ -540,6 +566,13 @@ export default function CdnPage() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+                {/* Move */}
+                <motion.div layout>
+                  <SecondaryButton size="md" onClick={() => setMoveOpen(true)} style={{ gap: 8 }}>
+                    <MIcon name="drive_file_move" size={15} className="shrink-0" />
+                    <span className="hidden sm:inline">Move</span>
+                  </SecondaryButton>
+                </motion.div>
                 {/* Delete */}
                 <motion.div layout>
                   <ShineButton
@@ -775,6 +808,17 @@ export default function CdnPage() {
             </SecondaryButton>
           </div>
         </div>
+      )}
+
+      {moveOpen && (
+        <MoveDialog
+          count={selectedAssets.size}
+          folders={folders}
+          currentFolderId={currentFolderId}
+          rootLabel="CDN Assets"
+          onCancel={() => setMoveOpen(false)}
+          onMove={handleBulkMove}
+        />
       )}
 
       <Walkthrough
