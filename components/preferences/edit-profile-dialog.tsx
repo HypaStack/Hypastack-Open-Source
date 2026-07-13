@@ -123,8 +123,8 @@ export function EditProfileDialog({
               if (e.key === "Enter" && !saving) handleSave()
             }}
           >
-            <div style={{ padding: '10px 14px 6px' }}>
-              <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingBottom: 8 }}>Username</p>
+            <div style={{ padding: '10px 4px 6px' }}>
+              <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>Username</p>
               <TextInput
                 type="text"
                 size="md"

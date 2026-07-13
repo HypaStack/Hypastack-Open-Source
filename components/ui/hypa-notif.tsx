@@ -115,7 +115,7 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
 
   return (
     <>
-      <div style={{ padding: '8px 8px 2px' }}>
+      <div style={{ padding: '8px 4px 2px' }}>
         <p className="text-[#111] dark:text-[#f7f8f8]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>
           {notif.title}
         </p>
@@ -130,7 +130,7 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
           placeholder={notif.inputPlaceholder ?? ""}
         />
       </div>
-      <div className="flex gap-2 mt-1.5">
+      <div className="flex gap-2" style={{ padding: 4 }}>
         <div className="flex-1">
           <SecondaryButton size="md" fullWidth onClick={handleCancel}>
             {notif.cancelText ?? "Cancel"}
