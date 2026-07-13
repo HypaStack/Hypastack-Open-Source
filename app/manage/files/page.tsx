@@ -1,7 +1,6 @@
 "use client"
 
 import { UploadZone } from "@/components/upload"
-import { LoadingSvg } from "@/components/ui/loading-svg"
 import { Loader } from "@/components/ui/loader"
 
 import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "react"
@@ -22,6 +21,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
+import { ListSkeleton } from "./_list-skeleton"
 import { MoveDialog } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
@@ -452,13 +452,13 @@ function FilesPageInner() {
       </div>
 
       {isLoading ? (
-        <div className="flex-1 flex items-center justify-center min-h-[400px]">
-          <LoadingSvg size={32} />
+        <div className="animate-in fade-in duration-200">
+          <ListSkeleton />
         </div>
       ) : isEmpty ? (
         <EmptyState query={searchQuery} username={user.nickname} />
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 animate-in fade-in duration-300">
           {filteredFolders.length > 0 && (
             <div>
               <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
