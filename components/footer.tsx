@@ -20,6 +20,8 @@ export function Footer() {
             <img loading="lazy" decoding="async"
               src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
               alt="Hypastack"
+              width={286}
+              height={286}
               className="h-8 w-auto object-contain select-none pointer-events-none"
               draggable={false}
             />
@@ -58,11 +60,12 @@ export function Footer() {
               rel="noopener noreferrer"
               className="inline-block hover:opacity-80 transition-opacity my-2"
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src="https://r2.hypastack.com/cdn/62c8tkg1mw51/saas-browser-badge.svg"
                 alt="Hypastack - software database"
-                width={140}
-                className="select-none pointer-events-none"
+                width={456}
+                height={160}
+                className="w-[140px] h-auto select-none pointer-events-none"
                 draggable={false}
               />
             </a>

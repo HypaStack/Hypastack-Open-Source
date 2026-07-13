@@ -58,6 +58,7 @@ export function Navbar() {
             href="/about"
             as={Link}
             size="sm"
+            aria-label="Learn more about Hypastack"
           >
             Learn more
           </ShineButton>
