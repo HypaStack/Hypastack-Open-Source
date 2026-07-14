@@ -1,6 +1,7 @@
-// hypasan is a tiny sidecar that offloads user-input sanitization (the file
-// "note" field) from the Node app. It speaks HTTP over a Unix domain socket
-// and mirrors the Node pipeline in lib/security/zeroTrust.ts:
+// hypasan is a tiny sidecar that offloads user-input validation from the Node
+// app. It speaks HTTP over a Unix domain socket and provides:
+//
+// /sanitize — mirrors the note pipeline in lib/security/zeroTrust.ts:
 //
 //	1. trim whitespace
 //	2. strip ALL HTML tags, keep text content (bluemonday StrictPolicy,
@@ -11,10 +12,16 @@
 //
 // The caller sends max_len so the length limit has a single source of truth
 // (MAX_NOTE_LENGTH in the Node constants).
+//
+// /sniff — magic-byte content detection (the file-type equivalent). Takes the
+// raw head bytes of a file, returns {mime, ext} or empty strings when unknown.
+// The allow/block decisions stay in Node (constants/security.ts); this only
+// detects.
 package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -24,6 +31,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -90,6 +98,44 @@ func handleSanitize(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
+type sniffResp struct {
+	Mime string `json:"mime"`
+	Ext  string `json:"ext"`
+}
+
+// handleSniff detects content type from raw head bytes (application/octet-stream
+// body). Unknown/binary-without-signature comes back as empty strings so the
+// Node caller can apply its own fallback (text heuristic).
+func handleSniff(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	head, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
+	if err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	resp := sniffResp{}
+	if len(head) > 0 {
+		mtype := mimetype.Detect(head)
+		mime := mtype.String()
+		if i := strings.IndexByte(mime, ';'); i >= 0 {
+			mime = strings.TrimSpace(mime[:i]) // drop "; charset=..." params
+		}
+		// The root of mimetype's tree means "no signature matched" — report
+		// unknown rather than a meaningless application/octet-stream.
+		if mime != "application/octet-stream" {
+			resp.Mime = mime
+			resp.Ext = strings.TrimPrefix(mtype.Extension(), ".")
+		}
+	}
+
+	w.Header().Set("content-type", "application/json")
+	_ = json.NewEncoder(w).Encode(resp)
+}
+
 func main() {
 	socketPath := os.Getenv("SAN_SOCKET_PATH")
 	if socketPath == "" {
@@ -112,6 +158,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/sanitize", handleSanitize)
+	mux.HandleFunc("/sniff", handleSniff)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusOK) })
 
 	srv := &http.Server{Handler: mux}
