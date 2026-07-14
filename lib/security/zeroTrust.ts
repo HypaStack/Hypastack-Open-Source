@@ -1,9 +1,24 @@
-import { fileTypeFromBuffer } from "file-type"
 import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
 import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTENSIONS, MAX_NOTE_LENGTH } from "@/constants"
-import { sanitizeViaService } from "@/lib/security/sanitizeService"
+import { sanitizeViaService, sniffViaService } from "@/lib/security/sanitizeService"
+
+// Magic-byte detection normally happens in the hypasan sidecar; file-type is
+// only the fallback, loaded lazily like jsdom below. Only the head of the
+// buffer is sent over the socket — signatures live in the first bytes.
+const SNIFF_HEAD_BYTES = 65536
+
+async function detectFileType(buffer: Buffer): Promise<{ mime: string; ext: string } | null> {
+  try {
+    const { mime, ext } = await sniffViaService(buffer.subarray(0, SNIFF_HEAD_BYTES))
+    return mime ? { mime, ext: ext ?? "" } : null
+  } catch {
+    const { fileTypeFromBuffer } = await import("file-type")
+    const fileType = await fileTypeFromBuffer(buffer)
+    return fileType ? { mime: fileType.mime, ext: fileType.ext } : null
+  }
+}
 
 // DOMPurify (and the heavyweight jsdom it needs for a DOM) is only the
 // fallback path now — the hypasan Go sidecar normally does note sanitization.
@@ -147,7 +162,7 @@ export async function verifyFileType(
     }
 
     // magic bytes analysis
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await detectFileType(buffer)
 
     if (!fileType) {
       // Can't determine type from magic bytes — check if it looks like text or unknown binary
@@ -252,7 +267,7 @@ export async function verifyCdnFileType(
       return { valid: false, mimeType: null, extension: null, error: "File too large" }
     }
 
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await detectFileType(buffer)
 
     if (!fileType) {
       // Magic bytes unknown — fine, extension already passed the CDN allowlist
