@@ -25,17 +25,20 @@ export async function initiateMultipartUpload(opts: {
   const createRes = await client.send(createCmd)
   const uploadId = createRes.UploadId!
 
-  const presignedUrls: string[] = []
-  for (let i = 1; i <= opts.totalParts; i++) {
-    const partCmd = new UploadPartCommand({
-      Bucket: bucket,
-      Key: opts.r2Key,
-      UploadId: uploadId,
-      PartNumber: i,
-    })
-    const url = await getSignedUrl(client, partCmd, { expiresIn: 3600 })
-    presignedUrls.push(url)
-  }
+  // Presigning is local HMAC work (no network), but each call still awaits
+  // through the SDK's async middleware stack — sign all parts concurrently
+  // instead of one at a time (a 5GB file is ~500 parts).
+  const presignedUrls = await Promise.all(
+    Array.from({ length: opts.totalParts }, (_, idx) => {
+      const partCmd = new UploadPartCommand({
+        Bucket: bucket,
+        Key: opts.r2Key,
+        UploadId: uploadId,
+        PartNumber: idx + 1,
+      })
+      return getSignedUrl(client, partCmd, { expiresIn: 3600 })
+    }),
+  )
 
   return { uploadId, presignedUrls }
 }
@@ -48,18 +51,17 @@ export async function getPresignedUrlsForParts(opts: {
   const client = getR2Client()
   const bucket = getBucketName()
 
-  const urls: string[] = []
-  for (const partNum of opts.partNumbers) {
-    const partCmd = new UploadPartCommand({
-      Bucket: bucket,
-      Key: opts.r2Key,
-      UploadId: opts.uploadId,
-      PartNumber: partNum,
-    })
-    const url = await getSignedUrl(client, partCmd, { expiresIn: 3600 })
-    urls.push(url)
-  }
-  return urls
+  return Promise.all(
+    opts.partNumbers.map((partNum) => {
+      const partCmd = new UploadPartCommand({
+        Bucket: bucket,
+        Key: opts.r2Key,
+        UploadId: opts.uploadId,
+        PartNumber: partNum,
+      })
+      return getSignedUrl(client, partCmd, { expiresIn: 3600 })
+    }),
+  )
 }
 
 export async function completeMultipartUpload(opts: {
