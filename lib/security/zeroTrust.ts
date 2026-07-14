@@ -1,13 +1,26 @@
-import { JSDOM } from "jsdom"
-import DOMPurify from "dompurify"
 import { fileTypeFromBuffer } from "file-type"
 import path from "path"
 import sharp from "sharp"
 import crypto from "crypto"
 import { CDN_ALLOWED_EXTENSIONS, MAX_FILE_SIZE, BLOCKED_MIME_TYPES, BLOCKED_EXTENSIONS, MAX_NOTE_LENGTH } from "@/constants"
+import { sanitizeViaService } from "@/lib/security/sanitizeService"
 
-const window = new JSDOM("").window
-const purify = DOMPurify(window)
+// DOMPurify (and the heavyweight jsdom it needs for a DOM) is only the
+// fallback path now — the hypasan Go sidecar normally does note sanitization.
+// Loaded lazily so jsdom stays out of memory while the sidecar is up.
+type Purifier = { sanitize: (dirty: string, cfg?: Record<string, unknown>) => string }
+let _purify: Purifier | null = null
+
+async function getPurify(): Promise<Purifier> {
+  if (!_purify) {
+    const [{ JSDOM }, { default: DOMPurify }] = await Promise.all([
+      import("jsdom"),
+      import("dompurify"),
+    ])
+    _purify = DOMPurify(new JSDOM("").window) as unknown as Purifier
+  }
+  return _purify
+}
 
 function stripInjectionPatterns(input: string): string {
   return input
@@ -28,20 +41,25 @@ function stripInjectionPatterns(input: string): string {
     .trim()
 }
 
-export function sanitizeNote(note: string | null | undefined): string | null {
+export async function sanitizeNote(note: string | null | undefined): Promise<string | null> {
   if (!note || note.trim().length === 0) return null
 
-  let sanitized = purify.sanitize(note.trim(), {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-    KEEP_CONTENT: true,
-    SANITIZE_DOM: true,
-    SAFE_FOR_TEMPLATES: true,
-    SAFE_FOR_XML: true,
-  })
-
-  sanitized = stripInjectionPatterns(sanitized)
-  if (sanitized.length > MAX_NOTE_LENGTH) sanitized = sanitized.substring(0, MAX_NOTE_LENGTH)
+  let sanitized: string
+  try {
+    sanitized = await sanitizeViaService(note, MAX_NOTE_LENGTH)
+  } catch {
+    const purify = await getPurify()
+    sanitized = purify.sanitize(note.trim(), {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+      KEEP_CONTENT: true,
+      SANITIZE_DOM: true,
+      SAFE_FOR_TEMPLATES: true,
+      SAFE_FOR_XML: true,
+    })
+    sanitized = stripInjectionPatterns(sanitized)
+    if (sanitized.length > MAX_NOTE_LENGTH) sanitized = sanitized.substring(0, MAX_NOTE_LENGTH)
+  }
 
   return sanitized.length > 0 ? sanitized : null
 }

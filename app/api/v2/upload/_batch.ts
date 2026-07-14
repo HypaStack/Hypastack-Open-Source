@@ -116,7 +116,7 @@ export async function handleUploadBatch(body: UploadBatchBody, userId: string) {
 
   const useCustomExpiry = isPaidTier(normalizeTier(userTier)) && typeof expiresInMinutes === "number" && expiresInMinutes > 0
   const sanitizedCustomFilename = customFilename ? sanitizeFilename(customFilename).sanitized || null : null
-  const sanitizedNote = note ? sanitizeNote(note) : null
+  const sanitizedNote = note ? await sanitizeNote(note) : null
   const encryptedCustomFilename = sanitizedCustomFilename ? encryptFilename(sanitizedCustomFilename) : null
 
   const created: Created[] = []

@@ -93,7 +93,7 @@ export async function handleUploadMultipartPost(request: NextRequest) {
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
-    const sanitizedNote = note ? sanitizeNote(note) : null
+    const sanitizedNote = note ? await sanitizeNote(note) : null
 
     // Custom slug (paid plans only). Validated and pre-checked here, before any
     // R2 multipart upload is initiated, to avoid orphaning an upload on conflict.

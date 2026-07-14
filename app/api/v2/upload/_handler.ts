@@ -111,7 +111,7 @@ export async function handleUploadPost(request: NextRequest) {
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
-    const sanitizedNote = note ? sanitizeNote(note) : null
+    const sanitizedNote = note ? await sanitizeNote(note) : null
 
     const encryptedOriginalName = encryptFilename(fileName)
     const encryptedCustomFilename = sanitizedCustomFilename

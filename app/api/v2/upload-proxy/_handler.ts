@@ -76,7 +76,7 @@ export async function handleUploadProxyPost(request: NextRequest) {
     const encryption = encryptFile(buffer)
     buffer = encryption.encrypted
 
-    const sanitizedNote = sanitizeNote(note)
+    const sanitizedNote = await sanitizeNote(note)
     const sanitizedCustomFilename = customFilename
       ? sanitizeFilename(customFilename).sanitized || null
       : null
