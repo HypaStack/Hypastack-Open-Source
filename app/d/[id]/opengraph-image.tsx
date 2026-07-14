@@ -1,16 +1,52 @@
 import { ImageResponse } from "next/og"
+import { cached } from "@/lib/data/cache"
 
-export const runtime = "edge"
 export const alt = "Download file on hypastack.com"
 export const size = { width: 1200, height: 630 }
+
+// Rendered PNGs are cached in Redis: one link pasted into a chat app triggers
+// several crawlers at once, and a Satori+resvg render per hit is the most
+// expensive thing a /d/ page does. TTL keeps a rename from being stale forever;
+// the underlying metadata fetch below has its own 60s revalidate on top.
+const OG_CACHE_TTL_S = 3600
 
 interface Props {
   params: Promise<{ id: string }>
 }
 
+// Satori can't resolve external image URLs, so the logo is inlined as a data
+// URL — fetched once per process, not per render.
+let _logoSrc: string | null = null
+async function getLogoSrc(): Promise<string> {
+  if (_logoSrc !== null) return _logoSrc
+  try {
+    const logoRes = await fetch("https://r2.hypastack.com/cdn/td2jaozbj6or/og-img-logo.png")
+    if (logoRes.ok) {
+      const buf = await logoRes.arrayBuffer()
+      _logoSrc = `data:image/png;base64,${Buffer.from(buf).toString("base64")}`
+      return _logoSrc
+    }
+  } catch {}
+  return "" // don't memoize a failure — retry on the next render
+}
+
 export default async function Image({ params }: Props) {
   const { id } = await params
 
+  const pngBase64 = await cached(`og:${id}`, OG_CACHE_TTL_S, async () => {
+    const res = await renderOgImage(id)
+    return Buffer.from(await res.arrayBuffer()).toString("base64")
+  })
+
+  return new Response(Buffer.from(pngBase64, "base64"), {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": `public, max-age=${OG_CACHE_TTL_S}`,
+    },
+  })
+}
+
+async function renderOgImage(id: string): Promise<ImageResponse> {
   let fileName = "Unknown file"
   let fileSize = ""
   let ext = "FILE"
@@ -42,16 +78,7 @@ export default async function Image({ params }: Props) {
 
   const displayName = fileName.length > 36 ? fileName.slice(0, 33) + "..." : fileName
 
-  // Fetch logo and convert to data URL — Satori can't resolve external image URLs
-  let logoSrc = ""
-  try {
-    const logoRes = await fetch("https://r2.hypastack.com/cdn/td2jaozbj6or/og-img-logo.png")
-    if (logoRes.ok) {
-      const buf = await logoRes.arrayBuffer()
-      const b64 = Buffer.from(buf).toString("base64")
-      logoSrc = `data:image/png;base64,${b64}`
-    }
-  } catch {}
+  const logoSrc = await getLogoSrc()
 
   return new ImageResponse(
     (
