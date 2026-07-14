@@ -4,7 +4,7 @@ import { withAuth } from "@/lib/http/route"
 import { getUserById, updateAvatarUrl, getStorageToken } from "@/lib/models/userModel"
 import { putObjectByKey, deleteByKey } from "@/lib/storage/r2"
 import { isOwnProfileKey } from "@/lib/storage/profileKeys"
-import { fileTypeFromBuffer } from "file-type"
+import { detectFileType } from "@/lib/security/zeroTrust"
 import { ALLOWED_AVATAR_TYPES, MAX_AVATAR_SIZE } from "@/constants"
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
@@ -23,7 +23,7 @@ export const POST = withAuth(async ({ request, user: auth }) => {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await detectFileType(buffer)
     if (!fileType || !ALLOWED_AVATAR_TYPES.includes(fileType.mime)) {
         return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, "415 Invalid File Extension, only JPEG, PNG, WebP, and GIF are allowed.")
     }

@@ -9,7 +9,7 @@ import { sanitizeViaService, sniffViaService } from "@/lib/security/sanitizeServ
 // buffer is sent over the socket — signatures live in the first bytes.
 const SNIFF_HEAD_BYTES = 65536
 
-async function detectFileType(buffer: Buffer): Promise<{ mime: string; ext: string } | null> {
+export async function detectFileType(buffer: Buffer): Promise<{ mime: string; ext: string } | null> {
   try {
     const { mime, ext } = await sniffViaService(buffer.subarray(0, SNIFF_HEAD_BYTES))
     return mime ? { mime, ext: ext ?? "" } : null

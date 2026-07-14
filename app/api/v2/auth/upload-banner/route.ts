@@ -4,7 +4,7 @@ import { withAuth } from "@/lib/http/route"
 import { getUserById, updateBannerUrl, getStorageToken } from "@/lib/models/userModel"
 import { putObjectByKey, deleteByKey } from "@/lib/storage/r2"
 import { isOwnProfileKey } from "@/lib/storage/profileKeys"
-import { fileTypeFromBuffer } from "file-type"
+import { detectFileType } from "@/lib/security/zeroTrust"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
 import { ALLOWED_BANNER_TYPES, MAX_BANNER_SIZE } from "@/constants"
 import { API_ERRORS } from "@/constants"
@@ -34,7 +34,7 @@ export const POST = withAuth(async ({ request, user: auth }) => {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const fileType = await fileTypeFromBuffer(buffer)
+    const fileType = await detectFileType(buffer)
     if (!fileType || !ALLOWED_BANNER_TYPES.includes(fileType.mime)) {
         return apiError(415, API_ERRORS.UNSUPPORTED_MEDIA_TYPE, "415 Invalid file type, only JPEG, PNG, GIF, and AVIF are allowed.")
     }
