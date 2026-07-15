@@ -1,6 +1,6 @@
 # Tiny static Go binary for the hash sidecar. No external modules, so the build
 # needs no network for `go mod download`.
-FROM golang:1.24-bookworm AS build
+FROM golang:1.25-bookworm AS build
 WORKDIR /src
 COPY go.mod ./
 COPY main.go ./

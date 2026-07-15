@@ -1,7 +1,7 @@
 # Tiny static Go binary for the sanitizer sidecar. Unlike hypahash this pulls
 # one vetted module (bluemonday) — hand-rolling an HTML sanitizer is not a
 # place to avoid dependencies.
-FROM golang:1.24-bookworm AS build
+FROM golang:1.25-bookworm AS build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
