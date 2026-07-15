@@ -7,6 +7,7 @@
 %%  - dumpster pastes untouched for 180 days,
 %%  - unused funnel links older than 7 days (never dropped into),
 %%  - expired display-name holds (released names past their reservation window),
+%%  - paid plans past their one-month expiry (downgraded back to free),
 %%  - branding on accounts that are no longer on a paid plan (downgrade cleanup).
 %% Runs hourly, mirroring the batch limits of the old in-app sweep.
 
@@ -33,6 +34,7 @@ handle_info(tick, State) ->
     try cleanup_staging() catch C1:R1 -> logger:error("staging sweep crashed: ~p:~p", [C1, R1]) end,
     try cleanup_dumpster() catch C2:R2 -> logger:error("dumpster sweep crashed: ~p:~p", [C2, R2]) end,
     try cleanup_name_holds() catch C3:R3 -> logger:error("name-hold sweep crashed: ~p:~p", [C3, R3]) end,
+    try expire_plans() catch C7:R7 -> logger:error("plan expiry crashed: ~p:~p", [C7, R7]) end,
     try reconcile_downgrades() catch C4:R4 -> logger:error("downgrade reconcile crashed: ~p:~p", [C4, R4]) end,
     try cleanup_funnels() catch C5:R5 -> logger:error("funnel sweep crashed: ~p:~p", [C5, R5]) end,
     try cleanup_funnel_staging() catch C6:R6 -> logger:error("funnel staging sweep crashed: ~p:~p", [C6, R6]) end,
@@ -136,6 +138,19 @@ cleanup_funnel_staging() ->
             report("funnel-staging", N);
         {error, Reason} ->
             logger:warning("funnel staging sweep query failed: ~p", [Reason])
+    end.
+
+%% Auto-expire paid plans one month after the upgrade: flip them back to 'free'.
+%% Only the tier changes here — files are never touched, they keep their own
+%% expiry. Runs just before reconcile_downgrades so the freed accounts get their
+%% paid-only branding stripped on the same tick.
+expire_plans() ->
+    Sql = <<"UPDATE users SET tier = 'free', tier_expires_at = NULL "
+            "WHERE tier IN ('essential','premium','ultimate','advanced') "
+            "AND tier_expires_at IS NOT NULL AND tier_expires_at < NOW()">>,
+    case hypasched_db:query(Sql, []) of
+        {ok, Count} -> report("plan-expiry", Count);
+        {error, Reason} -> logger:warning("plan expiry query failed: ~p", [Reason])
     end.
 
 %% Strip download-page branding from accounts that are no longer on a paid plan.

@@ -481,6 +481,31 @@ export async function initDatabase(): Promise<void> {
         created_at TIMESTAMPTZ  DEFAULT NOW()
       )` },
       { version: '2026-07-08-funnel-staging-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_staging_created_at ON funnel_staging(created_at)` },
+      // Paid-plan auto-expiry. A paid tier lasts one month from the upgrade, then
+      // hypasched flips it back to 'free' (files are never touched — they keep
+      // their own expiry). The trigger stamps tier_expires_at on any transition
+      // to a paid tier and clears it on downgrade, so a plain
+      // `UPDATE users SET tier='premium'` is enough; pass an explicit
+      // tier_expires_at in the same statement to override the one-month default.
+      { version: '2026-07-16-user-tier-expiry', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS tier_expires_at TIMESTAMPTZ` },
+      { version: '2026-07-16-tier-expiry-trigger', sql: `
+CREATE OR REPLACE FUNCTION set_tier_expiry() RETURNS trigger AS $fn$
+BEGIN
+  IF NEW.tier IS DISTINCT FROM OLD.tier THEN
+    IF NEW.tier IN ('essential','premium','ultimate','advanced') THEN
+      IF NEW.tier_expires_at IS NOT DISTINCT FROM OLD.tier_expires_at THEN
+        NEW.tier_expires_at := NOW() + INTERVAL '1 month';
+      END IF;
+    ELSE
+      NEW.tier_expires_at := NULL;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$fn$ LANGUAGE plpgsql;
+DROP TRIGGER IF EXISTS trg_set_tier_expiry ON users;
+CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION set_tier_expiry();
+` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
