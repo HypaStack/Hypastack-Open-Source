@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
@@ -61,11 +61,7 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
         <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: 16 }}>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
-            {isSelectedCurrent && (
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/10 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]">
-                Current
-              </span>
-            )}
+            {isSelectedCurrent && <ShineBadge primary>Current</ShineBadge>}
           </div>
           <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-4 font-normal">
             {selectedPlan.key === "free"
@@ -132,17 +128,38 @@ function PlanCard({
         <div className="absolute inset-0 pointer-events-none rounded-[12px] ring-1 ring-inset ring-[rgba(255,255,255,0.1)] dark:ring-[rgba(255,255,255,0.1)]" />
       )}
       <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] text-[10px] font-semibold tracking-wide">
-          {tier}
-        </span>
-        {current && (
-          <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111]/8 text-[#555]">
-            Current
-          </span>
-        )}
+        <ShineBadge>{tier}</ShineBadge>
+        {current && <ShineBadge primary>Current</ShineBadge>}
       </div>
       <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{size}</p>
       <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
     </button>
+  )
+}
+
+// Non-interactive badge that borrows the ShineButton look: subtle/gray for
+// tiers, primary gloss for "Current". A span (not ShineButton) since these sit
+// inside the clickable PlanCard <button>.
+function ShineBadge({ children, primary = false }: { children: ReactNode; primary?: boolean }) {
+  if (primary) {
+    return (
+      <span
+        className="inline-flex items-center h-[22px] px-2.5 rounded-[7px] text-[11px] font-medium text-white select-none shrink-0"
+        style={{
+          backgroundColor: "#2680bf",
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0))",
+          borderTop: "1px solid rgba(255,255,255,0.6)",
+          boxShadow:
+            "rgba(0,0,0,0.05) 0px 1px 0px 0px, rgba(0,0,0,0.1) 0px 2px 2px 0px, #195a87 0px -1px 0px 0px inset",
+        }}
+      >
+        {children}
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex items-center h-[22px] px-2.5 rounded-[7px] text-[11px] font-medium select-none shrink-0 bg-black/[0.05] text-[#171717] dark:bg-white/[0.06] dark:text-[#f7f8f8]">
+      {children}
+    </span>
   )
 }
