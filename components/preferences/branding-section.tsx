@@ -91,7 +91,7 @@ export function BrandingSection({ user }: { user: PreferencesUser }) {
   }
 
   return (
-    <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: "16px 20px", marginBottom: 16 }}>
+    <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: "12px 16px", marginBottom: 16 }}>
       <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Download page</p>
       <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-4 font-normal leading-snug">
         A banner and name shown above every file you share.
