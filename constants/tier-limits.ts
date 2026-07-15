@@ -42,7 +42,7 @@ export const FREE_LIMITS: TierLimits = {
 
 const ESSENTIAL_LIMITS: TierLimits = {
   label: "Essential",
-  maxNormalUploadSize: 500 * MB,
+  maxNormalUploadSize: 1 * GB,
   maxCdnFileSize: 200 * MB,
   maxCdnStorage: 300 * GB,
   maxCdnLinks: 45,
