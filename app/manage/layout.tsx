@@ -12,6 +12,7 @@ import { ShineButton } from "@/components/ui/shine-button"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { MenuItem } from "@/components/ui/menu-item"
+import { ShineBadge } from "@/components/ui/shine-badge"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
@@ -346,21 +347,46 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white dark:bg-[#0e0f10] rounded-[12px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
+                className="fixed z-[100] bg-white dark:bg-[#0e0f10] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
                 style={{
                   bottom: '68px',
                   left: '8px',
-                  width: 240,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.4)'
+                  width: 264,
+                  boxShadow: '0 12px 34px rgba(0,0,0,0.35), 0 3px 10px rgba(0,0,0,0.2)'
                 }}
               >
-                <div className="px-3 pb-2">
-                  <p className="text-sm font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
-                  <p className="text-xs text-[#666] dark:text-[#898e97] mt-0.5">{user.id}</p>
+                <div className="px-3 pt-1 pb-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      decoding="async"
+                      src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                      alt={user.nickname}
+                      className="h-10 w-10 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                      draggable={false}
+                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="min-w-0 truncate text-[14px] font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
+                        <ShineBadge>{tierLimits.label}</ShineBadge>
+                      </div>
+                      <div className="mt-1.5">
+                        <SecondaryButton
+                          onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
+                          size="xs"
+                          aria-label="Copy UUID"
+                          style={{ gap: 5, height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+                        >
+                          <MIcon name={copiedId ? "check" : "content_copy"} size={12} />
+                          {copiedId ? "Copied" : "Copy UUID"}
+                        </SecondaryButton>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mx-3 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)] mb-1" />
-                
+                <div className="mx-3 my-1 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)]" />
+
                 <div className="px-1.5 space-y-0.5">
                   <MenuItem
                     icon={<MIcon name="person" size={18} />}
@@ -382,8 +408,13 @@ function ManageLayoutInner({
                   >
                     Refer and earn
                   </MenuItem>
+                </div>
 
+                <div className="mx-3 my-1 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)]" />
+
+                <div className="px-1.5">
                   <MenuItem
+                    danger
                     icon={<MIcon name="logout" size={18} />}
                     onClick={() => { setMenuOpen(false); logout(); }}
                   >
@@ -490,24 +521,33 @@ function ManageLayoutInner({
         {drawerOpen && (
           <motion.div
             key="sheet"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0.06, bottom: 0.55 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 130 || info.velocity.y > 500) setDrawerOpen(false)
+            }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden pointer-events-auto"
+            className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden"
             style={{
-              height: '90vh',
-              backgroundColor: resolvedTheme === 'dark' ? '#0a0b0c' : '#f5f5f5',
-              borderRadius: '18px 18px 0 0',
+              maxHeight: '90vh',
+              backgroundColor: resolvedTheme === 'dark' ? '#0a0b0c' : '#ffffff',
+              borderRadius: '20px 20px 0 0',
+              borderTop: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #ebebeb',
+              boxShadow: '0 -10px 40px rgba(0,0,0,0.22)',
               willChange: 'transform',
             }}
           >
-              <div className="flex justify-center pt-3 pb-2">
-                <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: '#d4d4d8' }} />
+              {/* Grab handle — the sheet drags from here (or any empty space) to dismiss. */}
+              <div className="flex justify-center pt-3 pb-2.5 cursor-grab active:cursor-grabbing">
+                <div style={{ width: 40, height: 5, borderRadius: 999, backgroundColor: resolvedTheme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }} />
               </div>
 
-              <div className="px-3 pb-3 pt-1">
-                <div className="flex bg-[#e5e5e5] dark:bg-[#111111] rounded-md p-1 gap-1">
+              <div className="px-3 pb-3">
+                <div className="flex gap-1 p-1 rounded-[14px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.03)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]">
                   {SECTION_BUTTONS.map((section) => {
                     const active = isSectionActive(pathname, section.href)
                     return (
@@ -515,13 +555,13 @@ function ManageLayoutInner({
                         key={section.href}
                         href={section.href}
                         onClick={() => setDrawerOpen(false)}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-[14px] font-semibold transition-all ${
+                        className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-[10px] text-[12px] font-semibold transition-colors ${
                           active
-                            ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3] shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
-                            : "text-[#666] dark:text-[#888] active:bg-[rgba(0,0,0,0.05)] dark:active:bg-[#222]"
+                            ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                            : "text-[#888] dark:text-[#898e97] active:bg-[rgba(0,0,0,0.04)] dark:active:bg-[rgba(255,255,255,0.04)]"
                         }`}
                       >
-                        <MIcon name={section.icon} size={16} />
+                        <MIcon name={section.icon} size={19} />
                         {section.label}
                       </Link>
                     )
@@ -529,9 +569,9 @@ function ManageLayoutInner({
                 </div>
               </div>
 
-              <div style={{ height: 1, margin: '0 12px 12px', backgroundColor: resolvedTheme === 'dark' ? '#2a2a2a' : 'rgba(0,0,0,0.06)' }} />
+              <div className="mx-3 mb-1 border-t border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" />
 
-              <div className="flex flex-col gap-1.5 flex-1" style={{ padding: '0 12px 16px' }}>
+              <div className="flex flex-col gap-1 px-3 py-2">
                 {getSubNav(pathname).map((item) => {
                   const active = pathname === item.href
                   return (
@@ -539,49 +579,47 @@ function ManageLayoutInner({
                       key={item.href}
                       href={item.href}
                       onClick={() => setDrawerOpen(false)}
-                      className={`flex items-center gap-4 w-full active:scale-[0.98] transition-all duration-75 ${
+                      className={`flex items-center gap-3.5 rounded-[12px] px-3.5 transition-colors active:scale-[0.99] ${
                         active
-                          ? "bg-white dark:bg-[#2a2a2a] text-[#171717] dark:text-[#e3e3e3]"
-                          : "text-[#666] dark:text-[#888] active:bg-white dark:active:bg-[#2a2a2a]"
+                          ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]"
+                          : "text-[#666] dark:text-[#898e97] active:bg-[#f5f5f5] dark:active:bg-[rgba(255,255,255,0.04)]"
                       }`}
-                      style={{ height: 42, paddingLeft: 16, paddingRight: 16, borderRadius: 6 }}
+                      style={{ height: 50 }}
                     >
-                      <MIcon name={item.icon} size={20} style={{ color: active ? (resolvedTheme === 'dark' ? '#e3e3e3' : '#171717') : (resolvedTheme === 'dark' ? '#888' : '#666') }} />
-                      <span style={{ fontSize: 15, fontWeight: 500 }}>{item.label}</span>
+                      <MIcon name={item.icon} size={20} />
+                      <span className="text-[15px] font-medium">{item.label}</span>
                     </Link>
                   )
                 })}
               </div>
 
-              <div style={{ height: 1, margin: '4px 12px', backgroundColor: 'rgba(0,0,0,0.06)' }} />
-              <div className="flex items-center gap-3" style={{ padding: '16px 16px 60px' }}>
-                <div className="relative overflow-hidden shrink-0" style={{ width: 40, height: 40, borderRadius: 6 }}>
-                  <img
-                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
-                    alt={user.nickname}
-                    className="w-full h-full object-cover select-none pointer-events-none"
-                    draggable={false}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-                  />
+              <div className="mx-3 mt-1 border-t border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" />
+              <div className="flex items-center gap-3 px-4 pt-3" style={{ paddingBottom: 'calc(18px + env(safe-area-inset-bottom))' }}>
+                <img
+                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                  alt={user.nickname}
+                  className="h-10 w-10 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                  draggable={false}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
+                  <p className="text-[12px] text-[#888] dark:text-[#898e97]">{tierLimits.label} plan</p>
                 </div>
-                <span className="text-[15px] font-medium text-[#171717] dark:text-[#e3e3e3] truncate flex-1">{user.nickname}</span>
                 <SecondaryButton
                   variant="ghost"
                   iconOnly
-                  onClick={() => openPreferences("general")}
+                  onClick={() => { setDrawerOpen(false); openPreferences("general") }}
                   aria-label="Settings"
-                  style={{ width: 40, height: 40, borderRadius: 6 }}
+                  style={{ width: 40, height: 40, borderRadius: 12 }}
                 >
                   <MIcon name="settings" size={18} />
                 </SecondaryButton>
                 <SecondaryButton
                   variant="ghost"
                   danger
-                  onClick={() => {
-                    setDrawerOpen(false)
-                    logout()
-                  }}
-                  style={{ height: 40, borderRadius: 6, fontSize: 14 }}
+                  onClick={() => { setDrawerOpen(false); logout() }}
+                  style={{ height: 40, borderRadius: 12, fontSize: 14, paddingLeft: 12, paddingRight: 12 }}
                 >
                   Sign out
                 </SecondaryButton>
@@ -603,8 +641,9 @@ function ManageLayoutInner({
             style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: -4 }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="10" x2="20" y2="10"></line>
-              <line x1="4" y1="15" x2="20" y2="15"></line>
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="18" x2="20" y2="18"></line>
             </svg>
           </SecondaryButton>
         </header>
