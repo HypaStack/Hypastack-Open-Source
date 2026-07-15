@@ -97,7 +97,7 @@ export function ShineButton({
           backgroundImage: "linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0))",
           borderTop: "1px solid rgba(255,255,255,0.6)",
           boxShadow:
-            "rgba(0,0,0,0.05) 0px 1px 0px 0px, rgba(0,0,0,0.1) 0px 4px 4px 0px, rgba(0,0,0,0.15) 0px 10px 10px 0px, #195a87 0px -2px 0px 0px inset",
+            "rgba(0,0,0,0.05) 0px 1px 0px 0px, rgba(0,0,0,0.1) 0px 4px 4px 0px, rgba(0,0,0,0.15) 0px 10px 10px 0px, rgba(0,0,0,0.4) 0px -2px 0px 0px inset",
           transition: "all 0.5s cubic-bezier(0.4,0,0.2,1)",
         }
       : {
