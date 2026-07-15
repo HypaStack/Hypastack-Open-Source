@@ -15,16 +15,14 @@ export function FolderTile({
   return (
     <div
       onClick={onOpen}
-      className="group flex items-center gap-2.5 h-[52px] px-3 rounded-[12px] cursor-pointer select-none bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] hover:bg-[#eaeaea] dark:hover:bg-[rgba(255,255,255,0.04)] active:scale-[0.99] transition-all"
+      className="group relative flex flex-col items-center gap-0.5 py-2 w-[88px] mx-auto cursor-pointer select-none"
     >
-      <MIcon name="folder" size={18} className="text-[#666] dark:text-[#898e97] shrink-0" />
-      <span className="text-[14px] font-medium text-[#111] dark:text-[#f7f8f8] min-w-0 truncate flex-1">{name}</span>
       {/*
         Opacity lives on this wrapper, not the button: ShineButton sets opacity
         inline, which would beat any class we put on it.
         Always reachable on touch, hover-revealed on pointer devices.
       */}
-      <span className="shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
+      <span className="absolute top-1 right-1 z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
         <ShineButton
           size="xs"
           iconOnly
@@ -36,6 +34,14 @@ export function FolderTile({
           <MIcon name="delete" size={14} />
         </ShineButton>
       </span>
+      <img
+        loading="lazy"
+        decoding="async"
+        src="https://r2.hypastack.com/cdn/dashboardasset/folder.webp"
+        alt=""
+        className="w-[88px] h-auto pointer-events-none group-active:scale-[0.97] transition-transform"
+      />
+      <span className="block w-full truncate text-center text-[13px] font-medium text-[#111] dark:text-[#f7f8f8]">{name}</span>
     </div>
   )
 }

@@ -456,8 +456,7 @@ function FilesPageInner() {
         <div className="flex flex-col gap-6 animate-in fade-in duration-300">
           {filteredFolders.length > 0 && (
             <div>
-              <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
                 {filteredFolders.map(folder => (
                   <FolderTile
                     key={folder.id}
@@ -472,7 +471,7 @@ function FilesPageInner() {
 
           {filteredFiles.length > 0 && (
             <div>
-              {filteredFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Files</h2>}
+              {filteredFolders.length > 0 && <div className="border-t border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] mb-4" />}
               <ListView
                 files={paginatedFiles}
                 selectedFiles={selectedFiles}

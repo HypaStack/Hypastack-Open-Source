@@ -717,8 +717,7 @@ export default function CdnPage() {
         <div className="flex-1 min-h-0 overflow-y-auto mt-4 px-1.5 pt-1.5 animate-in fade-in duration-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ paddingBottom: totalPages > 1 ? 64 : 16 }}>
             {currentFolders.length > 0 && (
               <div className="mb-4">
-                <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Folders</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
                   {currentFolders.map((folder) => (
                     <FolderTile
                       key={folder.id}
@@ -749,7 +748,7 @@ export default function CdnPage() {
 
             {paginatedAssets.length > 0 && (
               <div>
-                {currentFolders.length > 0 && <h2 className="text-[13px] font-medium text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] mb-3 px-2">Assets</h2>}
+                {currentFolders.length > 0 && <div className="border-t border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] mb-4" />}
                 <motion.div
                   className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
                   initial="hidden"
