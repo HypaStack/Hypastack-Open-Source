@@ -378,11 +378,11 @@ function FilesPageInner() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-          <span className="cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc] transition-colors" onClick={() => setCurrentFolderId(null)}>Drive</span>
-          {getBreadcrumbs().map(f => (
+          <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
+          {getBreadcrumbs().map((f, i, arr) => (
             <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]">
               <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
-              <span className="cursor-pointer hover:underline hover:text-[#111] dark:text-white dark:hover:text-[#f0f0f0] transition-colors" onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
+              <span className={`cursor-pointer hover:underline transition-colors ${i === arr.length - 1 ? "text-[#171717] dark:text-[#e3e3e3]" : "text-[#999] dark:text-[#898e97] hover:text-[#111] dark:hover:text-[#f0f0f0]"}`} onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
         </h1>

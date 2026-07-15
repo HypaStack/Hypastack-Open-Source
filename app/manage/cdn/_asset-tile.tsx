@@ -61,6 +61,11 @@ export function CdnAssetTile({
   
   const ext = asset.name.includes(".") ? asset.name.split(".").pop()?.toLowerCase() || "file" : "file"
 
+  // Split the name so the label can truncate the base while always keeping the
+  // extension intact.
+  const dotIdx = asset.name.lastIndexOf(".")
+  const baseName = dotIdx > 0 ? asset.name.slice(0, dotIdx) : asset.name
+
   let typeLabel = "FILE"
   if (asset.contentType) {
     const sub = asset.contentType.split("/")[1]
@@ -100,7 +105,7 @@ export function CdnAssetTile({
         className="relative w-full aspect-square overflow-hidden bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]"
         style={{
           borderRadius: 12,
-          outline: `3px solid ${selected ? "rgba(79,70,229,0.4)" : hover ? "rgba(79,70,229,0.15)" : "transparent"}`,
+          outline: `3px solid ${selected ? "rgba(38,128,191,0.5)" : hover ? "rgba(38,128,191,0.2)" : "transparent"}`,
           outlineOffset: 2,
         }}
       >
@@ -109,8 +114,10 @@ export function CdnAssetTile({
             <div className="flex items-center justify-center mb-3">
               <MIcon name="image" size={20} style={{ color: '#999' }} />
             </div>
-            <p className="text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, marginBottom: 10 }}>
-              Preview <span className="text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>
+            <p className="flex items-center justify-center w-full min-w-0 text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, marginBottom: 10 }}>
+              <span className="shrink-0">Load&nbsp;</span>
+              <span className="truncate min-w-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>{baseName}</span>
+              {dotIdx > 0 && <span className="shrink-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>}
             </p>
             <SecondaryButton
               size="xs"
@@ -118,9 +125,8 @@ export function CdnAssetTile({
                 e.stopPropagation()
                 setRevealed(true)
               }}
-              style={{ borderRadius: 9999 }}
             >
-              Reveal
+              Load
             </SecondaryButton>
           </div>
         )}

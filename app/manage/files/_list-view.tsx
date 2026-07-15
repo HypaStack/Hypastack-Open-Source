@@ -51,7 +51,7 @@ export function ListView({
               window.open(`/d/${file.id}`, '_blank')
             }}
             onContextMenu={(e) => onContextMenu(e, file.id)}
-            className="group relative flex flex-col items-center gap-1 py-2 px-2 w-full rounded-[12px] cursor-pointer select-none data-[selected=true]:bg-[rgba(59,130,246,0.12)]"
+            className="group relative flex flex-col items-center justify-center gap-1 px-2 w-full aspect-square cursor-pointer select-none"
           >
             {/*
               Opacity lives on this wrapper, not the checkmark: revealed on hover
@@ -79,7 +79,7 @@ export function ListView({
               decoding="async"
               src="https://r2.hypastack.com/cdn/dashboardasset/folder.webp"
               alt=""
-              className="w-[88px] h-auto pointer-events-none group-active:scale-[0.97] transition-transform"
+              className="w-[88px] h-auto translate-y-3 pointer-events-none group-active:scale-[0.97] transition-transform"
             />
 
             <div className="flex w-full items-center justify-center gap-1 text-[12px] text-[#888] dark:text-[#898e97]">
