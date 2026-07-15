@@ -300,4 +300,16 @@ export async function revokeSession(sessionId: string): Promise<void> {
   )
 }
 
+// Revoke every active session for the user except the one they're on now.
+// Returns how many were revoked (for UI feedback).
+export async function revokeOtherUserSessions(userId: string, currentSessionId: string): Promise<number> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query(
+    `UPDATE user_sessions SET revoked = TRUE WHERE user_id = $1 AND id <> $2 AND revoked = FALSE`,
+    [userId, currentSessionId]
+  )
+  return result.rowCount ?? 0
+}
+
 

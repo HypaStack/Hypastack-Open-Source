@@ -115,7 +115,7 @@ export function generateToken(payload: { userId: string; sessionId: string }): s
   const body = Buffer.from(JSON.stringify({
     ...payload,
     iat: now,
-    exp: now + 15 * 60  // 15 minutes
+    exp: now + 60 * 60  // 1 hour
   })).toString("base64url")
 
   const signature = crypto
