@@ -140,7 +140,7 @@ export function IntegrationsTab() {
         {log.length === 0 ? (
           <p className="text-[12px] text-[#888] dark:text-[#898e97]">No webhook activity yet. Uploads will show up here.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-3">
             {log.map((e, i) => (
               <AlertMessage
                 key={`${e.ts}-${i}`}
