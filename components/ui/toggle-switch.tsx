@@ -37,7 +37,7 @@ export function ToggleSwitch({
   disabled = false,
   width = 48,
   height = 28,
-  activeColor = "#4f46e5",
+  activeColor = "#2680bf",
   inactiveColor = "rgba(255,255,255,0.14)",
   className,
   style,
@@ -74,7 +74,9 @@ export function ToggleSwitch({
         opacity: disabled ? 0.5 : 1,
         backgroundColor: checked ? activeColor : inactiveColor,
         backgroundImage: "linear-gradient(rgba(255,255,255,0.10), rgba(255,255,255,0))",
-        boxShadow: "rgba(0,0,0,0.1) 0px 3px 6px 0px, rgba(0,0,0,0.3) 0px -1px 0px 0px inset",
+        boxShadow: checked
+          ? "rgba(0,0,0,0.1) 0px 3px 6px 0px, #195a87 0px -1px 0px 0px inset"
+          : "rgba(0,0,0,0.1) 0px 3px 6px 0px, rgba(0,0,0,0.3) 0px -1px 0px 0px inset",
         transition: "background-color 0.3s ease-in-out",
         WebkitTapHighlightColor: "transparent",
         ...style,

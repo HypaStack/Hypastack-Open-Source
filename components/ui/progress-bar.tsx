@@ -29,7 +29,7 @@ interface ProgressBarProps {
 export function ProgressBar({
   value,
   height = 6,
-  color = "#4f46e5",
+  color = "#2680bf",
   theme = "auto",
   className,
   style,
@@ -67,7 +67,7 @@ export function ProgressBar({
           backgroundColor: color,
           backgroundImage: "linear-gradient(rgba(255,255,255,0.18), rgba(255,255,255,0))",
           borderTop: "0.7px solid rgba(255,255,255,0.4)",
-          boxShadow: "rgba(0,0,0,0.35) 0px -1px 0px 0px inset",
+          boxShadow: "#195a87 0px -1px 0px 0px inset",
           transition: "width 0.5s cubic-bezier(0.4,0,0.2,1)",
         }}
       />

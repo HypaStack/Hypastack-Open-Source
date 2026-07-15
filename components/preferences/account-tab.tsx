@@ -199,7 +199,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
         <ProgressBar value={usedPct} className="mt-4" aria-label="Storage used" />
         <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#4f46e5]" /> Drive
+            <span className="h-2 w-2 rounded-full bg-[#2680bf]" /> Drive
           </span>
         </div>
       </div>

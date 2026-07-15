@@ -23,9 +23,9 @@ const PALETTE = {
   },
 } as const
 
-/** Indigo checked fill — matches ShineButton's primary gloss. */
+/** Blue checked fill — matches ShineButton's primary gloss. */
 const CHECKED = {
-  bg: "#4f46e5",
+  bg: "#2680bf",
   sheen: "linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0))",
   topEdge: "rgba(255,255,255,0.6)",
 } as const

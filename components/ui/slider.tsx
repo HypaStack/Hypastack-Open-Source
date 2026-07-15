@@ -44,7 +44,7 @@ export function Slider({
   return (
     <>
       <style>{`
-.${cls}{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:9999px;background:linear-gradient(#4f46e5,#4f46e5) 0/${pct}% 100% no-repeat,${track};box-shadow:inset 0 1px 1px rgba(0,0,0,0.25);outline:none;cursor:${disabled ? "not-allowed" : "pointer"};opacity:${disabled ? 0.5 : 1};}
+.${cls}{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:9999px;background:linear-gradient(#2680bf,#2680bf) 0/${pct}% 100% no-repeat,${track};box-shadow:inset 0 1px 1px rgba(0,0,0,0.25);outline:none;cursor:${disabled ? "not-allowed" : "pointer"};opacity:${disabled ? 0.5 : 1};}
 .${cls}::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;${thumb}}
 .${cls}::-moz-range-thumb{border:none;${thumb}}
 `}</style>
