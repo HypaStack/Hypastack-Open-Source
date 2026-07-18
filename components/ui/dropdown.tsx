@@ -27,7 +27,7 @@ const PALETTE = {
     text: "#f7f8f8",
     placeholder: "rgba(255,255,255,0.4)",
     icon: "#898e97",
-    menuBg: "#0e0f10",
+    menuBg: "#1e1e20",
     menuBorder: "rgba(255,255,255,0.08)",
     optionText: "#cccccc",
     optionHover: "rgba(255,255,255,0.06)",

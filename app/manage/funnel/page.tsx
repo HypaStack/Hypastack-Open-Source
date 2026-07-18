@@ -229,7 +229,7 @@ export default function FunnelInboxPage() {
 
       {!paid && (
         <div className="absolute inset-0 flex items-center justify-center p-4">
-          <div className="max-w-[440px] w-full rounded-[16px] bg-white dark:bg-[#0e0f10] p-6" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}>
+          <div className="max-w-[440px] w-full rounded-[16px] bg-white dark:bg-[#1e1e20] p-6" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}>
             <h3 className="text-[18px] font-semibold text-[#171717] dark:text-[#f7f8f8]" style={{ letterSpacing: '-0.02em', fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Funnels are a paid feature</h3>
             <AlertMessage tone="info" icon={<MIcon name="warning" size={16} style={{ flexShrink: 0, marginRight: 8, marginTop: 2 }} />} className="mt-4" style={{ marginBottom: 0, fontSize: 13, lineHeight: "20px" }}>
               Create one-time links and receive files straight to your inbox, encrypted so only you can open them.

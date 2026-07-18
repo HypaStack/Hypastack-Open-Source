@@ -347,7 +347,7 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white dark:bg-[#0e0f10] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
+                className="fixed z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
                 style={{
                   bottom: '68px',
                   left: '8px',
@@ -686,7 +686,7 @@ function ManageLayoutInner({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#1e1e20] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
           style={{ borderRadius: 14, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
         >
           <div className="flex flex-col">

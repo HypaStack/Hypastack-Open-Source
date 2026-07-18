@@ -83,7 +83,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
             key="funnel-tray"
             initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 24, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed bottom-0 left-0 right-0 z-[60] flex w-full flex-col font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[18px] sm:rounded-[18px] bg-white dark:bg-[#0e0f10] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-4"
+            className="fixed bottom-0 left-0 right-0 z-[60] flex w-full flex-col font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[18px] sm:rounded-[18px] bg-white dark:bg-[#1e1e20] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-4"
             style={{ boxShadow: "0 16px 50px rgba(0,0,0,0.18)" }}
           >
             <div className="flex items-center justify-between mb-3">

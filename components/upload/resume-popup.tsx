@@ -43,7 +43,7 @@ export function ResumePopup({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className={`fixed z-[201] bottom-4 left-4 right-4 w-auto sm:left-auto sm:bottom-4 sm:w-[360px] pointer-events-auto overflow-hidden bg-[#0e0f10] border border-[rgba(255,255,255,0.08)] rounded-[16px] ${desktopPosition}`}
+            className={`fixed z-[201] bottom-4 left-4 right-4 w-auto sm:left-auto sm:bottom-4 sm:w-[360px] pointer-events-auto overflow-hidden bg-[#1e1e20] border border-[rgba(255,255,255,0.08)] rounded-[16px] ${desktopPosition}`}
             style={{
               boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)",
               padding: 6,
@@ -85,7 +85,7 @@ export function ResumePopup({
             </div>
 
             {/* Actions */}
-            <div className="bg-[#0e0f10] rounded-[10px] border border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
+            <div className="bg-[#1e1e20] rounded-[10px] border border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
               <MenuItem
                 theme="dark"
                 onClick={handleResumeUpload}
