@@ -115,7 +115,7 @@ function ThemeTile({
 }
 
 function ThemeMock({ dark }: { dark: boolean }) {
-  const bg = dark ? "#08090a" : "#f5f5f5"
+  const bg = dark ? "#151515" : "#f5f5f5"
   const sidebar = dark ? "#151616" : "#e8e8e8"
   const block = dark ? "#2c2c30" : "#dcdcdc"
   return (

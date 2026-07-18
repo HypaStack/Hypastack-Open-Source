@@ -110,7 +110,7 @@ export function AvatarCropperModal({
           padding: 4,
         }}
       >
-        <div className="relative w-full flex flex-col bg-white dark:bg-[#08090a] rounded-[16px] overflow-hidden">
+        <div className="relative w-full flex flex-col bg-white dark:bg-[#151515] rounded-[16px] overflow-hidden">
         <div className="relative w-full overflow-hidden" style={{ height: 400 }}>
           <Cropper
             image={imageSrc}

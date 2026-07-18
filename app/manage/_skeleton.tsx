@@ -13,7 +13,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
   const isFiles = pathname.startsWith("/manage/files")
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#08090a] animate-in fade-in duration-200">
+    <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] animate-in fade-in duration-200">
       {/* Icon rail */}
       <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
         <Skeleton className="h-8 w-8" style={{ borderRadius: 8 }} />
@@ -27,7 +27,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
 
       {/* Sidebar card */}
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 mr-1 rounded-[12px] bg-white dark:bg-[#0a0b0c] overflow-hidden"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 mr-1 rounded-[12px] bg-white dark:bg-[#1e1e20] overflow-hidden"
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="flex items-center pt-5 pb-4 shrink-0" style={{ paddingLeft: 24 }}>
@@ -58,7 +58,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
       </aside>
 
       {/* Main card */}
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#0a0b0c] overflow-hidden">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#1e1e20] overflow-hidden">
         <div className="flex-1 overflow-hidden px-3 sm:px-5 lg:px-6 pt-4 pb-6 flex flex-col">
           {/* Page header: title + action buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
