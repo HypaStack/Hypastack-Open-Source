@@ -61,7 +61,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#f0f0f0] dark:bg-[#1e1e20] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-none sm:rounded-[20px]"
+              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#f0f0f0] dark:bg-[#151515] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-none sm:rounded-[20px]"
               style={{
                 boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
                 padding: 4,
@@ -91,7 +91,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="hidden sm:flex w-[210px] shrink-0 bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.02)] border border-transparent dark:border-[rgba(255,255,255,0.06)] rounded-[16px] px-3 pt-6 pb-4 flex-col">
+              <div className="hidden sm:flex w-[210px] shrink-0 border-r border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
                   <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
