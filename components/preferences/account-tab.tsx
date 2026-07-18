@@ -164,7 +164,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
                 setCopiedId(true)
                 setTimeout(() => setCopiedId(false), 2000)
               }}
-              style={{ height: 26, gap: 6, borderRadius: 9999 }}
+              style={{ height: 26, gap: 6 }}
             >
               <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
               {copiedId ? "Copied" : "Copy user ID"}
@@ -172,7 +172,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
             <SecondaryButton
               size="xs"
               onClick={() => setEditing(true)}
-              style={{ height: 26, gap: 6, borderRadius: 9999 }}
+              style={{ height: 26, gap: 6 }}
             >
               <MIcon name="edit" size={13} />
               Edit

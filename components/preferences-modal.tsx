@@ -82,23 +82,23 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                   </SecondaryButton>
                 </div>
                 <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
-                  <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="mobile" />
-                  <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="mobile" />
-                  <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" layoutIdPrefix="mobile" />
-                  <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" layoutIdPrefix="mobile" />
-                  <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" layoutIdPrefix="mobile" />
-                  <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" layoutIdPrefix="mobile" />
+                  <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" />
+                  <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" />
+                  <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" />
+                  <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" />
+                  <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" />
+                  <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" />
                 </div>
               </div>
 
               <div className="hidden sm:flex w-[210px] shrink-0 border-r border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] px-3 pt-6 pb-4 flex-col">
                 <div className="space-y-0.5">
-                  <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" layoutIdPrefix="desktop" />
-                  <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" layoutIdPrefix="desktop" />
-                  <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" layoutIdPrefix="desktop" />
-                  <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" layoutIdPrefix="desktop" />
-                  <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" layoutIdPrefix="desktop" />
-                  <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" layoutIdPrefix="desktop" />
+                  <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" fullWidth />
+                  <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" fullWidth />
+                  <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" fullWidth />
+                  <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" fullWidth />
+                  <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" fullWidth />
+                  <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" fullWidth />
                 </div>
               </div>
 
@@ -121,33 +121,17 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
   )
 }
 
-function TabButton({ active, onClick, label, layoutIdPrefix }: { active: boolean; onClick: () => void; label: string; layoutIdPrefix: string }) {
+function TabButton({ active, onClick, label, fullWidth = false }: { active: boolean; onClick: () => void; label: string; fullWidth?: boolean }) {
   return (
-    <button
-      type="button"
+    <SecondaryButton
+      variant={active ? "solid" : "ghost"}
+      size="md"
+      fullWidth={fullWidth}
       onClick={onClick}
-      className={`relative sm:w-full text-left whitespace-nowrap shrink-0 transition-all duration-200 rounded-full ${
-        active
-          ? "text-[#111111] dark:text-[#f0f0f0] font-medium"
-          : "text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] hover:bg-[#ebebeb] dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#333] dark:hover:text-[#ccc] active:scale-[0.97] font-medium"
-      }`}
-      style={{
-        height: 34,
-        paddingLeft: 12,
-        paddingRight: 12,
-        fontSize: 14,
-      }}
+      style={{ justifyContent: "flex-start" }}
     >
-      {active && (
-        <motion.div
-          layoutId={`pref-tab-${layoutIdPrefix}`}
-          className="absolute inset-0 bg-white dark:bg-[rgba(255,255,255,0.1)] rounded-full"
-          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        />
-      )}
-      <span className="relative z-10">{label}</span>
-    </button>
+      {label}
+    </SecondaryButton>
   )
 }
 
