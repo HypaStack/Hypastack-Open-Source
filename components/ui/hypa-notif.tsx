@@ -272,7 +272,7 @@ export function HypaNotifProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden bg-white/95 dark:bg-[rgba(14,15,16,0.92)] backdrop-blur-xl border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
+          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden bg-white/95 dark:bg-[rgba(30,30,32,0.92)] backdrop-blur-xl border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
             style={{
               boxShadow: '0 12px 40px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)',
               padding: 6,
