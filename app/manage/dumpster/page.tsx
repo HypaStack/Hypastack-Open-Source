@@ -45,27 +45,13 @@ export default function DumpsterPage() {
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
-        <div>
-          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#f7f8f8] flex flex-wrap items-center gap-3">
-            <span>New Paste</span>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8] text-[12px] font-medium tracking-normal">
-                <MIcon name="visibility_off" size={14} />
-                Not linked to your account
-              </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-500 text-[12px] font-medium tracking-normal">
-                <MIcon name="warning" size={14} />
-                Stored in plain text, do not store sensitive data
-              </span>
-            </div>
-          </h1>
-          <p className="text-[13px] text-[#666] dark:text-[#898e97] mt-2">
-            Anonymous text pastes. Destroyed after 180 days of inactivity.
-          </p>
-        </div>
+        <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
+          <span className="text-[#333] dark:text-[#ccc]">New Paste</span>
+        </h1>
 
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <SecondaryButton
+            size="md"
             onClick={() => setContent("")}
             disabled={saving || !content}
             style={{ gap: 8 }}
