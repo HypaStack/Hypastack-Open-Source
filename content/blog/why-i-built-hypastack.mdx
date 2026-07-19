@@ -38,7 +38,9 @@ My portfolio is at [usekiko.com](https://usekiko.com) if you want to see the oth
 
 ## Where it is now
 
-Hypastack has two sides now: regular file sharing (zero-knowledge, encrypted) and CDN hosting for public assets. The CDN side strips all metadata from your images before serving them. No GPS coordinates, no device fingerprints, nothing that could trace a file back to you.
+Hypastack has three sides now: regular file sharing (zero-knowledge, encrypted), CDN hosting for public assets, and a developer API so you can drive both from your own code. The CDN side strips all metadata from your images before serving them. No GPS coordinates, no device fingerprints, nothing that could trace a file back to you.
+
+Only the first of those three is zero-knowledge. The CDN can't be, because a public image has to be readable. The API isn't either, because there's no browser in the loop doing the encrypting. I'd rather say that plainly than let the word cover things it doesn't.
 
 I'm still the only person working on it. That probably won't change anytime soon, and I'm fine with that.
 

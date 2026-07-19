@@ -59,6 +59,14 @@ Anyone who has the link has the key. If your recipient forwards it, the file ope
 
 Your own device is your job. Encryption in transit and at rest doesn't help if the laptop itself is compromised.
 
+It only covers files you upload through the website. That's the part where your browser does the encrypting. There are two other ways bytes reach me and neither one is zero-knowledge.
+
+The CDN is the obvious one. A public image has to be readable or it isn't an image, so those files are stored in the clear. I strip the EXIF and GPS data on the way in and that's the whole of what I do. I wrote about that [here](/blog/the-cdn-thing).
+
+The developer API is the newer one. If you're calling it from your own code there's no browser sitting in the middle to hold a key, so files sent that way land on my servers as you sent them and I can read them. If you're using an app somebody else built on it, your uploads live in their account, and both they and I can see them. That's worth knowing before you hand a file to a third party app that happens to run on Hypastack. Ask them what they do with it.
+
+I could have quietly not mentioned this. But a post called "what zero-knowledge actually means" that skips the parts where it doesn't apply would be the exact thing I'm complaining about in the first paragraph.
+
 And the [CDN side](/blog/the-cdn-thing) of Hypastack is public by definition. Those files are meant to be displayed on websites, so they can't be encrypted. Different tool, different rules.
 
 ---

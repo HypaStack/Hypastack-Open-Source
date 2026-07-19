@@ -1,23 +1,29 @@
 # Contributing to Hypastack
 
-Thanks for taking the time to look into contributing. I'm maintaining this project solo, so any help with bugs or improvements is appreciated.
+Thanks for looking. Before anything else, one thing worth being upfront about: this repo is **source-available, not open source**. The code is published so you can read it and check that the privacy claims hold up, not so it can be run, forked or reused. See [LICENSE](./LICENSE).
 
-Here’s a quick guide on how we can work together smoothly.
+That changes what "contributing" means here, so here's the honest version.
 
-## Security 
+## Security reports — always welcome
 
-**Please don't open a public issue for security vulnerabilities.** If you find a flaw in the encryption or anything else that could compromise the platform, just DM me directly on Telegram: **[@t_usekiko](https://t.me/t_usekiko)**. 
+**Please don't open a public issue for security vulnerabilities.** If you find a flaw in the encryption or anything else that could compromise the platform, DM me on Telegram: **[@t_usekiko](https://t.me/t_usekiko)**, or email **usekiko@hypamail.me**.
 
-## Issues (Bugs & Features)
+This is the contribution I care about most, and the licence protects it explicitly. Section 2(c) grants you an irrevocable right to publish good-faith security and privacy findings, including the code excerpts needed to explain them. I waived any claim against that on purpose. A licence that lets me silence a researcher would make the whole "read the code and verify it yourself" argument worthless.
 
-* **Bugs:** Check the existing issues first. If it's a new bug, open an issue and include some basic details on how I can reproduce it. 
-* **Features:** If you want to add something small, feel free to open a PR. If it's a massive new feature, please open an issue to discuss it with me first so you don't waste your time writing code I might not merge.
+You won't get a legal threat from me for an honest finding. If that ever changes, the licence itself is the thing holding me to it.
 
-## Pull Requests
+## Bug reports — yes please
 
-1. Fork the repo and create a branch.
-2. Make your changes and make sure the app still builds (`npm run build`).
-3. Try to keep PRs reasonably focused. Smaller, specific pull requests are much easier for me to review and merge than massive overhauls.
-4. Open the PR and drop a quick note about what you changed.
+Open an issue with enough detail to reproduce it. Bugs, broken UI, wrong copy, docs that don't match reality, all useful. Reading the code and telling me what's wrong with it is exactly what this repo is for.
 
-Thanks for helping out!
+## Pull requests — ask first
+
+The licence doesn't grant a general right to modify or redistribute the code, so unsolicited PRs sit in an awkward spot. I'm not going to pretend otherwise.
+
+If you've found something you want to fix, open an issue first and say so. If it's a good fix I'll ask you for a PR, and at that point Section 5 of the licence applies: contributions are assigned to HypaLabs, or licensed to it where assignment isn't legally possible. That's the tradeoff for a project that isn't open source, and you should know it going in rather than after you've written the code.
+
+Small typo or docs fix? Just open the issue. It's faster for both of us.
+
+## Anything else
+
+Licensing questions, commercial use, or anything the licence doesn't cover: **usekiko@hypamail.me**.
