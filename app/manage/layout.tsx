@@ -221,7 +221,7 @@ function ManageLayoutInner({
   const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
-    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
+    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#0d0d0d] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
@@ -315,7 +315,7 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="absolute bottom-full left-2 mb-2 z-10 bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+                className="absolute bottom-full left-2 mb-2 z-10 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
                 style={{
                   width: 264,
                   boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
@@ -422,7 +422,7 @@ function ManageLayoutInner({
             className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden"
             style={{
               maxHeight: '90vh',
-              backgroundColor: resolvedTheme === 'dark' ? '#1e1e20' : '#ffffff',
+              backgroundColor: resolvedTheme === 'dark' ? '#141416' : '#ffffff',
               borderRadius: '20px 20px 0 0',
               borderTop: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #ebebeb',
               boxShadow: '0 -10px 40px rgba(0,0,0,0.22)',
@@ -488,9 +488,9 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#1e1e20] overflow-hidden relative" style={{ border: 'none', boxShadow: 'none' }}>
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#141416] overflow-hidden relative" style={{ border: 'none', boxShadow: 'none' }}>
         <header
-          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#1e1e20] lg:hidden safe-area-top relative z-10"
+          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#141416] lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
           <SecondaryButton
@@ -542,7 +542,7 @@ function ManageLayoutInner({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#1e1e20] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#141416] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
           style={{ borderRadius: 14, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
         >
           <div className="flex flex-col">

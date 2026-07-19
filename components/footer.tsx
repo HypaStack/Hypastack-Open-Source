@@ -5,7 +5,7 @@ import { FOOTER_COLUMNS } from "@/constants/footer";
 const columns = FOOTER_COLUMNS.filter((c) => c.title !== "Company");
 
 const linkClass =
-  "text-white/55 hover:text-white text-[13px] font-light transition-colors duration-200 hover:bg-[#1c1c1c] rounded-lg px-2 py-1.5 w-fit relative right-2";
+  "text-white/55 hover:text-white text-[13px] font-light transition-colors duration-200 hover:bg-[#121212] rounded-lg px-2 py-1.5 w-fit relative right-2";
 
 const legalClass =
   "text-white/70 hover:text-white border-b border-white/20 hover:border-white/50 transition-colors duration-200";

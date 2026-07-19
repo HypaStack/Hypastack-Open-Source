@@ -56,7 +56,7 @@ export function ContextMenu({
           exit={{ opacity: 0, scale: 0.95, y: -5 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
           style={{ top: pos.y, left: pos.x, borderRadius: 8 }}
-          className="fixed z-50 flex flex-col min-w-[180px] p-1 bg-[#ffffff] dark:bg-[#1c1c1c] border border-[#e5e5e5] dark:border-[#333] shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
+          className="fixed z-50 flex flex-col min-w-[180px] p-1 bg-[#ffffff] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[#333] shadow-[0_4px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
           onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
           {children}

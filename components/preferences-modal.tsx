@@ -61,7 +61,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#f0f0f0] dark:bg-[#151515] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-none sm:rounded-[20px]"
+              className="relative w-full h-full sm:w-full sm:max-w-[1060px] sm:h-[720px] sm:max-h-[92vh] flex flex-col pointer-events-auto bg-[#f0f0f0] dark:bg-[#0d0d0d] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-none sm:rounded-[20px]"
               style={{
                 boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
                 padding: 4,
@@ -102,7 +102,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-white dark:bg-[#1e1e20] rounded-[16px] overflow-hidden">
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-white dark:bg-[#141416] rounded-[16px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
                   {active === "general" && <GeneralTab />}
                   {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}

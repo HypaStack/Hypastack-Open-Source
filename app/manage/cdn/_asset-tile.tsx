@@ -134,7 +134,7 @@ export function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && showSpinner && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#1e1e20]">
+              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#141416]">
                 <LoadingSvg size={28} />
               </div>
             )}

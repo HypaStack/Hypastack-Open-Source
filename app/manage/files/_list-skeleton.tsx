@@ -18,7 +18,7 @@ export function ListSkeleton({ rows = 6 }: { rows?: number }) {
         <span />
       </div>
 
-      <div className="bg-white dark:bg-[#1e1e20]" style={{ borderRadius: 12, overflow: "hidden" }}>
+      <div className="bg-white dark:bg-[#141416]" style={{ borderRadius: 12, overflow: "hidden" }}>
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className={`${COLS} py-3`}>
             <Skeleton className="h-[18px] w-[18px] rounded-[5px]" />

@@ -104,13 +104,13 @@ export function AvatarCropperModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[420px] flex flex-col bg-[#f0f0f0] dark:bg-[#1e1e20] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] sm:rounded-[20px]"
+        className="relative w-full max-w-[420px] flex flex-col bg-[#f0f0f0] dark:bg-[#141416] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] sm:rounded-[20px]"
         style={{
           boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
           padding: 4,
         }}
       >
-        <div className="relative w-full flex flex-col bg-white dark:bg-[#151515] rounded-[16px] overflow-hidden">
+        <div className="relative w-full flex flex-col bg-white dark:bg-[#0d0d0d] rounded-[16px] overflow-hidden">
         <div className="relative w-full overflow-hidden" style={{ height: 400 }}>
           <Cropper
             image={imageSrc}

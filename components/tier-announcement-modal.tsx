@@ -67,7 +67,7 @@ export function TierAnnouncementModal() {
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
             className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[720px] rounded-[20px] overflow-hidden"
-            style={{ backgroundColor: '#1e1e20', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
+            style={{ backgroundColor: '#141416', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
             <SecondaryButton
               iconOnly

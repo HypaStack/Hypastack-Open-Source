@@ -41,7 +41,7 @@ export function GeneralTab() {
         <>
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
-            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#1e1e20] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
+            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#141416] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: 4, borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
           >
             {languages.map((l) => {
@@ -115,7 +115,7 @@ function ThemeTile({
 }
 
 function ThemeMock({ dark }: { dark: boolean }) {
-  const bg = dark ? "#151515" : "#f5f5f5"
+  const bg = dark ? "#0d0d0d" : "#f5f5f5"
   const sidebar = dark ? "#151616" : "#e8e8e8"
   const block = dark ? "#2c2c30" : "#dcdcdc"
   return (
