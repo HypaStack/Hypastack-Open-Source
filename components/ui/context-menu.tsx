@@ -21,7 +21,7 @@ const EDGE = 8
 const PANEL =
   "rounded-[14px] p-1.5 " + SURFACE.panel + " shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
 const ROW =
-  "w-full flex items-center gap-2.5 rounded-[8px] text-left text-[14px] font-medium transition-colors " +
+  "w-full flex items-center gap-2.5 rounded-[12px] text-left text-[14px] font-medium transition-colors " +
   "text-[#333] dark:text-[#e3e3e3] hover:bg-[#f4f4f5] dark:hover:bg-[rgba(255,255,255,0.07)]"
 const ROW_STYLE: React.CSSProperties = { height: 40, paddingLeft: 10, paddingRight: 10 }
 
@@ -312,7 +312,7 @@ export function ContextMenuAction({
       disabled={disabled}
       color={t.color}
       hoverColor={t.hover}
-      style={{ gap: 10, justifyContent: "flex-start", paddingLeft: 10, paddingRight: 10, borderRadius: 8 }}
+      style={{ gap: 10, justifyContent: "flex-start", paddingLeft: 10, paddingRight: 10 }}
     >
       <MIcon name={icon} size={18} />
       {label}

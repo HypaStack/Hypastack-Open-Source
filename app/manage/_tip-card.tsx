@@ -34,12 +34,12 @@ export function TipCard() {
   return (
     <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
       <div className="flex items-center gap-1.5 mb-1.5">
-        <MIcon name="lightbulb" size={14} className="text-[#666] dark:text-[#888] shrink-0" />
-        <span className="text-xs font-medium text-[#666] dark:text-[#888] truncate">
+        <MIcon name="lightbulb" size={14} className="text-[#555] dark:text-[#a8a8a8] shrink-0" />
+        <span className="text-xs font-medium text-[#555] dark:text-[#a8a8a8] truncate">
           TIP: {tip.title}
         </span>
       </div>
-      <p className="text-[12px] leading-relaxed text-[#333] dark:text-[#ccc]">
+      <p className="text-[12px] leading-relaxed text-[#333] dark:text-[#dcdcdc]">
         {tip.body}
       </p>
     </div>

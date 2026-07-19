@@ -131,22 +131,22 @@ export default function FunnelInboxPage() {
 
   const handleDelete = async () => {
     const count = selected.size
-    const ok = await hypaConfirm({
+    // Deleting runs inside onConfirm so the spinner lives on the dialog's own
+    // Delete button, not on the page behind it.
+    await hypaConfirm({
       title: count > 1 ? `Delete ${count} files?` : "Delete this file?",
       description: "This permanently removes the received files.",
       confirmText: "Delete",
       destructive: true,
+      onConfirm: async () => {
+        for (const id of Array.from(selected)) {
+          const res = await apiFetch(`/api/v2/funnel/files/${id}`, { method: "DELETE" })
+          if (!res.ok) throw new Error("Couldn't delete the file.")
+        }
+        setSelected(new Set())
+        await load(false)
+      },
     })
-    if (!ok) return
-    setWorking(true)
-    try {
-      for (const id of Array.from(selected)) {
-        const res = await apiFetch(`/api/v2/funnel/files/${id}`, { method: "DELETE" })
-        if (!res.ok) hypaError("Couldn't delete the file.")
-      }
-      setSelected(new Set())
-      await load(false)
-    } finally { setWorking(false) }
   }
 
   if (!paid) {

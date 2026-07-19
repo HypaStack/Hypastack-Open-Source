@@ -33,6 +33,9 @@ import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limi
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
+// MenuItem defaults to a 6px radius; match the 12px the buttons beside it use.
+const MENU_ROW = { borderRadius: 12, height: 40 }
+
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
 }
@@ -78,7 +81,7 @@ function NavRow({
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={`group relative flex items-center gap-3 rounded-lg text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
+      className={`group relative flex items-center gap-3 rounded-[12px] text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
           ? `${SURFACE.active} text-[#171717] dark:text-[#f7f8f8]`
           : `text-[#666] dark:text-[#898e97] ${SURFACE.hover} hover:text-[#171717] dark:hover:text-[#f7f8f8]`
@@ -236,11 +239,7 @@ function ManageLayoutInner({
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Account menu"
-              className={`w-full flex items-center gap-2.5 rounded-lg transition-colors duration-150 cursor-pointer ${
-                menuOpen
-                  ? `${SURFACE.active} text-[#171717] dark:text-[#f7f8f8]`
-                  : `text-[#171717] dark:text-[#e3e3e3] ${SURFACE.hover}`
-              }`}
+              className={`w-full flex items-center gap-2.5 rounded-[12px] transition-colors duration-150 cursor-pointer ${SURFACE.panel} text-[#171717] dark:text-[#e3e3e3] hover:brightness-105 dark:hover:brightness-125`}
               style={{ height: 40, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
@@ -300,6 +299,7 @@ function ManageLayoutInner({
                   <MenuItem
                     icon={<MIcon name="person" size={18} />}
                     onClick={() => { setMenuOpen(false); openPreferences("account"); }}
+                    style={MENU_ROW}
                   >
                     Account settings
                   </MenuItem>
@@ -307,6 +307,7 @@ function ManageLayoutInner({
                   <MenuItem
                     icon={<MIcon name="settings" size={18} />}
                     onClick={() => { setMenuOpen(false); openPreferences("general"); }}
+                    style={MENU_ROW}
                   >
                     Workspace settings
                   </MenuItem>
@@ -314,6 +315,7 @@ function ManageLayoutInner({
                   <MenuItem
                     icon={<MIcon name="card_giftcard" size={18} />}
                     onClick={() => { setMenuOpen(false); }}
+                    style={MENU_ROW}
                   >
                     Refer and earn
                   </MenuItem>
@@ -356,7 +358,7 @@ function ManageLayoutInner({
 
         <div className="px-2 pb-2 shrink-0">
           <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
-            <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
+            <div className="text-xs text-[#555] dark:text-[#a8a8a8] font-medium mb-3">
               Usage
             </div>
 
