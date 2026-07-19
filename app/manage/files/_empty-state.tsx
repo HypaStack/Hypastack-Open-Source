@@ -8,24 +8,20 @@ import { ShineButton } from "@/components/ui/shine-button"
 
 export function EmptyState({ query, username }: { query: string; username: string }) {
   const FACTS = [
-    `What's your move, ${username}?`,
-    "Wanna share a file?",
-    "Thanks for using Hypastack, I appreciate it.",
-    "Did you know Hypastack was made by a solo European developer?",
-    "Your files are end-to-end encrypted.",
-    "Hypastack doesn't use third-party tracking scripts.",
-    "No ads. No selling data. Just pure file sharing.",
-    "Take a deep breath. Your privacy is safe here.",
-    "Zero-knowledge architecture means we couldn't see your files even if we tried.",
-    "Upload up to your limit, instantly.",
-    "Hypastack runs entirely on edge networks.",
-    "Share links automatically burn if you want them to.",
-    "No email required to start sharing.",
-    "Your data is wiped cleanly when you delete it. No lingering ghosts.",
-    "A quiet place to store loud ideas.",
-    "We sleep well at night knowing your data is yours alone.",
-    "Designed for the privacy-conscious.",
-    "Simple on the outside, engineered like a tank on the inside."
+    `Nothing here yet, ${username}.`,
+    "Drop a file in and get a link back.",
+    "This is where your shared files land.",
+    "Drag something onto the page to start.",
+    "Files get encrypted before they leave your browser.",
+    "Set a link to burn and it dies after one download.",
+    "Links can last a minute or a month. Your call.",
+    "We hold the scrambled version. Only you hold the key.",
+    "Nothing to see, which is kind of the point.",
+    "Zip a batch and share the whole thing as one link.",
+    "Add a note and it shows up next to the download.",
+    "No ads, no trackers, no selling anything.",
+    "Built by one developer who reads every bug report.",
+    "Delete a file and it is actually gone.",
   ];
 
   const [index, setIndex] = useState(0);

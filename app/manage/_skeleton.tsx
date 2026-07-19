@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { SIDEBAR_WIDTH } from "@/constants"
+import { SURFACE } from "./_surface"
 import { ListSkeleton } from "./files/_list-skeleton"
 import { GridSkeleton } from "./cdn/_grid-skeleton"
 
@@ -30,7 +31,15 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
           </div>
         </nav>
         <div className="px-2 pt-3 pb-2 shrink-0">
-          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.04)] px-3 py-3">
+          <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
+            <Skeleton className="h-3 w-[104px] mb-2" />
+            <Skeleton className="h-3 w-full mb-1" />
+            <Skeleton className="h-3 w-[70%]" />
+          </div>
+        </div>
+
+        <div className="px-2 pb-2 shrink-0">
+          <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
             <Skeleton className="h-3 w-[44px] mb-3" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (

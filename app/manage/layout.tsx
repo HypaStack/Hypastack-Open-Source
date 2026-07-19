@@ -20,6 +20,8 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
+import { SURFACE } from "./_surface"
+import { TipCard } from "./_tip-card"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -30,15 +32,6 @@ import {
 import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
-
-// One surface scale for the sidebar. The shell is the bottom layer and every
-// surface steps up from it — same direction in both themes.
-const SURFACE = {
-  inset: "bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.04)]",
-  hover: "hover:bg-[#fafafa] dark:hover:bg-[rgba(255,255,255,0.06)]",
-  active: "bg-white dark:bg-[rgba(255,255,255,0.09)]",
-  elevated: "bg-white dark:bg-[#1c1c1f]",
-}
 
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
@@ -358,6 +351,10 @@ function ManageLayoutInner({
         </nav>
 
         <div className="px-2 pt-3 pb-2 shrink-0">
+          <TipCard />
+        </div>
+
+        <div className="px-2 pb-2 shrink-0">
           <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
             <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
               Usage
