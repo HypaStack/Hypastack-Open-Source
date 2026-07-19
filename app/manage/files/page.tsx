@@ -7,7 +7,7 @@ import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "rea
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
-import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { type FileItem } from "@/hooks/useManage"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
@@ -21,7 +21,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { getFileExt, getFileTypeLabel, getFileIconForType, isImagePreviewable, formatBytes, formatDate, type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
-import { MoveDialog } from "../_move-dialog"
+import { MoveDialog, toPaths } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
 
@@ -133,6 +133,8 @@ function FilesPageInner() {
         return a.name.localeCompare(b.name) * dir
       })
   }, [folders, currentFolderId, searchQuery, sortField, sortDirection])
+
+  const folderPaths = useMemo(() => toPaths(folders), [folders])
 
   const filteredFiles = useMemo(() => {
     return files
@@ -253,7 +255,10 @@ function FilesPageInner() {
   }
 
   const handleBulkMove = async (folderId: string | null) => {
-    const ids = Array.from(selectedFiles)
+    await moveFiles(Array.from(selectedFiles), folderId)
+  }
+
+  const moveFiles = async (ids: string[], folderId: string | null) => {
     if (ids.length === 0) return
     try {
       const res = await apiFetch("/api/v2/files", {
@@ -553,7 +558,7 @@ function FilesPageInner() {
                 initial={{ opacity: 0, scale: 0.97, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 6 }}
-                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[16px] bg-white dark:bg-[#141416] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
+                className="relative w-full max-w-3xl max-h-[88vh] flex flex-col rounded-[16px] bg-white dark:bg-[#0f0f11] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
               >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] shrink-0">
                   <h2 className="text-[18px] font-semibold text-[#171717] dark:text-[#e3e3e3]">Upload files</h2>
@@ -595,10 +600,9 @@ function FilesPageInner() {
         {activeContextMenuFile && (
           <>
             <ContextMenuItem
-              icon={copiedId === activeContextMenuFile.id ? "check" : "content_copy"}
-              label={copiedId === activeContextMenuFile.id ? "Copied" : "Copy link"}
+              icon="content_copy"
+              label="Copy link"
               onClick={() => { handleCopyLink(activeContextMenuFile.shareUrl, activeContextMenuFile.id); setOpenMenuId(null); setContextMenuPos(null) }}
-              accent={copiedId === activeContextMenuFile.id ? "success" : undefined}
             />
             <ContextMenuLink
               icon="open_in_new"
@@ -607,6 +611,23 @@ function FilesPageInner() {
               onClick={() => { setOpenMenuId(null); setContextMenuPos(null) }}
               target="_blank"
             />
+            <ContextMenuSub icon="drive_file_move" label="Move file" title="Move to">
+              <ContextMenuItem
+                icon="hard_drive"
+                label="Drive"
+                disabled={activeContextMenuFile.folderId === null}
+                onClick={() => { moveFiles([activeContextMenuFile.id], null); setOpenMenuId(null); setContextMenuPos(null) }}
+              />
+              {folderPaths.map((f) => (
+                <ContextMenuItem
+                  key={f.id}
+                  icon="folder"
+                  label={f.path}
+                  disabled={activeContextMenuFile.folderId === f.id}
+                  onClick={() => { moveFiles([activeContextMenuFile.id], f.id); setOpenMenuId(null); setContextMenuPos(null) }}
+                />
+              ))}
+            </ContextMenuSub>
             <ContextMenuDivider />
             <ContextMenuAction
               icon="delete"
@@ -635,7 +656,7 @@ function FilesPageInner() {
 
 export default function FilesPage() {
   return (
-    <Suspense fallback={<div className="h-full w-full bg-white dark:bg-[#141416] animate-pulse" />}>
+    <Suspense fallback={<div className="h-full w-full bg-white dark:bg-[#0f0f11] animate-pulse" />}>
       <FilesPageInner />
     </Suspense>
   )

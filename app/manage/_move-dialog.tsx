@@ -14,7 +14,7 @@ export interface MoveTarget {
 }
 
 // Flattens the folder tree into display rows, deepest paths shown as "Parent / Child".
-function toPaths(folders: MoveTarget[]): { id: string; path: string }[] {
+export function toPaths(folders: MoveTarget[]): { id: string; path: string }[] {
   const byId = new Map(folders.map(f => [f.id, f]))
   return folders
     .map(f => {
@@ -74,7 +74,7 @@ export function MoveDialog({
         <motion.div
           initial={{ opacity: 0, scale: 0.97, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative w-full max-w-md flex flex-col rounded-[16px] bg-white dark:bg-[#141416] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
+          className="relative w-full max-w-md flex flex-col rounded-[16px] bg-white dark:bg-[#0f0f11] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
         >
           <div className="px-5 pt-4 pb-3">
             <h2 className="text-[16px] font-semibold text-[#171717] dark:text-[#e3e3e3]">

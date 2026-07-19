@@ -5,12 +5,10 @@ import { createPortal } from "react-dom"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { MIcon } from "@/components/ui/material-icon"
-import { MenuItem } from "@/components/ui/menu-item"
 import { ShineButton } from "@/components/ui/shine-button"
 
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
-/** Fill + hover fill for an accent action, matching the buttons used elsewhere. */
 const TONE: Record<string, { color: string; hover: string }> = {
   danger: { color: "#dc2626", hover: "#b91c1c" },
   warning: { color: "#d97706", hover: "#b45309" },
@@ -19,18 +17,23 @@ const TONE: Record<string, { color: string; hover: string }> = {
 }
 
 const EDGE = 8
+const PANEL =
+  "rounded-[14px] p-1.5 bg-white dark:bg-[#1c1c1f] shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
+const ROW =
+  "w-full flex items-center gap-2.5 rounded-[8px] text-left text-[14px] font-medium transition-colors " +
+  "text-[#333] dark:text-[#e3e3e3] hover:bg-[#f4f4f5] dark:hover:bg-[rgba(255,255,255,0.07)]"
+const ROW_STYLE: React.CSSProperties = { height: 40, paddingLeft: 10, paddingRight: 10 }
 
 export function ContextMenu({
   isOpen,
   pos,
   onClose,
-  width = 200,
+  width = 250,
   children,
 }: {
   isOpen: boolean
   pos: { x: number; y: number } | null
   onClose: () => void
-  /** Menu width in px. */
   width?: number
   children: React.ReactNode
 }) {
@@ -40,8 +43,7 @@ export function ContextMenu({
 
   useEffect(() => setMounted(true), [])
 
-  // Keep the menu inside the viewport — flip it back from whichever edge it
-  // would have run past, so a right click near the bottom still shows it all.
+  // Pull the menu back inside the viewport from whichever edge it overran.
   useIsoLayoutEffect(() => {
     if (!isOpen || !pos) { setAt(null); return }
     const el = menuRef.current
@@ -65,14 +67,12 @@ export function ContextMenu({
     }, 0)
     window.addEventListener("keydown", onKey)
     window.addEventListener("resize", onClose)
-    window.addEventListener("scroll", onClose, true)
     return () => {
       window.clearTimeout(id)
       window.removeEventListener("mousedown", outside)
       window.removeEventListener("contextmenu", outside)
       window.removeEventListener("keydown", onKey)
       window.removeEventListener("resize", onClose)
-      window.removeEventListener("scroll", onClose, true)
     }
   }, [isOpen, onClose])
 
@@ -88,13 +88,8 @@ export function ContextMenu({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-          style={{
-            top: (at ?? pos).y,
-            left: (at ?? pos).x,
-            width,
-            boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)",
-          }}
-          className="fixed z-[120] flex flex-col gap-0.5 p-1.5 rounded-[14px] bg-white dark:bg-[#1c1c1f]"
+          style={{ top: (at ?? pos).y, left: (at ?? pos).x, width }}
+          className={`fixed z-[120] flex flex-col gap-0.5 ${PANEL}`}
           onContextMenu={(e) => { e.preventDefault(); e.stopPropagation() }}
         >
           {children}
@@ -105,7 +100,6 @@ export function ContextMenu({
   )
 }
 
-/** Neutral row. `accent` tints the label only — use ContextMenuAction for buttons. */
 export function ContextMenuItem({
   icon,
   label,
@@ -121,21 +115,22 @@ export function ContextMenuItem({
   disabled?: boolean
   trailing?: React.ReactNode
 }) {
+  const tint =
+    accent === "danger" ? "#ef4444" : accent === "success" ? "#10b981" : accent === "warning" ? "#f59e0b" : undefined
+
   return (
-    <MenuItem
-      icon={<MIcon name={icon} size={17} />}
+    <button
+      type="button"
+      role="menuitem"
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      danger={accent === "danger"}
-      trailing={trailing}
-      style={{
-        fontSize: 13,
-        ...(accent === "success" ? { color: "#059669" } : {}),
-        ...(accent === "warning" ? { color: "#d97706" } : {}),
-      }}
+      className={`${ROW} ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+      style={{ ...ROW_STYLE, ...(tint ? { color: tint } : {}) }}
     >
-      {label}
-    </MenuItem>
+      <MIcon name={icon} size={18} className="shrink-0" style={tint ? { color: tint } : undefined} />
+      <span className="flex-1 min-w-0 truncate">{label}</span>
+      {trailing && <span className="shrink-0 flex items-center">{trailing}</span>}
+    </button>
   )
 }
 
@@ -153,24 +148,93 @@ export function ContextMenuLink({
   target?: string
 }) {
   return (
-    <MenuItem
-      as={Link}
-      href={href}
-      onClick={onClick}
-      icon={<MIcon name={icon} size={17} />}
-      style={{ fontSize: 13 }}
-      trailing={target === "_blank" ? <MIcon name="north_east" size={14} /> : undefined}
-    >
-      {label}
-    </MenuItem>
+    <Link href={href} target={target} onClick={onClick} role="menuitem" className={ROW} style={ROW_STYLE}>
+      <MIcon name={icon} size={18} className="shrink-0" />
+      <span className="flex-1 min-w-0 truncate">{label}</span>
+      {target === "_blank" && <MIcon name="north_east" size={15} className="shrink-0 opacity-50" />}
+    </Link>
   )
 }
 
 /**
- * A weighted action — delete, swap, and friends. Renders the same button the
- * rest of the app uses for that action, so a destructive row in a menu reads
- * exactly like the destructive button in a toolbar.
+ * A row that opens a second panel beside the menu. Opens on hover with a short
+ * close grace period so the pointer can travel across the gap, and flips to the
+ * left when there isn't room on the right.
  */
+export function ContextMenuSub({
+  icon,
+  label,
+  title,
+  width = 230,
+  children,
+}: {
+  icon: string
+  label: string
+  /** Small heading above the submenu rows. */
+  title?: string
+  width?: number
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+  const [flip, setFlip] = useState(false)
+  const rowRef = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const enter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    const el = rowRef.current
+    if (el) {
+      const r = el.getBoundingClientRect()
+      setFlip(r.right + width + EDGE > window.innerWidth)
+    }
+    setOpen(true)
+  }
+  const leave = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    closeTimer.current = setTimeout(() => setOpen(false), 140)
+  }
+
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current) }, [])
+
+  return (
+    <div ref={rowRef} className="relative" onMouseEnter={enter} onMouseLeave={leave}>
+      <button
+        type="button"
+        role="menuitem"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={`${ROW} cursor-pointer ${open ? "bg-[#f4f4f5] dark:bg-[rgba(255,255,255,0.07)]" : ""}`}
+        style={ROW_STYLE}
+      >
+        <MIcon name={icon} size={18} className="shrink-0" />
+        <span className="flex-1 min-w-0 truncate">{label}</span>
+        <MIcon name="chevron_right" size={18} className="shrink-0 opacity-60" />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, x: flip ? 4 : -4 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: flip ? 4 : -4 }}
+            transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
+            className={`absolute top-0 z-[121] flex flex-col gap-0.5 max-h-[300px] overflow-y-auto ${PANEL} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
+            style={{ width, ...(flip ? { right: "100%", marginRight: 6 } : { left: "100%", marginLeft: 6 }) }}
+          >
+            {title && (
+              <div className="px-2.5 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#8b9099]">
+                {title}
+              </div>
+            )}
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/** A weighted action, styled as the same button that action uses elsewhere. */
 export function ContextMenuAction({
   icon,
   label,
@@ -187,20 +251,20 @@ export function ContextMenuAction({
   const t = TONE[tone]
   return (
     <ShineButton
-      size="sm"
+      size="md"
       fullWidth
       onClick={onClick}
       disabled={disabled}
       color={t.color}
       hoverColor={t.hover}
-      style={{ gap: 8, justifyContent: "flex-start", paddingLeft: 10, paddingRight: 10 }}
+      style={{ gap: 10, justifyContent: "flex-start", paddingLeft: 10, paddingRight: 10, borderRadius: 8 }}
     >
-      <MIcon name={icon} size={16} />
+      <MIcon name={icon} size={18} />
       {label}
     </ShineButton>
   )
 }
 
 export function ContextMenuDivider() {
-  return <div className="h-px w-full bg-[rgba(0,0,0,0.06)] dark:bg-[rgba(255,255,255,0.06)] my-1" />
+  return <div className="h-px w-full bg-[rgba(0,0,0,0.07)] dark:bg-[rgba(255,255,255,0.07)] my-1" />
 }

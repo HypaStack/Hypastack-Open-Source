@@ -6,7 +6,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Checkmark } from "@/components/ui/checkmark"
-import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuDivider } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuDivider } from "@/components/ui/context-menu"
 import { type CdnAsset, formatBytes, formatDate, gridItemVariants, getFileIcon } from "./_helpers"
 
 export function CdnAssetTile({
@@ -22,6 +22,8 @@ export function CdnAssetTile({
   onView,
   onHotSwap,
   onDelete,
+  onMove,
+  folderPaths = [],
   copiedId
 }: {
   asset: CdnAsset
@@ -36,6 +38,8 @@ export function CdnAssetTile({
   onView: (asset: CdnAsset) => void
   onHotSwap: (asset: CdnAsset) => void
   onDelete: (id: string) => void
+  onMove?: (id: string, folderId: string | null) => void
+  folderPaths?: { id: string; path: string }[]
   copiedId: string | null
 }) {
   const [imgFailed, setImgFailed] = useState(false)
@@ -134,7 +138,7 @@ export function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && showSpinner && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#141416]">
+              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#0f0f11]">
                 <LoadingSvg size={28} />
               </div>
             )}
@@ -188,16 +192,34 @@ export function CdnAssetTile({
 
       <ContextMenu isOpen={isMenuOpen} pos={contextMenuPos} onClose={onCloseMenu}>
         <ContextMenuItem
-          icon={copiedId === asset.id ? "check" : "content_copy"}
-          label={copiedId === asset.id ? "Copied" : "Copy link"}
+          icon="content_copy"
+          label="Copy link"
           onClick={() => { onCopy(asset.cdnUrl, asset.id); onCloseMenu() }}
-          accent={copiedId === asset.id ? "success" : undefined}
         />
         <ContextMenuItem
           icon="open_in_new"
           label="View asset"
           onClick={() => { onView(asset); onCloseMenu() }}
         />
+        {onMove && (
+          <ContextMenuSub icon="drive_file_move" label="Move asset" title="Move to">
+            <ContextMenuItem
+              icon="cloud"
+              label="CDN Assets"
+              disabled={asset.folderId === null}
+              onClick={() => { onMove(asset.id, null); onCloseMenu() }}
+            />
+            {folderPaths.map((f) => (
+              <ContextMenuItem
+                key={f.id}
+                icon="folder"
+                label={f.path}
+                disabled={asset.folderId === f.id}
+                onClick={() => { onMove(asset.id, f.id); onCloseMenu() }}
+              />
+            ))}
+          </ContextMenuSub>
+        )}
         <ContextMenuDivider />
         <ContextMenuAction
           icon="swap_horiz"

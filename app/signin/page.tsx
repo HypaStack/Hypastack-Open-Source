@@ -247,7 +247,7 @@ export default function SignInPage() {
         </div>
         {!isDesktop && (
           <div
-            className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#141416] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
+            className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#0f0f11] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)] pointer-events-none" />
             <div className="w-full relative z-10">

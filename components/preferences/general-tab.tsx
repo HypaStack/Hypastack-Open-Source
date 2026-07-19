@@ -41,7 +41,7 @@ export function GeneralTab() {
         <>
           <div className="fixed inset-0 z-[100]" onClick={() => setLangOpen(false)} />
           <div
-            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#141416] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
+            className="relative z-[110] -mt-2 w-full max-h-[280px] overflow-y-auto bg-[#ffffff] dark:bg-[#0f0f11] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]"
             style={{ padding: 4, borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
           >
             {languages.map((l) => {

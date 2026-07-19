@@ -17,7 +17,7 @@ import { STORAGE_KEY_HIDE_CTRL_HINT } from "@/constants"
 import { type CdnAsset, type CdnFolder, formatBytes, formatDate, gridVariants, gridItemVariants, getFileIcon } from "./_helpers"
 import { CdnAssetTile } from "./_asset-tile"
 import { EmptyState } from "./_empty-state"
-import { MoveDialog } from "../_move-dialog"
+import { MoveDialog, toPaths } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
 export default function CdnPage() {
@@ -388,7 +388,10 @@ export default function CdnPage() {
   }
 
   const handleBulkMove = async (folderId: string | null) => {
-    const ids = Array.from(selectedAssets)
+    await moveAssets(Array.from(selectedAssets), folderId)
+  }
+
+  const moveAssets = async (ids: string[], folderId: string | null) => {
     if (ids.length === 0) return
     try {
       const res = await apiFetch("/api/v2/cdn/assets", {
@@ -485,6 +488,8 @@ export default function CdnPage() {
   // Filter to current folder
   const currentFolders = folders.filter(f => f.parentId === currentFolderId)
   const filteredAssets = assets.filter(a => (a.folderId || null) === currentFolderId)
+
+  const folderPaths = toPaths(folders)
 
   const allInFolderSelected = filteredAssets.length > 0 && filteredAssets.every(a => selectedAssets.has(a.id))
 
@@ -673,7 +678,7 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
-          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#141416] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] relative group pr-8" style={{ borderRadius: 9999, padding: '6px 16px' }}>
+          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#0f0f11] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] relative group pr-8" style={{ borderRadius: 9999, padding: '6px 16px' }}>
             <div className="flex items-center justify-center bg-white dark:bg-[rgba(255,255,255,0.06)] rounded-full px-2 py-0.5 text-[#555] dark:text-[#f7f8f8] text-[11px] font-bold border border-[rgba(0,0,0,0.08)] dark:border-transparent">CTRL</div>
             <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
@@ -770,6 +775,8 @@ export default function CdnPage() {
                       onView={(a) => window.open(a.cdnUrl, "_blank", "noopener,noreferrer")}
                       onHotSwap={handleHotSwapAsset}
                       onDelete={handleDelete}
+                      onMove={(id, folderId) => moveAssets([id], folderId)}
+                      folderPaths={folderPaths}
                       onDragAction={(action) => {
                         if (action === 'start') {
                           const mode = selectedAssets.has(asset.id) ? 'deselect' : 'select'

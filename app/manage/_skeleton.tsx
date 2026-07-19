@@ -60,7 +60,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
       </aside>
 
       {/* Main card */}
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#141416] overflow-hidden">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#0f0f11] overflow-hidden">
         <div className="flex-1 overflow-hidden px-3 sm:px-5 lg:px-6 pt-4 pb-6 flex flex-col">
           {/* Page header: title + action buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">

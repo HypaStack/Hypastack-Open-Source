@@ -269,11 +269,11 @@ input:-webkit-autofill:focus {
 }
 
 /* New squircle palette — light mode */
-.theme-dashboard.theme-light .bg-\[\#141416\] {
+.theme-dashboard.theme-light .bg-\[\#0f0f11\] {
   background-color: #ffffff !important;
 }
 
-.theme-dashboard.theme-light .bg-\[\#141416\]\/95 {
+.theme-dashboard.theme-light .bg-\[\#0f0f11\]\/95 {
   background-color: rgba(255, 255, 255, 0.97) !important;
 }
 
