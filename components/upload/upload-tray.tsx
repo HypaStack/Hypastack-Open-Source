@@ -526,7 +526,10 @@ function TrayFileRow({
   error?: boolean
 }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-black/[0.02] dark:bg-white/[0.02] px-3 py-2">
+    <div
+      className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-black/[0.02] dark:bg-white/[0.02] px-3"
+      style={{ height: 38 }}
+    >
       <MIcon name="attach_file" size={17} className="shrink-0 text-[#8b8b90] dark:text-[#8f8f95]" />
 
       <p className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#ededed]">
@@ -548,7 +551,11 @@ function TrayFileRow({
           </>
         )}
         {showCopy && onCopy && (
-          <SecondaryButton size="xs" onClick={(e) => { e.stopPropagation(); onCopy() }}>
+          <SecondaryButton
+            size="xs"
+            onClick={(e) => { e.stopPropagation(); onCopy() }}
+            style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8, borderRadius: 7 }}
+          >
             {copied ? "Copied" : "Copy link"}
           </SecondaryButton>
         )}
