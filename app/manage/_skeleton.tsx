@@ -19,19 +19,19 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
         className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-3">
+        <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-2">
           <Skeleton className="h-[30px] w-[30px]" style={{ borderRadius: 8 }} />
           <Skeleton className="h-[17px] w-[86px]" />
         </div>
-        <nav className="flex-1 min-h-0 px-3">
+        <nav className="flex-1 min-h-0 px-2">
           <div className="space-y-1">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-10 w-full" style={{ borderRadius: 8 }} />
             ))}
           </div>
         </nav>
-        <div className="px-3 pt-3 pb-3 shrink-0">
-          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] px-3 py-3">
+        <div className="px-2 pt-3 pb-3 shrink-0">
+          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
             <Skeleton className="h-3 w-[44px] mb-3" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -46,7 +46,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 pb-3 shrink-0">
+        <div className="flex items-center gap-2 px-2 pb-3 shrink-0">
           <Skeleton className="h-10 w-10 shrink-0" style={{ borderRadius: 12 }} />
           <Skeleton className="h-10 flex-1" style={{ borderRadius: 12 }} />
         </div>
