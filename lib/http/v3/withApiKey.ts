@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 import { resolveApiKey, touchApiKey, KEY_PREFIX } from "@/lib/models/apiKeyModel"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
@@ -124,14 +124,4 @@ export function withApiKey<P = Record<string, never>>(
       })
     }
   }
-}
-
-/** Preflight for a v3 route. Public API, so any origin, and never credentialed. */
-export function v3Preflight(): NextResponse {
-  const res = new NextResponse(null, { status: 204 })
-  res.headers.set("Access-Control-Allow-Origin", "*")
-  res.headers.set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-  res.headers.set("Access-Control-Allow-Headers", "authorization, content-type")
-  res.headers.set("Access-Control-Max-Age", "600")
-  return res
 }
