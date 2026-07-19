@@ -295,7 +295,7 @@ export function HypaNotifProvider() {
             {/* File list */}
             {notif.items && notif.items.length > 0 && (
               <div
-                className="bg-[#f4f4f5] dark:bg-[rgba(0,0,0,0.22)] rounded-[10px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)]"
+                className="bg-black/[0.04] dark:bg-white/[0.04] rounded-[10px]"
                 style={{ margin: '0 6px 6px', padding: 4, maxHeight: 140, overflowY: 'auto' }}
               >
                 {notif.items.map((item, i) => (
