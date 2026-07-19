@@ -428,7 +428,7 @@ function ManageLayoutInner({
       </aside>
 
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 rounded-[12px] bg-white dark:bg-[#1e1e20] overflow-hidden relative"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 overflow-hidden relative"
         style={{ width: SIDEBAR_WIDTH, border: 'none', boxShadow: 'none' }}
       >
         <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden w-full">
@@ -442,7 +442,7 @@ function ManageLayoutInner({
               exit="exit"
               transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
               style={{ willChange: 'transform', width: '100%', height: '100%' }}
-              className="flex flex-col bg-white dark:bg-[#1e1e20]"
+              className="flex flex-col bg-[#f0f0f0] dark:bg-[#151515]"
             >
               <SidebarNavContent
                 section={currentSection}
@@ -478,7 +478,7 @@ function ManageLayoutInner({
                 </div>
                 <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
               </div>
-              <ProgressBar value={sharedPct} aria-label="Shared links used" />
+              {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
             </div>
 
             <div>
@@ -489,7 +489,7 @@ function ManageLayoutInner({
                 </div>
                 <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
               </div>
-              <ProgressBar value={cdnPct} aria-label="CDN assets used" />
+              {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
             </div>
           </div>
           

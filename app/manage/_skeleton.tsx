@@ -27,7 +27,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
 
       {/* Sidebar card */}
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 mr-1 rounded-[12px] bg-white dark:bg-[#1e1e20] overflow-hidden"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 mr-1 overflow-hidden"
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="flex items-center pt-5 pb-4 shrink-0" style={{ paddingLeft: 24 }}>
