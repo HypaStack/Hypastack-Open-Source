@@ -7,6 +7,9 @@ export default defineConfig({
   test: {
     include: ["lib/**/*.test.ts"],
     environment: "node",
+    // lib/security/auth.ts throws at import time without this, and the key model
+    // reuses its hasher.
+    env: { JWT_SECRET: "test-secret-not-used-for-signing" },
   },
   resolve: {
     alias: { "@": resolve(__dirname, ".") },

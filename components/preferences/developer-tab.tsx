@@ -1,29 +1,48 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
-import { ToggleSwitch } from "@/components/ui/toggle-switch"
-import { getTierLimits, isPaidTier } from "@/constants"
+import { Loader } from "@/components/ui/loader"
+import { apiFetch } from "@/lib/http/fetch"
+import { getTierLimits, isPaidTier, V3_REQUESTS_PER_MINUTE } from "@/constants"
 import { type PreferencesTab, type PreferencesUser, resolveTier } from "./shared"
 import { PaidOnlyNotice } from "./paid-only-notice"
+import { ApiKeyList } from "./api-key-list"
+import { CreateKeyDialog } from "./create-key-dialog"
+import { type ApiKeySummary } from "./api-key-types"
 
 const CARD = "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-
-// What a key is allowed to do. Off by default — a fresh key reads and nothing else.
-const SCOPES = [
-  { id: "files.read", label: "Read files", hint: "List your files and read their metadata.", locked: true },
-  { id: "files.write", label: "Upload files", hint: "Create new uploads on your account." },
-  { id: "files.delete", label: "Delete files", hint: "Permanently remove files. Cannot be undone." },
-  { id: "cdn.write", label: "Manage CDN", hint: "Upload, swap and delete CDN assets." },
-] as const
 
 export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const tier = resolveTier(user)
   const unlocked = isPaidTier(tier)
   const maxKeys = getTierLimits(tier).maxApiKeys
-  const [scopes, setScopes] = useState<Record<string, boolean>>({ "files.read": true })
+  const perMinute = V3_REQUESTS_PER_MINUTE[tier]
+
+  const [keys, setKeys] = useState<ApiKeySummary[]>([])
+  const [loading, setLoading] = useState(unlocked)
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const load = useCallback(async () => {
+    if (!unlocked) return
+    try {
+      const res = await apiFetch("/api/v2/keys")
+      if (res.ok) {
+        const data = await res.json()
+        setKeys(data.keys ?? [])
+      }
+    } catch {
+      // Leave the list as-is; the empty state reads the same as a failed load.
+    } finally {
+      setLoading(false)
+    }
+  }, [unlocked])
+
+  useEffect(() => { load() }, [load])
+
+  const atLimit = keys.length >= maxKeys
 
   return (
     <div className="space-y-4">
@@ -35,7 +54,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
           <p className="text-[13px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Hypastack API</p>
         </div>
         <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
-          A plain REST API over your account. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
+          A plain REST API over your files and CDN. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
         </p>
       </div>
 
@@ -59,45 +78,37 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
           <div className="min-w-0">
             <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">API keys</p>
             <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5">
-              {unlocked ? `0 of ${maxKeys} used on ${getTierLimits(tier).label}` : "No keys on Free"}
+              {unlocked ? `${keys.length} of ${maxKeys} used on ${getTierLimits(tier).label}` : "No keys on Free"}
             </p>
           </div>
-          <ShineButton size="sm" disabled={!unlocked} style={{ height: 32, gap: 6 }}>
+          <ShineButton
+            size="sm"
+            disabled={!unlocked || atLimit}
+            onClick={() => setDialogOpen(true)}
+            style={{ height: 32, gap: 6 }}
+          >
             <MIcon name="add" size={15} />
             New key
           </ShineButton>
         </div>
-      </div>
 
-      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Permissions</p>
-        <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 mb-3">
-          What a new key is allowed to do. Anything left off returns a 403 with a clear reason.
-        </p>
-        <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
-          {SCOPES.map((s) => {
-            const locked = "locked" in s && s.locked
-            return (
-              <div key={s.id} className="flex items-center justify-between gap-4 py-2.5">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <code className="text-[12px] font-medium text-[#111] dark:text-[#f0f0f0]">{s.id}</code>
-                    <span className="text-[12px] text-[#888] dark:text-[#898e97]">{s.label}</span>
-                  </div>
-                  <p className="text-[12px] text-[#aaa] dark:text-[#6b7076] mt-0.5 leading-snug">{s.hint}</p>
-                </div>
-                <ToggleSwitch
-                  checked={!!scopes[s.id]}
-                  onChange={(v) => setScopes((prev) => ({ ...prev, [s.id]: v }))}
-                  disabled={!unlocked || locked}
-                  width={40}
-                  height={24}
-                  aria-label={s.label}
-                />
-              </div>
-            )
-          })}
-        </div>
+        {loading && (
+          <div className="flex items-center gap-2 pt-3 text-[12px] text-[#888] dark:text-[#898e97]">
+            <Loader size={14} /> Loading keys…
+          </div>
+        )}
+
+        {!loading && keys.length > 0 && (
+          <div className="mt-3">
+            <ApiKeyList keys={keys} onChanged={load} />
+          </div>
+        )}
+
+        {!loading && unlocked && atLimit && (
+          <p className="text-[11px] text-[#888] dark:text-[#6b7076] mt-2.5">
+            Revoke one to make room, or move up a plan for more.
+          </p>
+        )}
       </div>
 
       <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
@@ -107,9 +118,15 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         </p>
         <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
           <LimitRow label="Keys on this plan" value={unlocked ? String(maxKeys) : "None"} />
-          <LimitRow label="Requests" value="Per key, per minute" />
+          <LimitRow label="Requests per key" value={unlocked ? `${perMinute} / minute` : "None"} />
         </div>
       </div>
+
+      <CreateKeyDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onCreated={load}
+      />
     </div>
   )
 }
