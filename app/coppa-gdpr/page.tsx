@@ -53,8 +53,8 @@ export default function CoppaGdpr() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-[#f7f8f8]">Age Restrictions:</strong> Hypastack is not directed at children under the age of 13. I do not knowingly collect personal information from children under 13. If you are under 13, you are strictly prohibited from using my services or creating an account.</li>
-                <li><strong className="text-[#f7f8f8]">No Intentional Collection:</strong> Because I operate a zero-knowledge architecture, I do not monitor or profile the age of my users based on their uploaded content. I rely on the assertion that users accessing my tools are of legal age to form a binding contract.</li>
-                <li><strong className="text-[#f7f8f8]">Remediation:</strong> If I obtain actual, verifiable knowledge that an account belongs to a child under the age of 13, I will immediately terminate the account and permanently purge all associated encrypted ciphertext from my network in compliance with COPPA.</li>
+                <li><strong className="text-[#f7f8f8]">No Intentional Collection:</strong> I do not monitor or profile the age of my users based on their uploaded content. For website uploads I am technically unable to, since the content is encrypted before it reaches me; for CDN assets and developer API uploads I simply do not. I rely on the assertion that users accessing my tools are of legal age to form a binding contract.</li>
+                <li><strong className="text-[#f7f8f8]">Remediation:</strong> If I obtain actual, verifiable knowledge that an account belongs to a child under the age of 13, I will immediately terminate the account and permanently purge all associated data from my network in compliance with COPPA, whether that data is encrypted ciphertext or not.</li>
               </ul>
             </section>
 
@@ -63,8 +63,16 @@ export default function CoppaGdpr() {
               <p className="mb-4">
                 If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact me via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
               </p>
+              <p className="mb-4">
+                What I can return depends on how the data reached me, and I would rather set that out precisely than promise something inaccurate:
+              </p>
+              <ul className="list-disc list-inside space-y-3 ml-2 mb-4">
+                <li><strong className="text-[#f7f8f8]">Files uploaded through this website:</strong> I can provide only the encrypted ciphertext blocks stored on my servers. I cannot provide a decrypted version, nor recover your lost keys, because I do not possess them. This is a genuine technical limitation, not a refusal.</li>
+                <li><strong className="text-[#f7f8f8]">CDN assets:</strong> These are not encrypted. I can provide the files themselves, along with their stored metadata.</li>
+                <li><strong className="text-[#f7f8f8]">Files uploaded through the developer API:</strong> These are not encrypted either. I can provide the actual contents. Where the upload was made through a third party&apos;s application, the file resides in that developer&apos;s account and that developer is the controller of it — I can confirm what I hold, but requests concerning that content should also be directed to them.</li>
+              </ul>
               <p>
-                Please note that because of my zero-knowledge architecture, if you request an export of "your data", I can only provide you with the encrypted ciphertext blocks stored on my servers. I cannot provide you with a decrypted version of your files, nor can I recover your lost keys, as I do not possess them.
+                In every case I can provide the account metadata I hold, which is deliberately minimal: no email address, no password, no IP addresses, and a nickname that is itself encrypted in your browser before it reaches me.
               </p>
             </section>
           </div>

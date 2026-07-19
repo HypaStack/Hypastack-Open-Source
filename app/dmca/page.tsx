@@ -46,9 +46,9 @@ export default function DmcaPolicy() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Do</h2>
               <p className="mb-4">
-                When I receive a valid DMCA notice, I remove the content. Because of my 
-                zero-knowledge architecture, I cannot reliably notify the uploader — I do not 
-                have their email address or any contact information.
+                When I receive a valid DMCA notice, I remove the content. I cannot reliably notify
+                the uploader — I do not have their email address or any contact information, whether
+                the file was encrypted or not.
               </p>
               <p className="mb-4">
                 If the content was shared via a temporary link, it may have already expired 
@@ -74,8 +74,8 @@ export default function DmcaPolicy() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Repeat Infringers</h2>
               <p>
-                I will terminate accounts of repeat infringers when I can identify them. Given 
-                my zero-knowledge model, identification is limited to the hashed nickname and 
+                I will terminate accounts of repeat infringers when I can identify them. Given
+                my account model, identification is limited to the hashed nickname and
                 associated file records.
               </p>
             </section>

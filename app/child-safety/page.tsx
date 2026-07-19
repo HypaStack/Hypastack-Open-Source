@@ -41,7 +41,7 @@ export default function ChildSafety() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Can Provide to Authorities</h2>
               <p className="mb-4">
-                Due to my zero-knowledge architecture, the data I can provide is limited to:
+                For files uploaded through the website, my zero-knowledge architecture limits the data I can provide to:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>The hashed nickname associated with the account</li>
@@ -52,9 +52,14 @@ export default function ChildSafety() {
                 <li>The file content itself (before deletion)</li>
               </ul>
               <p className="mt-4">
-                I do not have email addresses, IP addresses, or real identities. I am transparent 
-                about this limitation. It is a consequence of the zero-knowledge model, not an 
-                attempt to shield abusers.
+                CDN assets and files uploaded through the developer API are not encrypted. For those,
+                I can provide the content itself in readable form, and I will do so when lawfully
+                required.
+              </p>
+              <p className="mt-4">
+                In no case do I have email addresses, IP addresses, or real identities. I am transparent
+                about this limitation. It is a consequence of the account model and the zero-knowledge
+                pipeline, not an attempt to shield abusers.
               </p>
             </section>
 

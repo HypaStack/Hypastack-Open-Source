@@ -26,7 +26,7 @@ export default function AcceptableUse() {
           <div className="space-y-16 text-[15px] leading-relaxed text-[#898e97]">
             <section>
               <p className="mb-4 text-[#f7f8f8] font-medium">
-                Hypastack is a zero-knowledge file sharing and CDN hosting platform designed to provide mathematical privacy to its users. However, privacy does not equate to lawlessness. 
+                Hypastack is a file sharing and CDN hosting platform. Files uploaded through the website are protected by a zero-knowledge architecture; CDN assets and developer API uploads are not encrypted and are readable by me. However, privacy does not equate to lawlessness.
               </p>
               <p>
                 This Acceptable Use Policy defines strictly what is not allowed on my infrastructure. If you violate this policy, your account, associated access keys, and all uploaded ciphertext will be terminated and permanently purged without warning. By utilizing my network, you explicitly agree to adhere to these constraints.
@@ -63,7 +63,7 @@ export default function AcceptableUse() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>3. Enforcement Under Zero-Knowledge</h2>
               <p className="mb-4">
-                Because Hypastack employs client-side AES-GCM encryption, I am mathematically incapable of proactively scanning the unencrypted contents of the files uploaded to my servers. I cannot implement traditional hash-matching or keyword-scanning algorithms on ciphertext.
+                Because Hypastack employs client-side AES-GCM encryption for website uploads, I am mathematically incapable of proactively scanning the contents of those files. I cannot implement traditional hash-matching or keyword-scanning algorithms on ciphertext. This constraint applies to that pipeline alone: CDN assets and developer API uploads are stored unencrypted, and I am technically able to inspect them when I have cause to.
               </p>
               <p>
                 Consequently, my enforcement mechanisms rely on:
