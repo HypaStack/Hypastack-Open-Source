@@ -14,33 +14,23 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] animate-in fade-in duration-200">
-      {/* Icon rail */}
-      <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
-        <Skeleton className="h-8 w-8" style={{ borderRadius: 8 }} />
-        <div className="flex flex-col items-center gap-2 mt-8 flex-1">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-12" style={{ borderRadius: 14 }} />
-          ))}
-        </div>
-        <Skeleton className="h-12 w-12 mb-2" style={{ borderRadius: 14 }} />
-      </aside>
-
-      {/* Sidebar card */}
+      {/* Sidebar */}
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 mr-1 overflow-hidden"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="flex items-center pt-5 pb-4 shrink-0" style={{ paddingLeft: 24 }}>
-          <Skeleton className="h-[24px] w-[96px]" />
+        <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-3">
+          <Skeleton className="h-[30px] w-[30px]" style={{ borderRadius: 8 }} />
+          <Skeleton className="h-[17px] w-[86px]" />
         </div>
-        <nav className="flex-1 min-h-0 pt-1 pb-2" style={{ padding: "0.25rem 0.75rem" }}>
+        <nav className="flex-1 min-h-0 px-3">
           <div className="space-y-1">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-10 w-full" style={{ borderRadius: 8 }} />
             ))}
           </div>
         </nav>
-        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb] dark:border-[#2a2a2a]">
+        <div className="px-3 pt-3 pb-3 shrink-0">
           <Skeleton className="h-3 w-[44px] mb-3" />
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -54,6 +44,9 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
             ))}
           </div>
           <Skeleton className="h-10 w-full mt-4" style={{ borderRadius: 12 }} />
+        </div>
+        <div className="px-3 pb-3 shrink-0">
+          <Skeleton className="h-12 w-full" style={{ borderRadius: 12 }} />
         </div>
       </aside>
 

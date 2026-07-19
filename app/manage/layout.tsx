@@ -23,11 +23,6 @@ import { ManageSkeleton } from "./_skeleton"
 import {
   type NavItem,
   SECTION_BUTTONS,
-  DRIVE_SUBNAV,
-  FUNNEL_SUBNAV,
-  CDN_SUBNAV,
-  DUMPSTER_SUBNAV,
-  SECTION_ORDER,
   SIDEBAR_WIDTH,
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
@@ -35,14 +30,6 @@ import {
 import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
-
-function getSubNav(pathname: string): NavItem[] {
-  if (pathname.startsWith("/manage/files")) return DRIVE_SUBNAV
-  if (pathname.startsWith("/manage/funnel")) return FUNNEL_SUBNAV
-  if (pathname.startsWith("/manage/cdn")) return CDN_SUBNAV
-  if (pathname.startsWith("/manage/dumpster")) return DUMPSTER_SUBNAV
-  return DRIVE_SUBNAV
-}
 
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
@@ -112,53 +99,6 @@ function NavRow({
   )
 }
 
-function SidebarNavContent({ section, pathname }: { section: string, pathname: string }) {
-  // Use a fallback path if the section doesn't match the pathname to ensure we get the right nav items
-  const items = section === "Funnel" ? FUNNEL_SUBNAV : section === "CDN" ? CDN_SUBNAV : section === "Dumpster" ? DUMPSTER_SUBNAV : DRIVE_SUBNAV
-
-  return (
-    <>
-      <div className="flex items-center pt-5 pb-4 shrink-0" style={{ paddingLeft: 24 }}>
-        <span className="text-[24px] font-semibold tracking-tight text-black dark:text-[#e3e3e3]">
-          {section}
-        </span>
-      </div>
-
-      <nav
-        className="flex-1 min-h-0 pt-1 pb-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-        style={{ padding: '0.25rem 0.75rem' }}
-      >
-        <div className="space-y-1">
-          {items.map((item) => (
-            <NavRow
-              key={item.href}
-              item={item}
-              active={pathname === item.href}
-            />
-          ))}
-        </div>
-      </nav>
-    </>
-  )
-}
-
-// SECTION_ORDER imported from @/constants
-
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%"
-  }),
-  center: {
-    x: 0
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? "100%" : "-100%",
-    position: 'absolute' as const,
-    top: 0, left: 0, right: 0, bottom: 0,
-    pointerEvents: 'none' as const,
-  })
-}
-
 export default function ManageLayout({
   children,
 }: {
@@ -181,20 +121,6 @@ function ManageLayoutInner({
   const { isAuthenticated } = useAuth()
   const { user, stats, files, cdnAssets, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
-
-  const currentSection = sectionTitle(pathname)
-  
-  const prevSectionRef = useRef(currentSection)
-  const directionRef = useRef(1)
-
-  if (prevSectionRef.current !== currentSection) {
-    const prevIndex = SECTION_ORDER[prevSectionRef.current] ?? 0
-    const newIndex = SECTION_ORDER[currentSection] ?? 0
-    directionRef.current = newIndex > prevIndex ? 1 : -1
-    prevSectionRef.current = currentSection
-  }
-
-  const direction = directionRef.current
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -296,47 +222,99 @@ function ManageLayoutInner({
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
-      <aside className="hidden lg:flex w-16 shrink-0 flex-col items-center pt-6 pb-2">
-        <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
-          <PageLogo size={32} borderRadius={8} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
-        </Link>
-
-        <div className="flex flex-col items-center gap-2 mt-8 flex-1">
-          {SECTION_BUTTONS.map((item) => {
-            const active = isSectionActive(pathname, item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`relative flex items-center justify-center h-12 w-12 rounded-[14px] transition-colors shrink-0 ${
-                  active ? 'bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]' : 'text-[#666] dark:text-[#898e97] hover:bg-white dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#171717] dark:hover:text-[#f7f8f8]'
-                }`}
-                aria-label={item.label}
-              >
-                <MIcon name={item.icon} size={20} />
-              </Link>
-            )
-          })}
+      <aside
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
+        style={{ width: SIDEBAR_WIDTH }}
+      >
+        <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-3">
+          <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
+            <PageLogo size={30} borderRadius={8} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
+          </Link>
+          <span className="text-[17px] font-semibold tracking-tight text-black dark:text-[#e3e3e3]">
+            Hypastack
+          </span>
         </div>
 
-        <div ref={menuRef} className="relative mb-2">
+        <nav className="flex-1 min-h-0 px-3 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="space-y-1">
+            {SECTION_BUTTONS.map((item) => (
+              <NavRow
+                key={item.href}
+                item={item}
+                active={isSectionActive(pathname, item.href)}
+              />
+            ))}
+          </div>
+        </nav>
+
+        <div className="px-3 pt-3 pb-3 shrink-0">
+          <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
+            Usage
+          </div>
+
+          <div className="space-y-3">
+
+            <div>
+              <div className="flex items-center justify-between text-sm mb-1.5">
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
+                  <span>Storage</span>
+                </div>
+                <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
+              </div>
+              <ProgressBar value={usedPct} aria-label="Storage used" />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between text-sm mb-1.5">
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
+                  <span>Shared Links</span>
+                </div>
+                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
+              </div>
+              {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between text-sm mb-1.5">
+                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                  <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
+                  <span>CDN Assets</span>
+                </div>
+                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
+              </div>
+              {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
+            </div>
+          </div>
+
+          <ShineButton
+            onClick={() => openPreferences("plans")}
+            size="md"
+            fullWidth
+            className="mt-4"
+          >
+            Upgrade plan
+          </ShineButton>
+        </div>
+
+        <div ref={menuRef} className="relative px-3 pb-3 shrink-0">
           <SecondaryButton
             variant="ghost"
-            iconOnly
+            fullWidth
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Account menu"
-            style={{ height: 48, width: 48, borderRadius: 14, ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
+            style={{ height: 48, borderRadius: 12, gap: 10, paddingLeft: 8, paddingRight: 8, justifyContent: "flex-start", ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
           >
-            <div className="h-7 w-7">
-              <img decoding="async"
-                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
-                alt={user.nickname}
-                className="h-7 w-7 object-cover rounded-full select-none pointer-events-none"
-                style={{ borderRadius: '50%' }}
-                draggable={false}
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-              />
-            </div>
+            <img decoding="async"
+              src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+              alt={user.nickname}
+              className="h-7 w-7 shrink-0 object-cover rounded-full select-none pointer-events-none"
+              draggable={false}
+              onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+            />
+            <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
+            <MIcon name="unfold_more" size={16} className="shrink-0 text-[#666] dark:text-[#898e97]" />
           </SecondaryButton>
 
           <AnimatePresence>
@@ -347,10 +325,8 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="fixed z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
+                className="absolute bottom-full left-3 mb-2 z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
                 style={{
-                  bottom: '68px',
-                  left: '8px',
                   width: 264,
                   boxShadow: '0 12px 34px rgba(0,0,0,0.35), 0 3px 10px rgba(0,0,0,0.2)'
                 }}
@@ -427,83 +403,6 @@ function ManageLayoutInner({
         </div>
       </aside>
 
-      <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-0 mr-1 overflow-hidden relative"
-        style={{ width: SIDEBAR_WIDTH, border: 'none', boxShadow: 'none' }}
-      >
-        <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden w-full">
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.div
-              key={currentSection}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
-              style={{ willChange: 'transform', width: '100%', height: '100%' }}
-              className="flex flex-col bg-[#f0f0f0] dark:bg-[#151515]"
-            >
-              <SidebarNavContent
-                section={currentSection}
-                pathname={pathname}
-              />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="px-3 pb-4 pt-3 shrink-0 border-t border-[#ebebeb] dark:border-[#2a2a2a]">
-          <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
-            Usage
-          </div>
-          
-          <div className="space-y-3">
-
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>Storage</span>
-                </div>
-                <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
-              </div>
-              <ProgressBar value={usedPct} aria-label="Storage used" />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>Shared Links</span>
-                </div>
-                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
-              </div>
-              {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>CDN Assets</span>
-                </div>
-                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
-              </div>
-              {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
-            </div>
-          </div>
-          
-          <ShineButton
-            onClick={() => openPreferences("plans")}
-            size="md"
-            fullWidth
-            className="mt-4"
-          >
-            Upgrade plan
-          </ShineButton>
-        </div>
-      </aside>
-
       <AnimatePresence>
         {drawerOpen && (
           <motion.div
@@ -546,51 +445,23 @@ function ManageLayoutInner({
                 <div style={{ width: 40, height: 5, borderRadius: 999, backgroundColor: resolvedTheme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }} />
               </div>
 
-              <div className="px-3 pb-3">
-                <div className="flex gap-1 p-1 rounded-[14px] bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.03)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]">
-                  {SECTION_BUTTONS.map((section) => {
-                    const active = isSectionActive(pathname, section.href)
-                    return (
-                      <Link
-                        key={section.href}
-                        href={section.href}
-                        onClick={() => setDrawerOpen(false)}
-                        className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-[10px] text-[12px] font-semibold transition-colors ${
-                          active
-                            ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
-                            : "text-[#888] dark:text-[#898e97] active:bg-[rgba(0,0,0,0.04)] dark:active:bg-[rgba(255,255,255,0.04)]"
-                        }`}
-                      >
-                        <MIcon name={section.icon} size={19} />
-                        {section.label}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="mx-3 mb-1 border-t border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" />
-
               <div className="flex flex-col gap-1 px-3 py-2">
-                {getSubNav(pathname).map((item) => {
-                  const active = pathname === item.href
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setDrawerOpen(false)}
-                      className={`flex items-center gap-3.5 rounded-[12px] px-3.5 transition-colors active:scale-[0.99] ${
-                        active
-                          ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]"
-                          : "text-[#666] dark:text-[#898e97] active:bg-[#f5f5f5] dark:active:bg-[rgba(255,255,255,0.04)]"
-                      }`}
-                      style={{ height: 50 }}
-                    >
-                      <MIcon name={item.icon} size={20} />
-                      <span className="text-[15px] font-medium">{item.label}</span>
-                    </Link>
-                  )
-                })}
+                {SECTION_BUTTONS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setDrawerOpen(false)}
+                    className={`flex items-center gap-3.5 rounded-[12px] px-3.5 transition-colors active:scale-[0.99] ${
+                      isSectionActive(pathname, item.href)
+                        ? "bg-white dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]"
+                        : "text-[#666] dark:text-[#898e97] active:bg-[#f5f5f5] dark:active:bg-[rgba(255,255,255,0.04)]"
+                    }`}
+                    style={{ height: 50 }}
+                  >
+                    <MIcon name={item.icon} size={20} />
+                    <span className="text-[15px] font-medium">{item.label}</span>
+                  </Link>
+                ))}
               </div>
 
               <div className="mx-3 mt-1 border-t border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" />
