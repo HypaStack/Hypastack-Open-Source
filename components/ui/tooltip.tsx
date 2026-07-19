@@ -10,7 +10,7 @@ export type TooltipPlacement = "top" | "right" | "bottom" | "left"
 // Matches the app's elevated surface (popovers, menus) so a tooltip reads as
 // the same material as everything else that floats.
 const PALETTE = {
-  dark: { bg: "#1c1c1f", text: "#f0f0f0" },
+  dark: { bg: "#181818", text: "#f0f0f0" },
   light: { bg: "#ffffff", text: "#171717" },
 } as const
 

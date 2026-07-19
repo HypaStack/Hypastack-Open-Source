@@ -429,7 +429,7 @@ function ManageLayoutInner({
             className="fixed inset-x-0 bottom-0 z-[39] flex flex-col safe-area-bottom lg:hidden"
             style={{
               maxHeight: '90vh',
-              backgroundColor: resolvedTheme === 'dark' ? '#0f0f11' : '#ffffff',
+              backgroundColor: resolvedTheme === 'dark' ? '#121212' : '#ffffff',
               borderRadius: '20px 20px 0 0',
               borderTop: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #ebebeb',
               boxShadow: '0 -10px 40px rgba(0,0,0,0.22)',
@@ -495,9 +495,9 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#0f0f11] overflow-hidden relative" style={{ border: 'none', boxShadow: 'none' }}>
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[12px] bg-white dark:bg-[#121212] overflow-hidden relative" style={{ border: 'none', boxShadow: 'none' }}>
         <header
-          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#0f0f11] lg:hidden safe-area-top relative z-10"
+          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#121212] lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
           <SecondaryButton
@@ -549,7 +549,7 @@ function ManageLayoutInner({
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#0f0f11] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
+          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#121212] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
           style={{ borderRadius: 14, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
         >
           <div className="flex flex-col">

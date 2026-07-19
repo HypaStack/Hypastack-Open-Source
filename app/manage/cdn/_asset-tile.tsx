@@ -6,8 +6,9 @@ import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Checkmark } from "@/components/ui/checkmark"
-import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuDivider } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider } from "@/components/ui/context-menu"
 import { type CdnAsset, formatBytes, formatDate, gridItemVariants, getFileIcon } from "./_helpers"
+import { type TreeNode } from "../_move-dialog"
 
 export function CdnAssetTile({
   asset,
@@ -23,7 +24,7 @@ export function CdnAssetTile({
   onHotSwap,
   onDelete,
   onMove,
-  folderPaths = [],
+  folderTree = [],
   copiedId
 }: {
   asset: CdnAsset
@@ -39,7 +40,7 @@ export function CdnAssetTile({
   onHotSwap: (asset: CdnAsset) => void
   onDelete: (id: string) => void
   onMove?: (id: string, folderId: string | null) => void
-  folderPaths?: { id: string; path: string }[]
+  folderTree?: TreeNode[]
   copiedId: string | null
 }) {
   const [imgFailed, setImgFailed] = useState(false)
@@ -138,7 +139,7 @@ export function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && showSpinner && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#0f0f11]">
+              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#121212]">
                 <LoadingSvg size={28} />
               </div>
             )}
@@ -209,11 +210,13 @@ export function CdnAssetTile({
               disabled={asset.folderId === null}
               onClick={() => { onMove(asset.id, null); onCloseMenu() }}
             />
-            {folderPaths.map((f) => (
-              <ContextMenuItem
+            {folderTree.map((f) => (
+              <ContextMenuTreeItem
                 key={f.id}
-                icon="folder"
-                label={f.path}
+                label={f.name}
+                depth={f.depth}
+                isLast={f.isLast}
+                ancestorsLast={f.ancestorsLast}
                 disabled={asset.folderId === f.id}
                 onClick={() => { onMove(asset.id, f.id); onCloseMenu() }}
               />

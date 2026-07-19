@@ -18,7 +18,7 @@ const TONE: Record<string, { color: string; hover: string }> = {
 
 const EDGE = 8
 const PANEL =
-  "rounded-[14px] p-1.5 bg-white dark:bg-[#1c1c1f] shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
+  "rounded-[14px] p-1.5 bg-white dark:bg-[#181818] shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
 const ROW =
   "w-full flex items-center gap-2.5 rounded-[8px] text-left text-[14px] font-medium transition-colors " +
   "text-[#333] dark:text-[#e3e3e3] hover:bg-[#f4f4f5] dark:hover:bg-[rgba(255,255,255,0.07)]"
@@ -231,6 +231,60 @@ export function ContextMenuSub({
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+const GUIDE = "border-[#d8d8dc] dark:border-[rgba(255,255,255,0.16)]"
+const RAIL = 15
+
+/**
+ * A row inside a tree. Draws its own connectors: a vertical line for every
+ * ancestor level still expecting more siblings, then a tee or an elbow into
+ * this row's own icon.
+ */
+export function ContextMenuTreeItem({
+  icon = "folder",
+  label,
+  depth,
+  isLast,
+  ancestorsLast,
+  onClick,
+  disabled,
+}: {
+  icon?: string
+  label: string
+  depth: number
+  isLast: boolean
+  ancestorsLast: boolean[]
+  onClick?: () => void
+  disabled?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`${ROW} ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+      style={{ ...ROW_STYLE, paddingLeft: 6, gap: 0 }}
+    >
+      {ancestorsLast.slice(0, depth).map((wasLast, i) => (
+        <span key={i} className="self-stretch relative shrink-0" style={{ width: RAIL }}>
+          {!wasLast && <span className={`absolute top-0 bottom-0 border-l ${GUIDE}`} style={{ left: "50%" }} />}
+        </span>
+      ))}
+
+      <span className="self-stretch relative shrink-0" style={{ width: RAIL }}>
+        <span
+          className={`absolute top-0 border-l ${GUIDE}`}
+          style={{ left: "50%", height: isLast ? "50%" : "100%" }}
+        />
+        <span className={`absolute border-t ${GUIDE}`} style={{ left: "50%", top: "50%", width: "50%" }} />
+      </span>
+
+      <MIcon name={icon} size={17} className="shrink-0 mr-2 opacity-70" />
+      <span className="flex-1 min-w-0 truncate">{label}</span>
+    </button>
   )
 }
 

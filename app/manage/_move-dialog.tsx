@@ -13,6 +13,41 @@ export interface MoveTarget {
   parentId: string | null
 }
 
+export interface TreeNode {
+  id: string
+  name: string
+  depth: number
+  /** Last child of its parent — draws an elbow instead of a tee. */
+  isLast: boolean
+  /** For each ancestor level, whether that ancestor was its parent's last child.
+   *  Levels that weren't need a vertical line running past this row. */
+  ancestorsLast: boolean[]
+}
+
+// Walks the folder tree depth-first, carrying the guide-line state each row
+// needs to draw its own connectors.
+export function toTree(folders: MoveTarget[]): TreeNode[] {
+  const byParent = new Map<string | null, MoveTarget[]>()
+  for (const f of folders) {
+    const list = byParent.get(f.parentId) ?? []
+    list.push(f)
+    byParent.set(f.parentId, list)
+  }
+  for (const list of byParent.values()) list.sort((a, b) => a.name.localeCompare(b.name))
+
+  const out: TreeNode[] = []
+  const walk = (parentId: string | null, depth: number, ancestorsLast: boolean[]) => {
+    const kids = byParent.get(parentId) ?? []
+    kids.forEach((f, i) => {
+      const isLast = i === kids.length - 1
+      out.push({ id: f.id, name: f.name, depth, isLast, ancestorsLast })
+      walk(f.id, depth + 1, [...ancestorsLast, isLast])
+    })
+  }
+  walk(null, 0, [])
+  return out
+}
+
 // Flattens the folder tree into display rows, deepest paths shown as "Parent / Child".
 export function toPaths(folders: MoveTarget[]): { id: string; path: string }[] {
   const byId = new Map(folders.map(f => [f.id, f]))
@@ -74,7 +109,7 @@ export function MoveDialog({
         <motion.div
           initial={{ opacity: 0, scale: 0.97, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative w-full max-w-md flex flex-col rounded-[16px] bg-white dark:bg-[#0f0f11] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
+          className="relative w-full max-w-md flex flex-col rounded-[16px] bg-white dark:bg-[#121212] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
         >
           <div className="px-5 pt-4 pb-3">
             <h2 className="text-[16px] font-semibold text-[#171717] dark:text-[#e3e3e3]">

@@ -102,7 +102,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-white dark:bg-[#0f0f11] rounded-[16px] overflow-hidden">
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col bg-white dark:bg-[#121212] rounded-[16px] overflow-hidden">
                 <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
                   {active === "general" && <GeneralTab />}
                   {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}
