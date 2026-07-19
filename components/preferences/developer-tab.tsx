@@ -39,7 +39,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
       </div>
 
       <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <div className="flex items-center justify-between gap-4 mb-3">
+        <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">API keys</p>
             <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5">
@@ -51,17 +51,6 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
             New key
           </ShineButton>
         </div>
-
-        <div
-          className="flex flex-col items-center justify-center text-center border border-dashed border-[#ddd] dark:border-[rgba(255,255,255,0.1)]"
-          style={{ borderRadius: 10, padding: '22px 16px' }}
-        >
-          <MIcon name="key" size={20} className="text-[#bbb] dark:text-[#5a5f66] mb-1.5" />
-          <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">No keys yet</p>
-          <p className="text-[12px] text-[#aaa] dark:text-[#6b7076] mt-0.5 max-w-[280px] leading-snug">
-            Make one to start calling the API from your own code.
-          </p>
-        </div>
       </div>
 
       <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
@@ -69,15 +58,11 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 mb-3">
           What a new key is allowed to do. Anything left off returns a 403 with a clear reason.
         </p>
-        <div className="space-y-2">
+        <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
           {SCOPES.map((s) => {
             const locked = "locked" in s && s.locked
             return (
-              <div
-                key={s.id}
-                className="flex items-center justify-between gap-4 bg-white dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-                style={{ borderRadius: 10, padding: '10px 12px' }}
-              >
+              <div key={s.id} className="flex items-center justify-between gap-4 py-2.5">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <code className="text-[12px] font-medium text-[#111] dark:text-[#f0f0f0]">{s.id}</code>
@@ -104,7 +89,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 mb-3">
           Every response carries your remaining budget in the headers, so you never have to guess.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
           <LimitRow label="Keys on this plan" value={unlocked ? String(maxKeys) : "None"} />
           <LimitRow label="Requests" value="Per key, per minute" />
         </div>
@@ -115,10 +100,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
 
 function LimitRow({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="flex items-center justify-between bg-white dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-      style={{ borderRadius: 10, padding: '9px 12px' }}
-    >
+    <div className="flex items-center justify-between py-2.5">
       <span className="text-[12px] text-[#888] dark:text-[#898e97]">{label}</span>
       <span className="text-[12px] font-medium text-[#111] dark:text-[#f0f0f0]">{value}</span>
     </div>
