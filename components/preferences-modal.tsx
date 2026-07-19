@@ -10,6 +10,8 @@ import { AccountTab } from "./preferences/account-tab"
 import { PlansTab } from "./preferences/plans-tab"
 import { IntegrationsTab } from "./preferences/integrations-tab"
 import { SecurityTab } from "./preferences/security-tab"
+import { DeveloperTab } from "./preferences/developer-tab"
+import { useDeveloperMode } from "@/hooks/useDeveloperMode"
 
 // Modal shell — each tab lives in components/preferences/.
 export type { PreferencesTab, PreferencesUser, PreferencesStorage } from "./preferences/shared"
@@ -24,10 +26,17 @@ interface Props {
 
 export function PreferencesModal({ open, initialTab = "general", onClose, user, storage }: Props) {
   const [active, setActive] = useState<PreferencesTab>(initialTab)
+  const { developerMode } = useDeveloperMode()
 
   useEffect(() => {
     if (open) setActive(initialTab)
   }, [open, initialTab])
+
+  // Turning developer mode off while sitting on its tab would leave the modal
+  // on a tab with no way back to it.
+  useEffect(() => {
+    if (!developerMode && active === "developer") setActive("general")
+  }, [developerMode, active])
 
   useEffect(() => {
     if (!open) return
@@ -88,6 +97,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                   <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" />
                   <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" />
                   <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" />
+                  {developerMode && <TabButton active={active === "developer"} onClick={() => setActive("developer")} label="Developer" />}
                 </div>
               </div>
 
@@ -99,6 +109,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                   <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" fullWidth />
                   <TabButton active={active === "integrations"} onClick={() => setActive("integrations")} label="Integrations" fullWidth />
                   <TabButton active={active === "security"} onClick={() => setActive("security")} label="Security" fullWidth />
+                  {developerMode && <TabButton active={active === "developer"} onClick={() => setActive("developer")} label="Developer" fullWidth />}
                 </div>
               </div>
 
@@ -110,6 +121,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                   {active === "billing" && <BillingTab user={user} />}
                   {active === "integrations" && <IntegrationsTab />}
                   {active === "security" && <SecurityTab user={user} />}
+                  {active === "developer" && <DeveloperTab user={user} onSwitchTab={setActive} />}
                 </div>
               </div>
             </div>
