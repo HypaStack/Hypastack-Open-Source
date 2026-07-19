@@ -12,6 +12,7 @@ import { ShineButton } from "@/components/ui/shine-button"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { MenuItem } from "@/components/ui/menu-item"
+import { Tooltip } from "@/components/ui/tooltip"
 import { ShineBadge } from "@/components/ui/shine-badge"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -71,6 +72,7 @@ function NavRow({
   badge?: React.ReactNode
 }) {
   return (
+    <Tooltip content={item.hint} placement="right">
     <Link
       href={item.href}
       onClick={onNavigate}
@@ -95,6 +97,7 @@ function NavRow({
         {badge && <div className="ml-2 shrink-0">{badge}</div>}
       </div>
     </Link>
+    </Tooltip>
   )
 }
 

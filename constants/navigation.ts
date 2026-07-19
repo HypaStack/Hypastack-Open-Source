@@ -7,14 +7,16 @@ export interface NavItem {
   label: string
   href: string
   icon: string
+  /** Shown in the sidebar hover tooltip. */
+  hint?: string
 }
 
 /** Primary section buttons shown in the icon sidebar */
 export const SECTION_BUTTONS: NavItem[] = [
-  { label: "Drive", href: "/manage/files", icon: "hard_drive" },
-  { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox" },
-  { label: "CDN", href: "/manage/cdn", icon: "cloud" },
-  { label: "Dumpster", href: "/manage/dumpster", icon: "delete" },
+  { label: "Drive", href: "/manage/files", icon: "hard_drive", hint: "Share files with expiring links" },
+  { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
+  { label: "CDN", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
+  { label: "Dumpster", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
 
 /** Sub-navigation items for the Drive section */
