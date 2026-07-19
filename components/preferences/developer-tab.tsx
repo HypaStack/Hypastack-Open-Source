@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { ShineButton } from "@/components/ui/shine-button"
+import { SecondaryButton } from "@/components/ui/secondary-button"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { getTierLimits, isPaidTier } from "@/constants"
 import { type PreferencesTab, type PreferencesUser, resolveTier } from "./shared"
@@ -36,6 +37,21 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
           A plain REST API over your account. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
         </p>
+      </div>
+
+      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Documentation</p>
+            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-snug">
+              Every endpoint, every error code, with copyable examples.
+            </p>
+          </div>
+          <SecondaryButton size="sm" href="/docs/developer-api" style={{ height: 32, gap: 6 }}>
+            Read the docs
+            <MIcon name="open_in_new" size={14} />
+          </SecondaryButton>
+        </div>
       </div>
 
       <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
