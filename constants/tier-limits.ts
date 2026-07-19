@@ -14,6 +14,7 @@ export interface TierLimits {
   expirationMultiplier: number
   maxFunnelUploadSize: number
   maxFunnelLinks: number
+  maxApiKeys: number
 }
 
 const MB = 1024 * 1024
@@ -38,6 +39,7 @@ export const FREE_LIMITS: TierLimits = {
   expirationMultiplier: 1,
   maxFunnelUploadSize: 0, // Funnel not available on Free
   maxFunnelLinks: 0,
+  maxApiKeys: 0, // API not available on Free
 }
 
 const ESSENTIAL_LIMITS: TierLimits = {
@@ -53,6 +55,7 @@ const ESSENTIAL_LIMITS: TierLimits = {
   expirationMultiplier: 2,
   maxFunnelUploadSize: 100 * MB,
   maxFunnelLinks: 10,
+  maxApiKeys: 1,
 }
 
 const PREMIUM_LIMITS: TierLimits = {
@@ -68,6 +71,7 @@ const PREMIUM_LIMITS: TierLimits = {
   expirationMultiplier: 3,
   maxFunnelUploadSize: 300 * MB,
   maxFunnelLinks: 25,
+  maxApiKeys: 3,
 }
 
 export const ULTIMATE_LIMITS: TierLimits = {
@@ -83,6 +87,7 @@ export const ULTIMATE_LIMITS: TierLimits = {
   expirationMultiplier: 4,
   maxFunnelUploadSize: 1000 * MB,
   maxFunnelLinks: 50,
+  maxApiKeys: 5,
 }
 
 const TIER_TO_LIMITS: Record<Tier, TierLimits> = {

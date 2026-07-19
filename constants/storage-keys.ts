@@ -25,5 +25,8 @@ export const STORAGE_KEY_DISCORD_WEBHOOK_LOG = "hpsk_discord_webhook_log"
 /** Pending (unsent) Discord webhook messages, drained with rate-limit spacing */
 export const STORAGE_KEY_DISCORD_WEBHOOK_QUEUE = "hpsk_discord_webhook_queue"
 
+/** Whether the Developer tab is revealed in preferences */
+export const STORAGE_KEY_DEVELOPER_MODE = "hpsk_developer_mode"
+
 /** Whether the CDN page's Ctrl-click multi-select hint has been dismissed */
 export const STORAGE_KEY_HIDE_CTRL_HINT = "hideCtrlHint"
