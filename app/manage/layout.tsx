@@ -17,7 +17,6 @@ import { PreferencesModal, type PreferencesTab } from "@/components/preferences-
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
-import { PageLogo } from "@/components/page-logo"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
 import {
@@ -226,62 +225,7 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-2">
-          <Link href="/" aria-label="Hypastack home" className="shrink-0 transition-transform duration-300">
-            <PageLogo size={30} borderRadius={8} darkSrc="https://r2.hypastack.com/cdn/7byi0fl52s1c/favicon.webp" />
-          </Link>
-          <span className="text-[17px] font-semibold tracking-tight text-black dark:text-[#e3e3e3]">
-            Hypastack
-          </span>
-        </div>
-
-        <nav className="flex-1 min-h-0 px-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="space-y-1">
-            {SECTION_BUTTONS.map((item) => (
-              <NavRow
-                key={item.href}
-                item={item}
-                active={isSectionActive(pathname, item.href)}
-              />
-            ))}
-          </div>
-        </nav>
-
-        <div className="px-2 pt-3 pb-3 shrink-0">
-          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
-            <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
-              Usage
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">Storage</span>
-                  <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
-                </div>
-                <ProgressBar value={usedPct} aria-label="Storage used" />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">Shared Links</span>
-                  <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
-                </div>
-                {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">CDN Assets</span>
-                  <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
-                </div>
-                {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div ref={menuRef} className="relative flex items-center gap-2 px-2 pb-3 shrink-0">
+        <div ref={menuRef} className="relative flex items-center gap-2 shrink-0 pt-4 pb-4 px-2">
           <SecondaryButton
             variant="ghost"
             iconOnly
@@ -311,11 +255,11 @@ function ManageLayoutInner({
             {menuOpen && (
               <motion.div
                 key="account-popover"
-                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="absolute bottom-full left-2 mb-2 z-10 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+                className="absolute top-full left-2 mt-2 z-10 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
                 style={{
                   width: 264,
                   boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
@@ -389,6 +333,52 @@ function ManageLayoutInner({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        <nav className="flex-1 min-h-0 px-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="space-y-1">
+            {SECTION_BUTTONS.map((item) => (
+              <NavRow
+                key={item.href}
+                item={item}
+                active={isSectionActive(pathname, item.href)}
+              />
+            ))}
+          </div>
+        </nav>
+
+        <div className="px-2 pt-3 pb-3 shrink-0">
+          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
+            <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
+              Usage
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-[#333] dark:text-[#ccc]">Storage</span>
+                  <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
+                </div>
+                <ProgressBar value={usedPct} aria-label="Storage used" />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-[#333] dark:text-[#ccc]">Shared Links</span>
+                  <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
+                </div>
+                {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-[#333] dark:text-[#ccc]">CDN Assets</span>
+                  <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
+                </div>
+                {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
 
