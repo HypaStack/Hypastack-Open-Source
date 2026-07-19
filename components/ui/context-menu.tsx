@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { MIcon } from "@/components/ui/material-icon"
 import { ShineButton } from "@/components/ui/shine-button"
+import { SURFACE } from "@/components/ui/surface"
 
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
@@ -18,7 +19,7 @@ const TONE: Record<string, { color: string; hover: string }> = {
 
 const EDGE = 8
 const PANEL =
-  "rounded-[14px] p-1.5 bg-white dark:bg-[#181818] shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
+  "rounded-[14px] p-1.5 " + SURFACE.panel + " shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
 const ROW =
   "w-full flex items-center gap-2.5 rounded-[8px] text-left text-[14px] font-medium transition-colors " +
   "text-[#333] dark:text-[#e3e3e3] hover:bg-[#f4f4f5] dark:hover:bg-[rgba(255,255,255,0.07)]"

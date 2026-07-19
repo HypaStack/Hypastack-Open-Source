@@ -4,14 +4,15 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
 import { useThemeMode, type ThemeMode } from "./use-theme-mode"
+import { SURFACE_HEX } from "./surface"
 
 export type TooltipPlacement = "top" | "right" | "bottom" | "left"
 
 // Matches the app's elevated surface (popovers, menus) so a tooltip reads as
 // the same material as everything else that floats.
 const PALETTE = {
-  dark: { bg: "#181818", text: "#f0f0f0" },
-  light: { bg: "#ffffff", text: "#171717" },
+  dark: { bg: SURFACE_HEX.dark, text: "#f0f0f0" },
+  light: { bg: SURFACE_HEX.light, text: "#171717" },
 } as const
 
 const ARROW = 5

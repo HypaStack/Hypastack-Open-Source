@@ -20,7 +20,7 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
-import { SURFACE } from "./_surface"
+import { SURFACE } from "@/components/ui/surface"
 import { TipCard } from "./_tip-card"
 import {
   type NavItem,
@@ -262,12 +262,12 @@ function ManageLayoutInner({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                  className={`absolute top-full left-0 right-0 mt-1.5 ${SURFACE.elevated} rounded-[14px] p-1.5`}
+                  className={`absolute top-full left-0 right-0 mt-1.5 ${SURFACE.panel} rounded-[14px] p-1.5`}
                   style={{
                     boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
                   }}
                 >
-                <div className={`flex items-center gap-2.5 rounded-[10px] ${SURFACE.inset} px-2.5 py-2.5`}>
+                <div className="flex items-center gap-2.5 px-2.5 py-2.5">
                   <img
                     decoding="async"
                     src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -355,7 +355,7 @@ function ManageLayoutInner({
         </div>
 
         <div className="px-2 pb-2 shrink-0">
-          <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
+          <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
             <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
               Usage
             </div>

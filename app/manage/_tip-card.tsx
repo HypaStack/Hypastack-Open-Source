@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { SURFACE } from "./_surface"
+import { SURFACE } from "@/components/ui/surface"
 
 const TIPS = [
   { title: "Burn after reading", body: "Flip on burn after download and the file deletes itself the moment someone grabs it." },
@@ -32,7 +32,7 @@ export function TipCard() {
   const tip = TIPS[index]
 
   return (
-    <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
+    <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
       <div className="flex items-center gap-1.5 mb-1.5">
         <MIcon name="lightbulb" size={14} className="text-[#666] dark:text-[#888] shrink-0" />
         <span className="text-xs font-medium text-[#666] dark:text-[#888] truncate">

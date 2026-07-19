@@ -53,7 +53,7 @@ export function Walkthrough({ id, steps, currentStep }: WalkthroughProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.96 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] font-medium text-[#333] dark:text-[#e3e3e3] bg-white dark:bg-[#121212] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pl-4 sm:pl-5 pr-2.5 sm:pr-3 py-2.5 rounded-md w-max max-w-[calc(100vw-1.5rem)] sm:max-w-md z-40 text-center sm:text-left"
+        className="fixed bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 text-[13px] sm:text-[14px] font-medium text-[#333] dark:text-[#e3e3e3] bg-[#f7f7f8] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pl-4 sm:pl-5 pr-2.5 sm:pr-3 py-2.5 rounded-md w-max max-w-[calc(100vw-1.5rem)] sm:max-w-md z-40 text-center sm:text-left"
         style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)' }}
       >
         <MIcon name={icon} size={18} className="text-[#555] dark:text-[#a1a1aa] shrink-0" />
