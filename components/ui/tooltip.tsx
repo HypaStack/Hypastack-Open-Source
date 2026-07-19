@@ -108,6 +108,8 @@ export function Tooltip({
   const [coords, setCoords] = useState<Coords | null>(null)
   const triggerRef = useRef<HTMLSpanElement>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Set on click so the tooltip stays down until the pointer actually leaves.
+  const suppressedRef = useRef(false)
   const c = PALETTE[useThemeMode(theme)]
 
   useEffect(() => setMounted(true), [])
@@ -132,13 +134,29 @@ export function Tooltip({
   }, [coords])
 
   const show = () => {
-    if (disabled || !content) return
+    if (disabled || !content || suppressedRef.current) return
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       const el = triggerRef.current
       if (!el) return
       setCoords(place(el.getBoundingClientRect(), placement, offset))
     }, delay)
+  }
+
+  const leave = () => {
+    suppressedRef.current = false
+    hide()
+  }
+
+  // A mouse click focuses the trigger, which would otherwise re-open what the
+  // click just dismissed. Only keyboard focus should surface it.
+  const focusShow = (e: React.FocusEvent) => {
+    if (e.target instanceof Element && e.target.matches(":focus-visible")) show()
+  }
+
+  const press = () => {
+    suppressedRef.current = true
+    hide()
   }
 
   const from = enterOffset(placement)
@@ -149,10 +167,10 @@ export function Tooltip({
         ref={triggerRef}
         style={{ display }}
         onMouseEnter={show}
-        onMouseLeave={hide}
-        onFocus={show}
+        onMouseLeave={leave}
+        onFocus={focusShow}
         onBlur={hide}
-        onPointerDown={hide}
+        onPointerDown={press}
       >
         {children}
       </span>
