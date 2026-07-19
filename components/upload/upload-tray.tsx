@@ -23,8 +23,8 @@ const TurnstileWithRef = Turnstile as React.ComponentType<
   React.ComponentProps<typeof Turnstile> & { ref?: React.RefObject<{ reset(): void }> }
 >
 
-// One horizontal gutter for every row in the tray, and one hairline between
-// sections. No nested cards — the shell is the only surface.
+// One horizontal gutter for every row. No nested cards and no inner rules —
+// the shell is the only surface, matching the sidebar usage card.
 const PAD = "px-4"
 const RULE = "border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
 const LABEL = "text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]"
@@ -131,7 +131,7 @@ export function UploadTray({
             opacity: { duration: 0.25, ease: "easeOut" },
             filter: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           }}
-          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] ${SURFACE.panel}`}
+          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] ${SURFACE.panel}`}
           style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
         >
           {/* ── Header ── */}
@@ -248,7 +248,7 @@ export function UploadTray({
 
                 {/* ── Options (Files) ── */}
                 {showOptions && uploadType !== "cdn" && (
-                  <div className={RULE}>
+                  <div>
                     <div className={`${PAD} pt-3 pb-1`}>
                       <span className={SECTION}>Options</span>
                     </div>
@@ -369,7 +369,7 @@ export function UploadTray({
 
                 {/* ── Options (CDN) ── */}
                 {showOptions && uploadType === "cdn" && (
-                  <div className={RULE}>
+                  <div>
                     <div className={`${PAD} pt-3 pb-1`}>
                       <span className={SECTION}>Options</span>
                     </div>
@@ -391,7 +391,7 @@ export function UploadTray({
                 )}
 
                 {showOptions && process.env.NODE_ENV !== "development" && (
-                  <div className={`${RULE} ${PAD} flex justify-center py-3`}>
+                  <div className={`${PAD} flex justify-center py-3`}>
                     <TurnstileWithRef
                       ref={turnstileRef}
                       sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
