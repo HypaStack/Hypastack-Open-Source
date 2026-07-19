@@ -42,6 +42,43 @@ curl "https://api.hypastack.com/v3/files" \\
         returns <code className="text-[#f7f8f8]">403 plan_required</code>, your plan has no API access.
       </p>
 
+      <H2 id="encryption">Encryption, and what it doesn&apos;t cover</H2>
+      <p className={P}>
+        Read this before you build anything that handles other people&apos;s files.
+      </p>
+      <p className={P}>
+        When someone uploads through hypastack.com, their browser encrypts the file before it leaves their device and
+        keeps the key in the link&apos;s <code className="text-[#f7f8f8]">#fragment</code>. We never receive that key, so
+        we cannot read the file. That is the zero-knowledge property the product is built on.
+      </p>
+      <p className={P}>
+        <strong className="text-[#f7f8f8]">The API does not do this.</strong> There is no browser in the loop to hold a
+        key, so files uploaded through v3 are stored as you send them. We can read them. Filenames are still encrypted at
+        rest, but the contents are not.
+      </p>
+      <p className={P}>
+        There are two consequences, and neither is subtle:
+      </p>
+      <ul className={`${P} list-disc pl-5 space-y-1.5`}>
+        <li>
+          Everything uploaded with your key lands in <em>your</em> account, and you can read all of it. If your app lets
+          other people upload, you can see what they upload.
+        </li>
+        <li>
+          So can we. Anything your users send through your app does not get the privacy guarantee they would get by
+          using hypastack.com directly.
+        </li>
+      </ul>
+      <p className={P}>
+        If you are building something where users upload their own content, tell them this plainly in your own privacy
+        policy. You are the one holding their data. If you need the files to be unreadable by us, encrypt them yourself
+        before the PUT and keep the key — we will store whatever bytes you send.
+      </p>
+      <p className={P}>
+        For CDN assets none of this applies: they are public by design, served from a URL anyone can fetch, and were
+        never encrypted.
+      </p>
+
       <H2 id="authentication">Authentication</H2>
       <p className={P}>
         Every request carries your key as a bearer token. There are no cookies, no sessions, and no CSRF tokens — a

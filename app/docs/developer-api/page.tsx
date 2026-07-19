@@ -89,8 +89,8 @@ export default function DeveloperApiDocs() {
               <DocGuide />
 
               <SectionHeading id="files" title="Files">
-                Private, expiring file shares. Uploads are encrypted at rest, filenames included, and every file has a
-                lifetime after which it deletes itself.
+                Expiring file storage. Every file has a lifetime after which it deletes itself. Filenames are encrypted
+                at rest; contents uploaded through the API are not — see Encryption above before you build on this.
               </SectionHeading>
               {FILE_ENDPOINTS.map((endpoint) => (
                 <EndpointCard key={endpoint.id} endpoint={endpoint} />

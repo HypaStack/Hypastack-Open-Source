@@ -20,7 +20,6 @@ export interface V3File {
   created_at: string
   expires_at: string
   burn_on_read: boolean
-  url: string
 }
 
 export interface V3CdnAsset {
@@ -37,8 +36,17 @@ function iso(value: Date | string): string {
   return new Date(value).toISOString()
 }
 
+/**
+ * No `url` field, deliberately.
+ *
+ * A /d/{id} link is only usable with the AES key in its `#fragment`, and the
+ * browser uploader is what generates that key. Files created through the API
+ * have no such key, so a /d/ link for one renders "you're missing the #
+ * fragment" — returning it would hand out links that cannot work.
+ *
+ * Use GET /files/{id}/download for a signed, time-limited URL instead.
+ */
 export function toV3File(record: FileRecord): V3File {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ""
   return {
     object: "file",
     id: record.id,
@@ -50,7 +58,6 @@ export function toV3File(record: FileRecord): V3File {
     created_at: iso(record.upload_date),
     expires_at: iso(record.expires_at),
     burn_on_read: (record.burn_on_read ?? 0) !== 0,
-    url: `${appUrl}/d/${record.slug || record.id}`,
   }
 }
 

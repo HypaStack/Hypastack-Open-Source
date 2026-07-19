@@ -27,8 +27,7 @@ const FILE_OBJECT = `{
   "content_type": "text/plain",
   "created_at": "2026-07-19T21:04:11.000Z",
   "expires_at": "2026-07-19T22:04:11.000Z",
-  "burn_on_read": false,
-  "url": "https://hypastack.com/d/n4pdd98rh4la0uar"
+  "burn_on_read": false
 }`
 
 const ASSET_OBJECT = `{

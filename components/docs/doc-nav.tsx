@@ -5,6 +5,7 @@ import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
 
 const GUIDE = [
   { id: "quickstart", label: "Quickstart" },
+  { id: "encryption", label: "Encryption" },
   { id: "authentication", label: "Authentication" },
   { id: "scopes", label: "Scopes" },
   { id: "uploading", label: "Uploading" },

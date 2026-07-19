@@ -79,7 +79,9 @@ export const POST = withApiKey(async ({ request, requestId, userId, tier, rate }
     burn_on_read: burn_on_read === true,
     share_url: shareUrl,
     user_id: userId,
-    encryption_total_parts: 1,
+    // No encryption_* metadata: unlike the browser uploader, the API stores what
+    // it is given. Claiming a part count here would assert an encryption that
+    // does not exist.
   }, limits.maxFileLinks)
 
   if (!staged) {
