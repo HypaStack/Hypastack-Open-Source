@@ -1,6 +1,6 @@
 import { type PreferencesTier } from "@/constants"
 
-export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security"
+export type PreferencesTab = "general" | "account" | "plans" | "billing" | "integrations" | "security" | "developer"
 
 export interface PreferencesUser {
   id: string

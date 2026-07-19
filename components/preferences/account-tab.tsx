@@ -6,17 +6,22 @@ import { LoadingSvg } from "@/components/ui/loading-svg"
 import { ShineButton } from "@/components/ui/shine-button"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { SecondaryButton } from "@/components/ui/secondary-button"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { useManage } from "@/hooks/useManage"
+import { useDeveloperMode } from "@/hooks/useDeveloperMode"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
-import { API_BASE, MAX_AVATAR_SIZE } from "@/constants"
+import { API_BASE, MAX_AVATAR_SIZE, isPaidTier } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
-import { type PreferencesTab, type PreferencesUser, type PreferencesStorage, formatBytes, formatStoragePct } from "./shared"
+import { type PreferencesTab, type PreferencesUser, type PreferencesStorage, formatBytes, formatStoragePct, resolveTier } from "./shared"
+import { PaidOnlyNotice } from "./paid-only-notice"
 import { AvatarCropperModal } from "./avatar-cropper"
 import { BrandingSection } from "./branding-section"
 import { EditProfileDialog } from "./edit-profile-dialog"
 
 export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; storage: PreferencesStorage | null; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const { refreshUser, files, setFiles, logout } = useManage()
+  const { developerMode, setDeveloperMode } = useDeveloperMode()
+  const devUnlocked = isPaidTier(resolveTier(user))
   const [editing, setEditing] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
@@ -229,6 +234,28 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
       )}
 
       {user.premium && <BrandingSection user={user} />}
+
+      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Developer mode</p>
+            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-0.5 leading-snug">
+              Adds a Developer tab where you can create API keys and pick what they&apos;re allowed to do.
+            </p>
+          </div>
+          <ToggleSwitch
+            checked={devUnlocked && developerMode}
+            onChange={setDeveloperMode}
+            disabled={!devUnlocked}
+            aria-label="Developer mode"
+          />
+        </div>
+        {!devUnlocked && (
+          <div className="mt-3">
+            <PaidOnlyNotice onSwitchTab={onSwitchTab} />
+          </div>
+        )}
+      </div>
 
       <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '12px 16px' }}>
         <div>
