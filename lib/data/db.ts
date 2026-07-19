@@ -246,6 +246,24 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh ON user_sessions(refresh_token_hash) WHERE revoked = FALSE`)
 
+    // v3 public API keys. Only the SHA-256 lookup is stored — the key itself is
+    // shown once at creation and never again.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS api_keys (
+        id VARCHAR(16) PRIMARY KEY,
+        user_id VARCHAR(36) NOT NULL,
+        name VARCHAR(60) NOT NULL,
+        key_lookup TEXT NOT NULL UNIQUE,
+        hint VARCHAR(16) NOT NULL,
+        scopes TEXT[] NOT NULL,
+        revoked BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        last_used_at TIMESTAMPTZ
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_api_keys_lookup ON api_keys(key_lookup) WHERE revoked = FALSE`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_api_keys_user ON api_keys(user_id, created_at) WHERE revoked = FALSE`)
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS cdn_assets (
         id VARCHAR(12) PRIMARY KEY,

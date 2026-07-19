@@ -24,6 +24,18 @@ export const MAX_ATTEMPTS = {
   funnelUpload:   { free: 20 },
 } as const
 
+/**
+ * v3 public API budget, per key per minute. Per-key rather than per-account so a
+ * runaway script can't starve the account's other keys. Free never reaches this
+ * — it has no keys at all.
+ */
+export const V3_REQUESTS_PER_MINUTE = {
+  free: 0,
+  essential: 120,
+  premium: 600,
+  ultimate: 1800,
+} as const
+
 /** Retries for the session bootstrap fetch (auth/me, manage data) after a 429 */
 export const SESSION_FETCH_MAX_RETRIES = 3
 

@@ -181,6 +181,27 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
+  // v3 is the public developer API: server-to-server callers authenticate with a
+  // bearer key and send no Origin, no Sec-Fetch-Site and no cookies, so none of
+  // the browser-shaped guards below apply to it. It returns early rather than
+  // joining the exception list, so nothing downstream can re-introduce a
+  // cookie or CSRF check on it by accident.
+  //
+  // Wildcard CORS *without* credentials is deliberate: keys travel in the
+  // Authorization header, so a v3 route never needs — and must never accept —
+  // an ambient browser session.
+  if (pathname.startsWith('/api/v3/')) {
+    const v3 = request.method === 'OPTIONS'
+      ? new NextResponse(null, { status: 204 })
+      : NextResponse.next()
+    v3.headers.set('Access-Control-Allow-Origin', '*')
+    v3.headers.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+    v3.headers.set('Access-Control-Allow-Headers', 'authorization, content-type')
+    v3.headers.set('Access-Control-Expose-Headers', 'X-Request-Id, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After')
+    v3.headers.set('Access-Control-Max-Age', '600')
+    return v3
+  }
+
   // CORS: resolve the caller origin once. Only allow-listed origins get CORS
   // headers (and can call the API cross-origin from a separate host).
   const requestOrigin = request.headers.get('origin')

@@ -195,6 +195,11 @@ export async function checkApiRateLimit(accountId: string): Promise<RateLimitRes
   return checkRateLimit(accountId, 'api', WINDOW_MINUTES.api, MAX_ATTEMPTS.api.free)
 }
 
+/** v3 public API, keyed by API key id rather than account — see lib/http/v3/limit.ts */
+export async function checkV3KeyRateLimit(keyId: string, maxRequests: number): Promise<RateLimitResult> {
+  return checkRateLimit(keyId, 'v3', 1, maxRequests)
+}
+
 /** 5 reports per IP per 10 minutes — prevents forum_reports table flooding */
 export async function checkForumReportRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'forum_report', 10, 5)
