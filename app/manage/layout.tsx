@@ -248,43 +248,44 @@ function ManageLayoutInner({
         </nav>
 
         <div className="px-3 pt-3 pb-3 shrink-0">
-          <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
-            Usage
-          </div>
-
-          <div className="space-y-3">
-
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>Storage</span>
-                </div>
-                <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
-              </div>
-              <ProgressBar value={usedPct} aria-label="Storage used" />
+          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] px-3 py-3">
+            <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
+              Usage
             </div>
 
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>Shared Links</span>
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                    <MIcon name="hard_drive" size={15} className="text-[#666] dark:text-[#888]" />
+                    <span>Storage</span>
+                  </div>
+                  <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
                 </div>
-                <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
+                <ProgressBar value={usedPct} aria-label="Storage used" />
               </div>
-              {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
-            </div>
 
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
-                  <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
-                  <span>CDN Assets</span>
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                    <MIcon name="link" size={15} className="text-[#666] dark:text-[#888]" />
+                    <span>Shared Links</span>
+                  </div>
+                  <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
                 </div>
-                <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
+                {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
               </div>
-              {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
+
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <div className="flex items-center gap-2 text-[#333] dark:text-[#ccc]">
+                    <MIcon name="cloud" size={15} className="text-[#666] dark:text-[#888]" />
+                    <span>CDN Assets</span>
+                  </div>
+                  <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
+                </div>
+                {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
+              </div>
             </div>
           </div>
         </div>

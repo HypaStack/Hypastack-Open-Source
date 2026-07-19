@@ -31,17 +31,19 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
           </div>
         </nav>
         <div className="px-3 pt-3 pb-3 shrink-0">
-          <Skeleton className="h-3 w-[44px] mb-3" />
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <Skeleton className="h-[14px] w-[86px]" />
-                  <Skeleton className="h-[14px] w-[36px]" />
+          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] px-3 py-3">
+            <Skeleton className="h-3 w-[44px] mb-3" />
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Skeleton className="h-[14px] w-[86px]" />
+                    <Skeleton className="h-[14px] w-[36px]" />
+                  </div>
+                  <Skeleton className="h-1.5 w-full rounded-full" />
                 </div>
-                <Skeleton className="h-1.5 w-full rounded-full" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 pb-3 shrink-0">
