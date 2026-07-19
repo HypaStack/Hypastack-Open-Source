@@ -19,9 +19,8 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
         className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="flex items-center gap-2 shrink-0 pt-4 pb-4 px-2">
-          <Skeleton className="h-10 w-10 shrink-0" style={{ borderRadius: 12 }} />
-          <Skeleton className="h-10 flex-1" style={{ borderRadius: 12 }} />
+        <div className="shrink-0 pt-4 pb-3 px-2">
+          <Skeleton className="h-10 w-full" style={{ borderRadius: 12 }} />
         </div>
         <nav className="flex-1 min-h-0 px-2">
           <div className="space-y-1">
@@ -30,7 +29,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
             ))}
           </div>
         </nav>
-        <div className="px-2 pt-3 pb-3 shrink-0">
+        <div className="px-2 pt-3 pb-2 shrink-0">
           <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
             <Skeleton className="h-3 w-[44px] mb-3" />
             <div className="space-y-3">
@@ -45,6 +44,9 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
               ))}
             </div>
           </div>
+        </div>
+        <div className="px-2 pb-3 shrink-0">
+          <Skeleton className="h-10 w-full" style={{ borderRadius: 12 }} />
         </div>
       </aside>
 

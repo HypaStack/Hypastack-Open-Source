@@ -225,52 +225,46 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div ref={menuRef} className="relative flex items-center gap-2 shrink-0 pt-4 pb-4 px-2">
-          <SecondaryButton
-            variant="ghost"
-            iconOnly
-            size="md"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Account menu"
-            style={menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : undefined}
-          >
-            <img decoding="async"
-              src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
-              alt={user.nickname}
-              className="h-7 w-7 shrink-0 object-cover rounded-full select-none pointer-events-none"
-              draggable={false}
-              onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-            />
-          </SecondaryButton>
+        <div ref={menuRef} className="relative z-20 shrink-0 pt-4 pb-3 px-2">
+          <div className="relative">
+            <SecondaryButton
+              variant="ghost"
+              fullWidth
+              size="md"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Account menu"
+              style={{ gap: 10, paddingLeft: 8, paddingRight: 8, justifyContent: "flex-start", ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
+            >
+              <img decoding="async"
+                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                alt={user.nickname}
+                className="h-7 w-7 shrink-0 object-cover rounded-full select-none pointer-events-none"
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+              />
+              <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
+              <MIcon name="expand_more" size={18} className="shrink-0 text-[#666] dark:text-[#898e97]" />
+            </SecondaryButton>
 
-          <ShineButton
-            onClick={() => openPreferences("plans")}
-            size="md"
-            className="flex-1"
-          >
-            Upgrade plan
-          </ShineButton>
-
-          <AnimatePresence>
-            {menuOpen && (
-              <motion.div
-                key="account-popover"
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="absolute top-full left-2 mt-2 z-10 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
-                style={{
-                  width: 264,
-                  boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
-                }}
-              >
-                <div className="flex items-center gap-3 rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-2.5">
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  key="account-popover"
+                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                  transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
+                  className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+                  style={{
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
+                  }}
+                >
+                <div className="flex items-center gap-2.5 rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-2.5 py-2.5">
                   <img
                     decoding="async"
                     src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
                     alt={user.nickname}
-                    className="h-9 w-9 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                    className="h-8 w-8 shrink-0 rounded-full object-cover select-none pointer-events-none"
                     draggable={false}
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
                   />
@@ -330,9 +324,10 @@ function ManageLayoutInner({
                     Log out
                   </ShineButton>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <nav className="flex-1 min-h-0 px-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -347,7 +342,7 @@ function ManageLayoutInner({
           </div>
         </nav>
 
-        <div className="px-2 pt-3 pb-3 shrink-0">
+        <div className="px-2 pt-3 pb-2 shrink-0">
           <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
             <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
               Usage
@@ -379,6 +374,16 @@ function ManageLayoutInner({
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="px-2 pb-3 shrink-0">
+          <ShineButton
+            onClick={() => openPreferences("plans")}
+            size="md"
+            fullWidth
+          >
+            Upgrade plan
+          </ShineButton>
         </div>
       </aside>
 
