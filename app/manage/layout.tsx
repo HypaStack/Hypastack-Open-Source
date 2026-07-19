@@ -322,45 +322,42 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="absolute bottom-full left-3 mb-2 z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] py-2"
+                className="absolute bottom-full left-3 mb-2 z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
                 style={{
                   width: 264,
-                  boxShadow: '0 12px 34px rgba(0,0,0,0.35), 0 3px 10px rgba(0,0,0,0.2)'
+                  boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
                 }}
               >
-                <div className="px-3 pt-1 pb-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      decoding="async"
-                      src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
-                      alt={user.nickname}
-                      className="h-10 w-10 shrink-0 rounded-full object-cover select-none pointer-events-none"
-                      draggable={false}
-                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="min-w-0 truncate text-[14px] font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
-                        <ShineBadge>{tierLimits.label}</ShineBadge>
-                      </div>
-                      <div className="mt-1.5">
-                        <SecondaryButton
-                          onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
-                          size="xs"
-                          aria-label="Copy UUID"
-                          style={{ gap: 5, height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
-                        >
-                          <MIcon name={copiedId ? "check" : "content_copy"} size={12} />
-                          {copiedId ? "Copied" : "Copy UUID"}
-                        </SecondaryButton>
-                      </div>
+                <div className="flex items-center gap-3 rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] px-3 py-2.5">
+                  <img
+                    decoding="async"
+                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                    alt={user.nickname}
+                    className="h-9 w-9 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{user.nickname}</p>
+                      <ShineBadge>{tierLimits.label}</ShineBadge>
                     </div>
+                    <p className="mt-0.5 truncate text-[11px] text-[#8b8b90] dark:text-[#8b9099]">{user.id}</p>
                   </div>
+                  <SecondaryButton
+                    variant="ghost"
+                    iconOnly
+                    size="xs"
+                    onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
+                    title={copiedId ? "Copied" : "Copy UUID"}
+                    aria-label="Copy UUID"
+                    style={{ height: 28, width: 28, borderRadius: 8, ...(copiedId ? { color: "#34d399" } : {}) }}
+                  >
+                    <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
+                  </SecondaryButton>
                 </div>
 
-                <div className="mx-3 my-1 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)]" />
-
-                <div className="px-1.5 space-y-0.5">
+                <div className="mt-1.5 space-y-0.5">
                   <MenuItem
                     icon={<MIcon name="person" size={18} />}
                     onClick={() => { setMenuOpen(false); openPreferences("account"); }}
@@ -383,16 +380,18 @@ function ManageLayoutInner({
                   </MenuItem>
                 </div>
 
-                <div className="mx-3 my-1 border-b border-[#f0f0f0] dark:border-[rgba(255,255,255,0.08)]" />
-
-                <div className="px-1.5">
-                  <MenuItem
-                    danger
-                    icon={<MIcon name="logout" size={18} />}
+                <div className="mt-1.5">
+                  <ShineButton
+                    size="sm"
+                    fullWidth
                     onClick={() => { setMenuOpen(false); logout(); }}
+                    color="#dc2626"
+                    hoverColor="#b91c1c"
+                    style={{ height: 36, borderRadius: 9, gap: 8 }}
                   >
+                    <MIcon name="logout" size={16} />
                     Log out
-                  </MenuItem>
+                  </ShineButton>
                 </div>
               </motion.div>
             )}
