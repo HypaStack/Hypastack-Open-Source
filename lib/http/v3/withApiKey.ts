@@ -5,7 +5,7 @@ import { getTierLimits } from "@/constants/tier-limits"
 import type { Tier } from "@/constants/tier-limits"
 import { V3_CODES } from "./codes"
 import { newRequestId, v3Error, type V3RateHeaders } from "./respond"
-import { checkV3Limit } from "./limit"
+import { checkV3Limit, checkV3GlobalLimit } from "./limit"
 import { hasScope, type V3Scope } from "./scopes"
 
 export interface V3Context<P> {
@@ -61,6 +61,18 @@ export function withApiKey<P = Record<string, never>>(
     const requestId = newRequestId()
 
     try {
+      // Load shedding comes before authentication on purpose: when the origin is
+      // at its ceiling the cheapest possible rejection is the correct one, and
+      // doing a key lookup first would spend the very resource we are protecting.
+      const global = await checkV3GlobalLimit()
+      if (!global.allowed) {
+        return v3Error(
+          global.unavailable ? V3_CODES.SERVICE_UNAVAILABLE : V3_CODES.SERVER_BUSY,
+          requestId,
+          { retryAfter: global.retryAfter },
+        )
+      }
+
       const presented = readBearer(request)
       if (!presented) {
         return v3Error(V3_CODES.MISSING_KEY, requestId)

@@ -3,6 +3,7 @@ import { V3_CODES, V3_STATUS, V3_MESSAGE, type V3Code } from "./codes"
 import { parseScopes, hasScope, isV3Scope, V3_SCOPES } from "./scopes"
 import { encodeCursor, decodeCursor, parseLimit, buildPage, DEFAULT_LIMIT, MAX_LIMIT } from "./cursor"
 import { limitForTier } from "./limit"
+import { V3_GLOBAL_REQUESTS_PER_MINUTE } from "@/constants"
 
 describe("error catalogue", () => {
   it("gives every code a status and a message", () => {
@@ -12,9 +13,24 @@ describe("error catalogue", () => {
     }
   })
 
-  it("keeps the catalogue closed at twelve codes", () => {
-    expect(Object.keys(V3_STATUS)).toHaveLength(12)
-    expect(Object.keys(V3_MESSAGE)).toHaveLength(12)
+  it("keeps the catalogue closed at thirteen codes", () => {
+    expect(Object.keys(V3_STATUS)).toHaveLength(13)
+    expect(Object.keys(V3_MESSAGE)).toHaveLength(13)
+  })
+
+  it("separates load shedding from a broken limiter", () => {
+    // Both are 503, but a client should be able to tell "retry, we were busy"
+    // from "something is actually wrong" without parsing prose.
+    expect(V3_STATUS[V3_CODES.SERVER_BUSY]).toBe(503)
+    expect(V3_STATUS[V3_CODES.SERVICE_UNAVAILABLE]).toBe(503)
+    expect(V3_CODES.SERVER_BUSY).not.toBe(V3_CODES.SERVICE_UNAVAILABLE)
+    expect(V3_MESSAGE[V3_CODES.SERVER_BUSY]).not.toBe(V3_MESSAGE[V3_CODES.SERVICE_UNAVAILABLE])
+  })
+
+  it("tells the user to come back later when shedding load", () => {
+    expect(V3_MESSAGE[V3_CODES.SERVER_BUSY]).toBe(
+      "Hypastack's servers are under heavy load, try again later.",
+    )
   })
 
   it("never names the owner in the not_found message", () => {
@@ -135,6 +151,18 @@ describe("tier budgets", () => {
     expect(limitForTier("essential")).toBe(120)
     expect(limitForTier("premium")).toBe(600)
     expect(limitForTier("ultimate")).toBe(1800)
+  })
+})
+
+describe("global ceiling", () => {
+  it("is the documented 30k per minute", () => {
+    expect(V3_GLOBAL_REQUESTS_PER_MINUTE).toBe(30_000)
+  })
+
+  it("sits far above what any single account can spend", () => {
+    // If the largest per-key budget ever approached the ceiling, one Max key
+    // could shed everyone else's traffic on its own.
+    expect(limitForTier("ultimate")).toBeLessThan(V3_GLOBAL_REQUESTS_PER_MINUTE / 10)
   })
 })
 

@@ -1,5 +1,6 @@
 import { checkV3KeyRateLimit } from "@/lib/data/rateLimit"
-import { V3_REQUESTS_PER_MINUTE } from "@/constants"
+import { getRedis } from "@/lib/data/redis"
+import { V3_REQUESTS_PER_MINUTE, V3_GLOBAL_REQUESTS_PER_MINUTE } from "@/constants"
 import type { Tier } from "@/constants/tier-limits"
 import type { V3RateHeaders } from "./respond"
 
@@ -23,6 +24,67 @@ export interface V3LimitResult {
 
 export function limitForTier(tier: Tier): number {
   return V3_REQUESTS_PER_MINUTE[tier] ?? V3_REQUESTS_PER_MINUTE.free
+}
+
+export interface V3GlobalResult {
+  allowed: boolean
+  /** Seconds until the current minute window rolls over. */
+  retryAfter: number
+  /** True when the ceiling could not be evaluated at all. */
+  unavailable?: boolean
+}
+
+/** Fixed one-minute buckets, so the key itself carries the window. */
+function globalWindowKey(now: number): { key: string; secondsLeft: number } {
+  const minute = Math.floor(now / 60_000)
+  return { key: `hs:v3:global:${minute}`, secondsLeft: 60 - Math.floor((now % 60_000) / 1000) }
+}
+
+/**
+ * The hard ceiling across all v3 traffic. Checked before anything else in the
+ * request, so a request shed here costs one Redis INCR and no database work —
+ * which is the entire point: v3 must never be able to take down the site it is
+ * bolted to.
+ *
+ * Redis-only, deliberately. The per-account limiter falls back to a Postgres
+ * upsert when Redis is down, which is fine for a counter split across many rows
+ * — but this is ONE counter taking every v3 request, and 30k writes a minute
+ * contending on a single row would cause exactly the outage this exists to
+ * prevent. With no Redis there is no safe way to count, so it fails closed.
+ *
+ * The bucket key embeds the minute, so windows roll over without a separate
+ * EXPIRE round-trip and an abandoned bucket simply ages out.
+ */
+export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {
+  const redis = getRedis()
+  const { key, secondsLeft } = globalWindowKey(Date.now())
+
+  if (!redis) {
+    return { allowed: false, retryAfter: secondsLeft, unavailable: true }
+  }
+
+  try {
+    const lua = `
+      local current = redis.call('INCR', KEYS[1])
+      if current == 1 then
+        redis.call('EXPIRE', KEYS[1], ARGV[1])
+      end
+      return current
+    `
+    // 120s rather than 60s so a bucket outlives its window and a clock skew
+    // between app instances can't resurrect a counter that was already spent.
+    const current = Number(await redis.eval(lua, 1, key, 120))
+
+    if (current > V3_GLOBAL_REQUESTS_PER_MINUTE) {
+      console.error(`[v3] global ceiling hit: ${current}/${V3_GLOBAL_REQUESTS_PER_MINUTE} this minute`)
+      return { allowed: false, retryAfter: secondsLeft }
+    }
+
+    return { allowed: true, retryAfter: 0 }
+  } catch (err) {
+    console.error("[v3] global limiter unreachable:", (err as Error).message)
+    return { allowed: false, retryAfter: secondsLeft, unavailable: true }
+  }
 }
 
 export async function checkV3Limit(keyId: string, tier: Tier): Promise<V3LimitResult> {

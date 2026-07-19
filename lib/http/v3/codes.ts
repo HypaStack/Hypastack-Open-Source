@@ -21,6 +21,7 @@ export const V3_CODES = {
   FILE_TOO_LARGE: "file_too_large",
   RATE_LIMIT_EXCEEDED: "rate_limit_exceeded",
   INTERNAL_ERROR: "internal_error",
+  SERVER_BUSY: "server_busy",
   SERVICE_UNAVAILABLE: "service_unavailable",
 } as const
 
@@ -39,6 +40,7 @@ export const V3_STATUS: Record<V3Code, number> = {
   file_too_large: 413,
   rate_limit_exceeded: 429,
   internal_error: 500,
+  server_busy: 503,
   service_unavailable: 503,
 }
 
@@ -59,5 +61,8 @@ export const V3_MESSAGE: Record<V3Code, string> = {
   file_too_large: "That file is larger than your plan allows.",
   rate_limit_exceeded: "Too many requests. Slow down and retry after the window resets.",
   internal_error: "Something went wrong on our end.",
+  // Distinct from service_unavailable on purpose: this one means the request was
+  // shed to protect the origin, so a retry after the window is expected to work.
+  server_busy: "Hypastack's servers are under heavy load, try again later.",
   service_unavailable: "The service is temporarily unavailable. Retry shortly.",
 }

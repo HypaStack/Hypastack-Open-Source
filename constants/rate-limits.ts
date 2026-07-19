@@ -36,6 +36,14 @@ export const V3_REQUESTS_PER_MINUTE = {
   ultimate: 1800,
 } as const
 
+/**
+ * Hard ceiling on ALL v3 traffic, per minute, across every key and account.
+ * Per-key budgets stop one bad actor; only this stops aggregate load from
+ * taking the origin down. v3 is the first thing shed so v2 and the website
+ * keep serving.
+ */
+export const V3_GLOBAL_REQUESTS_PER_MINUTE = 30_000
+
 /** Retries for the session bootstrap fetch (auth/me, manage data) after a 429 */
 export const SESSION_FETCH_MAX_RETRIES = 3
 
