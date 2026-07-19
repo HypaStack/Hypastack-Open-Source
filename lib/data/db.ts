@@ -261,6 +261,22 @@ export async function initDatabase(): Promise<void> {
         last_used_at TIMESTAMPTZ
       )
     `)
+    // In-flight v3 CDN uploads. v2 lets the browser hand back the r2 key at
+    // completion because the session already proves who is asking; a public API
+    // must not trust that, so the init→owner binding is persisted here and the
+    // completing key is checked against it.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS cdn_staging (
+        id VARCHAR(12) PRIMARY KEY,
+        user_id VARCHAR(36) NOT NULL,
+        r2_key VARCHAR(500) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        content_type VARCHAR(255) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_cdn_staging_created ON cdn_staging(created_at)`)
+
     await client.query(`CREATE INDEX IF NOT EXISTS idx_api_keys_lookup ON api_keys(key_lookup) WHERE revoked = FALSE`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_api_keys_user ON api_keys(user_id, created_at) WHERE revoked = FALSE`)
 

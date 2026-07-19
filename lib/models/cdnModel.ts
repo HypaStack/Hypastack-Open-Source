@@ -107,6 +107,40 @@ export async function getCdnAssetsByUserId(userId: string): Promise<CdnAsset[]> 
   })
 }
 
+export interface CdnStagingRecord {
+  id: string
+  user_id: string
+  r2_key: string
+  original_name: string
+  content_type: string
+}
+
+/** Record an in-flight v3 CDN upload so completion can verify the owner. */
+export async function createCdnStaging(input: CdnStagingRecord): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  await pool.query(
+    `INSERT INTO cdn_staging (id, user_id, r2_key, original_name, content_type)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [input.id, input.user_id, input.r2_key, input.original_name, input.content_type]
+  )
+}
+
+export async function getCdnStaging(id: string): Promise<CdnStagingRecord | null> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<CdnStagingRecord>(
+    `SELECT id, user_id, r2_key, original_name, content_type FROM cdn_staging WHERE id = $1`,
+    [id]
+  )
+  return result.rows[0] ?? null
+}
+
+export async function deleteCdnStaging(id: string): Promise<void> {
+  const pool = getPool()
+  await pool.query(`DELETE FROM cdn_staging WHERE id = $1`, [id])
+}
+
 /**
  * Cursor page of a user's CDN assets, newest first. Mirrors getFilesPage — the
  * cached whole-account read above is right for the dashboard and wrong for a
