@@ -60,7 +60,7 @@ export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {
   const { key, secondsLeft } = globalWindowKey(Date.now())
 
   if (!redis) {
-    return { allowed: false, retryAfter: secondsLeft, unavailable: true }
+    return unreachable(secondsLeft)
   }
 
   try {
@@ -82,9 +82,32 @@ export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {
 
     return { allowed: true, retryAfter: 0 }
   } catch (err) {
-    console.error("[v3] global limiter unreachable:", (err as Error).message)
-    return { allowed: false, retryAfter: secondsLeft, unavailable: true }
+    console.error("[v3] global limiter error:", (err as Error).message)
+    return unreachable(secondsLeft)
   }
+}
+
+/**
+ * What to do when the ceiling can't be evaluated.
+ *
+ * Production fails closed: without a counter there is no bound on a flood, and
+ * refusing v3 is strictly better than letting it take the website with it.
+ *
+ * Development fails open, because dev machines don't run Redis and a v3 that
+ * answers every request with 503 locally is untestable. Same reasoning the
+ * upload routes use to skip Turnstile outside production — and it is scoped to
+ * NODE_ENV rather than a config flag so it can't be switched on in prod by
+ * accident.
+ */
+export function unreachable(
+  secondsLeft: number,
+  isProduction = process.env.NODE_ENV === "production",
+): V3GlobalResult {
+  if (!isProduction) {
+    console.warn("[v3] global ceiling skipped — no Redis in this environment (dev only)")
+    return { allowed: true, retryAfter: 0 }
+  }
+  return { allowed: false, retryAfter: secondsLeft, unavailable: true }
 }
 
 export async function checkV3Limit(keyId: string, tier: Tier): Promise<V3LimitResult> {

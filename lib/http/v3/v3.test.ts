@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { V3_CODES, V3_STATUS, V3_MESSAGE, type V3Code } from "./codes"
 import { parseScopes, hasScope, isV3Scope, V3_SCOPES } from "./scopes"
 import { encodeCursor, decodeCursor, parseLimit, buildPage, DEFAULT_LIMIT, MAX_LIMIT } from "./cursor"
-import { limitForTier } from "./limit"
+import { limitForTier, unreachable } from "./limit"
 import { V3_GLOBAL_REQUESTS_PER_MINUTE } from "@/constants"
 
 describe("error catalogue", () => {
@@ -163,6 +163,22 @@ describe("global ceiling", () => {
     // If the largest per-key budget ever approached the ceiling, one Max key
     // could shed everyone else's traffic on its own.
     expect(limitForTier("ultimate")).toBeLessThan(V3_GLOBAL_REQUESTS_PER_MINUTE / 10)
+  })
+})
+
+describe("global ceiling when the limiter is unreachable", () => {
+  it("fails CLOSED in production", () => {
+    // The whole point of the ceiling. If this ever flips, a Redis outage stops
+    // shedding v3 and the origin is unprotected — so it is pinned here.
+    const result = unreachable(42, true)
+    expect(result.allowed).toBe(false)
+    expect(result.unavailable).toBe(true)
+    expect(result.retryAfter).toBe(42)
+  })
+
+  it("fails open outside production so dev machines without Redis work", () => {
+    const result = unreachable(42, false)
+    expect(result.allowed).toBe(true)
   })
 })
 
