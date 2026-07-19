@@ -223,7 +223,7 @@ function ManageLayoutInner({
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 z-[100] h-[calc(100vh-16px)] my-2 ml-2 mr-1"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-3">
@@ -293,9 +293,10 @@ function ManageLayoutInner({
           <SecondaryButton
             variant="ghost"
             iconOnly
+            size="md"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Account menu"
-            style={{ height: 40, width: 40, borderRadius: 12, ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
+            style={menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : undefined}
           >
             <img decoding="async"
               src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -322,7 +323,7 @@ function ManageLayoutInner({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                 transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className="absolute bottom-full left-3 mb-2 z-[100] bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+                className="absolute bottom-full left-3 mb-2 z-10 bg-white dark:bg-[#1e1e20] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
                 style={{
                   width: 264,
                   boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
@@ -351,7 +352,7 @@ function ManageLayoutInner({
                     onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
                     title={copiedId ? "Copied" : "Copy UUID"}
                     aria-label="Copy UUID"
-                    style={{ height: 28, width: 28, borderRadius: 8, ...(copiedId ? { color: "#34d399" } : {}) }}
+                    style={copiedId ? { color: "#34d399" } : undefined}
                   >
                     <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
                   </SecondaryButton>
@@ -382,12 +383,12 @@ function ManageLayoutInner({
 
                 <div className="mt-1.5">
                   <ShineButton
-                    size="sm"
+                    size="md"
                     fullWidth
                     onClick={() => { setMenuOpen(false); logout(); }}
                     color="#dc2626"
                     hoverColor="#b91c1c"
-                    style={{ height: 36, borderRadius: 9, gap: 8 }}
+                    style={{ gap: 8 }}
                   >
                     <MIcon name="logout" size={16} />
                     Log out
@@ -542,10 +543,6 @@ function ManageLayoutInner({
       <HypaNotifProvider />
 
     </div>
-
-    {menuOpen && (
-      <div className="fixed inset-0 z-[99]" onClick={() => setMenuOpen(false)} />
-    )}
 
     <AnimatePresence>
       {showDonationNotice && (
