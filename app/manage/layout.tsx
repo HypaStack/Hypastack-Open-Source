@@ -82,8 +82,8 @@ function NavRow({
       }`}
       style={{
         height: 40,
-        paddingLeft: 14,
-        paddingRight: 14,
+        paddingLeft: 12,
+        paddingRight: 12,
       }}
     >
       <MIcon
