@@ -17,6 +17,7 @@ import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
 import { useTheme } from "@/hooks/useTheme"
+import { formatFileSize } from "./utils"
 import type { UseUploadReturn } from "./use-upload"
 
 const TurnstileWithRef = Turnstile as React.ComponentType<
@@ -131,7 +132,7 @@ export function UploadTray({
             opacity: { duration: 0.25, ease: "easeOut" },
             filter: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           }}
-          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] ${SURFACE.panel}`}
+          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[520px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] ${SURFACE.panel}`}
           style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
         >
           {/* ── Header ── */}
@@ -172,16 +173,16 @@ export function UploadTray({
                 )}
 
                 {state === "zipping" && (
-                  <div className="py-1">
-                    <TrayFileRow badge="ZIP" name={`Zipping ${files.length} items…`} status="Compressing…" progressPct={zipProgress} />
+                  <div className={`${PAD} py-2`}>
+                    <TrayFileRow name={`Zipping ${files.length} items…`} status="Compressing…" progressPct={zipProgress} />
                   </div>
                 )}
 
                 {showList && (
-                  <div className="py-1">
+                  <div className={`${PAD} flex flex-col gap-2 py-2`}>
                     {zippedFile ? (
                       <TrayFileRow
-                        badge="ZIP"
+                        size={zippedFile.size}
                         name={zippedFile.name}
                         status={
                           state === "done"
@@ -205,7 +206,7 @@ export function UploadTray({
                         return (
                           <TrayFileRow
                             key={f.id}
-                            badge={f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
+                            size={f.file.size}
                             name={f.path || f.file.name}
                             status={
                               state === "done"
@@ -430,15 +431,14 @@ export function UploadTray({
                 </div>
 
                 {state === "selected" ? (
-                  <div className="flex items-center gap-2">
-                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <SecondaryButton size="md" onClick={handleReset}>
                       Cancel
                     </SecondaryButton>
                     <ShineButton
                       size="md"
                       onClick={handleUpload}
                       disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
-                      className="flex-1"
                       style={{ gap: 8 }}
                     >
                       <MIcon name="arrow_upward" size={16} />
@@ -446,14 +446,13 @@ export function UploadTray({
                     </ShineButton>
                   </div>
                 ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
-                  <div className="flex items-center gap-2">
-                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <SecondaryButton size="md" onClick={handleReset}>
                       Done
                     </SecondaryButton>
                     <ShineButton
                       size="md"
                       onClick={handleCopy}
-                      className="flex-1"
                       color={copied ? "#059669" : undefined}
                       hoverColor={copied ? "#047857" : undefined}
                       style={{ gap: 8 }}
@@ -463,14 +462,13 @@ export function UploadTray({
                     </ShineButton>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <SecondaryButton size="md" onClick={handleReset}>
                       Clear
                     </SecondaryButton>
                     <SecondaryButton
                       size="md"
                       onClick={() => inputRef.current?.click()}
-                      className="flex-1"
                       style={{ gap: 8 }}
                     >
                       <MIcon name="add" size={16} />
@@ -492,33 +490,31 @@ export function UploadTray({
 
 // Single file/archive line: name, badge, status-or-progress, optional copy chip.
 function TrayFileRow({
-  badge,
   name,
   status,
+  size,
   progressPct = null,
   showCopy = false,
   copied = false,
   onCopy,
   error = false,
 }: {
-  badge: string
   name: string
   status: string
+  size?: number
   progressPct?: number | null
   showCopy?: boolean
   copied?: boolean
   onCopy?: () => void
   error?: boolean
 }) {
+  const active = progressPct !== null && progressPct > 0 && progressPct < 100
   return (
-    <div className={`flex items-center gap-3 ${PAD} py-2.5`}>
+    <div className="flex items-center gap-3 rounded-[10px] bg-black/[0.03] dark:bg-white/[0.04] px-3 py-2.5">
+      <MIcon name="attach_file" size={17} className={`shrink-0 ${ICON}`} />
+
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5">
-          <p className="truncate text-[13px] font-medium leading-tight text-[#111] dark:text-[#f0f0f0]">{name}</p>
-          <span className="shrink-0 rounded-[6px] bg-black/[0.05] dark:bg-white/[0.08] px-1.5 py-[1px] text-[9px] font-bold uppercase tracking-wide text-[#6b6b70] dark:text-[#a8a8a8]">
-            {badge}
-          </span>
-        </div>
+        <p className="truncate text-[13px] font-medium leading-tight text-[#111] dark:text-[#f0f0f0]">{name}</p>
         {progressPct === null ? (
           <p className={`mt-0.5 text-[12px] ${error ? "text-red-500 dark:text-red-400" : "text-[#6b6b70] dark:text-[#a8a8a8]"}`}>{status}</p>
         ) : (
@@ -527,11 +523,22 @@ function TrayFileRow({
           </div>
         )}
       </div>
-      {showCopy && onCopy && (
-        <SecondaryButton size="xs" onClick={(e) => { e.stopPropagation(); onCopy() }}>
-          {copied ? "Copied" : "Copy link"}
-        </SecondaryButton>
-      )}
+
+      <div className="flex shrink-0 items-center gap-2.5">
+        {active && (
+          <span className="text-[12px] font-medium tabular-nums text-[#6b6b70] dark:text-[#a8a8a8]">
+            {Math.round(progressPct)}%
+          </span>
+        )}
+        {size !== undefined && (
+          <span className="text-[12px] tabular-nums text-[#6b6b70] dark:text-[#a8a8a8]">{formatFileSize(size)}</span>
+        )}
+        {showCopy && onCopy && (
+          <SecondaryButton size="xs" onClick={(e) => { e.stopPropagation(); onCopy() }}>
+            {copied ? "Copied" : "Copy link"}
+          </SecondaryButton>
+        )}
+      </div>
     </div>
   )
 }
