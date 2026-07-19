@@ -60,6 +60,14 @@ const SECTIONS: Section[] = [
     ],
   },
   {
+    icon: "terminal",
+    title: "Developer API",
+    rows: [
+      all("REST API for files and CDN"),
+      derive((l) => String(l.maxApiKeys), "API keys"),
+    ],
+  },
+  {
     icon: "support_agent",
     title: "Support",
     rows: [
