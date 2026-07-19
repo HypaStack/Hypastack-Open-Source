@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence, useSpring } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { TextInput } from "@/components/ui/text-input"
 import { ShineButton } from "@/components/ui/shine-button"
@@ -480,6 +480,20 @@ export function UploadTray({
 // ── Presentational helpers ──
 
 // Single file/archive line: name, badge, status-or-progress, optional copy chip.
+// XHR reports real upload progress, but it fires in coarse jumps — a quick file
+// can go straight from 0 to 100. Ease between the values it does report so the
+// ring and the number travel instead of teleporting. The target is always the
+// real percentage; only the path to it is interpolated.
+function useSmoothPercent(target: number) {
+  const spring = useSpring(target, { stiffness: 90, damping: 20, mass: 0.5 })
+  const [shown, setShown] = useState(target)
+
+  useEffect(() => { spring.set(target) }, [spring, target])
+  useEffect(() => spring.on("change", (v) => setShown(v)), [spring])
+
+  return shown
+}
+
 // Ring that fills as the upload runs, shown beside the percentage.
 function CircleProgress({ value, size = 16 }: { value: number; size?: number }) {
   const stroke = 2
@@ -525,6 +539,7 @@ function TrayFileRow({
   onCopy?: () => void
   error?: boolean
 }) {
+  const smooth = useSmoothPercent(progressPct ?? 0)
   return (
     <div
       className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-black/[0.02] dark:bg-white/[0.02] px-3"
@@ -543,8 +558,8 @@ function TrayFileRow({
           <>
             {uploading && (
               <>
-                <span>{Math.round(progressPct ?? 0)}%</span>
-                <CircleProgress value={progressPct ?? 0} size={14} />
+                <span>{Math.round(smooth)}%</span>
+                <CircleProgress value={smooth} size={14} />
               </>
             )}
             {size !== undefined && <span>{formatFileSize(size)}</span>}
