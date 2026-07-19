@@ -71,7 +71,7 @@ export function Footer() {
             </a>
 
             <div className="text-white/40 text-[11px] font-light leading-relaxed">
-              © 2025-2026 Hypastack. AGPL-3.0.{" "}
+              © 2025-2026 HypaLabs. All rights reserved.{" "}
               <Link href="/terms" className={legalClass} title="Terms of Service">
                 Terms
               </Link>{" "}

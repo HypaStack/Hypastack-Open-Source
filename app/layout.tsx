@@ -221,7 +221,7 @@ export default async function RootLayout({
                     priceCurrency: "USD",
                     description: "Free plan. Paid plans raise storage and upload limits.",
                   },
-                  license: "https://www.gnu.org/licenses/agpl-3.0.html",
+                  license: "https://github.com/HypaStack/Hypastack-Open-Source/blob/main/LICENSE",
                   screenshot: PREVIEW_URL,
                   featureList: [
                     "Files are encrypted in the browser with AES-256-GCM before upload; the decryption key stays in the URL fragment and never reaches the server",
@@ -234,7 +234,7 @@ export default async function RootLayout({
                     "Resumable parallel uploads for large files",
                     "EU-based storage",
                     "Windows desktop app with system tray upload",
-                    "Open source under AGPL-3.0",
+                    "Source available for public review under a reference-only licence",
                   ],
                   publisher: {
                     "@id": `${SITE_URL}/#organization`,
@@ -246,7 +246,7 @@ export default async function RootLayout({
                   name: "Hypastack source code",
                   codeRepository: "https://github.com/HypaStack/Hypastack-Open-Source",
                   programmingLanguage: ["TypeScript", "Go", "Erlang", "Rust"],
-                  license: "https://www.gnu.org/licenses/agpl-3.0.html",
+                  license: "https://github.com/HypaStack/Hypastack-Open-Source/blob/main/LICENSE",
                   about: {
                     "@id": `${SITE_URL}/#webapp`,
                   },

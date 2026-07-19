@@ -37,7 +37,7 @@ export const faqs = [
     a: "Shares are encrypted end to end, filenames are encrypted at rest, files get random IDs on EU-based storage, and we never store IP addresses. CDN images get their EXIF/GPS junk stripped, and you can set shares to burn after the first download if you're feeling paranoid.",
   },
   {
-    q: "Is Hypastack open source?",
-    a: "Yes, the entire platform is open source under AGPL-3.0 — the site, the API, the background services and the desktop app. You can read the code or self-host it from github.com/HypaStack/Hypastack-Open-Source.",
+    q: "Can I see the code?",
+    a: "Yes. The whole platform is public to read at github.com/HypaStack/Hypastack-Open-Source: the site, the API, the background services and the desktop app. It's published so you can check the privacy claims yourself instead of taking my word for it. It isn't open source though, and the licence is review only, so you can read and audit it but not run or reuse it.",
   },
 ]
