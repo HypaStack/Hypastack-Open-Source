@@ -30,7 +30,7 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
           </div>
         </nav>
         <div className="px-2 pt-3 pb-2 shrink-0">
-          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
+          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.04)] px-3 py-3">
             <Skeleton className="h-3 w-[44px] mb-3" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (

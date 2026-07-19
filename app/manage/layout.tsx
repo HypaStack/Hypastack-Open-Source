@@ -31,6 +31,15 @@ import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limi
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
+// One surface scale for the sidebar. The shell is the bottom layer and every
+// surface steps up from it — same direction in both themes.
+const SURFACE = {
+  inset: "bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.04)]",
+  hover: "hover:bg-[#fafafa] dark:hover:bg-[rgba(255,255,255,0.06)]",
+  active: "bg-white dark:bg-[rgba(255,255,255,0.09)]",
+  elevated: "bg-white dark:bg-[#1c1c1f]",
+}
+
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
 }
@@ -78,8 +87,8 @@ function NavRow({
       onClick={onNavigate}
       className={`group relative flex items-center gap-3 rounded-lg text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
-          ? 'bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.08)] text-[#171717] dark:text-[#f7f8f8]'
-          : 'text-[#666] dark:text-[#898e97] hover:bg-[#f4f4f4] dark:hover:bg-[rgba(255,255,255,0.04)] hover:text-[#171717] dark:hover:text-[#f7f8f8]'
+          ? `${SURFACE.active} text-[#171717] dark:text-[#f7f8f8]`
+          : `text-[#666] dark:text-[#898e97] ${SURFACE.hover} hover:text-[#171717] dark:hover:text-[#f7f8f8]`
       }`}
       style={{
         height: 40,
@@ -230,13 +239,16 @@ function ManageLayoutInner({
       >
         <div ref={menuRef} className="relative z-20 shrink-0 pt-4 pb-3 px-2">
           <div className="relative">
-            <SecondaryButton
-              variant="ghost"
-              fullWidth
-              size="md"
+            <button
+              type="button"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Account menu"
-              style={{ gap: 10, paddingLeft: 8, paddingRight: 8, justifyContent: "flex-start", ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
+              className={`w-full flex items-center gap-2.5 rounded-lg transition-colors duration-150 cursor-pointer ${
+                menuOpen
+                  ? `${SURFACE.active} text-[#171717] dark:text-[#f7f8f8]`
+                  : `text-[#171717] dark:text-[#e3e3e3] ${SURFACE.hover}`
+              }`}
+              style={{ height: 40, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
                 src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -247,7 +259,7 @@ function ManageLayoutInner({
               />
               <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
               <MIcon name="expand_more" size={18} className="shrink-0 text-[#666] dark:text-[#898e97]" />
-            </SecondaryButton>
+            </button>
 
             <AnimatePresence>
               {menuOpen && (
@@ -257,12 +269,12 @@ function ManageLayoutInner({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                  className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#141416] rounded-[14px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+                  className={`absolute top-full left-0 right-0 mt-1.5 ${SURFACE.elevated} rounded-[14px] p-1.5`}
                   style={{
                     boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
                   }}
                 >
-                <div className="flex items-center gap-2.5 rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-2.5 py-2.5">
+                <div className={`flex items-center gap-2.5 rounded-[10px] ${SURFACE.inset} px-2.5 py-2.5`}>
                   <img
                     decoding="async"
                     src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -346,7 +358,7 @@ function ManageLayoutInner({
         </nav>
 
         <div className="px-2 pt-3 pb-2 shrink-0">
-          <div className="rounded-[10px] bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] px-3 py-3">
+          <div className={`rounded-[10px] ${SURFACE.inset} px-3 py-3`}>
             <div className="text-xs text-[#666] dark:text-[#888] font-medium mb-3">
               Usage
             </div>
