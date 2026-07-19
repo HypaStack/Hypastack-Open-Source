@@ -47,7 +47,7 @@ curl "https://api.hypastack.com/v3/files" \\
         Every request carries your key as a bearer token. There are no cookies, no sessions, and no CSRF tokens — a
         browser session can never authenticate against this API, which is deliberate.
       </p>
-      <CodeBlock code={`Authorization: Bearer hsk_jrj3byug0SdLnUKbuVc5tYhgs…`} />
+      <CodeBlock code={`Authorization: Bearer hsk_EXAMPLE0000000000000000000000000000000000`} />
       <p className={`${P} mt-4`}>
         Keys start with <code className="text-[#f7f8f8]">hsk_</code>. Treat one like a password: it acts on your account
         with whatever permissions you gave it. We only ever store a hash, so if you lose it we cannot recover it — make a

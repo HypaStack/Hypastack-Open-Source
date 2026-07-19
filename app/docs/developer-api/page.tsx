@@ -69,10 +69,20 @@ export default function DeveloperApiDocs() {
           </div>
 
           <div className="flex gap-12">
-            <aside className="hidden lg:block w-[190px] shrink-0">
-              <div className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto pr-1">
-                <DocNav />
-              </div>
+            {/* One element does the sticking and the scrolling. A definite
+                height (not max-height) is what actually makes it overflow, and
+                self-start stops the flex row stretching it to full page height.
+                Scrollbars are hidden app-wide, so the bottom edge fades out to
+                signal there's more below. */}
+            <aside
+              className="hidden lg:block w-[190px] shrink-0 self-start sticky top-28 h-[calc(100vh-9rem)] overflow-y-auto overscroll-contain pr-1"
+              style={{
+                maskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
+                WebkitMaskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
+              }}
+            >
+              <DocNav />
+              <div aria-hidden className="h-8" />
             </aside>
 
             <div className="min-w-0 flex-1 max-w-[760px]">
