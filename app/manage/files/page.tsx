@@ -7,7 +7,7 @@ import { useEffect, useState, useRef, useMemo, useCallback, Suspense } from "rea
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
-import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { type FileItem } from "@/hooks/useManage"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
@@ -608,12 +608,12 @@ function FilesPageInner() {
               target="_blank"
             />
             <ContextMenuDivider />
-            <ContextMenuItem
+            <ContextMenuAction
               icon="delete"
               label="Delete"
               onClick={() => { handleDelete(activeContextMenuFile.id); setOpenMenuId(null); setContextMenuPos(null) }}
               disabled={deleteLoading === activeContextMenuFile.id}
-              accent="danger"
+              tone="danger"
             />
           </>
         )}

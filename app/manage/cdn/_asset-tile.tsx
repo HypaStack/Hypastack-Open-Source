@@ -6,7 +6,7 @@ import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Checkmark } from "@/components/ui/checkmark"
-import { ContextMenu, ContextMenuItem, ContextMenuDivider } from "@/components/ui/context-menu"
+import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuDivider } from "@/components/ui/context-menu"
 import { type CdnAsset, formatBytes, formatDate, gridItemVariants, getFileIcon } from "./_helpers"
 
 export function CdnAssetTile({
@@ -199,17 +199,17 @@ export function CdnAssetTile({
           onClick={() => { onView(asset); onCloseMenu() }}
         />
         <ContextMenuDivider />
-        <ContextMenuItem
+        <ContextMenuAction
           icon="swap_horiz"
           label="Hot swap"
           onClick={() => { onHotSwap(asset); onCloseMenu() }}
-          accent="warning"
+          tone="warning"
         />
-        <ContextMenuItem
+        <ContextMenuAction
           icon="delete"
           label="Delete"
           onClick={() => { onDelete(asset.id); onCloseMenu() }}
-          accent="danger"
+          tone="danger"
         />
       </ContextMenu>
     </motion.div>
