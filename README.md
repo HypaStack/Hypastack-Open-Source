@@ -31,7 +31,9 @@
   <img src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png?=4" alt="The Hypastack dashboard">
 </div>
 
-Hypastack is a file sharing site that can't read the files it hosts. Everything you upload is locked inside your browser before it leaves your device, and the key never reaches the server. I run the server, and even I can't open your files. That's the entire idea.
+Hypastack is a file sharing site that can't read the files you share through it. Upload from the website and everything is locked inside your browser before it leaves your device, with the key never reaching the server. I run the server, and even I can't open those files. That's the entire idea.
+
+Two things are deliberately outside that guarantee, and I'd rather say so up front than have you assume: **CDN assets aren't encrypted** (they're public by design — I strip their EXIF and GPS metadata, nothing more), and **developer API uploads aren't encrypted** either, because there's no browser in the loop to hold a key. Both are readable by me.
 
 I'm [Kiko](https://usekiko.com), a solo developer in Europe. This code is published so you don't have to take that on faith — you can read it and check.
 

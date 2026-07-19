@@ -27,8 +27,22 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>1. Introduction to Zero-Knowledge</h2>
               <p className="mb-4 text-[#f7f8f8] font-medium">
-                Hypastack operates on a strict zero-knowledge paradigm. This means we design our systems under the assumption that our own servers cannot be trusted with your unencrypted data.
+                Hypastack operates on a strict zero-knowledge paradigm for files uploaded through this website. This means we design our systems under the assumption that our own servers cannot be trusted with your unencrypted data.
               </p>
+              <p className="mb-4 text-[#f7f8f8] font-medium">
+                That guarantee is specific, and it is important you know exactly how far it reaches. There are three pipelines, and only one of them is zero-knowledge:
+              </p>
+              <ul className="mb-4 list-disc pl-5 space-y-2">
+                <li>
+                  <strong className="text-[#f7f8f8]">Website file uploads are zero-knowledge.</strong> Your browser encrypts the file before it leaves your device and the key never reaches us. We cannot read these files.
+                </li>
+                <li>
+                  <strong className="text-[#f7f8f8]">CDN assets are not encrypted.</strong> They are public by design, because a browser has to be able to display them. We strip EXIF, GPS and camera metadata on upload, but the file itself is stored and served in the clear and is readable by us and by anyone holding the link.
+                </li>
+                <li>
+                  <strong className="text-[#f7f8f8]">Developer API uploads are not encrypted.</strong> The API has no browser in the loop to hold a key, so files sent to it are stored as received and are readable by us. If you are using a third-party application built on our API, your uploads are held inside that developer&apos;s account, and both that developer and we can access them. Your privacy relationship in that case is with the developer, and you should consult their privacy policy.
+                </li>
+              </ul>
               <p className="mb-4">
                 Unlike traditional cloud storage providers that decrypt your data on their backend, analyze it, and potentially share it with third parties, Hypastack relies exclusively on client-side encryption for its Secure File Sharing pipeline. All files uploaded through this pipeline are encrypted locally on your device using AES-GCM (256-bit) before transmission. Note that our Permanent CDN Hosting pipeline is designed for public assets and is intentionally unencrypted, as detailed below.
               </p>

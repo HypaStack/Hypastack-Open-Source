@@ -9,8 +9,15 @@ PURPOSE
 
 This source code is published for one reason: so that anyone can read it and
 verify for themselves that the Hypastack service does what it claims to do —
-in particular, that it is genuinely zero-knowledge and cannot read the files
-it hosts.
+in particular, that files uploaded through the website are genuinely
+zero-knowledge and cannot be read by the operator.
+
+That claim is deliberately narrow, and the code shows why. CDN assets are not
+encrypted; they are public by design and have only their embedded metadata
+stripped. Files uploaded through the developer API are not encrypted either,
+because no browser is involved to hold a key. Both are readable by the
+operator. Verifying the zero-knowledge claim means verifying it where it is
+made, and not assuming it extends to the paths where it is not.
 
 Publishing the code is a transparency measure, not a grant of use. This is NOT
 open source software, and it is NOT free software. Every right not expressly

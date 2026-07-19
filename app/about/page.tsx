@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "About Hypastack",
-  description: "Hypastack is a private, open-source file sharing platform and CDN built in Europe. No tracking, no personal data collected, and free to use.",
+  description: "Hypastack is a private, source-available file sharing platform and CDN built in Europe. No tracking, no personal data collected, and free to use.",
   alternates: {
     canonical: "https://hypastack.com/about",
   },
@@ -25,7 +25,7 @@ export default function About() {
             <section>
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Zero-Knowledge Architecture</h2>
               <p className="mb-4 text-[#f7f8f8]">
-                Hypastack is a secure, high-performance file sharing and CDN platform built from the ground up to ensure absolute privacy for your files. I achieve this by utilizing a strictly zero-knowledge architecture.
+                Hypastack is a secure, high-performance file sharing and CDN platform built from the ground up to ensure absolute privacy for the files you share through this website. I achieve this by utilizing a strictly zero-knowledge architecture for that pipeline. Two other pipelines are deliberately not encrypted, and I would rather say so plainly than let you assume otherwise: CDN assets are public by design and have only their metadata stripped, and uploads made through the developer API are stored as received and are readable by me.
               </p>
               <p className="mb-4">
                 Unlike traditional cloud storage providers that encrypt your files on their servers—meaning they hold the keys and can read your data at any time—Hypastack shifts the encryption process entirely to your device.

@@ -97,7 +97,7 @@ export function HowItWorks() {
                 </ShineButton>
                 </div>
                 <p className="mt-4 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
-                  Fully open source so you never have to take our word for it.
+                  Source available, so you never have to take our word for it.
                 </p>
               </div>
 

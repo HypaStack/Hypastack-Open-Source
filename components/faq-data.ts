@@ -10,7 +10,7 @@ import { FREE_LIMITS, ULTIMATE_LIMITS, formatTierSize } from "@/constants/tier-l
 export const faqs = [
   {
     q: "What is Hypastack?",
-    a: "Think of it as a dead-simple way to share files that doesn't creep on your data. Your files are end-to-end encrypted in your browser before upload, so we can't read them. There's also a CDN side for public assets. That part isn't encrypted (public images have to be readable), but we strip the EXIF metadata so you aren't accidentally leaking your location.",
+    a: "Think of it as a dead-simple way to share files that doesn't creep on your data. When you upload through the site, your files are end-to-end encrypted in your browser first, so we can't read them. There's also a CDN side for public assets. That part isn't encrypted (public images have to be readable), but we strip the EXIF metadata so you aren't accidentally leaking your location.",
   },
   {
     q: "Can Hypastack read my files?",
@@ -34,7 +34,11 @@ export const faqs = [
   },
   {
     q: "Is my stuff actually safe?",
-    a: "Shares are encrypted end to end, filenames are encrypted at rest, files get random IDs on EU-based storage, and we never store IP addresses. CDN images get their EXIF/GPS junk stripped, and you can set shares to burn after the first download if you're feeling paranoid.",
+    a: "Shares you upload through the site are encrypted end to end, filenames are encrypted at rest, files get random IDs on EU-based storage, and we never store IP addresses. CDN images get their EXIF/GPS junk stripped, and you can set shares to burn after the first download if you're feeling paranoid.",
+  },
+  {
+    q: "So is everything zero-knowledge?",
+    a: "No, and it's worth being precise. Files you upload through the website are: your browser encrypts them before they leave your device and the key stays in the link, so we genuinely cannot read them. CDN assets are not encrypted at all, because a browser has to be able to display them. We only strip the EXIF and GPS metadata on the way in. Files uploaded through the developer API aren't encrypted either, because there's no browser in the loop holding a key, so we can read those. If you're using an app someone else built on our API, your files sit in their account and both they and we can see them. Ask them what they do with it.",
   },
   {
     q: "Can I see the code?",
