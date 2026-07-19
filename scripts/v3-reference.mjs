@@ -1,44 +1,33 @@
 #!/usr/bin/env node
 /**
- * Hypastack v3 API — runnable reference.
+ * Hypastack v3 API — the reference client.
  *
- * Walks the whole surface end to end and prints every request and response, so
- * it doubles as a smoke test and as the worked example the docs will be built
- * from.
+ * Everything the API can do, in the order you'd actually do it. Copy what you
+ * need; there are no dependencies and no framework.
  *
- *   HYPASTACK_API_KEY=hsk_... node scripts/v3-reference.mjs
- *   HYPASTACK_API_KEY=hsk_... V3_BASE=https://api.hypastack.com/v3 node scripts/v3-reference.mjs
+ *   HYPASTACK_API_KEY=hsk_... node v3-reference.mjs
  *
- * The key is read from the environment on purpose — never paste one into a file
- * that gets committed.
+ * Point it somewhere else with V3_BASE (defaults to production):
  *
- * It creates a file and a CDN asset, then deletes both on the way out. Nothing
- * it makes is meant to survive the run.
+ *   V3_BASE=http://localhost:3000/api/v3 node v3-reference.mjs
  */
 
-const BASE = process.env.V3_BASE ?? "http://localhost:3000/api/v3"
+const BASE = process.env.V3_BASE ?? "https://api.hypastack.com/v3"
 const KEY = process.env.HYPASTACK_API_KEY
 
 if (!KEY) {
-  console.error("Set HYPASTACK_API_KEY first:\n  HYPASTACK_API_KEY=hsk_... node scripts/v3-reference.mjs")
+  console.error("Set HYPASTACK_API_KEY first.")
   process.exit(1)
 }
 
-const dim = (s) => `\x1b[2m${s}\x1b[0m`
-const bold = (s) => `\x1b[1m${s}\x1b[0m`
-const green = (s) => `\x1b[32m${s}\x1b[0m`
-const red = (s) => `\x1b[31m${s}\x1b[0m`
-const cyan = (s) => `\x1b[36m${s}\x1b[0m`
-
-let passed = 0
-let failed = 0
-
 /**
- * Every v3 call goes through here. Two things worth copying into your own
- * client: the key travels as a bearer token, and the budget is echoed on every
- * response so you can back off before you get a 429 rather than after.
+ * One wrapper for every call.
+ *
+ * Two things worth keeping in your own client: the key goes in the
+ * Authorization header, and every response echoes your remaining budget so you
+ * can slow down before you get a 429 instead of after.
  */
-async function call(method, path, body) {
+async function api(method, path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers: {
@@ -48,164 +37,134 @@ async function call(method, path, body) {
     ...(body ? { body: JSON.stringify(body) } : {}),
   })
 
-  const text = await res.text()
-  let json
-  try { json = text ? JSON.parse(text) : null } catch { json = { raw: text.slice(0, 200) } }
+  const data = await res.json().catch(() => null)
 
-  const remaining = res.headers.get("x-ratelimit-remaining")
-  const limit = res.headers.get("x-ratelimit-limit")
-  const reqId = res.headers.get("x-request-id")
+  if (!res.ok) {
+    // Every failure has this shape. Switch on `error.code`, never on `message`.
+    const err = new Error(data?.error?.message ?? `HTTP ${res.status}`)
+    err.code = data?.error?.code
+    err.status = res.status
+    err.requestId = data?.error?.request_id
+    err.retryAfter = Number(res.headers.get("retry-after")) || null
+    throw err
+  }
 
-  console.log(
-    `  ${cyan(method.padEnd(6))} ${path.padEnd(42)} ${res.ok ? green(res.status) : red(res.status)}` +
-    dim(`  ${remaining ?? "-"}/${limit ?? "-"} left  ${reqId ?? ""}`),
-  )
-
-  return { status: res.status, json, headers: res.headers }
-}
-
-function check(label, condition, detail) {
-  if (condition) {
-    passed++
-    console.log(`  ${green("PASS")} ${label}`)
-  } else {
-    failed++
-    console.log(`  ${red("FAIL")} ${label}${detail ? dim(` — ${detail}`) : ""}`)
+  return {
+    data,
+    remaining: Number(res.headers.get("x-ratelimit-remaining")),
+    limit: Number(res.headers.get("x-ratelimit-limit")),
   }
 }
 
-function section(title) {
-  console.log(`\n${bold(title)}`)
+/** Retries the two failures that are always worth retrying, and nothing else. */
+async function apiWithRetry(method, path, body, attempts = 3) {
+  for (let i = 1; ; i++) {
+    try {
+      return await api(method, path, body)
+    } catch (err) {
+      const retryable = err.code === "rate_limit_exceeded" || err.code === "server_busy"
+      if (!retryable || i >= attempts) throw err
+      const wait = (err.retryAfter ?? 2 ** i) * 1000
+      console.log(`  ${err.code} — waiting ${wait / 1000}s`)
+      await new Promise((r) => setTimeout(r, wait))
+    }
+  }
 }
 
-/** Upload flow, both resources: init → PUT the bytes to R2 → complete. */
-async function putBytes(uploadUrl, bytes, contentType) {
-  const res = await fetch(uploadUrl, {
+/**
+ * Uploading is always three steps, for files and for CDN assets alike:
+ * ask for a URL, PUT the bytes straight to storage, then commit.
+ * The bytes never pass through Hypastack's servers.
+ */
+async function upload(resource, bytes, name, contentType, extra = {}) {
+  const { data: init } = await apiWithRetry("POST", `/${resource}`, {
+    name,
+    size: bytes.length,
+    content_type: contentType,
+    ...extra,
+  })
+
+  const put = await fetch(init.upload_url, {
     method: "PUT",
     headers: { "content-type": contentType },
     body: bytes,
   })
-  console.log(`  ${cyan("PUT   ")} ${dim("<presigned R2 url>".padEnd(42))} ${res.ok ? green(res.status) : red(res.status)}`)
-  return res.ok
+  if (!put.ok) throw new Error(`storage rejected the upload: ${put.status}`)
+
+  const { data } = await apiWithRetry("POST", `/${resource}/${init.id}/complete`)
+  return data
 }
 
 async function main() {
-  console.log(bold(`\nHypastack v3 reference  ${dim(BASE)}`))
+  // ── Files ────────────────────────────────────────────────────────────────
 
-  section("Auth")
-  const noKey = await fetch(`${BASE}/files`).then(r => r.json().then(j => ({ s: r.status, j })))
-  check("no key returns 401 missing_key", noKey.s === 401 && noKey.j?.error?.code === "missing_key", noKey.j?.error?.code)
+  const { data: files, remaining, limit } = await api("GET", "/files?limit=10")
+  console.log(`Files: ${files.data.length}${files.has_more ? "+" : ""}   budget ${remaining}/${limit}`)
 
-  const badKey = await fetch(`${BASE}/files`, { headers: { authorization: "Bearer hsk_totally-made-up" } })
-    .then(r => r.json().then(j => ({ s: r.status, j })))
-  check("bad key returns 401 invalid_key", badKey.s === 401 && badKey.j?.error?.code === "invalid_key", badKey.j?.error?.code)
-
-  section("Files — list")
-  const list = await call("GET", "/files?limit=5")
-  check("list returns a data array", Array.isArray(list.json?.data), JSON.stringify(list.json)?.slice(0, 120))
-  check("list reports has_more", typeof list.json?.has_more === "boolean")
-  check("budget headers present", list.headers.get("x-ratelimit-limit") !== null)
-
-  section("Files — upload")
-  const content = Buffer.from(`hypastack v3 reference — ${new Date().toISOString()}\n`)
-  const init = await call("POST", "/files", {
-    name: "v3-reference.txt",
-    size: content.length,
-    content_type: "text/plain",
-    expires_in: 3600,
-  })
-  check("init returns 201 with an upload_url", init.status === 201 && !!init.json?.upload_url, init.json?.error?.code)
-
-  let fileId = init.json?.id
-  if (init.json?.upload_url) {
-    const ok = await putBytes(init.json.upload_url, content, "text/plain")
-    check("bytes reach R2", ok)
-
-    const done = await call("POST", `/files/${fileId}/complete`)
-    check("complete returns the file", done.json?.object === "file", done.json?.error?.code)
-    check("size round-trips", done.json?.size === content.length)
-
-    const again = await call("POST", `/files/${fileId}/complete`)
-    check("complete is idempotent", again.status === 200 && again.json?.id === fileId)
+  // Page through everything with the cursor. Never use an offset.
+  let cursor = files.next_cursor
+  while (cursor) {
+    const { data: page } = await api("GET", `/files?limit=100&cursor=${cursor}`)
+    console.log(`  ...another ${page.data.length}`)
+    cursor = page.next_cursor
   }
 
-  section("Files — read")
-  if (fileId) {
-    const one = await call("GET", `/files/${fileId}`)
-    check("retrieve by id", one.json?.id === fileId)
-    check("no internal fields leak", !("r2_key" in (one.json ?? {})) && !("user_id" in (one.json ?? {})))
+  const file = await upload(
+    "files",
+    Buffer.from("hello from the v3 reference\n"),
+    "hello.txt",
+    "text/plain",
+    { expires_in: 3600, burn_on_read: false },
+  )
+  console.log(`Uploaded ${file.name} (${file.size} bytes) -> ${file.url}`)
+  console.log(`  expires ${file.expires_at}`)
 
-    const dl = await call("GET", `/files/${fileId}/download`)
-    check("download returns a url, not a redirect", typeof dl.json?.download_url === "string")
+  const { data: link } = await api("GET", `/files/${file.id}/download`)
+  console.log(`Download URL good until ${link.expires_at}`)
+  console.log(`  ${(await fetch(link.download_url).then((r) => r.text())).trim()}`)
 
-    if (dl.json?.download_url) {
-      const fetched = await fetch(dl.json.download_url).then(r => r.text())
-      check("downloaded bytes match what we uploaded", fetched === content.toString())
-    }
-  }
+  // ── CDN ──────────────────────────────────────────────────────────────────
 
-  section("Errors")
-  const missing = await call("GET", "/files/definitely-not-a-real-id")
-  check("unknown id returns 404 not_found", missing.status === 404 && missing.json?.error?.code === "not_found")
-  check("404 message reveals nothing about ownership",
-    !/own|permission|belong/i.test(missing.json?.error?.message ?? ""))
+  const { data: assets } = await api("GET", "/cdn/assets?limit=10")
+  console.log(`CDN assets: ${assets.data.length}${assets.has_more ? "+" : ""}`)
 
-  const bad = await call("POST", "/files", { name: "x", size: -5, content_type: "text/plain" })
-  check("invalid body returns 400 invalid_request", bad.status === 400 && bad.json?.error?.code === "invalid_request")
-  check("400 names the offending param", typeof bad.json?.error?.param === "string", bad.json?.error?.param)
+  const asset = await upload(
+    "cdn/assets",
+    Buffer.from("body{color:#000}\n"),
+    "styles.css",
+    "text/css",
+  )
+  console.log(`Published ${asset.name} -> ${asset.url}`)
 
-  const badCursor = await call("GET", "/files?cursor=not-a-cursor")
-  check("bad cursor is rejected", badCursor.status === 400 && badCursor.json?.error?.param === "cursor")
-
-  section("CDN")
-  const cdnList = await call("GET", "/cdn/assets?limit=5")
-  check("cdn list returns data", Array.isArray(cdnList.json?.data), cdnList.json?.error?.code)
-
-  const img = Buffer.from(`/* v3 reference asset */\nbody{color:#000}\n`)
-  const cdnInit = await call("POST", "/cdn/assets", {
-    name: "v3-reference.css",
-    size: img.length,
+  // Swap replaces the bytes but keeps the id and the public URL, so anything
+  // already pointing at it picks up the new version.
+  const next = Buffer.from("body{color:#fff;background:#000}\n")
+  const { data: swap } = await api("POST", `/cdn/assets/${asset.id}/swap`, {
+    size: next.length,
     content_type: "text/css",
   })
-  check("cdn init returns an upload_url", cdnInit.status === 201 && !!cdnInit.json?.upload_url, cdnInit.json?.error?.code)
+  await fetch(swap.upload_url, { method: "PUT", headers: { "content-type": "text/css" }, body: next })
+  const swapped = await api("POST", `/cdn/assets/${asset.id}/complete`)
+  console.log(`Swapped in place, same URL, now ${swapped.data.size} bytes`)
 
-  let assetId = cdnInit.json?.id
-  if (cdnInit.json?.upload_url) {
-    await putBytes(cdnInit.json.upload_url, img, "text/css")
-    const cdnDone = await call("POST", `/cdn/assets/${assetId}/complete`)
-    check("cdn complete returns the asset", cdnDone.json?.object === "cdn_asset", cdnDone.json?.error?.code)
-    check("asset has a public url", typeof cdnDone.json?.url === "string")
+  // ── Errors ───────────────────────────────────────────────────────────────
 
-    const bigger = Buffer.from(`/* v3 reference asset, swapped */\nbody{color:#fff;background:#000}\n`)
-    const swap = await call("POST", `/cdn/assets/${assetId}/swap`, { size: bigger.length, content_type: "text/css" })
-    check("swap returns an upload_url", !!swap.json?.upload_url, swap.json?.error?.code)
-
-    if (swap.json?.upload_url) {
-      await putBytes(swap.json.upload_url, bigger, "text/css")
-      const swapped = await call("POST", `/cdn/assets/${assetId}/complete`)
-      check("swap keeps the same id and url", swapped.json?.id === assetId)
-      check("swap updates the size", swapped.json?.size === bigger.length, `${swapped.json?.size} vs ${bigger.length}`)
-    }
+  try {
+    await api("GET", "/files/does-not-exist")
+  } catch (err) {
+    // 404 is deliberately identical whether it never existed or isn't yours.
+    console.log(`Expected failure: ${err.status} ${err.code} (request ${err.requestId})`)
   }
 
-  section("Cleanup")
-  if (fileId) {
-    const del = await call("DELETE", `/files/${fileId}`)
-    check("file deleted", del.json?.deleted === true, del.json?.error?.code)
-    const gone = await call("GET", `/files/${fileId}`)
-    check("deleted file is gone", gone.status === 404)
-  }
-  if (assetId) {
-    const del = await call("DELETE", `/cdn/assets/${assetId}`)
-    check("cdn asset deleted", del.json?.deleted === true, del.json?.error?.code)
-  }
+  // ── Cleanup ──────────────────────────────────────────────────────────────
 
-  console.log(`\n${bold("Result")}  ${green(`${passed} passed`)}  ${failed ? red(`${failed} failed`) : dim("0 failed")}\n`)
-  process.exit(failed ? 1 : 0)
+  await api("DELETE", `/files/${file.id}`)
+  await api("DELETE", `/cdn/assets/${asset.id}`)
+  console.log("Cleaned up.")
 }
 
 main().catch((err) => {
-  console.error(red(`\nScript crashed: ${err.message}`))
-  console.error(dim("Is the dev server running?  npm run dev"))
+  console.error(`\n${err.status ?? ""} ${err.code ?? "error"}: ${err.message}`)
+  if (err.requestId) console.error(`request id: ${err.requestId}`)
   process.exit(1)
 })

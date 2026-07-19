@@ -19,7 +19,8 @@ tsconfig.tsbuildinfo
 CLAUDE.md
 
 .claude/
-docs/
+# root only — app/docs, components/docs and lib/docs are real source
+/docs/
 
 # wrangler build artifacts
 workers/r2-gateway/.wrangler/
