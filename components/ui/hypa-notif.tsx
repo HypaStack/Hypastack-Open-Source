@@ -280,14 +280,33 @@ export function HypaNotifProvider() {
           >
             {/* Title + description */}
             {!notif.isInput && (
-              <div style={{ padding: '10px 14px 6px 14px' }}>
-                <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: notif.description ? 3 : 0 }}>
-                  {notif.title}
-                </p>
-                {notif.description && (
-                  <p className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
-                    {notif.description}
+              <div className="flex items-center gap-2.5" style={{ padding: '10px 14px 6px 14px' }}>
+                {notif.isProgress && (
+                  <span className="shrink-0 text-[#8b8b90] dark:text-[#8f8f95]">
+                    <Loader size={18} />
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: notif.description || notif.isProgress ? 3 : 0 }}>
+                    {notif.title}
                   </p>
+                  {notif.isProgress ? (
+                    <p className="text-[#8b8b90] dark:text-[#8f8f95] truncate" style={{ fontSize: 12.5, lineHeight: 1.3 }}>
+                      {notif.progressText || "Working…"}
+                    </p>
+                  ) : notif.description ? (
+                    <p className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
+                      {notif.description}
+                    </p>
+                  ) : null}
+                </div>
+                {notif.isProgress && (
+                  <span
+                    className="shrink-0 tabular-nums text-[#111] dark:text-[#ededed]"
+                    style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}
+                  >
+                    {Math.round(notif.progressPercent || 0)}%
+                  </span>
                 )}
               </div>
             )}
@@ -309,11 +328,7 @@ export function HypaNotifProvider() {
 
             {/* Actions or Progress */}
             {notif.isProgress ? (
-              <div style={{ padding: '6px 8px 8px' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13 }}>{notif.progressText || "Processing..."}</span>
-                  <span className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 13, fontWeight: 500 }}>{Math.round(notif.progressPercent || 0)}%</span>
-                </div>
+              <div style={{ padding: '2px 14px 12px' }}>
                 <ProgressBar value={notif.progressPercent || 0} height={5} aria-label={notif.progressText || "Progress"} />
               </div>
             ) : notif.isInput ? (
