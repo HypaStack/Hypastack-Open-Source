@@ -12,22 +12,25 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
+import { SURFACE } from "@/components/ui/surface"
 import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
 import { useTheme } from "@/hooks/useTheme"
-import { formatFileSize } from "./utils"
 import type { UseUploadReturn } from "./use-upload"
 
 const TurnstileWithRef = Turnstile as React.ComponentType<
   React.ComponentProps<typeof Turnstile> & { ref?: React.RefObject<{ reset(): void }> }
 >
 
-// Shared surface token — every section in the tray is one of these cards, spaced
-// 6px apart inside the shell. Matches the hypa-notif card system.
-const CARD =
-  "bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-[12px]"
-const DIVIDE = "divide-y divide-[rgba(0,0,0,0.05)] dark:divide-[rgba(255,255,255,0.05)]"
+// One horizontal gutter for every row in the tray, and one hairline between
+// sections. No nested cards — the shell is the only surface.
+const PAD = "px-4"
+const RULE = "border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
+const LABEL = "text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]"
+const MUTED = "text-[12px] text-[#6b6b70] dark:text-[#a8a8a8]"
+const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#9a9aa0]"
+const ICON = "text-[#8b8b90] dark:text-[#9a9aa0]"
 const TITLE_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
 
 type UploadTrayProps = UseUploadReturn
@@ -88,6 +91,7 @@ export function UploadTray({
   const expIndex = Math.max(0, EXPIRATION_STEPS.findIndex((s) => s.minutes === expirationMinutes))
   const currentExpLabel = EXPIRATION_STEPS[expIndex]?.label ?? EXPIRATION_STEPS[EXPIRATION_STEPS.length - 1].label
   const showList = state === "selected" || state === "uploading" || state === "done" || state === "error"
+  const showOptions = state === "selected"
 
   const footerTitle =
     state === "done"
@@ -107,7 +111,7 @@ export function UploadTray({
       : state === "error"
       ? errorMessage
       : state === "zipping"
-      ? "Zipping your files — one moment…"
+      ? "Zipping your files, one moment…"
       : "Press Start to begin"
 
   if (!mounted) return null
@@ -127,143 +131,128 @@ export function UploadTray({
             opacity: { duration: 0.25, ease: "easeOut" },
             filter: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           }}
-          className="fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[18px] sm:rounded-[18px] bg-[#f7f7f8] dark:bg-[#171717] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] p-1.5"
+          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[420px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] ${SURFACE.panel}`}
           style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
         >
           {/* ── Header ── */}
-          <div className="flex shrink-0 items-start justify-between px-2.5 pt-1.5 pb-2">
+          <div className={`flex shrink-0 items-center justify-between gap-3 ${PAD} py-3`}>
             <div className="flex min-w-0 flex-col">
               <h3 className="text-[15px] font-semibold tracking-tight text-[#111] dark:text-[#f0f0f0]" style={TITLE_FONT}>
                 Uploads
               </h3>
-              <p className="text-[12px] text-[#8b8b90] dark:text-[#8b9099]">
+              <p className={MUTED}>
                 {files.length} item{files.length !== 1 ? "s" : ""} · {uploadType === "cdn" ? "CDN" : "Files"}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-0.5">
-              <SecondaryButton
-                variant="ghost"
-                size="xs"
-                onClick={handleReset}
-                style={{ height: 28, borderRadius: 9999 }}
-              >
-                Clear
-              </SecondaryButton>
-              <SecondaryButton
-                variant="ghost"
-                iconOnly
-                size="xs"
-                onClick={() => setTrayCollapsed((v) => !v)}
-                aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
-                style={{ height: 28, width: 28, borderRadius: 9999 }}
-              >
-                <MIcon name={trayCollapsed ? "expand_less" : "expand_more"} size={18} />
-              </SecondaryButton>
-            </div>
+            <SecondaryButton
+              variant="ghost"
+              iconOnly
+              size="sm"
+              onClick={() => setTrayCollapsed((v) => !v)}
+              aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
+            >
+              <MIcon name={trayCollapsed ? "expand_less" : "expand_more"} size={18} />
+            </SecondaryButton>
           </div>
 
           {!trayCollapsed && (
             <>
-              <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-0.5 [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Copy-all warning (multi-link files upload) */}
+              <div className={`flex min-h-0 flex-1 flex-col overflow-y-auto ${RULE} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}>
                 {uploadType !== "cdn" && state === "done" && shareUrl && shareUrl.includes("\n") && (
-                  <AlertMessage tone="error" style={{ marginBottom: 0 }}>
-                    <span className="flex flex-col leading-snug">
-                      <span className="font-semibold">Copy your links now</span>
-                      <span className="opacity-80">
-                        If you don&apos;t copy them, every file you shared becomes unrecoverable.
+                  <div className={`${PAD} pt-3`}>
+                    <AlertMessage tone="error" style={{ marginBottom: 0 }}>
+                      <span className="flex flex-col leading-snug">
+                        <span className="font-semibold">Copy your links now</span>
+                        <span className="opacity-80">
+                          If you don&apos;t copy them, every file you shared becomes unrecoverable.
+                        </span>
                       </span>
-                    </span>
-                  </AlertMessage>
+                    </AlertMessage>
+                  </div>
                 )}
 
-                {/* Zipping */}
                 {state === "zipping" && (
-                  <div className={CARD}>
-                    <TrayFileRow
-                      badge="ZIP"
-                      name={`Zipping ${files.length} items…`}
-                      status="Compressing…"
-                      progressPct={zipProgress}
-                    />
+                  <div className="py-1">
+                    <TrayFileRow badge="ZIP" name={`Zipping ${files.length} items…`} status="Compressing…" progressPct={zipProgress} />
                   </div>
                 )}
 
-                {/* File list */}
                 {showList && (
-                  <div className={`${CARD} overflow-hidden`}>
-                    <div className={DIVIDE}>
-                      {zippedFile ? (
-                        <TrayFileRow
-                          badge="ZIP"
-                          name={zippedFile.name}
-                          status={
-                            state === "done"
-                              ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
-                              : state === "error"
-                              ? "Failed"
-                              : state === "uploading"
-                              ? "Uploading…"
-                              : "Pending"
-                          }
-                          progressPct={state === "uploading" ? progress : null}
-                          showCopy={state === "done"}
-                          copied={copied}
-                          onCopy={handleCopy}
-                          error={state === "error"}
-                        />
-                      ) : (
-                        files.map((f, index) => {
-                          const done = state === "uploading" ? index < uploadingIndex : false
-                          const current = state === "uploading" && index === uploadingIndex
-                          return (
-                            <TrayFileRow
-                              key={f.id}
-                              badge={f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
-                              name={f.path || f.file.name}
-                              status={
-                                state === "done"
+                  <div className="py-1">
+                    {zippedFile ? (
+                      <TrayFileRow
+                        badge="ZIP"
+                        name={zippedFile.name}
+                        status={
+                          state === "done"
+                            ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
+                            : state === "error"
+                            ? "Failed"
+                            : state === "uploading"
+                            ? "Uploading…"
+                            : "Pending"
+                        }
+                        progressPct={state === "uploading" ? progress : null}
+                        showCopy={state === "done"}
+                        copied={copied}
+                        onCopy={handleCopy}
+                        error={state === "error"}
+                      />
+                    ) : (
+                      files.map((f, index) => {
+                        const done = state === "uploading" ? index < uploadingIndex : false
+                        const current = state === "uploading" && index === uploadingIndex
+                        return (
+                          <TrayFileRow
+                            key={f.id}
+                            badge={f.file.name.split(".").pop()?.substring(0, 4) || "FILE"}
+                            name={f.path || f.file.name}
+                            status={
+                              state === "done"
+                                ? "Uploaded"
+                                : state === "error"
+                                ? index < uploadingIndex
                                   ? "Uploaded"
-                                  : state === "error"
-                                  ? index < uploadingIndex
-                                    ? "Uploaded"
-                                    : index === uploadingIndex
-                                    ? "Failed"
-                                    : "Skipped"
-                                  : state === "uploading"
-                                  ? done
-                                    ? "Uploaded"
-                                    : current
-                                    ? "Uploading…"
-                                    : "Pending"
+                                  : index === uploadingIndex
+                                  ? "Failed"
+                                  : "Skipped"
+                                : state === "uploading"
+                                ? done
+                                  ? "Uploaded"
+                                  : current
+                                  ? "Uploading…"
                                   : "Pending"
-                              }
-                              progressPct={
-                                state === "selected" || state === "uploading"
-                                  ? state === "uploading"
-                                    ? done
-                                      ? 100
-                                      : current
-                                      ? progress
-                                      : 0
+                                : "Pending"
+                            }
+                            progressPct={
+                              state === "selected" || state === "uploading"
+                                ? state === "uploading"
+                                  ? done
+                                    ? 100
+                                    : current
+                                    ? progress
                                     : 0
-                                  : null
-                              }
-                              showCopy={state === "done"}
-                              copied={copiedIndex === index}
-                              onCopy={() => handleCopyOne(index)}
-                              error={state === "error" && index === uploadingIndex}
-                            />
-                          )
-                        })
-                      )}
-                    </div>
+                                  : 0
+                                : null
+                            }
+                            showCopy={state === "done"}
+                            copied={copiedIndex === index}
+                            onCopy={() => handleCopyOne(index)}
+                            error={state === "error" && index === uploadingIndex}
+                          />
+                        )
+                      })
+                    )}
                   </div>
                 )}
 
-                {/* Options (Files) */}
-                {state === "selected" && uploadType !== "cdn" && (
-                  <div className={`${CARD} ${DIVIDE} overflow-hidden`}>
+                {/* ── Options (Files) ── */}
+                {showOptions && uploadType !== "cdn" && (
+                  <div className={RULE}>
+                    <div className={`${PAD} pt-3 pb-1`}>
+                      <span className={SECTION}>Options</span>
+                    </div>
+
                     <ToggleRow
                       icon="local_fire_department"
                       label="Burn after download"
@@ -272,15 +261,13 @@ export function UploadTray({
                     />
 
                     {/* Custom expiration (Essential plan and above) */}
-                    <div className="px-3.5 py-3">
-                      <div className="mb-2 flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <MIcon name="schedule" size={16} className="text-[#8b8b90] dark:text-[#8b9099]" />
-                          <span className="text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]">Expires after</span>
-                        </div>
-                        {slugLocked ? (
-                          <LockBadge />
-                        ) : (
+                    <div className={`${PAD} py-3`}>
+                      <div className="mb-2.5 flex items-center justify-between gap-3">
+                        <span className={`flex items-center gap-2.5 ${LABEL}`}>
+                          <MIcon name="schedule" size={17} className={ICON} />
+                          Expires after
+                        </span>
+                        {slugLocked ? <LockBadge /> : (
                           <span className="text-[12px] font-semibold text-[#111] dark:text-[#f0f0f0]">{currentExpLabel}</span>
                         )}
                       </div>
@@ -296,7 +283,7 @@ export function UploadTray({
                       {slugLocked ? (
                         <UpgradeLink text="Upgrade to choose a custom expiry" />
                       ) : (
-                        <div className="mt-1 flex justify-between text-[10px] text-[#9a9aa0] dark:text-[#6b6b6b]">
+                        <div className="mt-1.5 flex justify-between text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
                           <span>1 min</span>
                           <span>30 days</span>
                         </div>
@@ -337,7 +324,7 @@ export function UploadTray({
                             />
                           </>
                         ) : (
-                          <NoCustomLinkNote text="Custom links aren't available when uploading files separately — zip them into one archive to use one." />
+                          <NoCustomLinkNote text="Custom links aren't available when uploading files separately. Zip them into one archive to use one." />
                         )}
                       </>
                     ) : (
@@ -352,7 +339,6 @@ export function UploadTray({
                             placeholder={files[0]?.file.name || "example.pdf"}
                           />
                         </FieldBlock>
-                        {/* Custom link (Essential plan and above) */}
                         <CustomLinkField
                           slugLocked={slugLocked}
                           customSlug={customSlug}
@@ -381,9 +367,12 @@ export function UploadTray({
                   </div>
                 )}
 
-                {/* Options (CDN) */}
-                {state === "selected" && uploadType === "cdn" && (
-                  <div className={`${CARD} overflow-hidden`}>
+                {/* ── Options (CDN) ── */}
+                {showOptions && uploadType === "cdn" && (
+                  <div className={RULE}>
+                    <div className={`${PAD} pt-3 pb-1`}>
+                      <span className={SECTION}>Options</span>
+                    </div>
                     {files.length === 1 ? (
                       <CustomLinkField
                         slugLocked={slugLocked}
@@ -396,14 +385,13 @@ export function UploadTray({
                         previewBase="r2.hypastack.com/cdn/"
                       />
                     ) : (
-                      <NoCustomLinkNote text="Custom links aren't available for multi-file uploads — upload a single asset to use one." />
+                      <NoCustomLinkNote text="Custom links aren't available for multi-file uploads. Upload a single asset to use one." />
                     )}
                   </div>
                 )}
 
-                {/* Turnstile */}
-                {state === "selected" && process.env.NODE_ENV !== "development" && (
-                  <div className={`${CARD} flex justify-center px-3 py-3`}>
+                {showOptions && process.env.NODE_ENV !== "development" && (
+                  <div className={`${RULE} ${PAD} flex justify-center py-3`}>
                     <TurnstileWithRef
                       ref={turnstileRef}
                       sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
@@ -414,75 +402,81 @@ export function UploadTray({
                   </div>
                 )}
 
-                {/* Upgrade nudge */}
                 {normalizeTier(user?.tier) !== "ultimate" && (
-                  <p className="px-2.5 text-[11px] text-[#9a9aa0] dark:text-[#6b6b6b]">
-                    Want faster uploads &amp; deletes?{" "}
-                    <a href="/pricing" className="underline text-[#666] dark:text-[#8b9099] hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
-                      Upgrade your plan
-                    </a>
-                    .
-                  </p>
+                  <div className={`${PAD} pb-3 pt-2`}>
+                    <p className="text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
+                      Want faster uploads and deletes?{" "}
+                      <a href="/pricing" className="underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
+                        Upgrade your plan
+                      </a>
+                      .
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {/* ── Footer / action bar ── */}
-              <div className="mt-1.5 shrink-0 rounded-[12px] bg-[#f2f2f4] dark:bg-[rgba(255,255,255,0.02)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] p-2">
-                <div className="flex items-center gap-3 px-1.5 pb-2.5 pt-1">
+              {/* ── Footer ── */}
+              <div className={`shrink-0 ${RULE} ${PAD} py-3`}>
+                <div className="mb-3 flex items-center gap-2.5">
                   {(state === "uploading" || state === "zipping") && (
-                    <span className="text-[#666] dark:text-[#8b9099]">
-                      <Loader size={22} />
+                    <span className="shrink-0 text-[#6b6b70] dark:text-[#a8a8a8]">
+                      <Loader size={20} />
                     </span>
                   )}
                   <div className="flex min-w-0 flex-col">
                     <span className="text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{footerTitle}</span>
-                    <span className="line-clamp-2 text-[12px] text-[#8b8b90] dark:text-[#8b9099]">{footerSub}</span>
+                    <span className={`line-clamp-2 ${MUTED}`}>{footerSub}</span>
                   </div>
                 </div>
 
                 {state === "selected" ? (
-                  <div className="flex items-center gap-1.5">
-                    <SecondaryButton
-                      size="sm"
-                      onClick={handleReset}
-                      className="flex-1"
-                      style={{ height: 36, borderRadius: 9 }}
-                    >
+                  <div className="flex items-center gap-2">
+                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
                       Cancel
                     </SecondaryButton>
                     <ShineButton
-                      size="sm"
+                      size="md"
                       onClick={handleUpload}
                       disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
                       className="flex-1"
-                      style={{ height: 36, borderRadius: 9, gap: 6 }}
+                      style={{ gap: 8 }}
                     >
                       <MIcon name="arrow_upward" size={16} />
                       Start
                     </ShineButton>
                   </div>
                 ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
-                  <ShineButton
-                    size="sm"
-                    fullWidth
-                    onClick={handleCopy}
-                    color={copied ? "#059669" : undefined}
-                    hoverColor={copied ? "#047857" : undefined}
-                    style={{ height: 36, borderRadius: 9, gap: 6 }}
-                  >
-                    <MIcon name={copied ? "check" : "content_copy"} size={16} />
-                    {copied ? "Copied all links" : "Copy all links"}
-                  </ShineButton>
+                  <div className="flex items-center gap-2">
+                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
+                      Done
+                    </SecondaryButton>
+                    <ShineButton
+                      size="md"
+                      onClick={handleCopy}
+                      className="flex-1"
+                      color={copied ? "#059669" : undefined}
+                      hoverColor={copied ? "#047857" : undefined}
+                      style={{ gap: 8 }}
+                    >
+                      <MIcon name={copied ? "check" : "content_copy"} size={16} />
+                      {copied ? "Copied" : "Copy all"}
+                    </ShineButton>
+                  </div>
                 ) : (
-                  <SecondaryButton
-                    size="sm"
-                    fullWidth
-                    onClick={() => inputRef.current?.click()}
-                    style={{ height: 36, borderRadius: 9, gap: 6 }}
-                  >
-                    <MIcon name="add" size={16} />
-                    Add more
-                  </SecondaryButton>
+                  <div className="flex items-center gap-2">
+                    <SecondaryButton size="md" onClick={handleReset} className="flex-1">
+                      Clear
+                    </SecondaryButton>
+                    <SecondaryButton
+                      size="md"
+                      onClick={() => inputRef.current?.click()}
+                      className="flex-1"
+                      style={{ gap: 8 }}
+                    >
+                      <MIcon name="add" size={16} />
+                      Add more
+                    </SecondaryButton>
+                  </div>
                 )}
               </div>
             </>
@@ -496,7 +490,7 @@ export function UploadTray({
 
 // ── Presentational helpers ──
 
-// Single file/archive line: badge, name, status-or-progress, optional copy chip.
+// Single file/archive line: name, badge, status-or-progress, optional copy chip.
 function TrayFileRow({
   badge,
   name,
@@ -517,28 +511,24 @@ function TrayFileRow({
   error?: boolean
 }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5">
+    <div className={`flex items-center gap-3 ${PAD} py-2.5`}>
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-1.5">
           <p className="truncate text-[13px] font-medium leading-tight text-[#111] dark:text-[#f0f0f0]">{name}</p>
-          <span className="shrink-0 rounded-[5px] bg-black/[0.05] dark:bg-white/[0.08] px-1.5 py-[1px] text-[9px] font-bold uppercase tracking-wide text-[#8b8b90] dark:text-[#8b9099]">
+          <span className="shrink-0 rounded-[6px] bg-black/[0.05] dark:bg-white/[0.08] px-1.5 py-[1px] text-[9px] font-bold uppercase tracking-wide text-[#6b6b70] dark:text-[#a8a8a8]">
             {badge}
           </span>
         </div>
         {progressPct === null ? (
-          <p className={`mt-0.5 text-[12px] ${error ? "text-red-500 dark:text-red-400" : "text-[#8b8b90] dark:text-[#8b9099]"}`}>{status}</p>
+          <p className={`mt-0.5 text-[12px] ${error ? "text-red-500 dark:text-red-400" : "text-[#6b6b70] dark:text-[#a8a8a8]"}`}>{status}</p>
         ) : (
           <div className="mt-1.5">
-            <Bar pct={progressPct} />
+            <ProgressBar value={progressPct} height={4} aria-label="Upload progress" />
           </div>
         )}
       </div>
       {showCopy && onCopy && (
-        <SecondaryButton
-          size="xs"
-          onClick={(e) => { e.stopPropagation(); onCopy() }}
-          style={{ borderRadius: 9999 }}
-        >
+        <SecondaryButton size="xs" onClick={(e) => { e.stopPropagation(); onCopy() }}>
           {copied ? "Copied" : "Copy link"}
         </SecondaryButton>
       )}
@@ -546,12 +536,6 @@ function TrayFileRow({
   )
 }
 
-// Shared shiny indigo progress bar — one treatment everywhere.
-function Bar({ pct }: { pct: number }) {
-  return <ProgressBar value={pct} height={4} aria-label="Upload progress" />
-}
-
-// Theme-aware toggle switch.
 // Toggle row with icon + label (+ optional helper text).
 function ToggleRow({
   icon,
@@ -567,20 +551,17 @@ function ToggleRow({
   sub?: string
 }) {
   return (
-    <div>
-      <div
-        className="flex cursor-pointer items-center justify-between px-3.5 py-3 transition-colors duration-150 hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
-        onClick={onToggle}
-      >
-        <div className="flex items-center gap-2.5">
-          <MIcon name={icon} size={17} className="text-[#8b8b90] dark:text-[#8b9099]" />
-          <span className="text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]">{label}</span>
-        </div>
-        <span onClick={(e) => e.stopPropagation()} style={{ display: 'inline-flex' }}>
+    <div className={`${PAD} py-3`}>
+      <div className="flex cursor-pointer items-center justify-between gap-3" onClick={onToggle}>
+        <span className={`flex items-center gap-2.5 ${LABEL}`}>
+          <MIcon name={icon} size={17} className={ICON} />
+          {label}
+        </span>
+        <span onClick={(e) => e.stopPropagation()} style={{ display: "inline-flex" }}>
           <ToggleSwitch checked={on} onChange={onToggle} width={36} height={20} aria-label={label} />
         </span>
       </div>
-      {sub && <p className="px-3.5 pb-3 -mt-1.5 text-[12px] leading-snug text-[#8b8b90] dark:text-[#8b9099]">{sub}</p>}
+      {sub && <p className={`mt-1.5 leading-snug ${MUTED}`}>{sub}</p>}
     </div>
   )
 }
@@ -588,20 +569,19 @@ function ToggleRow({
 // Labelled field block (icon + label above a control).
 function FieldBlock({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) {
   return (
-    <div className="px-3.5 py-3">
-      <div className="mb-2 flex items-center gap-2.5">
-        <MIcon name={icon} size={16} className="text-[#8b8b90] dark:text-[#8b9099]" />
-        <span className="text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]">{label}</span>
+    <div className={`${PAD} py-3`}>
+      <div className={`mb-2.5 flex items-center gap-2.5 ${LABEL}`}>
+        <MIcon name={icon} size={17} className={ICON} />
+        {label}
       </div>
       {children}
     </div>
   )
 }
 
-
 function LockBadge() {
   return (
-    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#9a9aa0] dark:text-[#8b9099]">
+    <span className="flex shrink-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#9a9aa0]">
       <MIcon name="lock" size={12} /> Essential+
     </span>
   )
@@ -609,7 +589,7 @@ function LockBadge() {
 
 function UpgradeLink({ text }: { text: string }) {
   return (
-    <a href="/pricing" className="mt-1 inline-block text-[11px] text-[#8b8b90] dark:text-[#8b9099] underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
+    <a href="/pricing" className="mt-2 inline-block text-[11px] text-[#8b8b90] dark:text-[#9a9aa0] underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
       {text}
     </a>
   )
@@ -638,12 +618,12 @@ function CustomLinkField({
   previewBase: string
 }) {
   return (
-    <div className="px-3.5 py-3">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <MIcon name="link" size={16} className="text-[#8b8b90] dark:text-[#8b9099]" />
-          <span className="text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]">Custom link</span>
-        </div>
+    <div className={`${PAD} py-3`}>
+      <div className="mb-2.5 flex items-center justify-between gap-3">
+        <span className={`flex items-center gap-2.5 ${LABEL}`}>
+          <MIcon name="link" size={17} className={ICON} />
+          Custom link
+        </span>
         {slugLocked && <LockBadge />}
       </div>
       <TextInput
@@ -665,15 +645,14 @@ function CustomLinkField({
         <UpgradeLink text="Upgrade to Essential to use custom links" />
       ) : slugError ? (
         <div className="mt-2">
-          <p className="text-[11px] text-red-500" style={{ paddingLeft: 2 }}>{slugError.message}</p>
+          <p className="text-[11px] text-red-500">{slugError.message}</p>
           {slugError.suggestions.length > 0 && (
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {slugError.suggestions.map((s) => (
                 <SecondaryButton
                   key={s}
                   size="xs"
                   onClick={() => { setCustomSlug(s); setSlugError(null) }}
-                  style={{ height: 24, padding: "0 8px", borderRadius: 6, fontSize: 11 }}
                 >
                   {s}
                 </SecondaryButton>
@@ -683,7 +662,7 @@ function CustomLinkField({
         </div>
       ) : (
         customSlug.trim() && (
-          <p className="mt-1.5 truncate text-[11px] text-[#9a9aa0] dark:text-[#8b9099]" style={{ paddingLeft: 2 }}>
+          <p className="mt-2 truncate text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
             {previewBase}{customSlug.trim()}
           </p>
         )
@@ -695,10 +674,10 @@ function CustomLinkField({
 // Small inline note explaining a custom link can't be used for this upload.
 function NoCustomLinkNote({ text }: { text: string }) {
   return (
-    <div className="px-3.5 py-3">
-      <div className="flex items-start gap-2">
-        <MIcon name="info" size={14} className="mt-0.5 shrink-0 text-[#8b8b90] dark:text-[#8b9099]" />
-        <p className="text-[12px] leading-snug text-[#8b8b90] dark:text-[#8b9099]">{text}</p>
+    <div className={`${PAD} py-3`}>
+      <div className="flex items-start gap-2.5">
+        <MIcon name="info" size={16} className={`mt-px shrink-0 ${ICON}`} />
+        <p className={`leading-snug ${MUTED}`}>{text}</p>
       </div>
     </div>
   )
