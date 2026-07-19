@@ -108,6 +108,42 @@ export async function getCdnAssetsByUserId(userId: string): Promise<CdnAsset[]> 
 }
 
 /**
+ * Cursor page of a user's CDN assets, newest first. Mirrors getFilesPage — the
+ * cached whole-account read above is right for the dashboard and wrong for a
+ * public API. Sorted by (created_at, id) for a total ordering across pages.
+ */
+export async function getCdnAssetsPage(
+  userId: string,
+  limit: number,
+  cursor: { ts: number; id: string } | null,
+): Promise<CdnAsset[]> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `SELECT * FROM cdn_assets
+     WHERE user_id = $1
+       AND ($2::timestamptz IS NULL OR (created_at, id) < ($2::timestamptz, $3))
+     ORDER BY created_at DESC, id DESC
+     LIMIT $4`,
+    [userId, cursor ? new Date(cursor.ts) : null, cursor?.id ?? null, limit + 1]
+  )
+
+  return result.rows.map(row => ({
+    id: row.id,
+    user_id: row.user_id,
+    r2_key: row.r2_key,
+    original_name: row.original_name,
+    file_size: Number(row.file_size),
+    content_type: row.content_type,
+    cdn_url: row.cdn_url,
+    folder_id: row.folder_id || null,
+    slug: row.slug || null,
+    created_at: row.created_at,
+  }))
+}
+
+/**
  * True if a CDN slug is unavailable. The slug becomes the public path segment
  * (`/cdn/<slug>/<name>`), so it must be unique across cdn_assets. The `id = $1`
  * clause is defense-in-depth against a slug colliding with a random asset id.

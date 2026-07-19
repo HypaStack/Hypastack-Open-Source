@@ -491,6 +491,52 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
   })
 }
 
+/**
+ * Cursor page of a user's files, newest first. Separate from getFilesByUserId
+ * because that one loads and caches the whole drive — fine for the dashboard,
+ * wrong for a public API that must stay flat as an account grows.
+ *
+ * Sorted by (upload_date, id) so the tiebreaker is total and a page boundary
+ * can never repeat or skip a row. Fetch limit+1 and let buildPage drop the probe.
+ */
+export async function getFilesPage(
+  userId: string,
+  limit: number,
+  cursor: { ts: number; id: string } | null,
+): Promise<FileRecord[]> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  const result = await pool.query(
+    `SELECT id, original_name, file_size, content_type, upload_date, expires_at,
+            burn_on_read, upload_completed, upload_started_at, custom_filename, note, slug
+     FROM basedrop_files
+     WHERE user_id = $1
+       AND expires_at > NOW()
+       AND ($2::timestamptz IS NULL OR (upload_date, id) < ($2::timestamptz, $3))
+     ORDER BY upload_date DESC, id DESC
+     LIMIT $4`,
+    [userId, cursor ? new Date(cursor.ts) : null, cursor?.id ?? null, limit + 1],
+  )
+
+  return result.rows.map(row => ({
+    id: row.id,
+    r2_key: '',
+    original_name: row.original_name,
+    file_size: Number(row.file_size),
+    content_type: row.content_type,
+    upload_date: row.upload_date,
+    expires_at: row.expires_at,
+    burn_on_read: (row.burn_on_read ?? 0) as 0 | 1 | 2,
+    upload_completed: row.upload_completed,
+    upload_started_at: row.upload_started_at,
+    file_hash: null,
+    custom_filename: row.custom_filename,
+    note: row.note,
+    slug: row.slug,
+  }))
+}
+
 export async function getUserFileStats(userId: string): Promise<{
   totalUploads: number
   activeFiles: number
