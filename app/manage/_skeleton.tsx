@@ -43,10 +43,10 @@ export function ManageSkeleton({ pathname }: { pathname: string }) {
               </div>
             ))}
           </div>
-          <Skeleton className="h-10 w-full mt-4" style={{ borderRadius: 12 }} />
         </div>
-        <div className="px-3 pb-3 shrink-0">
-          <Skeleton className="h-12 w-full" style={{ borderRadius: 12 }} />
+        <div className="flex items-center gap-2 px-3 pb-3 shrink-0">
+          <Skeleton className="h-10 w-10 shrink-0" style={{ borderRadius: 12 }} />
+          <Skeleton className="h-10 flex-1" style={{ borderRadius: 12 }} />
         </div>
       </aside>
 

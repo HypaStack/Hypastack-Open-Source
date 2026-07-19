@@ -223,7 +223,7 @@ function ManageLayoutInner({
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#151515] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
+        className="hidden lg:flex shrink-0 flex-col sticky top-0 z-[100] h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="flex items-center gap-2.5 shrink-0 pt-4 pb-6 px-3">
@@ -287,24 +287,15 @@ function ManageLayoutInner({
               {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
             </div>
           </div>
-
-          <ShineButton
-            onClick={() => openPreferences("plans")}
-            size="md"
-            fullWidth
-            className="mt-4"
-          >
-            Upgrade plan
-          </ShineButton>
         </div>
 
-        <div ref={menuRef} className="relative px-3 pb-3 shrink-0">
+        <div ref={menuRef} className="relative flex items-center gap-2 px-3 pb-3 shrink-0">
           <SecondaryButton
             variant="ghost"
-            fullWidth
+            iconOnly
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Account menu"
-            style={{ height: 48, borderRadius: 12, gap: 10, paddingLeft: 8, paddingRight: 8, justifyContent: "flex-start", ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
+            style={{ height: 40, width: 40, borderRadius: 12, ...(menuOpen ? { backgroundColor: "rgba(255,255,255,0.08)" } : {}) }}
           >
             <img decoding="async"
               src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -313,9 +304,15 @@ function ManageLayoutInner({
               draggable={false}
               onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
             />
-            <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
-            <MIcon name="unfold_more" size={16} className="shrink-0 text-[#666] dark:text-[#898e97]" />
           </SecondaryButton>
+
+          <ShineButton
+            onClick={() => openPreferences("plans")}
+            size="md"
+            className="flex-1"
+          >
+            Upgrade plan
+          </ShineButton>
 
           <AnimatePresence>
             {menuOpen && (
