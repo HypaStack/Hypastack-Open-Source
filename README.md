@@ -100,4 +100,4 @@ This is source-available, not open source. You may read, analyse and audit this 
 
 You may not deploy it, host it, self-host it, run it in production, redistribute or sublicense it, modify it beyond what review requires, use it to work around service limits or tiers, or build a competing product or public instance from it — commercial or otherwise.
 
-The full terms are in [LICENSE](./LICENSE). For anything beyond review, ask: github@hypastack.com.
+The full terms are in [LICENSE](./LICENSE). For anything beyond review, ask: usekiko@hypamail.me.
