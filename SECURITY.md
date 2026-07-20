@@ -6,8 +6,8 @@ I support the current stable version and the latest release of the previous majo
 
 | Version | Supported |
 | ------- | :---: |
-| 3.x.x | Not out yet |
-| 2.x.x | :white_check_mark: |
+| 3.x.x | ✅ |
+| 2.x.x | ✅ |
 | 1.x.x | :x: |
 | < 1.0 | :x: |
 
