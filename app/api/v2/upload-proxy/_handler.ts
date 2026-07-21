@@ -59,7 +59,6 @@ export async function handleUploadProxyPost(request: NextRequest) {
     }
 
     const bytes = await file.arrayBuffer()
-    // eslint-disable-next-line prefer-const
     let buffer: Buffer = Buffer.from(bytes)
 
     const typeVerification = await verifyFileType(buffer)

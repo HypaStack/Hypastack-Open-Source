@@ -204,7 +204,6 @@ export function useUpload({
         if (!sel.limitExceeded) setErrorMessage("")
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [files, MAX_FILES, MAX_SIZE, maxSizeLabel, effectiveMaxFiles, remainingSlots, accountLinkCap, uploadType]
   )
 

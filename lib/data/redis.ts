@@ -10,7 +10,6 @@ let _redisDown = false        // suppress repeated error logs
 let _downSince: number | null = null
 
 declare global {
-  // eslint-disable-next-line no-var
   var __hypaRedis: Redis | undefined
 }
 
