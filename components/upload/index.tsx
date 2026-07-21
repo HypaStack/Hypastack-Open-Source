@@ -7,17 +7,18 @@ import type { UploadZoneProps } from "./types"
 
 export function UploadZone(props: UploadZoneProps) {
   const upload = useUpload(props)
+  const { inputRef } = upload
 
   return (
     <>
       <input
-        ref={upload.inputRef}
+        ref={inputRef}
         type="file"
         multiple
         className="hidden"
         onChange={(e) => {
           upload.handleFiles(e.target.files)
-          if (upload.inputRef.current) upload.inputRef.current.value = ""
+          e.target.value = ""
         }}
       />
 
