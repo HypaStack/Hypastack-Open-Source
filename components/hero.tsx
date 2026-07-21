@@ -10,12 +10,6 @@ import { ShineButton } from "@/components/ui/shine-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { useAuth } from "@/hooks/useAuth";
 
-// Film grain as an inline SVG turbulence tile — no asset request, and `data:`
-// is already permitted by the CSP's img-src. Sits above both the card and the
-// ambient glow so the two share one grain pass and can't drift apart.
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E\")";
-
 // One-time bouncy blur-in on mount. Driven by a useSpring MotionValue (0 -> 1)
 // rather than motion's animate/initial props, which don't tween in this setup.
 function PopIn({ children, delay, fromY, className }: { children: ReactNode; delay: number; fromY: number; className?: string }) {
@@ -176,19 +170,6 @@ export function Hero() {
                   </>
                 )}
               </div>
-              {showVideo && videoReady && (
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-20 rounded-[14px]"
-                  style={{
-                    backgroundImage: GRAIN,
-                    backgroundRepeat: "repeat",
-                    backgroundSize: "200px 200px",
-                    mixBlendMode: "overlay",
-                    opacity: 0.22,
-                  }}
-                />
-              )}
             </div>
           </PopIn>
         </div>
