@@ -143,7 +143,6 @@ export function CdnAssetTile({
                 <LoadingSvg size={28} />
               </div>
             )}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img loading="lazy" decoding="async"
               src={asset.cdnUrl}
               alt={asset.name}

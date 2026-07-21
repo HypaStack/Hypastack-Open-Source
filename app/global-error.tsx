@@ -75,6 +75,9 @@ export default function GlobalError({
             >
               Try again
             </button>
+            {/* A full reload is the point here — the router is gone with the
+                root layout, so next/link can't be used. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/"
               style={{

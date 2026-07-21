@@ -23,7 +23,6 @@ export function FileThumb({
     )
   }
   return (
-    /* eslint-disable-next-line @next/next/no-img-element */
     <img loading="lazy" decoding="async"
       src={`${API_BASE}/files/${id}/preview`}
       alt={name}
