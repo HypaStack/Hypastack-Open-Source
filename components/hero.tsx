@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
-import { AlertMessage } from "@/components/ui/alert-message";
 import { Loader } from "@/components/ui/loader";
 import { ShineButton } from "@/components/ui/shine-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
@@ -73,22 +72,6 @@ export function Hero() {
         </svg>
 
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
-          <PopIn delay={80} fromY={18} className="mb-5">
-            <a href="https://streamduck.site/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-              <AlertMessage
-                rgb="79, 70, 229"
-                animate={false}
-                icon={null}
-                style={{ display: "inline-flex", alignItems: "flex-start", marginBottom: 0, fontSize: 13, lineHeight: "18px", cursor: "pointer", color: "#c7d2fe" }}
-              >
-                <span className="flex items-center gap-2">
-                  <span className="font-medium">Check out Streamduck!</span>
-                  <span className="text-[9px] font-semibold uppercase tracking-wider leading-none px-1.5 py-[2px] rounded-[2px] bg-[rgba(99,102,241,0.35)]">Partnership</span>
-                </span>
-                <span className="block text-[11px] opacity-70 mt-0.5">Free Movie Streaming Forever</span>
-              </AlertMessage>
-            </a>
-          </PopIn>
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
               className="text-left text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
