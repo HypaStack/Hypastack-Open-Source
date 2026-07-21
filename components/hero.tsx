@@ -94,10 +94,10 @@ export function Hero() {
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
             <div className="flex flex-wrap items-center gap-3">
-              <ShineButton size="lg" onClick={handleLoginClick}>
+              <ShineButton size="md" onClick={handleLoginClick}>
                 Get started
               </ShineButton>
-              <SecondaryButton href="/pricing" as={Link} size="lg">
+              <SecondaryButton href="/pricing" as={Link} size="md">
                 View pricing
               </SecondaryButton>
             </div>
