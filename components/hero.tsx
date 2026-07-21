@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
-import { Loader } from "@/components/ui/loader";
 import { ShineButton } from "@/components/ui/shine-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,11 +32,6 @@ export function Hero() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [pendingNav, setPendingNav] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-  // Mobile opt-in: user tapped "Load regardless" to pull the heavy video anyway.
-  const [forceLoad, setForceLoad] = useState(false);
-  const showVideo = isMobile === false || forceLoad;
 
   // Navigate once auth resolves after button was clicked
   useEffect(() => {
@@ -46,15 +40,6 @@ export function Hero() {
       router.push(isAuthenticated ? "/manage/files" : "/signin");
     }
   }, [pendingNav, isLoading, isAuthenticated, router]);
-
-  // Don't ship the heavy video to phones — render a note instead.
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
 
   function handleLoginClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -88,61 +73,6 @@ export function Hero() {
               <SecondaryButton href="/pricing" as={Link} size="lg">
                 View pricing
               </SecondaryButton>
-            </div>
-          </PopIn>
-          <PopIn delay={320} fromY={44} className="w-full mt-28 sm:mt-40">
-            <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
-              {/* Ambient glow: a blurred copy of the video bleeding its own colours
-                  around the card edges, so the glow always matches and blends. */}
-              {showVideo && videoReady && (
-                <video
-                  src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  aria-hidden="true"
-                  tabIndex={-1}
-                  draggable={false}
-                  className="pointer-events-none select-none absolute inset-0 h-full w-full object-cover"
-                  style={{ filter: "blur(55px) saturate(1.7) brightness(1.5)", transform: "scale(1.08)", opacity: 0.6, zIndex: 0 }}
-                />
-              )}
-              <div className="absolute inset-0 z-10 rounded-[14px] overflow-hidden bg-[#0e0f10]">
-                {isMobile === true && !forceLoad ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center gap-4 px-8">
-                    <p className="text-[14px] leading-relaxed text-[#898e97] max-w-[320px]">
-                      You're on mobile so we couldn't load this video for you to ensure a smooth experience
-                    </p>
-                    <SecondaryButton size="sm" onClick={() => setForceLoad(true)}>
-                      Load regardless
-                    </SecondaryButton>
-                  </div>
-                ) : (
-                  <>
-                    {!videoReady && (
-                      <div className="absolute inset-0 flex items-center justify-center text-[#898e97]">
-                        <Loader size={34} />
-                      </div>
-                    )}
-                    {showVideo && (
-                      <video
-                        src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        onCanPlay={() => setVideoReady(true)}
-                        aria-label="Hypastack dashboard with encrypted file sharing and CDN asset hosting"
-                        className="w-full h-full object-cover select-none pointer-events-none"
-                        style={{ opacity: videoReady ? 1 : 0, transition: "opacity 0.6s ease-out" }}
-                        draggable={false}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
             </div>
           </PopIn>
         </div>
