@@ -21,7 +21,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const retryCountRef = useRef(0)
 
-  const fetchAuth = useCallback(async () => {
+  // Named so the retries below recurse on the function itself rather than on
+  // the outer `fetchAuth` binding, which would go stale if deps are ever added.
+  const fetchAuth = useCallback(async function run(): Promise<void> {
     try {
       const response = await apiFetch("/api/v2/auth/me", {
         credentials: "include",
@@ -30,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.status === 429) {
         if (retryCountRef.current < MAX_RETRIES) {
           retryCountRef.current++
-          setTimeout(() => fetchAuth(), RETRY_DELAY_MS * retryCountRef.current)
+          setTimeout(() => run(), RETRY_DELAY_MS * retryCountRef.current)
           return
         }
         setIsLoading(false)
@@ -52,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       if (retryCountRef.current < MAX_RETRIES) {
         retryCountRef.current++
-        setTimeout(() => fetchAuth(), RETRY_DELAY_MS * retryCountRef.current)
+        setTimeout(() => run(), RETRY_DELAY_MS * retryCountRef.current)
         return
       }
       setIsLoading(false)

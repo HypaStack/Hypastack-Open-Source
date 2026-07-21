@@ -104,7 +104,9 @@ export function ManageProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const retryCountRef = useRef(0)
 
-  const fetchData = useCallback(async () => {
+  // Named so the retries below recurse on the function itself rather than on
+  // the outer `fetchData` binding, which would go stale if deps are ever added.
+  const fetchData = useCallback(async function run(): Promise<void> {
     try {
       const response = await apiFetch("/api/v2/auth/me?include=user,stats,files,cdn,folders", {
         credentials: "include",
@@ -113,7 +115,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
       if (response.status === 429) {
         if (retryCountRef.current < MAX_RETRIES) {
           retryCountRef.current++
-          setTimeout(() => fetchData(), RETRY_DELAY_MS * retryCountRef.current)
+          setTimeout(() => run(), RETRY_DELAY_MS * retryCountRef.current)
           return
         }
         setIsLoading(false)
@@ -165,7 +167,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
     } catch {
       if (retryCountRef.current < MAX_RETRIES) {
         retryCountRef.current++
-        setTimeout(() => fetchData(), RETRY_DELAY_MS * retryCountRef.current)
+        setTimeout(() => run(), RETRY_DELAY_MS * retryCountRef.current)
         return
       }
       setIsLoading(false)

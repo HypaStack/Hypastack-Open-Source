@@ -137,31 +137,6 @@ export function useUpload({
     fetchCsrfToken()
   }, [])
 
-  const initialFilesProcessed = useRef(false)
-  useEffect(() => {
-    if (!initialFiles) return
-    if (initialFilesProcessed.current) return
-    initialFilesProcessed.current = true
-    const list =
-      initialFiles instanceof FileList
-        ? initialFiles
-        : (() => {
-            const dt = new DataTransfer()
-            for (const f of initialFiles) dt.items.add(f)
-            return dt.files
-          })()
-    if (list.length === 0) return
-    handleFiles(list)
-    // Paid users see the CDN options first (a custom link for a single asset, or
-    // a "not available" note for multi-file), so don't auto-start their CDN
-    // uploads; free users keep the instant flow.
-    const cdnShowsOptions = uploadType === "cdn" && isPaidTier(normalizeTier(user?.tier))
-    if ((autoStart || uploadType === "cdn") && !cdnShowsOptions) {
-      setAutoStartArmed(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialFiles, autoStart, uploadType])
-
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList) return
@@ -206,6 +181,33 @@ export function useUpload({
     },
     [files, MAX_FILES, MAX_SIZE, maxSizeLabel, effectiveMaxFiles, remainingSlots, accountLinkCap, uploadType]
   )
+
+  // Declared after handleFiles so it reads the current one, not the binding
+  // from an earlier render.
+  const initialFilesProcessed = useRef(false)
+  useEffect(() => {
+    if (!initialFiles) return
+    if (initialFilesProcessed.current) return
+    initialFilesProcessed.current = true
+    const list =
+      initialFiles instanceof FileList
+        ? initialFiles
+        : (() => {
+            const dt = new DataTransfer()
+            for (const f of initialFiles) dt.items.add(f)
+            return dt.files
+          })()
+    if (list.length === 0) return
+    handleFiles(list)
+    // Paid users see the CDN options first (a custom link for a single asset, or
+    // a "not available" note for multi-file), so don't auto-start their CDN
+    // uploads; free users keep the instant flow.
+    const cdnShowsOptions = uploadType === "cdn" && isPaidTier(normalizeTier(user?.tier))
+    if ((autoStart || uploadType === "cdn") && !cdnShowsOptions) {
+      setAutoStartArmed(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFiles, autoStart, uploadType])
 
   // Multiple files init as ONE batch so a single solved Turnstile token verifies
   // the whole upload (instead of once per file, which hit the token reuse cap and
