@@ -28,7 +28,7 @@ export function Faq() {
           >
             Frequently Asked <span className="text-[#898e97]">Questions</span>
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
+          <p className="mt-4 text-[17px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
 The stuff people usually ask us.
           </p>
         </motion.div>
@@ -49,7 +49,7 @@ The stuff people usually ask us.
                 headerStyle={{ padding: "20px 32px" }}
                 panelStyle={{ padding: "0 32px 24px" }}
               >
-                <p className="text-[14px] leading-relaxed text-[#898e97] max-w-3xl">{item.a}</p>
+                <p className="text-[16px] leading-relaxed text-[#898e97] max-w-3xl">{item.a}</p>
               </AccordionItem>
             ))}
           </Accordion>

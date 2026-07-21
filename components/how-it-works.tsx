@@ -46,24 +46,24 @@ export function HowItWorks() {
             >
               A simple, secure network <span className="text-[#898e97]">built for your files.</span>
             </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
+            <p className="mt-4 text-[17px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
               No setup and no clutter. Just fast private hosting that stays out of your way.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 sm:mt-10">
               <ShineCard className="h-full p-8">
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Built for purpose</h3>
-                <p className="text-[15px] leading-relaxed text-[#898e97]">Shaped by what creators actually need. Tools that just work.</p>
+                <p className="text-[17px] leading-relaxed text-[#898e97]">Shaped by what creators actually need. Tools that just work.</p>
               </ShineCard>
 
               <ShineCard className="h-full p-8">
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Powered by Cloudflare</h3>
-                <p className="text-[15px] leading-relaxed text-[#898e97]">A secure spot to pass encrypted files plus a fast CDN that strips tracking automatically.</p>
+                <p className="text-[17px] leading-relaxed text-[#898e97]">A secure spot to pass encrypted files plus a fast CDN that strips tracking automatically.</p>
               </ShineCard>
 
               <ShineCard className="h-full p-8">
                 <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Designed for speed</h3>
-                <p className="text-[15px] leading-relaxed text-[#898e97]">A lightweight network that stays out of your way and serves files near-instantly.</p>
+                <p className="text-[17px] leading-relaxed text-[#898e97]">A lightweight network that stays out of your way and serves files near-instantly.</p>
               </ShineCard>
             </div>
           </motion.div>
@@ -96,7 +96,7 @@ export function HowItWorks() {
                   <span>Source code</span>
                 </ShineButton>
                 </div>
-                <p className="mt-4 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
+                <p className="mt-4 text-[17px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
                   Source available, so you never have to take our word for it.
                 </p>
               </div>
@@ -104,15 +104,15 @@ export function HowItWorks() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 sm:mt-8">
                 <ShineCard className="h-full p-8">
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Hidden Telemetry</h3>
-                  <p className="text-[15px] leading-relaxed text-[#898e97]">Other platforms quietly log what you do. We can't, our source is public.</p>
+                  <p className="text-[17px] leading-relaxed text-[#898e97]">Other platforms quietly log what you do. We can't, our source is public.</p>
                 </ShineCard>
                 <ShineCard className="h-full p-8">
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Data Harvesting</h3>
-                  <p className="text-[15px] leading-relaxed text-[#898e97]">Read the code and see exactly how your files are handled. No blind faith needed.</p>
+                  <p className="text-[17px] leading-relaxed text-[#898e97]">Read the code and see exactly how your files are handled. No blind faith needed.</p>
                 </ShineCard>
                 <ShineCard className="h-full p-8">
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Vendor Lock-in</h3>
-                  <p className="text-[15px] leading-relaxed text-[#898e97]">If we ever change or shut down, you can just self-host the whole stack.</p>
+                  <p className="text-[17px] leading-relaxed text-[#898e97]">If we ever change or shut down, you can just self-host the whole stack.</p>
                 </ShineCard>
               </div>
             </motion.div>
@@ -142,7 +142,7 @@ export function HowItWorks() {
                   })}
                 </h2>
 
-                <p className="mt-5 text-[15px] leading-relaxed text-[#898e97] font-light">
+                <p className="mt-5 text-[17px] leading-relaxed text-[#898e97] font-light">
                   From someone who just wanted their files to load fast.
                 </p>
               </div>

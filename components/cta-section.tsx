@@ -34,7 +34,7 @@ export function CtaSection() {
                     <span>Welcome <span className="text-[#898e97]">back!</span></span>
                   </div>
                 </h2>
-                <p className="mt-3 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
+                <p className="mt-3 text-[17px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
                   Pick up right where you left off.
                 </p>
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -54,7 +54,7 @@ export function CtaSection() {
                 >
                   Wanna check <span className="text-[#898e97]">it out?</span>
                 </h2>
-                <p className="mt-3 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
+                <p className="mt-3 text-[17px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
                   Make an account in seconds. No email and no tracking.
                 </p>
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
