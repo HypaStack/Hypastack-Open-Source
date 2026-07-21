@@ -89,7 +89,7 @@ export function Hero() {
               className="text-left text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
-              Private file sharing, <span className="text-[#898e97]">encrypted in your browser. Plus a free CDN for everything public.</span>
+              Private file sharing, <span className="text-[#898e97]">encrypted in your browser.</span>
             </h1>
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">

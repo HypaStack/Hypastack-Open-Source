@@ -44,7 +44,7 @@ export function HowItWorks() {
               className="text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
             >
-              A simple, secure network <span className="text-[#898e97]">designed to host and share your files seamlessly.</span>
+              A simple, secure network <span className="text-[#898e97]">built for your files.</span>
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-[#898e97] font-light max-w-[560px]">
               No setup and no clutter. Just fast private hosting that stays out of your way.
