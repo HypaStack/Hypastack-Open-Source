@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
+import { MIcon } from "@/components/ui/material-icon";
 import { ShineButton } from "@/components/ui/shine-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,6 +55,35 @@ export function Hero() {
     <section className="relative w-full">
       <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
+          <PopIn delay={80} fromY={18} className="mb-5">
+            <Link
+              href="https://github.com/HypaStack/Hypastack-Open-Source/commits/main"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.07)] transition-colors py-1 pl-1 pr-3 no-underline"
+            >
+              {/* Mirrors ShineButton's primary gloss — a span rather than the
+                  component itself, since a nested <a>/<button> is invalid here. */}
+              <span
+                className="inline-flex items-center gap-1 rounded-full text-white"
+                style={{
+                  height: 22,
+                  padding: "0 9px",
+                  fontSize: 11,
+                  fontWeight: 500,
+                  backgroundColor: "#2680bf",
+                  backgroundImage: "linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0))",
+                  borderTop: "1px solid rgba(255,255,255,0.6)",
+                  boxShadow:
+                    "rgba(0,0,0,0.05) 0px 1px 0px 0px, rgba(0,0,0,0.1) 0px 4px 4px 0px, rgba(0,0,0,0.15) 0px 10px 10px 0px, rgba(0,0,0,0.4) 0px -2px 0px 0px inset",
+                }}
+              >
+                <MIcon name="celebration" size={12} />
+                NEW
+              </span>
+              <span className="text-[13px] text-[#c9ced6]">Read our changelog</span>
+            </Link>
+          </PopIn>
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
               className="text-left text-[clamp(28px,4.5vw,56px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
