@@ -213,7 +213,7 @@ export async function proxy(request: NextRequest) {
     if (corsOrigin) {
       preflight.headers.set('Access-Control-Allow-Origin', corsOrigin)
       preflight.headers.set('Access-Control-Allow-Credentials', 'true')
-      preflight.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+      preflight.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
       preflight.headers.set('Access-Control-Allow-Headers', `content-type, ${PROXY_HEADER}`)
       preflight.headers.set('Access-Control-Max-Age', '600')
       preflight.headers.set('Vary', 'Origin')
