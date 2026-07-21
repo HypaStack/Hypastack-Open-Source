@@ -9,7 +9,7 @@ import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
 import { useManage, type CdnAssetItem } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { ContextMenu, ContextMenuItem } from "@/components/ui/context-menu"
 import { apiFetch } from "@/lib/http/fetch"
 import { errorMessage } from "@/lib/errors"
@@ -20,6 +20,17 @@ import { EmptyState } from "./_empty-state"
 import { MoveDialog, toTree } from "../_move-dialog"
 import { FolderTile } from "../_folder-tile"
 
+const CTRL_HINT_EVENT = "hypa-ctrl-hint-dismissed"
+
+function readCtrlHintHidden(): boolean {
+  return localStorage.getItem(STORAGE_KEY_HIDE_CTRL_HINT) === '1'
+}
+
+function subscribeCtrlHint(onStoreChange: () => void) {
+  window.addEventListener(CTRL_HINT_EVENT, onStoreChange)
+  return () => window.removeEventListener(CTRL_HINT_EVENT, onStoreChange)
+}
+
 export default function CdnPage() {
   const { user, cdnAssets: assets, setCdnAssets: setAssets, cdnFolders: folders, setCdnFolders: setFolders, refreshUser } = useManage()
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -29,11 +40,9 @@ export default function CdnPage() {
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
   const [moveOpen, setMoveOpen] = useState(false)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
-  const [hideCtrlHint, setHideCtrlHint] = useState(true)
-
-  useEffect(() => {
-    setHideCtrlHint(localStorage.getItem(STORAGE_KEY_HIDE_CTRL_HINT) === '1')
-  }, [])
+  // Hidden on the server snapshot so the hint can only ever appear, never
+  // flash away once the stored preference is read.
+  const hideCtrlHint = useSyncExternalStore(subscribeCtrlHint, readCtrlHintHidden, () => true)
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
@@ -689,7 +698,7 @@ export default function CdnPage() {
               size="xs"
               onClick={() => {
                 localStorage.setItem(STORAGE_KEY_HIDE_CTRL_HINT, '1')
-                setHideCtrlHint(true)
+                window.dispatchEvent(new Event(CTRL_HINT_EVENT))
               }}
               className="absolute right-2 opacity-0 group-hover:opacity-100"
               aria-label="Dismiss hint"
