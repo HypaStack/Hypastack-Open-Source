@@ -123,7 +123,7 @@ export function Hero() {
                   around the card edges, so the glow always matches and blends. */}
               {showVideo && videoReady && (
                 <video
-                  src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
+                  src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
                   autoPlay
                   muted
                   loop
@@ -132,7 +132,7 @@ export function Hero() {
                   tabIndex={-1}
                   draggable={false}
                   className="pointer-events-none select-none absolute inset-0 h-full w-full object-cover"
-                  style={{ filter: "blur(55px) saturate(1.7) brightness(1.5)", transform: "scale(1.08)", opacity: 0.6, zIndex: 0 }}
+                  style={{ filter: "blur(40px) saturate(1.7) brightness(1.5)", transform: "scale(1.03)", opacity: 0.6, zIndex: 0 }}
                 />
               )}
               <div className="absolute inset-0 z-10 rounded-[14px] overflow-hidden bg-[#0e0f10]">
@@ -154,7 +154,7 @@ export function Hero() {
                     )}
                     {showVideo && (
                       <video
-                        src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
+                        src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
                         autoPlay
                         muted
                         loop
