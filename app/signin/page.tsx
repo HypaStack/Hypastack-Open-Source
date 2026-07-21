@@ -38,7 +38,7 @@ export default function SignInPage() {
   }, [])
   useEffect(() => {
     if (!authLoading && isAuthenticated) router.replace("/manage/files")
-  }, [isAuthenticated, authLoading])
+  }, [isAuthenticated, authLoading, router])
 
   const goToApp = () => {
     const params = new URLSearchParams(window.location.search)

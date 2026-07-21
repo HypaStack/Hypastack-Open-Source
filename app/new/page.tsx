@@ -26,6 +26,32 @@ const FEATURES = [
   { icon: "lock", label: "No email. No tracking." },
 ]
 
+const RightPanel = () => (
+  <div
+    className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#121212] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
+  >
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)] pointer-events-none" />
+    <div className="w-full relative z-10">
+      <img
+        src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png"
+        alt="Behind the scenes"
+        className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
+      />
+      <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+        See Hypastack under the hood
+      </h2>
+      <SecondaryButton
+        href="https://github.com/HypaStack/Hypastack-Open-Source"
+        target="_blank"
+        rel="noopener noreferrer"
+        size="md"
+      >
+        Take a look
+      </SecondaryButton>
+    </div>
+  </div>
+)
+
 export default function CreateAccountPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -53,7 +79,7 @@ export default function CreateAccountPage() {
   }
   useEffect(() => {
     if (!authLoading && isAuthenticated) router.replace("/manage/files")
-  }, [isAuthenticated, authLoading])
+  }, [isAuthenticated, authLoading, router])
 
   // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.
   const nicknameError =
@@ -103,32 +129,6 @@ export default function CreateAccountPage() {
       setTimeout(() => setCopied(false), 3000)
     } catch {}
   }
-
-  const RightPanel = () => (
-    <div
-      className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#121212] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
-    >
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)] pointer-events-none" />
-      <div className="w-full relative z-10">
-        <img 
-          src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png" 
-          alt="Behind the scenes" 
-          className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
-        />
-        <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
-          See Hypastack under the hood
-        </h2>
-        <SecondaryButton
-          href="https://github.com/HypaStack/Hypastack-Open-Source"
-          target="_blank"
-          rel="noopener noreferrer"
-          size="md"
-        >
-          Take a look
-        </SecondaryButton>
-      </div>
-    </div>
-  )
 
   if (generatedKey) {
     return (
