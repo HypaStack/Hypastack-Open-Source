@@ -53,7 +53,7 @@ export function Hero() {
   }
   return (
     <section className="relative w-full">
-      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
+      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#0d0e10] pt-[20vh] sm:pt-[15vh]">
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={80} fromY={18} className="mb-5">
             <Link

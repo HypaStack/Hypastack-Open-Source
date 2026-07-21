@@ -31,7 +31,7 @@ export function HowItWorks() {
   const quoteProgress = useSpring(scrollYProgress, { stiffness: 160, damping: 9, mass: 0.8 });
   return (
     <section id="how-it-works" className="relative flex flex-col items-center">
-      <div className="mt-[100px] sm:mt-[150px] lg:mt-[200px] relative w-full max-w-[1200px] flex flex-col bg-[#08090a] z-[60]">
+      <div className="mt-[100px] sm:mt-[150px] lg:mt-[200px] relative w-full max-w-[1200px] flex flex-col bg-[#0d0e10] z-[60]">
         <div className="w-full px-6 sm:px-6 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -71,7 +71,7 @@ export function HowItWorks() {
       </div>
 
       <div className="relative w-full max-w-[1200px] mt-[80px] sm:mt-[120px] lg:mt-[180px]">
-        <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
+        <div className="relative w-full flex flex-col bg-[#0d0e10] z-[60]">
 
           <div className="w-full px-6 sm:px-6 pt-12 sm:pt-16 pb-12 sm:pb-14 text-left relative overflow-hidden">
             <motion.div
@@ -120,7 +120,7 @@ export function HowItWorks() {
         </div>
       </div>
       <div className="relative w-full max-w-[1200px] mt-[80px] sm:mt-[120px] lg:mt-[180px]">
-        <div className="relative w-full flex flex-col bg-[#08090a] z-[60]">
+        <div className="relative w-full flex flex-col bg-[#0d0e10] z-[60]">
           <div className="w-full px-6 sm:px-6 py-12 sm:py-20 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 items-start lg:items-center">
               <div className="text-left flex-1 w-full max-w-none">

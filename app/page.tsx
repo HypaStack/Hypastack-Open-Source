@@ -58,7 +58,7 @@ export default function Home() {
         }}
       />
       <Navbar />
-      <main className="relative min-h-screen bg-[#08090a] text-foreground w-full overflow-hidden">
+      <main className="relative min-h-screen bg-[#0d0e10] text-foreground w-full overflow-hidden">
         <Suspense fallback={null}>
           <StatusBanner />
         </Suspense>
