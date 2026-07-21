@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
 import { ShineButton } from "@/components/ui/shine-button";
@@ -53,9 +53,6 @@ export function Hero() {
   return (
     <section className="relative w-full">
       <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-[#08090a] pt-[20vh] sm:pt-[15vh]">
-        <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" aria-hidden="true" style={{ zIndex: 0, overflow: 'visible' }}>
-        </svg>
-
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
