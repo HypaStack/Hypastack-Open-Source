@@ -53,8 +53,10 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
     window.open(`${API_BASE}/bin/${id}/raw`, '_blank', 'noopener,noreferrer')
   }
 
-  // Calculate days left for 180-day retention
-  const retentionDays = createdAt ? 180 - Math.floor((Date.now() - new Date(createdAt).getTime()) / 864e5) : 180
+  // Calculate days left for 180-day retention. `now` is pinned at mount so the
+  // count stays stable across re-renders.
+  const [now] = useState(() => Date.now())
+  const retentionDays = createdAt ? 180 - Math.floor((now - new Date(createdAt).getTime()) / 864e5) : 180
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-[#08090a]">

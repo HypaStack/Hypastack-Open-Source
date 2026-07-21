@@ -44,9 +44,10 @@ export function BrandingDialog({
     return () => document.removeEventListener("keydown", onKey)
   }, [open, onClose])
 
+  const [now] = useState(() => Date.now())
   const nameChanged = displayName.trim() !== (user.displayName ?? "")
   const nameCooldownMs = user.displayNameChangedAt
-    ? Math.max(0, new Date(user.displayNameChangedAt).getTime() + DISPLAY_NAME_CHANGE_COOLDOWN_MS - Date.now())
+    ? Math.max(0, new Date(user.displayNameChangedAt).getTime() + DISPLAY_NAME_CHANGE_COOLDOWN_MS - now)
     : 0
   const nameCooldownDays = Math.ceil(nameCooldownMs / (24 * 60 * 60 * 1000))
 

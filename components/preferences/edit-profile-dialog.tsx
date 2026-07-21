@@ -52,9 +52,10 @@ export function EditProfileDialog({
     nickname.length < 3 ? "Must be at least 3 characters." :
     nickname.length > 12 ? "Must be 12 characters or fewer." : ""
   const isNicknameValid = /^[A-Za-z0-9]{3,12}$/.test(nickname)
+  const [now] = useState(() => Date.now())
   const nickChanged = nickname.trim() !== user.nickname
   const nickCooldownMs = user.nicknameChangedAt
-    ? Math.max(0, new Date(user.nicknameChangedAt).getTime() + NICKNAME_CHANGE_COOLDOWN_MS - Date.now())
+    ? Math.max(0, new Date(user.nicknameChangedAt).getTime() + NICKNAME_CHANGE_COOLDOWN_MS - now)
     : 0
   const nickCooldownDays = Math.ceil(nickCooldownMs / (24 * 60 * 60 * 1000))
   const nickCooldownLocked = nickChanged && nickCooldownMs > 0
