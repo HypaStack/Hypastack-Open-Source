@@ -52,16 +52,22 @@ const nextConfig = {
           },
         ],
       },
-      {
-        // Next.js static chunks are content-addressed — safe to cache forever
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
+      // Next.js static chunks are content-addressed — safe to cache forever.
+      // Skipped in dev: a custom Cache-Control here breaks HMR asset reloading,
+      // which is what `next dev` warns about.
+      ...(process.env.NODE_ENV === "development"
+        ? []
+        : [
+            {
+              source: "/_next/static/:path*",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "public, max-age=31536000, immutable",
+                },
+              ],
+            },
+          ]),
       {
         source: "/api/:path*",
         headers: [
