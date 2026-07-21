@@ -113,7 +113,7 @@ export function Hero() {
                   around the card edges, so the glow always matches and blends. */}
               {showVideo && videoReady && (
                 <video
-                  src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
+                  src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
                   autoPlay
                   muted
                   loop
@@ -144,7 +144,7 @@ export function Hero() {
                     )}
                     {showVideo && (
                       <video
-                        src="https://r2.hypastack.com/cdn/heroassets/hero.mp4"
+                        src="https://r2.hypastack.com/cdn/hero-section-video/new-hero.mp4"
                         autoPlay
                         muted
                         loop
