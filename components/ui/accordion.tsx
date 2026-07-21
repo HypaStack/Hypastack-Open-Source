@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useRef, useState, type CSSProperties, type ReactNode } from "react"
+import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { useThemeMode, type ThemeMode } from "./use-theme-mode"
 
 const PALETTE = {
@@ -101,6 +101,16 @@ export function AccordionItem({
   const c = PALETTE[useThemeMode(theme)]
 
   const isOpen = open ?? uncontrolled
+
+  // Measured in an effect rather than read off panelRef during render: the ref
+  // is null on the first render (so it fell back to a magic 2000px), and a
+  // render-time read never re-measures when the panel content changes.
+  useEffect(() => {
+    const el = panelRef.current
+    if (!el) return
+    el.style.maxHeight = isOpen ? `${el.scrollHeight}px` : "0"
+  }, [isOpen, children])
+
   const toggle = () => {
     if (disabled) return
     const next = !isOpen
@@ -159,7 +169,7 @@ export function AccordionItem({
           ref={panelRef}
           style={{
             overflow: "hidden",
-            maxHeight: isOpen ? panelRef.current?.scrollHeight ?? 2000 : 0,
+            maxHeight: 0,
             transition: "max-height 0.3s ease-in-out",
           }}
         >
