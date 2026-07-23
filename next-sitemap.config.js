@@ -19,6 +19,12 @@ module.exports = {
       },
 
       {
+        loc: '/docs/developer-api',
+        changefreq: 'weekly',
+        priority: 0.8,
+        lastmod: new Date().toISOString(),
+      },
+      {
         loc: '/terms',
         changefreq: 'monthly',
         priority: 0.6,

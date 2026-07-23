@@ -232,6 +232,7 @@ export default async function RootLayout({
                     "No ads, no tracking, and IP addresses are never stored",
                     "Anonymous text pastes",
                     "Resumable parallel uploads for large files",
+                    "REST developer API (v3) with scoped API keys for driving files and CDN assets from your own code; unlike website uploads, files sent through the API are not end-to-end encrypted and are readable by the operator",
                     "EU-based storage",
                     "Windows desktop app with system tray upload",
                     "Source available for public review under a reference-only licence",
@@ -249,6 +250,25 @@ export default async function RootLayout({
                   license: "https://github.com/HypaStack/Hypastack-Open-Source/blob/main/LICENSE",
                   about: {
                     "@id": `${SITE_URL}/#webapp`,
+                  },
+                },
+                {
+                  "@type": "APIReference",
+                  "@id": `${SITE_URL}/docs/developer-api#apireference`,
+                  name: "Hypastack Developer API",
+                  headline: "Hypastack Developer API (v3)",
+                  url: `${SITE_URL}/docs/developer-api`,
+                  description:
+                    "REST API for driving Hypastack files and CDN assets from your own code. Bearer-token auth with scoped keys, plain JSON, no SDK. Files uploaded through the API are not end-to-end encrypted (there is no browser to hold the key) and are readable by the operator; CDN assets are public by design. The zero-knowledge guarantee applies only to uploads made through the website.",
+                  targetPlatform: "https://api.hypastack.com/v3",
+                  programmingModel: "REST",
+                  assemblyVersion: "v3",
+                  inLanguage: "en-US",
+                  isPartOf: {
+                    "@id": `${SITE_URL}/#webapp`,
+                  },
+                  publisher: {
+                    "@id": `${SITE_URL}/#organization`,
                   },
                 },
               ],

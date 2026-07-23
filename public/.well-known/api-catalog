@@ -1,12 +1,36 @@
 {
   "linkset": [
     {
+      "anchor": "https://api.hypastack.com/v3",
+      "service-doc": [
+        {
+          "href": "https://hypastack.com/docs/developer-api",
+          "type": "text/html",
+          "title": "Hypastack Developer API (v3) — reference"
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://hypastack.com/docs/developer-api",
+          "type": "text/html",
+          "title": "Hypastack Developer API (v3). REST, bearer-token auth with scoped keys. Files uploaded through the API are not end-to-end encrypted and are readable by the operator; only website uploads are zero-knowledge."
+        }
+      ],
+      "status": [
+        {
+          "href": "https://status.hypastack.com",
+          "type": "text/html",
+          "title": "Hypastack status"
+        }
+      ]
+    },
+    {
       "anchor": "https://hypastack.com/api/v2",
       "service-doc": [
         {
           "href": "https://github.com/HypaStack/Hypastack-Open-Source#the-stack",
           "type": "text/html",
-          "title": "Hypastack API — source and documentation"
+          "title": "Hypastack internal API (v2) — source and documentation"
         }
       ],
       "status": [
