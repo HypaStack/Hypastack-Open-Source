@@ -16,7 +16,7 @@ export const SECTION_BUTTONS: NavItem[] = [
   { label: "Drive", href: "/manage/files", icon: "hard_drive", hint: "Share files with expiring links" },
   { label: "CDN", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
   { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
-  { label: "Dumpster", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
+  { label: "Scratch", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
 
 /** Sub-navigation items for the Drive section */
@@ -34,8 +34,8 @@ export const CDN_SUBNAV: NavItem[] = [
   { label: "Assets", href: "/manage/cdn", icon: "cloud" },
 ]
 
-/** Sub-navigation items for the Dumpster section */
-export const DUMPSTER_SUBNAV: NavItem[] = [
+/** Sub-navigation items for the Scratch section */
+export const SCRATCH_SUBNAV: NavItem[] = [
   { label: "New Paste", href: "/manage/dumpster", icon: "add_notes" },
 ]
 
@@ -44,7 +44,7 @@ export const SECTION_ORDER: Record<string, number> = {
   Drive: 0,
   CDN: 1,
   Funnel: 2,
-  Dumpster: 3,
+  Scratch: 3,
 }
 
 /** width of the secondary (sub-nav) sidebar in pixels */

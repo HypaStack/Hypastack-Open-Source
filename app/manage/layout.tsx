@@ -60,7 +60,7 @@ function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/funnel")) return "Funnel"
   if (pathname.startsWith("/manage/cdn")) return "CDN"
-  if (pathname.startsWith("/manage/dumpster")) return "Dumpster"
+  if (pathname.startsWith("/manage/dumpster")) return "Scratch"
   return "Drive"
 }
 

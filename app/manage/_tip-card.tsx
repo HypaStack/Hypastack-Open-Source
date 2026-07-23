@@ -15,7 +15,7 @@ const TIPS = [
   { title: "Swap without relinking", body: "Hot swap replaces a CDN asset in place and every link pointing at it keeps working." },
   { title: "Say something with it", body: "Add a note to a share and whoever opens the link reads it next to the download." },
   { title: "Right click anything", body: "Files and assets have a context menu with copy, rename and delete already in it." },
-  { title: "Paste it instead", body: "Dumpster turns a block of text into a link without making a file first." },
+  { title: "Paste it instead", body: "Scratch turns a block of text into a link without making a file first." },
   { title: "Skip the upload button", body: "Drag files straight onto the page from anywhere in the dashboard." },
   { title: "Lost an upload?", body: "Close the tab mid upload and it picks up where it left off next time you open the dashboard." },
   { title: "Reporting a bug?", body: "Grab your UUID from the account menu at the top and paste it in. It speeds things up a lot." },
