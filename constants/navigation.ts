@@ -14,7 +14,7 @@ export interface NavItem {
 /** Primary section buttons shown in the icon sidebar */
 export const SECTION_BUTTONS: NavItem[] = [
   { label: "Drive", href: "/manage/files", icon: "hard_drive", hint: "Share files with expiring links" },
-  { label: "CDN", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
+  { label: "Edge", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
   { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
   { label: "Scratch", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
@@ -29,8 +29,8 @@ export const FUNNEL_SUBNAV: NavItem[] = [
   { label: "Inbox", href: "/manage/funnel", icon: "inbox" },
 ]
 
-/** sub-navigation items for the CDN section */
-export const CDN_SUBNAV: NavItem[] = [
+/** sub-navigation items for the Edge section */
+export const EDGE_SUBNAV: NavItem[] = [
   { label: "Assets", href: "/manage/cdn", icon: "cloud" },
 ]
 
@@ -42,7 +42,7 @@ export const SCRATCH_SUBNAV: NavItem[] = [
 /** Determines the display order for section slide animations */
 export const SECTION_ORDER: Record<string, number> = {
   Drive: 0,
-  CDN: 1,
+  Edge: 1,
   Funnel: 2,
   Scratch: 3,
 }

@@ -65,7 +65,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
   const handleDeleteAccount = async () => {
     const confirmed = await hypaConfirm({
       title: "Delete your account permanently?",
-      description: "All files, CDN assets, and your account will be permanently erased. This cannot be undone.",
+      description: "All files, Edge assets, and your account will be permanently erased. This cannot be undone.",
       items: [],
       confirmText: "Delete forever",
       cancelText: "Cancel",

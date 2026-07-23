@@ -54,7 +54,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
           <p className="text-[13px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Hypastack API</p>
         </div>
         <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
-          A plain REST API over your files and CDN. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
+          A plain REST API over your files and Edge assets. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
         </p>
       </div>
 

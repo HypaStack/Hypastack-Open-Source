@@ -59,7 +59,7 @@ function formatStoragePct(pct: number): string {
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/funnel")) return "Funnel"
-  if (pathname.startsWith("/manage/cdn")) return "CDN"
+  if (pathname.startsWith("/manage/cdn")) return "Edge"
   if (pathname.startsWith("/manage/dumpster")) return "Scratch"
   return "Drive"
 }
@@ -381,7 +381,7 @@ function ManageLayoutInner({
 
               <div>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">CDN Assets</span>
+                  <span className="text-[#333] dark:text-[#ccc]">Edge Assets</span>
                   <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
                 </div>
                 {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
