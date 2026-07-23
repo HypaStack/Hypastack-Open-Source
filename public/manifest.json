@@ -1,7 +1,7 @@
 {
   "name": "Hypastack - Private File Sharing & Free Global CDN",
   "short_name": "Hypastack",
-  "description": "Share files privately or host images on a fast global CDN. Encrypted in your browser, no email, no ads, no tracking. Free, open source, EU-based.",
+  "description": "Share files privately or host images on a fast global CDN. Encrypted in your browser, no email, no ads, no tracking. Free, source-available, EU-based.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08090a",

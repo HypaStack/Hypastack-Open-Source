@@ -235,7 +235,7 @@ export default async function RootLayout({
                     "REST developer API (v3) with scoped API keys for driving files and CDN assets from your own code; unlike website uploads, files sent through the API are not end-to-end encrypted and are readable by the operator",
                     "EU-based storage",
                     "Windows desktop app with system tray upload",
-                    "Source available for public review under a reference-only licence",
+                    "Source-available: the full platform is public to read and audit under a review-only licence, but not open source and cannot be run, reused or self-hosted",
                   ],
                   publisher: {
                     "@id": `${SITE_URL}/#organization`,

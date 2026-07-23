@@ -112,7 +112,7 @@ export function HowItWorks() {
                 </ShineCard>
                 <ShineCard className="h-full p-8">
                   <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Vendor Lock-in</h3>
-                  <p className="text-[17px] leading-relaxed text-[#898e97]">If we ever change or shut down, you can just self-host the whole stack.</p>
+                  <p className="text-[17px] leading-relaxed text-[#898e97]">Your files download in their original format with nothing proprietary, so you can pick up and leave anytime.</p>
                 </ShineCard>
               </div>
             </motion.div>

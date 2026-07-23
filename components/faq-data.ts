@@ -14,7 +14,7 @@ export const faqs = [
   },
   {
     q: "Can Hypastack read my files?",
-    a: "No. Files are encrypted with AES-256 in your browser before they leave your device, and the decryption key travels in the part of the link after the #, which browsers never send to any server. We only ever store scrambled bytes, so there's nothing readable for us to look at, leak, or hand over.",
+    a: "Not the ones you share through the site. Those get encrypted with AES-256 in your browser before they leave your device, and the key rides in the part of the link after the #, which browsers never send to any server, so all we ever hold is scrambled bytes. Public CDN assets and anything sent through the developer API aren't encrypted though, since there's no browser holding a key, so those we can read. There's a full breakdown further down.",
   },
   {
     q: "Is Hypastack free?",
