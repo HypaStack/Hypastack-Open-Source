@@ -59,6 +59,7 @@ function formatStoragePct(pct: number): string {
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/manage/files")) return "Drive"
   if (pathname.startsWith("/manage/funnel")) return "Funnel"
+  if (pathname.startsWith("/manage/peerline")) return "Peerline"
   if (pathname.startsWith("/manage/cdn")) return "Edge"
   if (pathname.startsWith("/manage/dumpster")) return "Scratch"
   return "Drive"

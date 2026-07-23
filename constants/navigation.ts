@@ -16,6 +16,7 @@ export const SECTION_BUTTONS: NavItem[] = [
   { label: "Drive", href: "/manage/files", icon: "hard_drive", hint: "Share files with expiring links" },
   { label: "Edge", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
   { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
+  { label: "Peerline", href: "/manage/peerline", icon: "swap_horiz", hint: "Send files device to device, nothing stored" },
   { label: "Scratch", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
 
@@ -44,7 +45,8 @@ export const SECTION_ORDER: Record<string, number> = {
   Drive: 0,
   Edge: 1,
   Funnel: 2,
-  Scratch: 3,
+  Peerline: 3,
+  Scratch: 4,
 }
 
 /** width of the secondary (sub-nav) sidebar in pixels */
