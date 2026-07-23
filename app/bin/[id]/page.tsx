@@ -92,7 +92,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
               </p>
               <div className="flex gap-2">
                 <ShineButton
-                  href="/manage/dumpster"
+                  href="/me/dumpster"
                   as={Link}
                   className="flex-1"
                 >New Paste</ShineButton>

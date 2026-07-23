@@ -211,7 +211,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
 export function useManage() {
   const context = useContext(ManageContext)
   if (context === undefined) {
-    throw new Error("useManage must be used within a ManageProvider (only available under /manage/* routes)")
+    throw new Error("useManage must be used within a ManageProvider (only available under /me/* routes)")
   }
   return context
 }

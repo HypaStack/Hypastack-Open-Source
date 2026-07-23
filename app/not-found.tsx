@@ -34,7 +34,7 @@ export default function NotFoundPage() {
           </AlertMessage>
           <div className="flex gap-3">
             <ShineButton
-              onClick={() => router.push("/manage/files")}
+              onClick={() => router.push("/me/files")}
               className="flex-1"
             >
               Upload a file

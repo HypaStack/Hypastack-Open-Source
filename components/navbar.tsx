@@ -25,7 +25,7 @@ export function Navbar() {
   useEffect(() => {
     if (pendingNav && !isLoading) {
       setPendingNav(false);
-      router.push(isAuthenticated ? "/manage/files" : "/signin");
+      router.push(isAuthenticated ? "/me/files" : "/signin");
     }
   }, [pendingNav, isLoading, isAuthenticated, router]);
 
@@ -36,7 +36,7 @@ export function Navbar() {
       setPendingNav(true);
       return;
     }
-    router.push(isAuthenticated ? "/manage/files" : "/signin");
+    router.push(isAuthenticated ? "/me/files" : "/signin");
   }
 
   return (

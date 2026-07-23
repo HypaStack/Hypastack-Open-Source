@@ -38,10 +38,10 @@ export function CtaSection() {
                   Pick up right where you left off.
                 </p>
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <ShineButton href="/manage" as={Link} size="lg">
+                  <ShineButton href="/me" as={Link} size="lg">
                     Go to Dashboard
                   </ShineButton>
-                  <SecondaryButton href="/manage/files" as={Link} size="lg">
+                  <SecondaryButton href="/me/files" as={Link} size="lg">
                     My Files
                   </SecondaryButton>
                 </div>

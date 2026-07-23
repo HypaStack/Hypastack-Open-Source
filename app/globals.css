@@ -74,7 +74,7 @@ a:hover .material-symbols-rounded,
   --sidebar: #08090a;
   --sidebar-foreground: #f7f8f8;}
 
-/* Dark theme — scoped to /manage dashboard */
+/* Dark theme — scoped to /me dashboard */
 .theme-dark {
   --background: #111111;
   --foreground: #fafafa;

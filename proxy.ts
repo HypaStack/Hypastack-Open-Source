@@ -288,7 +288,7 @@ export async function proxy(request: NextRequest) {
       if (!authed) {
         const dest = new URL(fallback, request.url)
         // Only attach safe same-origin redirect params
-        if (prefix === '/manage') dest.searchParams.set('redirect', pathname)
+        if (prefix === '/me') dest.searchParams.set('redirect', pathname)
         return NextResponse.redirect(dest)
       }
       break // matched

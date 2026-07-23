@@ -3,9 +3,9 @@ export const FOOTER_COLUMNS = [
     title: "Platform",
     links: [
       { label: "Upload a file", href: "/new" },
-      { label: "CDN Hosting", href: "/manage/cdn" },
+      { label: "CDN Hosting", href: "/me/cdn" },
       { label: "Forum", href: "/forum" },
-      { label: "Dashboard", href: "/manage" },
+      { label: "Dashboard", href: "/me" },
       { label: "Pricing", href: "/pricing" },
       { label: "System status", href: "https://status.hypastack.com" },
       { label: "Desktop app", href: "https://hypastack.com/d/987vw0zy#9OU2rAIyA3j3Eye90DrxYoimxWbNCcycuyT6LNn7_BA" },

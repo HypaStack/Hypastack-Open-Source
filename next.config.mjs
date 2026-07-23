@@ -78,7 +78,7 @@ const nextConfig = {
         ],
       },
       {
-        source: "/manage/:path*",
+        source: "/me/:path*",
         headers: [
           {
             key: "X-Robots-Tag",
@@ -257,22 +257,22 @@ const nextConfig = {
       },
       {
         source: "/transfer",
-        destination: "/manage",
+        destination: "/me",
         permanent: true,
       },
       {
         source: "/upload",
-        destination: "/manage",
+        destination: "/me",
         permanent: true,
       },
       {
         source: "/share",
-        destination: "/manage",
+        destination: "/me",
         permanent: true,
       },
       {
         source: "/send",
-        destination: "/manage",
+        destination: "/me",
         permanent: true,
       },
       {
@@ -318,6 +318,17 @@ const nextConfig = {
       {
         source: "/safety",
         destination: "/child-safety",
+        permanent: true,
+      },
+      // old dashboard path -> /me
+      {
+        source: "/manage",
+        destination: "/me",
+        permanent: true,
+      },
+      {
+        source: "/manage/:path*",
+        destination: "/me/:path*",
         permanent: true,
       },
       // www to non-www redirect handled by hosting

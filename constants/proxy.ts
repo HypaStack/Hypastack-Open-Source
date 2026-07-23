@@ -11,7 +11,7 @@ export const LEGAL_EXACT = new Set([
 ])
 
 export const AUTH_ROUTES: Array<{ prefix: string; fallback: string }> = [
-  { prefix: '/manage',     fallback: '/signin' },
+  { prefix: '/me',     fallback: '/signin' },
   { prefix: '/experience', fallback: '/new'    },
 ]
 

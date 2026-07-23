@@ -57,11 +57,11 @@ function formatStoragePct(pct: number): string {
 }
 
 function sectionTitle(pathname: string): string {
-  if (pathname.startsWith("/manage/files")) return "Drive"
-  if (pathname.startsWith("/manage/funnel")) return "Funnel"
-  if (pathname.startsWith("/manage/peerline")) return "Peerline"
-  if (pathname.startsWith("/manage/cdn")) return "Edge"
-  if (pathname.startsWith("/manage/dumpster")) return "Scratch"
+  if (pathname.startsWith("/me/files")) return "Drive"
+  if (pathname.startsWith("/me/funnel")) return "Funnel"
+  if (pathname.startsWith("/me/peerline")) return "Peerline"
+  if (pathname.startsWith("/me/cdn")) return "Edge"
+  if (pathname.startsWith("/me/dumpster")) return "Scratch"
   return "Drive"
 }
 
@@ -172,8 +172,8 @@ function ManageLayoutInner({
   }, [pathname])
 
   useEffect(() => {
-    if (pathname === "/manage" || pathname === "/manage/") {
-      router.replace("/manage/files")
+    if (pathname === "/me" || pathname === "/me/") {
+      router.replace("/me/files")
     }
   }, [pathname, router])
 

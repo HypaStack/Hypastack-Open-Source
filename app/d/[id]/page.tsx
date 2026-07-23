@@ -332,7 +332,7 @@ export default function DownloadPage() {
               </p>
               <div className="flex gap-2">
                 <ShineButton
-                  onClick={() => router.push("/manage/files")}
+                  onClick={() => router.push("/me/files")}
                   className="flex-1"
                 >Upload a file</ShineButton>
                 <SecondaryButton

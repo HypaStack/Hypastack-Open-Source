@@ -75,8 +75,8 @@ module.exports = {
     '/_next/*',
     '/d/*', // Dynamic download pages
     '/policy', // Redirect page
-    '/manage',
-    '/manage/*',
+    '/me',
+    '/me/*',
     '/maintenance',
     '/experience',
     '/desktop',

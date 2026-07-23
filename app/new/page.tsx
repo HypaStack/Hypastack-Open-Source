@@ -78,7 +78,7 @@ export default function CreateAccountPage() {
     setBioEnabled(ok)
   }
   useEffect(() => {
-    if (!authLoading && isAuthenticated) router.replace("/manage/files")
+    if (!authLoading && isAuthenticated) router.replace("/me/files")
   }, [isAuthenticated, authLoading, router])
 
   // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.
@@ -187,7 +187,7 @@ export default function CreateAccountPage() {
             )}
 
             <ShineButton
-              onClick={() => { window.location.href = "/manage/files" }}
+              onClick={() => { window.location.href = "/me/files" }}
               size="lg"
               fullWidth
             >

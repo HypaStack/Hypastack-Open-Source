@@ -32,7 +32,7 @@ export function DesktopGate({ children }: { children: React.ReactNode }) {
     if (!showSplash || isLoading) return
 
     // authentication resolved, redirect
-    const target = isAuthenticated ? "/manage" : "/signin"
+    const target = isAuthenticated ? "/me" : "/signin"
 
     // brief delay -- will remove soon
     const timer = setTimeout(() => {

@@ -13,31 +13,31 @@ export interface NavItem {
 
 /** Primary section buttons shown in the icon sidebar */
 export const SECTION_BUTTONS: NavItem[] = [
-  { label: "Drive", href: "/manage/files", icon: "hard_drive", hint: "Share files with expiring links" },
-  { label: "Edge", href: "/manage/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
-  { label: "Funnel", href: "/manage/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
-  { label: "Peerline", href: "/manage/peerline", icon: "swap_horiz", hint: "Send files device to device, nothing stored" },
-  { label: "Scratch", href: "/manage/dumpster", icon: "delete", hint: "Paste and share text" },
+  { label: "Drive", href: "/me/files", icon: "hard_drive", hint: "Share files with expiring links" },
+  { label: "Edge", href: "/me/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
+  { label: "Funnel", href: "/me/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
+  { label: "Peerline", href: "/me/peerline", icon: "swap_horiz", hint: "Send files device to device, nothing stored" },
+  { label: "Scratch", href: "/me/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
 
 /** Sub-navigation items for the Drive section */
 export const DRIVE_SUBNAV: NavItem[] = [
-  { label: "Files", href: "/manage/files", icon: "folder" },
+  { label: "Files", href: "/me/files", icon: "folder" },
 ]
 
 /** Sub-navigation items for the Funnel section */
 export const FUNNEL_SUBNAV: NavItem[] = [
-  { label: "Inbox", href: "/manage/funnel", icon: "inbox" },
+  { label: "Inbox", href: "/me/funnel", icon: "inbox" },
 ]
 
 /** sub-navigation items for the Edge section */
 export const EDGE_SUBNAV: NavItem[] = [
-  { label: "Assets", href: "/manage/cdn", icon: "cloud" },
+  { label: "Assets", href: "/me/cdn", icon: "cloud" },
 ]
 
 /** Sub-navigation items for the Scratch section */
 export const SCRATCH_SUBNAV: NavItem[] = [
-  { label: "New Paste", href: "/manage/dumpster", icon: "add_notes" },
+  { label: "New Paste", href: "/me/dumpster", icon: "add_notes" },
 ]
 
 /** Determines the display order for section slide animations */

@@ -10,7 +10,7 @@ User-agent: *
 Content-Signal: search=yes, ai-train=no, ai-input=no
 Allow: /
 Disallow: /api/
-Disallow: /manage
+Disallow: /me
 Disallow: /d/
 Disallow: /bin/
 Disallow: /signin

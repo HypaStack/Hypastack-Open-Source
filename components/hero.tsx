@@ -44,7 +44,7 @@ export function Hero() {
   useEffect(() => {
     if (pendingNav && !isLoading) {
       setPendingNav(false);
-      router.push(isAuthenticated ? "/manage/files" : "/signin");
+      router.push(isAuthenticated ? "/me/files" : "/signin");
     }
   }, [pendingNav, isLoading, isAuthenticated, router]);
 
@@ -64,7 +64,7 @@ export function Hero() {
       setPendingNav(true);
       return;
     }
-    router.push(isAuthenticated ? "/manage/files" : "/signin");
+    router.push(isAuthenticated ? "/me/files" : "/signin");
   }
   return (
     <section className="relative w-full">

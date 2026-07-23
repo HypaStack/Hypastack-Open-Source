@@ -6,7 +6,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   // layout persistance
-  if (pathname?.startsWith("/manage")) {
+  if (pathname?.startsWith("/me")) {
     return <>{children}</>
   }
 
