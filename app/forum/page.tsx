@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useAuth } from "@/hooks/useAuth"
+import { formatBytes, timeAgo } from "@/lib/format"
 import { API_BASE } from "@/constants"
 import { TextInput } from "@/components/ui/text-input"
 import { SecondaryButton } from "@/components/ui/secondary-button"
@@ -31,28 +32,6 @@ interface ForumPost {
   comment_count: number
   author_nickname_encrypted?: string
   author_avatar_url?: string | null
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`
-}
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now()
-  const then = new Date(dateStr).getTime()
-  const diff = now - then
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return "just now"
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  if (days < 30) return `${days}d ago`
-  const months = Math.floor(days / 30)
-  return `${months}mo ago`
 }
 
 function ForumCard({ post }: { post: ForumPost }) {
@@ -109,7 +88,7 @@ function ForumCard({ post }: { post: ForumPost }) {
         </span>
         <span className="flex items-center gap-1 w-20 justify-end" title="Total Size">
           <MIcon name="storage" size={14} />
-          {formatFileSize(totalSize)}
+          {formatBytes(totalSize)}
         </span>
         <span className="w-20 text-right">{timeAgo(post.created_at)}</span>
       </div>

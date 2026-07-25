@@ -1,4 +1,4 @@
-import { formatFileSize } from "./utils"
+import { formatBytes } from "@/lib/format"
 import type { FileWithPreview } from "./types"
 
 // Live "1.2 MB / 5 MB • 3.4 MB/s • 12s left" line for the upload tray. Pure:
@@ -28,7 +28,7 @@ export function formatUploadStats(
       ? `${(speed / (1024 * 1024)).toFixed(1)} MB/s`
       : `${(speed / 1024).toFixed(0)} KB/s`
 
-  const progressStr = `${formatFileSize(bytesUploaded)} / ${formatFileSize(totalBytes)}`
+  const progressStr = `${formatBytes(bytesUploaded)} / ${formatBytes(totalBytes)}`
 
   if (etaSeconds < 5) return `${progressStr} • ${speedStr} • Almost done`
   if (etaSeconds < 60) return `${progressStr} • ${speedStr} • ${etaSeconds}s left`

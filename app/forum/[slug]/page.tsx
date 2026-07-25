@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { useAuth } from "@/hooks/useAuth"
+import { formatBytes, timeAgo } from "@/lib/format"
 import { apiFetch } from "@/lib/http/fetch"
 import { API_BASE } from "@/constants"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
@@ -49,28 +50,6 @@ interface ForumComment {
   replies?: ForumComment[]
 }
 
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`
-}
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now()
-  const then = new Date(dateStr).getTime()
-  const diff = now - then
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return "just now"
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  if (days < 30) return `${days}d ago`
-  const months = Math.floor(days / 30)
-  return `${months}mo ago`
-}
-
 function FilePreview({ file }: { file: ForumFile }) {
   // Generic file row for everything
   return (
@@ -84,7 +63,7 @@ function FilePreview({ file }: { file: ForumFile }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-[#f7f8f8]  truncate group-hover:text-[#e3e3e3]  transition-colors">{file.original_name}</p>
-        <p className="text-[11px] text-[#999]">{formatFileSize(file.file_size)}</p>
+        <p className="text-[11px] text-[#999]">{formatBytes(file.file_size)}</p>
       </div>
       <MIcon name="download" size={16} className="text-[#898e97] group-hover:text-[#444] transition-colors flex-shrink-0 mr-2" />
     </a>

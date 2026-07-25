@@ -3,7 +3,8 @@
 import { MIcon } from "@/components/ui/material-icon"
 import { Checkmark } from "@/components/ui/checkmark"
 import { type FileItem } from "@/hooks/useManage"
-import { formatBytes, type SortField, type SortDirection } from "./_helpers"
+import { type SortField, type SortDirection } from "./_helpers"
+import { formatBytes } from "@/lib/format"
 
 export function ListView({
   files,

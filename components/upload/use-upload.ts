@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import { shouldUseMultipart } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
-import { formatFileSize } from "./utils"
+import { formatBytes } from "@/lib/format"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
 import { MAX_EXPIRATION_MINUTES, NATIVE_UPLOAD_EVENT } from "@/constants/upload"
@@ -78,7 +78,7 @@ export function useUpload({
   const uploadDelayMs = getTierDelayMs(normalizeTier(user?.tier))
   const MAX_SIZE = uploadType === "cdn" ? tierLimits.maxCdnFileSize : tierLimits.maxNormalUploadSize
   const MAX_FILES = uploadType === "cdn" ? tierLimits.maxCdnFilesPerUpload : tierLimits.maxFilesPerUpload
-  const maxSizeLabel = formatFileSize(MAX_SIZE)
+  const maxSizeLabel = formatBytes(MAX_SIZE)
 
   // Account-wide link cap (the thing the server 403s on). Trim the selection to
   // the free slots the user actually has so we never let them pick more than
@@ -167,7 +167,7 @@ export function useUpload({
         return
       }
       if (sel.totalSizeExceeded) {
-        setErrorMessage(`Total size exceeds ${maxSizeLabel} limit (${formatFileSize(sel.totalSize)}). Remove some files.`)
+        setErrorMessage(`Total size exceeds ${maxSizeLabel} limit (${formatBytes(sel.totalSize)}). Remove some files.`)
         setState("error")
         return
       }

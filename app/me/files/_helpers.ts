@@ -44,23 +44,5 @@ export function getFileIconForType(contentType?: string, name?: string): string 
   return "description"
 }
 
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0"
-  const k = 1024
-  const sizes = ["B", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
-}
-
-export function formatDate(dateStr: string | Date): string {
-  const d = new Date(dateStr)
-  const day = d.getDate()
-  const month = d.toLocaleDateString("en-US", { month: "short" })
-  const year = d.getFullYear()
-  const time = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })
-  return `${day} ${month}, ${year} at ${time}`
-}
-
-
 export type SortField = "name" | "size" | "date"
 export type SortDirection = "asc" | "desc"

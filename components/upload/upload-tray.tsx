@@ -16,7 +16,7 @@ import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
 import { useTheme } from "@/hooks/useTheme"
-import { formatFileSize } from "./utils"
+import { formatBytes } from "@/lib/format"
 import type { UseUploadReturn } from "./use-upload"
 
 const TurnstileWithRef = Turnstile as React.ComponentType<
@@ -562,7 +562,7 @@ function TrayFileRow({
                 <CircleProgress value={smooth} size={14} />
               </>
             )}
-            {size !== undefined && <span>{formatFileSize(size)}</span>}
+            {size !== undefined && <span>{formatBytes(size)}</span>}
           </>
         )}
         {showCopy && onCopy && (

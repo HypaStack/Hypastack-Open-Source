@@ -4,7 +4,8 @@ import { useState } from "react"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { Checkmark } from "@/components/ui/checkmark"
-import { formatBytes, formatDate, gridItemVariants } from "../cdn/_helpers"
+import { gridItemVariants } from "../cdn/_helpers"
+import { formatBytes, formatDate } from "@/lib/format"
 
 export interface FunnelFileDto {
   id: string

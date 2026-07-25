@@ -14,6 +14,7 @@ import { ShineButton } from "@/components/ui/shine-button"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { errorMessage } from "@/lib/errors"
+import { formatBytes } from "@/lib/format"
 
 interface PendingFile {
   file: File
@@ -22,13 +23,6 @@ interface PendingFile {
   error?: string
   fileId?: string
   publicUrl?: string
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`
 }
 
 export default function ForumNewPage() {
@@ -369,7 +363,7 @@ export default function ForumNewPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[12px] font-medium text-[#e3e3e3]  truncate">{pf.file.name}</p>
                         <p className="text-[11px] text-[#999]">
-                          {formatFileSize(pf.file.size)}
+                          {formatBytes(pf.file.size)}
                           {pf.error && <span className="text-red-500 ml-2">{pf.error}</span>}
                         </p>
                       </div>
