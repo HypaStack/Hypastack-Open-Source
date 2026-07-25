@@ -59,6 +59,7 @@ export function startCleanupScheduler(): NodeJS.Timeout {
     await cleanupDumpsterPastes()
     await cleanupUnusedFunnels()
     await cleanupFunnelStaging()
+    await cleanupCdnStaging()
     await scheduleUpcomingExpiries()
   }
 
@@ -142,6 +143,58 @@ async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string
     if (cleaned > 0) console.log(`[Cleanup] Funnel staging: cleaned=${cleaned}`)
   } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupFunnelStaging:', error)
+    errors.push(`Fatal error: ${errorMessage(error)}`)
+  } finally {
+    client.release()
+  }
+
+  return { cleaned, errors }
+}
+
+// Sweep abandoned CDN uploads (init wrote a cdn_staging row, complete never
+// cleared it). Rows past 2 hours never completed: delete the orphaned R2 object
+// and the row.
+//
+// The "is it live" test is on r2_key, not id. Two inits can reserve the same
+// custom slug before either completes — isCdnSlugTaken only sees cdn_assets —
+// so both staging rows carry the same key while only the winner's id becomes an
+// asset. Matching on id would let the loser's sweep delete the winner's live
+// object. Keys still referenced by an asset keep their object; the stale marker
+// is dropped either way.
+async function cleanupCdnStaging(): Promise<{ cleaned: number; errors: string[] }> {
+  const errors: string[] = []
+  let cleaned = 0
+  const client = await getClient()
+
+  try {
+    await client.query(`
+      DELETE FROM cdn_staging s
+      WHERE s.created_at < NOW() - INTERVAL '2 hours'
+        AND EXISTS (SELECT 1 FROM cdn_assets a WHERE a.r2_key = s.r2_key)
+    `)
+
+    const { rows } = await client.query(`
+      SELECT id, r2_key FROM cdn_staging s
+      WHERE s.created_at < NOW() - INTERVAL '2 hours'
+        AND NOT EXISTS (SELECT 1 FROM cdn_assets a WHERE a.r2_key = s.r2_key)
+      LIMIT 500
+    `)
+
+    for (const row of rows) {
+      try {
+        await deleteByKey(row.r2_key)
+        await client.query(`DELETE FROM cdn_staging WHERE id = $1`, [row.id])
+        cleaned++
+      } catch (error) {
+        const errorMsg = `Failed to delete cdn staging ${row.id}: ${errorMessage(error)}`
+        console.error(`[Cleanup] ${errorMsg}`)
+        errors.push(errorMsg)
+      }
+    }
+
+    if (cleaned > 0) console.log(`[Cleanup] CDN staging: cleaned=${cleaned}`)
+  } catch (error) {
+    console.error('[Cleanup] Fatal error in cleanupCdnStaging:', error)
     errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()

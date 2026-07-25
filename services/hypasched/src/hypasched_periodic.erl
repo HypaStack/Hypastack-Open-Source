@@ -4,6 +4,7 @@
 %% The cleanups that are inherently scans rather than timed events:
 %%  - upload staging rows older than 2 hours (abandoned uploads),
 %%  - funnel staging rows older than 2 hours (abandoned funnel drops),
+%%  - cdn staging rows older than 2 hours (abandoned cdn uploads),
 %%  - dumpster pastes untouched for 180 days,
 %%  - unused funnel links older than 7 days (never dropped into),
 %%  - expired display-name holds (released names past their reservation window),
@@ -38,6 +39,7 @@ handle_info(tick, State) ->
     try reconcile_downgrades() catch C4:R4 -> logger:error("downgrade reconcile crashed: ~p:~p", [C4, R4]) end,
     try cleanup_funnels() catch C5:R5 -> logger:error("funnel sweep crashed: ~p:~p", [C5, R5]) end,
     try cleanup_funnel_staging() catch C6:R6 -> logger:error("funnel staging sweep crashed: ~p:~p", [C6, R6]) end,
+    try cleanup_cdn_staging() catch C8:R8 -> logger:error("cdn staging sweep crashed: ~p:~p", [C8, R8]) end,
     erlang:send_after(?TICK_MS, self(), tick),
     {noreply, State};
 handle_info(_Msg, State) ->
@@ -138,6 +140,37 @@ cleanup_funnel_staging() ->
             report("funnel-staging", N);
         {error, Reason} ->
             logger:warning("funnel staging sweep query failed: ~p", [Reason])
+    end.
+
+%% Sweep abandoned CDN uploads: an init writes a cdn_staging row, complete
+%% clears it. Rows still present after 2 hours never completed. The "is it live"
+%% test is on r2_key, not id: two inits can reserve the same custom slug before
+%% either completes, so both rows carry the same key while only the winner's id
+%% becomes an asset — matching on id would let the loser's sweep delete the
+%% winner's live object. Drop the stale markers for keys that ARE live first,
+%% then delete the R2 object + row for the rest.
+cleanup_cdn_staging() ->
+    _ = hypasched_db:query(
+        <<"DELETE FROM cdn_staging s "
+          "WHERE s.created_at < NOW() - INTERVAL '2 hours' "
+          "AND EXISTS (SELECT 1 FROM cdn_assets a WHERE a.r2_key = s.r2_key)">>, []),
+    Sql = <<"SELECT id, r2_key FROM cdn_staging s "
+            "WHERE s.created_at < NOW() - INTERVAL '2 hours' "
+            "AND NOT EXISTS (SELECT 1 FROM cdn_assets a WHERE a.r2_key = s.r2_key) LIMIT 500">>,
+    case hypasched_db:query(Sql, []) of
+        {ok, Rows} when is_list(Rows) ->
+            N = lists:foldl(fun({Id, R2Key}, Acc) ->
+                _ = hypasched_r2:delete_object(R2Key),  %% best-effort
+                case hypasched_db:query(<<"DELETE FROM cdn_staging WHERE id = $1">>, [Id]) of
+                    {ok, _} -> Acc + 1;
+                    {error, Reason} ->
+                        logger:warning("cdn staging row ~s delete failed: ~p", [Id, Reason]),
+                        Acc
+                end
+            end, 0, Rows),
+            report("cdn-staging", N);
+        {error, Reason} ->
+            logger:warning("cdn staging sweep query failed: ~p", [Reason])
     end.
 
 %% Auto-expire paid plans one month after the upgrade: flip them back to 'free'.
