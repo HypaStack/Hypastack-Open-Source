@@ -21,6 +21,7 @@ import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
 import { SURFACE } from "@/components/ui/surface"
 import { TipCard } from "./_tip-card"
+import { formatStoragePct } from "@/lib/format"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -45,14 +46,6 @@ function formatStorageSize(bytes: number): string {
   const sizes = ["B", "KB", "MB", "GB", "TB"]
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1)
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i]
-}
-
-// Format a storage percentage to at most 1 decimal. Tiny non-zero usage floors
-// to 0.1% so it never reads as "0%" when some space is actually used.
-function formatStoragePct(pct: number): string {
-  if (pct <= 0) return "0"
-  if (pct < 0.1) return "0.1"
-  return String(Math.round(pct * 10) / 10)
 }
 
 function sectionTitle(pathname: string): string {

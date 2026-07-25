@@ -26,10 +26,3 @@ export interface PreferencesStorage {
   storagePercent: number
 }
 
-// Format a storage percentage to at most 1 decimal. Tiny non-zero usage floors
-// to 0.1% so it never reads as "0%" when some space is actually used.
-export function formatStoragePct(pct: number): string {
-  if (pct <= 0) return "0"
-  if (pct < 0.1) return "0.1"
-  return String(Math.round(pct * 10) / 10)
-}

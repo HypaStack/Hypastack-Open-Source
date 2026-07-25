@@ -22,6 +22,16 @@ export function formatDate(dateStr: string | Date): string {
   })
 }
 
+/**
+ * Storage percentage to at most 1 decimal. Tiny non-zero usage floors to 0.1%
+ * so it never reads as "0%" when some space is actually used.
+ */
+export function formatStoragePct(pct: number): string {
+  if (pct <= 0) return "0"
+  if (pct < 0.1) return "0.1"
+  return String(Math.round(pct * 10) / 10)
+}
+
 /** Coarse relative time, e.g. "5m ago". Tops out at months. */
 export function timeAgo(dateStr: string): string {
   const mins = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000)
