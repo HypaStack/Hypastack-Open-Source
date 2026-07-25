@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from 'pg'
+import { Pool, PoolClient } from 'pg'
 import { readFileSync } from 'fs'
 import { errorMessage } from "@/lib/errors"
 

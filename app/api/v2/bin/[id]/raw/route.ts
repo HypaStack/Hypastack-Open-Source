@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server"
 import { getClient } from "@/lib/data/db"
 import { downloadHeadByKey } from "@/lib/storage/r2"
 

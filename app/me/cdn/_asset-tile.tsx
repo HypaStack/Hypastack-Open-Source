@@ -7,7 +7,7 @@ import { LoadingSvg } from "@/components/ui/loading-svg"
 import { SecondaryButton } from "@/components/ui/secondary-button"
 import { Checkmark } from "@/components/ui/checkmark"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider } from "@/components/ui/context-menu"
-import { type CdnAsset, formatBytes, formatDate, gridItemVariants, getFileIcon } from "./_helpers"
+import { type CdnAsset, formatBytes, gridItemVariants } from "./_helpers"
 import { type TreeNode } from "../_move-dialog"
 
 export function CdnAssetTile({

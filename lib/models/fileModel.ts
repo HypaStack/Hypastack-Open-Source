@@ -2,7 +2,6 @@ import { getPool, ensureDatabase, getClient } from '@/lib/data/db'
 import { cached, bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
 import { scheduleFileExpiry } from '@/lib/expiryScheduler'
-import { randomUUID, webcrypto } from 'node:crypto'
 import { errorMessage, errorCode } from "@/lib/errors"
 
 export interface FileRecord {

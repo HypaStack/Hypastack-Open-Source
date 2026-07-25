@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { withRouteCache } from "@/lib/http/routeCache"
 import { withAuth } from "@/lib/http/route"
 import { validateCsrfToken } from "@/lib/security/security"
 import { createForumPost, getForumPosts, normalizeTags } from "@/lib/models/forumModel"

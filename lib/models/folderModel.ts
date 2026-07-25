@@ -1,4 +1,4 @@
-import { getPool, ensureDatabase, getClient } from '@/lib/data/db'
+import { getPool, ensureDatabase } from '@/lib/data/db'
 import { randomUUID } from 'node:crypto'
 import { encryptFilename, decryptFilename } from '@/lib/security/filenameCrypto'
 import { getFilesByUserId, deleteFileRecord } from '@/lib/models/fileModel'

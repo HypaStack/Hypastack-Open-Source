@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { withRouteCache } from "@/lib/http/routeCache"
 import { getCurrentUser } from "@/lib/security/auth"
 import { getUserById } from "@/lib/models/userModel"
 import { getFilesByUserId } from "@/lib/models/fileModel"
