@@ -160,9 +160,27 @@ export async function getCdnStaging(id: string): Promise<CdnStagingRecord | null
   return result.rows[0] ?? null
 }
 
+/** Batched staging lookup — one round trip for a whole multi-file completion. */
+export async function getCdnStagingMany(ids: string[]): Promise<CdnStagingRecord[]> {
+  if (ids.length === 0) return []
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<CdnStagingRecord>(
+    `SELECT id, user_id, r2_key, original_name, content_type, slug FROM cdn_staging WHERE id = ANY($1)`,
+    [ids]
+  )
+  return result.rows
+}
+
 export async function deleteCdnStaging(id: string): Promise<void> {
   const pool = getPool()
   await pool.query(`DELETE FROM cdn_staging WHERE id = $1`, [id])
+}
+
+export async function deleteCdnStagingMany(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+  const pool = getPool()
+  await pool.query(`DELETE FROM cdn_staging WHERE id = ANY($1)`, [ids])
 }
 
 /**

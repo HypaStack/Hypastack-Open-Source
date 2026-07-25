@@ -315,6 +315,43 @@ export async function deleteObjectsBatch(r2Keys: string[]): Promise<string[]> {
   return failedKeys
 }
 
+/**
+ * One ranged GET that answers everything a completion needs: the object's real
+ * size, its stored content type, and the leading bytes for magic-byte checks.
+ * A separate HEAD would double the request count on multi-file batches, and the
+ * range response already carries the full size in Content-Range.
+ *
+ * Returns null when the object isn't there, matching headCdnObject.
+ */
+export async function headAndSniffCdnObject(
+  r2Key: string,
+  bytes: number = 65536,
+): Promise<{ size: number; contentType: string; head: Buffer } | null> {
+  try {
+    const response = await getR2Client().send(new GetObjectCommand({
+      Bucket: getBucketName(),
+      Key: r2Key,
+      Range: `bytes=0-${bytes - 1}`,
+    }))
+    const chunks: Buffer[] = []
+    if (response.Body) {
+      for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
+        chunks.push(Buffer.from(chunk))
+      }
+    }
+    const head = Buffer.concat(chunks)
+    // "bytes 0-99/100" — the part after the slash is the object's full length.
+    const total = Number(response.ContentRange?.split("/")[1])
+    return {
+      size: Number.isFinite(total) ? total : head.length,
+      contentType: response.ContentType || "application/octet-stream",
+      head,
+    }
+  } catch {
+    return null
+  }
+}
+
 export async function downloadHeadByKey(r2Key: string, bytes: number = 65536): Promise<Buffer> {
   const command = new GetObjectCommand({
     Bucket: getBucketName(),

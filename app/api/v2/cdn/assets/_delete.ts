@@ -7,6 +7,9 @@ import { getUserTier } from "@/lib/models/userModel"
 import { getTierDelayMs } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 
+/** Objects per R2 batch-delete call. Small enough that progress moves visibly. */
+const DELETE_CHUNK = 50
+
 export async function DELETE(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)
@@ -35,50 +38,54 @@ export async function DELETE(request: NextRequest) {
       await new Promise(resolve => setTimeout(resolve, delayMs))
     }
 
-    // 1. Batch-fetch all records (single DB query, ownership-filtered)
+    // Batch-fetch all records (single DB query, ownership-filtered)
     const ownedAssets = await getCdnAssetsByIds(idsToDelete, currentUser.userId)
     const ownedById = new Map(ownedAssets.map(a => [a.id, a]))
 
-    // 2. Batch-delete from R2 in one HTTP call (up to 1000 keys)
-    const r2Keys = ownedAssets.map(a => a.r2_key)
-    let failedR2Keys = new Set<string>()
-    if (r2Keys.length > 0) {
-      try {
-        const failed = await deleteObjectsBatch(r2Keys)
-        failedR2Keys = new Set(failed)
-      } catch (r2Err) {
-        console.error('[CDN] R2 batch delete error:', r2Err)
-      }
-    }
-
-    // 3. Batch-delete from DB in one query (only assets where R2 succeeded)
-    const idsWithR2Ok = ownedAssets
-      .filter(a => !failedR2Keys.has(a.r2_key))
-      .map(a => a.id)
-
-    if (idsWithR2Ok.length > 0) {
-      await deleteCdnAssetsByIds(idsWithR2Ok, currentUser.userId)
-    }
-
-    // 4. Stream results back (all at once, preserving existing frontend contract)
+    // Delete in chunks and report after each one, so the client's progress
+    // tracks real work instead of arriving in a single burst at the end.
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
-      start(controller) {
-        idsToDelete.forEach((id, i) => {
-          const asset = ownedById.get(id)
-          const r2Failed = asset ? failedR2Keys.has(asset.r2_key) : false
-          const success = !!asset && !r2Failed
-
+      async start(controller) {
+        let index = 0
+        const emit = (id: string, success: boolean, name: string) => {
           try {
             controller.enqueue(encoder.encode(JSON.stringify({
-              index: i + 1,
+              index: ++index,
               total: idsToDelete.length,
               id,
               success,
-              name: asset?.original_name ?? "Unknown",
+              name,
             }) + "\n"))
           } catch { /* client disconnected */ }
-        })
+        }
+
+        // Ids the caller asked for but doesn't own resolve immediately.
+        const unowned = idsToDelete.filter(id => !ownedById.has(id))
+        for (const id of unowned) emit(id, false, "Unknown")
+
+        for (let i = 0; i < ownedAssets.length; i += DELETE_CHUNK) {
+          const chunk = ownedAssets.slice(i, i + DELETE_CHUNK)
+          let failed = new Set<string>()
+          try {
+            failed = new Set(await deleteObjectsBatch(chunk.map(a => a.r2_key)))
+          } catch (r2Err) {
+            console.error('[CDN] R2 batch delete error:', r2Err)
+            failed = new Set(chunk.map(a => a.r2_key))
+          }
+
+          const okIds = chunk.filter(a => !failed.has(a.r2_key)).map(a => a.id)
+          if (okIds.length > 0) {
+            try {
+              await deleteCdnAssetsByIds(okIds, currentUser.userId)
+            } catch (dbErr) {
+              console.error('[CDN] row delete error:', dbErr)
+            }
+          }
+
+          for (const a of chunk) emit(a.id, !failed.has(a.r2_key), a.original_name)
+        }
+
         try { controller.close() } catch { /* ignore */ }
       }
     })

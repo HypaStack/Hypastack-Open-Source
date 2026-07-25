@@ -35,6 +35,7 @@ export default function CdnPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [copiedSelection, setCopiedSelection] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
+  const [deleteProgress, setDeleteProgress] = useState<{ done: number; total: number } | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
   const [moveOpen, setMoveOpen] = useState(false)
@@ -436,8 +437,9 @@ export default function CdnPage() {
     if (!confirmed) return
 
     setDeleteLoading("bulk")
-    // The endpoint streams one NDJSON line per deleted asset, so report the real count.
-    const progress = hypaProgress({ title: "Deleting assets", progressText: `0 of ${ids.length}` })
+    // The endpoint streams a line per asset as it actually deletes, so the
+    // count below tracks real work. It renders on the button itself.
+    setDeleteProgress({ done: 0, total: ids.length })
     try {
       const res = await apiFetch("/api/v2/cdn/assets", {
         method: "DELETE",
@@ -461,7 +463,7 @@ export default function CdnPage() {
             const data = JSON.parse(line)
             if (data.success && data.id) deletedIds.add(data.id)
             if (data.index && data.total) {
-              progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+              setDeleteProgress({ done: data.index, total: data.total })
             }
           } catch {}
         }
@@ -471,7 +473,7 @@ export default function CdnPage() {
     } catch (err) {
       hypaError("Failed to delete assets", errorMessage(err))
     } finally {
-      progress.close()
+      setDeleteProgress(null)
       setDeleteLoading(null)
     }
   }
@@ -626,13 +628,28 @@ export default function CdnPage() {
                     disabled={deleteLoading === "bulk"}
                     color="#dc2626"
                     hoverColor="#b91c1c"
-                    style={{ gap: 8 }}
+                    style={{ gap: 8, position: "relative", overflow: "hidden" }}
                   >
                     {deleteLoading === "bulk" ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <Loader size={16} color="#ffffff" />
-                        Deleting…
-                      </span>
+                      <>
+                        {/* Fills left-to-right as the stream reports deletions. */}
+                        <span
+                          aria-hidden
+                          className="absolute inset-y-0 left-0 bg-white/25 pointer-events-none"
+                          style={{
+                            width: `${deleteProgress && deleteProgress.total > 0
+                              ? Math.round((deleteProgress.done / deleteProgress.total) * 100)
+                              : 0}%`,
+                            transition: "width 140ms linear",
+                          }}
+                        />
+                        <span className="relative flex items-center justify-center gap-2 tabular-nums">
+                          <MIcon name="delete" size={16} className="shrink-0" />
+                          {deleteProgress
+                            ? `Deleting ${deleteProgress.done}/${deleteProgress.total}`
+                            : "Deleting…"}
+                        </span>
+                      </>
                     ) : (
                       <>
                         <MIcon name="delete" size={16} className="shrink-0" />

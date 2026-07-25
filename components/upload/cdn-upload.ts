@@ -100,8 +100,10 @@ export async function runCdnUpload(
       if (xhr.status >= 200 && xhr.status < 300) {
         sentBytes[i] = file.size
         // The tray reads this as "n of N finished"; with parallel transfers it
-        // counts completions rather than pointing at one file.
-        deps.onFileIndex(Math.min(++done, files.length - 1))
+        // counts completions rather than pointing at one file. It must be able
+        // to reach files.length, or the final row never renders as done and
+        // appears to hang for however long the finalize call takes.
+        deps.onFileIndex(++done)
         reportProgress()
         resolve()
       } else {

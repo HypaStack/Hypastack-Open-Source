@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getCurrentUser } from "@/lib/security/auth"
 import { validateCsrfToken } from "@/lib/security/security"
-import { headCdnObject, downloadHeadByKey, deleteByKey } from "@/lib/storage/r2"
+import { headAndSniffCdnObject, deleteByKey } from "@/lib/storage/r2"
 import { verifyCdnFileType } from "@/lib/security/zeroTrust"
 import { getFileExtension } from "@/lib/validation/fileValidation"
-import { createCdnAssetsBatch, deleteCdnStaging, getCdnStaging, getTotalStorageUsed, suggestAvailableCdnSlugs, type CdnStagingRecord } from "@/lib/models/cdnModel"
+import { createCdnAssetsBatch, deleteCdnStagingMany, getCdnStagingMany, getTotalStorageUsed, suggestAvailableCdnSlugs, type CdnStagingRecord } from "@/lib/models/cdnModel"
 import { getCdnFoldersByUserId } from "@/lib/models/cdnFolderModel"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
@@ -15,6 +15,26 @@ import { errorCode } from "@/lib/errors"
 interface FileCompleteInput {
   cdnId: string
   folderId?: string | null
+}
+
+/** Simultaneous R2 probes. Above this the SDK just queues on its own sockets. */
+const R2_PROBE_CONCURRENCY = 24
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  width: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out = new Array<R>(items.length)
+  let cursor = 0
+  const worker = async () => {
+    while (cursor < items.length) {
+      const i = cursor++
+      out[i] = await fn(items[i])
+    }
+  }
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(width, items.length)) }, worker))
+  return out
 }
 
 export async function handleCdnUploadCompletePost(request: NextRequest) {
@@ -67,52 +87,59 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       }
     }
 
-    // Resolve every id against its staging row. A row that is missing or owned
-    // by someone else is indistinguishable from an id that never existed.
-    const staged = await Promise.all(filesToComplete.map(f => getCdnStaging(f.cdnId)))
+    // Resolve every id against its staging row, in one query. A row that is
+    // missing or owned by someone else is indistinguishable from an id that
+    // never existed.
+    const stagingRows = await getCdnStagingMany(filesToComplete.map(f => f.cdnId))
+    const stagingById = new Map(stagingRows.map(r => [r.id, r]))
     const resolved: { cdnId: string; folderId?: string | null; staging: CdnStagingRecord }[] = []
-    for (let i = 0; i < filesToComplete.length; i++) {
-      const staging = staged[i]
+    for (const f of filesToComplete) {
+      const staging = stagingById.get(f.cdnId)
       if (!staging || staging.user_id !== currentUser.userId) {
         return apiError(404, API_ERRORS.NOT_FOUND, "Upload session not found or expired")
       }
-      resolved.push({ ...filesToComplete[i], staging })
+      resolved.push({ ...f, staging })
     }
 
-    // Verify all files exist in R2 in parallel — one concurrent batch of HEAD requests
-    const headResults = await Promise.all(
-      resolved.map(async (f) => {
-        const r2Key = f.staging.r2_key
-        const head = await headCdnObject(r2Key)
-        return {
-          cdnId: f.cdnId,
-          folderId: f.folderId,
-          slug: f.staging.slug ?? null,
-          sanitizedName: f.staging.original_name,
-          contentType: f.staging.content_type,
-          r2Key,
-          head,
-        }
-      })
-    )
+    // One ranged GET per object gives size, content type and the leading bytes
+    // at once. Fanning all of them out unbounded just queues on the SDK's
+    // sockets, so run a fixed window instead.
+    const probes = await mapWithConcurrency(resolved, R2_PROBE_CONCURRENCY, async (f) => {
+      const r2Key = f.staging.r2_key
+      const probe = await headAndSniffCdnObject(r2Key)
+      return {
+        cdnId: f.cdnId,
+        folderId: f.folderId,
+        slug: f.staging.slug ?? null,
+        sanitizedName: f.staging.original_name,
+        contentType: f.staging.content_type,
+        r2Key,
+        probe,
+      }
+    })
 
     // Check for any files not found in R2
-    const missing = headResults.filter(r => !r.head)
+    const missing = probes.filter(r => !r.probe)
     if (missing.length > 0) {
       const names = missing.map(r => r.sanitizedName).join(", ")
         return apiError(404, API_ERRORS.NOT_FOUND, `Upload not found in storage for: ${names}. Did the upload finish?`)
     }
 
+    const headResults = probes.map(r => ({
+      ...r,
+      head: { size: r.probe!.size, contentType: r.probe!.contentType },
+    }))
+
     // Magic-byte validation: CDN assets are public and unencrypted, so verify
     // the actual bytes don't decode to a known-dangerous executable/script that
     // was renamed to a safe extension. Types without distinctive magic bytes
-    // (svg, text, fonts, etc.) pass through unchanged.
+    // (svg, text, fonts, etc.) pass through unchanged. The bytes came back with
+    // the probe above, so this costs no extra requests.
     const typeChecks = await Promise.all(
-      headResults.map(async (r) => {
+      probes.map(async (r) => {
         try {
-          const head = await downloadHeadByKey(r.r2Key, 65536)
           const ext = getFileExtension(r.sanitizedName).replace(/^\./, "")
-          const result = await verifyCdnFileType(head, ext)
+          const result = await verifyCdnFileType(r.probe!.head, ext)
           return { r2Key: r.r2Key, name: r.sanitizedName, valid: result.valid, error: result.error }
         } catch {
           return { r2Key: r.r2Key, name: r.sanitizedName, valid: false, error: "File validation failed" }
@@ -168,7 +195,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     }
 
     // One-shot: the ids can't be completed twice.
-    await Promise.all(assetInputs.map(a => deleteCdnStaging(a.id).catch(() => {})))
+    await deleteCdnStagingMany(assetInputs.map(a => a.id)).catch(() => {})
 
     // Build response assets array
     const completedAssets = assetInputs.map(a => ({
