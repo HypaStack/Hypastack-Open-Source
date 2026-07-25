@@ -266,10 +266,10 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
               )}
             </ShineCard>
 
-            <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7079] text-center">
+            <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7076] text-center">
               Your file is encrypted on this device before it&apos;s uploaded, so only {ownerName} can open it. Anyone can set a
               name and avatar. Hypastack doesn&apos;t vet profiles, so only accounts showing a{" "}
-              <span className="inline-flex items-center gap-0.5 align-middle text-[#8a9099]"><MIcon name="verified" size={12} />Verified</span>{" "}
+              <span className="inline-flex items-center gap-0.5 align-middle text-[#898e97]"><MIcon name="verified" size={12} />Verified</span>{" "}
               badge are confirmed.
             </p>
           </motion.div>

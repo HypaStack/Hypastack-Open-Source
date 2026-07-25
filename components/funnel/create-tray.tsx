@@ -100,7 +100,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
               <h3 className="text-[15px] font-semibold tracking-tight text-[#111] dark:text-[#f0f0f0]" style={TITLE_FONT}>
                 New funnel
               </h3>
-              <p className="text-[12px] text-[#8b8b90] dark:text-[#8b9099]">
+              <p className="text-[12px] text-[#898e97] dark:text-[#898e97]">
                 One-time drop link
               </p>
             </div>
@@ -126,7 +126,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
             {!link ? (
               <>
                 <div className={`${CARD} px-3.5 py-3`}>
-                  <p className="text-[12px] leading-relaxed text-[#8b8b90] dark:text-[#8b9099]">
+                  <p className="text-[12px] leading-relaxed text-[#898e97] dark:text-[#898e97]">
                     Whoever opens the link can drop a single file into your inbox. It&apos;s encrypted in their browser, so
                     only you can open it.
                   </p>
@@ -135,7 +135,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                 <div className={`${CARD} overflow-hidden`}>
                   <div className="px-3.5 py-3">
                     <div className="mb-2 flex items-center gap-2.5">
-                      <MIcon name="link" size={16} className="text-[#8b8b90] dark:text-[#8b9099]" />
+                      <MIcon name="link" size={16} className="text-[#898e97] dark:text-[#898e97]" />
                       <span className="text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]">Custom link</span>
                     </div>
                     <TextInput
@@ -148,7 +148,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                       leading={<span className="text-[13px] shrink-0">/funnel/</span>}
                       style={{ paddingLeft: 4 }}
                     />
-                    <p className="mt-1.5 text-[11px] text-[#9a9aa0] dark:text-[#6b6b6b]">
+                    <p className="mt-1.5 text-[11px] text-[#898e97] dark:text-[#6b6b6b]">
                       Optional. Leave it empty for a random link.
                     </p>
                   </div>
@@ -159,7 +159,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                 <div className="flex items-center gap-3 px-3.5 py-3">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-medium leading-tight text-[#111] dark:text-[#f0f0f0]">{link}</p>
-                    <p className="mt-0.5 text-[12px] text-[#8b8b90] dark:text-[#8b9099]">
+                    <p className="mt-0.5 text-[12px] text-[#898e97] dark:text-[#898e97]">
                       {copied ? "Copied to your clipboard" : "Copy it before you close this tray"}
                     </p>
                   </div>
@@ -171,13 +171,13 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
           <div className="mt-1.5 shrink-0 rounded-[12px] bg-[#f2f2f4] dark:bg-[rgba(255,255,255,0.02)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] p-2">
             <div className="flex items-center gap-3 px-1.5 pb-2.5 pt-1">
               {creating && (
-                <span className="text-[#666] dark:text-[#8b9099]">
+                <span className="text-[#666] dark:text-[#898e97]">
                   <LoadingSvg size={22} />
                 </span>
               )}
               <div className="flex min-w-0 flex-col">
                 <span className="text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{footerTitle}</span>
-                <span className="line-clamp-2 text-[12px] text-[#8b8b90] dark:text-[#8b9099]">{footerSub}</span>
+                <span className="line-clamp-2 text-[12px] text-[#898e97] dark:text-[#898e97]">{footerSub}</span>
               </div>
             </div>
 

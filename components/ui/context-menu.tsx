@@ -223,7 +223,7 @@ export function ContextMenuSub({
             style={{ width, ...(flip ? { right: "100%", marginRight: 6 } : { left: "100%", marginLeft: 6 }) }}
           >
             {title && (
-              <div className="px-2.5 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#8b9099]">
+              <div className="px-2.5 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]">
                 {title}
               </div>
             )}

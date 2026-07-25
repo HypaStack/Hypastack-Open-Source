@@ -95,7 +95,7 @@ function CellView({ c }: { c: Cell }) {
       <MIcon name={c.infinity ? "all_inclusive" : "check"} size={16} className="shrink-0 text-[#e6e7e9]" />
       <span className="text-[15px] text-[#f7f8f8]">
         {c.main}
-        {c.suffix ? <span className="text-[#6b7280]"> {c.suffix}</span> : null}
+        {c.suffix ? <span className="text-[#6b7076]"> {c.suffix}</span> : null}
       </span>
     </div>
   )

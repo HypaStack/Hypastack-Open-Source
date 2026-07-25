@@ -466,9 +466,9 @@ export default function DownloadPage() {
             </ShineCard>
 
             {uploader && (
-              <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7079] text-center">
+              <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7076] text-center">
                 Anyone can set a name and banner. Hypastack doesn&apos;t vet profiles, so a banner alone proves nothing. Only accounts showing a{" "}
-                <span className="inline-flex items-center gap-0.5 align-middle text-[#8a9099]"><MIcon name="verified" size={12} />Verified</span>{" "}
+                <span className="inline-flex items-center gap-0.5 align-middle text-[#898e97]"><MIcon name="verified" size={12} />Verified</span>{" "}
                 badge are confirmed. Don&apos;t trust a file just because it looks branded.
               </p>
             )}

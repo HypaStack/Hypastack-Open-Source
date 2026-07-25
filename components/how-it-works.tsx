@@ -16,7 +16,7 @@ function QuoteWord({ children, progress, start, end }: { children: string; progr
   const opacity = useTransform(progress, [start, end], [0.25, 1]);
   const blur = useTransform(progress, [start, end], [5, 0]);
   const y = useTransform(progress, [start, end], [14, 0]);
-  const color = useTransform(progress, [start, end], ["#6b7280", "#f7f8f8"]);
+  const color = useTransform(progress, [start, end], ["#6b7076", "#f7f8f8"]);
   const filter = useMotionTemplate`blur(${blur}px)`;
   return (
     <motion.span className="inline-block" style={{ opacity, y, color, filter, marginRight: "0.28em" }}>

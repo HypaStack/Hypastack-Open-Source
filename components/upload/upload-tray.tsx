@@ -28,9 +28,9 @@ const TurnstileWithRef = Turnstile as React.ComponentType<
 const PAD = "px-3"
 const RULE = "border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
 const LABEL = "text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]"
-const MUTED = "text-[12px] text-[#6b6b70] dark:text-[#a8a8a8]"
-const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#9a9aa0]"
-const ICON = "text-[#8b8b90] dark:text-[#9a9aa0]"
+const MUTED = "text-[12px] text-[#6b6b70] dark:text-[#a1a1aa]"
+const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]"
+const ICON = "text-[#898e97] dark:text-[#898e97]"
 const TITLE_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
 
 type UploadTrayProps = UseUploadReturn
@@ -140,7 +140,7 @@ export function UploadTray({
               <h3 className="text-[15px] font-semibold tracking-tight text-[#111] dark:text-[#f0f0f0]" style={TITLE_FONT}>
                 Uploads
               </h3>
-              <p className="text-[12px] text-[#8b8b90] dark:text-[#8f8f95]">
+              <p className="text-[12px] text-[#898e97] dark:text-[#898e97]">
                 {files.length} item{files.length !== 1 ? "s" : ""} · {uploadType === "cdn" ? "CDN" : "Files"}
               </p>
             </div>
@@ -275,7 +275,7 @@ export function UploadTray({
                       {slugLocked ? (
                         <UpgradeLink text="Upgrade to choose a custom expiry" />
                       ) : (
-                        <div className="mt-1.5 flex justify-between text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
+                        <div className="mt-1.5 flex justify-between text-[11px] text-[#898e97] dark:text-[#898e97]">
                           <span>1 min</span>
                           <span>30 days</span>
                         </div>
@@ -396,7 +396,7 @@ export function UploadTray({
 
                 {normalizeTier(user?.tier) !== "ultimate" && (
                   <div className={`${PAD} pb-3 pt-2`}>
-                    <p className="text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
+                    <p className="text-[11px] text-[#898e97] dark:text-[#898e97]">
                       Want faster uploads and deletes?{" "}
                       <a href="/pricing" className="underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
                         Upgrade your plan
@@ -411,13 +411,13 @@ export function UploadTray({
               <div className={`shrink-0 ${RULE} px-3 py-2.5`}>
                 <div className="mb-2.5 flex items-center gap-2 px-0.5">
                   {(state === "uploading" || state === "zipping") && (
-                    <span className="shrink-0 text-[#8b8b90] dark:text-[#8f8f95]">
+                    <span className="shrink-0 text-[#898e97] dark:text-[#898e97]">
                       <Loader size={18} />
                     </span>
                   )}
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-[13px] font-semibold leading-none text-[#111] dark:text-[#ededed]">{footerTitle}</span>
-                    <span className="line-clamp-1 text-[12px] leading-none text-[#8b8b90] dark:text-[#8f8f95]">{footerSub}</span>
+                    <span className="line-clamp-1 text-[12px] leading-none text-[#898e97] dark:text-[#898e97]">{footerSub}</span>
                   </div>
                 </div>
 
@@ -545,13 +545,13 @@ function TrayFileRow({
       className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-black/[0.02] dark:bg-white/[0.02] px-3"
       style={{ height: 38 }}
     >
-      <MIcon name="attach_file" size={17} className="shrink-0 text-[#8b8b90] dark:text-[#8f8f95]" />
+      <MIcon name="attach_file" size={17} className="shrink-0 text-[#898e97] dark:text-[#898e97]" />
 
       <p className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#ededed]">
         {name}
       </p>
 
-      <div className="flex shrink-0 items-center gap-2 text-[12px] tabular-nums text-[#8b8b90] dark:text-[#8f8f95]">
+      <div className="flex shrink-0 items-center gap-2 text-[12px] tabular-nums text-[#898e97] dark:text-[#898e97]">
         {error ? (
           <span className="text-red-500 dark:text-red-400">{status}</span>
         ) : (
@@ -624,7 +624,7 @@ function FieldBlock({ icon, label, children }: { icon: string; label: string; ch
 
 function LockBadge() {
   return (
-    <span className="flex shrink-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#8b8b90] dark:text-[#9a9aa0]">
+    <span className="flex shrink-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]">
       <MIcon name="lock" size={12} /> Essential+
     </span>
   )
@@ -632,7 +632,7 @@ function LockBadge() {
 
 function UpgradeLink({ text }: { text: string }) {
   return (
-    <a href="/pricing" className="mt-2 inline-block text-[11px] text-[#8b8b90] dark:text-[#9a9aa0] underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
+    <a href="/pricing" className="mt-2 inline-block text-[11px] text-[#898e97] dark:text-[#898e97] underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
       {text}
     </a>
   )
@@ -705,7 +705,7 @@ function CustomLinkField({
         </div>
       ) : (
         customSlug.trim() && (
-          <p className="mt-2 truncate text-[11px] text-[#8b8b90] dark:text-[#9a9aa0]">
+          <p className="mt-2 truncate text-[11px] text-[#898e97] dark:text-[#898e97]">
             {previewBase}{customSlug.trim()}
           </p>
         )

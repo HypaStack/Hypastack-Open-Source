@@ -280,7 +280,7 @@ function ManageLayoutInner({
                       <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{user.nickname}</p>
                       <ShineBadge>{tierLimits.label}</ShineBadge>
                     </div>
-                    <p className="mt-0.5 truncate text-[11px] text-[#8b8b90] dark:text-[#8b9099]">{user.id}</p>
+                    <p className="mt-0.5 truncate text-[11px] text-[#898e97] dark:text-[#898e97]">{user.id}</p>
                   </div>
                   <SecondaryButton
                     variant="ghost"
@@ -358,7 +358,7 @@ function ManageLayoutInner({
 
         <div className="px-2 pb-2 shrink-0">
           <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
-            <div className="text-xs text-[#555] dark:text-[#a8a8a8] font-medium mb-3">
+            <div className="text-xs text-[#555] dark:text-[#a1a1aa] font-medium mb-3">
               Usage
             </div>
 
