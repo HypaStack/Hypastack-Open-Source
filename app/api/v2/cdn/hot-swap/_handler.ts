@@ -3,7 +3,7 @@ import { apiError } from "@/lib/http/apiError"
 import { getCurrentUser } from "@/lib/security/auth"
 import { validateCsrfToken } from "@/lib/security/security"
 import { getCdnAssetById, getTotalStorageUsed, updateCdnAssetAfterSwap } from "@/lib/models/cdnModel"
-import { getPresignedCdnUploadUrl, headCdnObject } from "@/lib/storage/r2"
+import { getPresignedCdnUploadUrlForKey, headCdnObject } from "@/lib/storage/r2"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
@@ -60,12 +60,11 @@ export async function handleHotSwapInit(request: NextRequest) {
       return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `Not enough storage. You have ${remainingMB}MB remaining.`)
     }
 
-    // Generate presigned PUT URL for the EXISTING R2 key (overwrites in-place)
-    const { uploadUrl } = await getPresignedCdnUploadUrl(
-      asset.id,
-      asset.original_name,
-      contentType,
-    )
+    // Presign the EXISTING R2 key so the new bytes overwrite in place. Derive
+    // it from the stored key, not from asset.id — once an asset has a slug the
+    // id is no longer the path segment, and presigning cdn/<id>/<name> would
+    // write an orphan while the live object stayed untouched.
+    const { uploadUrl } = await getPresignedCdnUploadUrlForKey(asset.r2_key, contentType)
 
     return NextResponse.json({
       success: true,

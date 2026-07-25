@@ -540,6 +540,9 @@ $fn$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trg_set_tier_expiry ON users;
 CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION set_tier_expiry();
 ` },
+      // v2 CDN uploads stage the same way v3 does, and a v2 init can carry a
+      // custom slug, so the staging row has to remember it for completion.
+      { version: '2026-07-25-cdn-staging-slug', sql: `ALTER TABLE cdn_staging ADD COLUMN IF NOT EXISTS slug VARCHAR(64)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

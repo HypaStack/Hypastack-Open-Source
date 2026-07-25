@@ -6,7 +6,7 @@ import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { checkCdnUploadRateLimit } from "@/lib/data/rateLimit"
 import { isExtensionBlocked } from "@/lib/validation/fileValidation"
 import { sanitizeCdnFilename } from "@/lib/security/zeroTrust"
-import { generateCdnId, getTotalStorageUsed, getUserCdnStats, isCdnSlugTaken, suggestAvailableCdnSlugs } from "@/lib/models/cdnModel"
+import { createCdnStaging, generateCdnId, getTotalStorageUsed, getUserCdnStats, isCdnSlugTaken, suggestAvailableCdnSlugs } from "@/lib/models/cdnModel"
 import { getUserFileStats } from "@/lib/models/fileModel"
 import { getPresignedCdnUploadUrl } from "@/lib/storage/r2"
 import { getUserTier } from "@/lib/models/userModel"
@@ -152,11 +152,23 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
         // The random id stays the primary key; the slug (when set) only replaces
         // the URL/R2 path segment.
         const pathSegment = finalSlug ?? cdnId
+        const contentType = f.contentType || "application/octet-stream"
         const { uploadUrl, r2Key } = await getPresignedCdnUploadUrl(
           pathSegment,
           f.sanitizedName,
-          f.contentType || "application/octet-stream",
+          contentType,
         )
+        // Persist the init→owner binding. Completion reads the key back from
+        // here rather than rebuilding it, so the validation above is what
+        // decides the object a caller can finalize.
+        await createCdnStaging({
+          id: cdnId,
+          user_id: currentUser.userId,
+          r2_key: r2Key,
+          original_name: f.sanitizedName,
+          content_type: contentType,
+          slug: finalSlug,
+        })
         return {
           cdnId,
           slug: finalSlug,

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getCurrentUser } from "@/lib/security/auth"
+import { validateCsrfToken } from "@/lib/security/security"
 import { headCdnObject, downloadHeadByKey, deleteByKey } from "@/lib/storage/r2"
 import { verifyCdnFileType } from "@/lib/security/zeroTrust"
 import { getFileExtension } from "@/lib/validation/fileValidation"
-import { createCdnAssetsBatch, getTotalStorageUsed, suggestAvailableCdnSlugs } from "@/lib/models/cdnModel"
+import { createCdnAssetsBatch, deleteCdnStaging, getCdnStaging, getTotalStorageUsed, suggestAvailableCdnSlugs, type CdnStagingRecord } from "@/lib/models/cdnModel"
 import { getCdnFoldersByUserId } from "@/lib/models/cdnFolderModel"
 import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
@@ -13,10 +14,7 @@ import { errorCode } from "@/lib/errors"
 
 interface FileCompleteInput {
   cdnId: string
-  sanitizedName: string
-  contentType?: string
   folderId?: string | null
-  slug?: string | null
 }
 
 export async function handleCdnUploadCompletePost(request: NextRequest) {
@@ -28,22 +26,33 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
 
     const body = await request.json()
 
-    // Support both single-file (legacy) and batch mode
-    // Batch: { files: [{cdnId, sanitizedName, contentType, folderId}] }
-    // Legacy: { cdnId, sanitizedName, contentType, folderId }
+    const csrfValid = await validateCsrfToken(body.csrfToken)
+    if (!csrfValid) {
+      return apiError(403, API_ERRORS.FORBIDDEN, "Invalid CSRF token")
+    }
+
+    // Support both single-file (legacy) and batch mode. Only the id and the
+    // destination folder are read — name, content type and slug come from the
+    // staging row written at init.
+    // Batch: { files: [{cdnId, folderId}] }
+    // Legacy: { cdnId, folderId }
     let filesToComplete: FileCompleteInput[]
     if (Array.isArray(body.files)) {
       filesToComplete = body.files
     } else {
-      const { cdnId, sanitizedName, contentType, folderId, slug } = body
-      if (!cdnId || !sanitizedName) {
+      const { cdnId, folderId } = body
+      if (!cdnId) {
           return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
       }
-      filesToComplete = [{ cdnId, sanitizedName, contentType, folderId, slug }]
+      filesToComplete = [{ cdnId, folderId }]
     }
 
     if (filesToComplete.length === 0) {
         return apiError(400, API_ERRORS.BAD_REQUEST, "No files provided")
+    }
+
+    if (filesToComplete.some(f => typeof f?.cdnId !== "string" || !f.cdnId)) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Missing required fields")
     }
 
     const cdnDomain = process.env.R2_CDN_DOMAIN
@@ -58,13 +67,32 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       }
     }
 
+    // Resolve every id against its staging row. A row that is missing or owned
+    // by someone else is indistinguishable from an id that never existed.
+    const staged = await Promise.all(filesToComplete.map(f => getCdnStaging(f.cdnId)))
+    const resolved: { cdnId: string; folderId?: string | null; staging: CdnStagingRecord }[] = []
+    for (let i = 0; i < filesToComplete.length; i++) {
+      const staging = staged[i]
+      if (!staging || staging.user_id !== currentUser.userId) {
+        return apiError(404, API_ERRORS.NOT_FOUND, "Upload session not found or expired")
+      }
+      resolved.push({ ...filesToComplete[i], staging })
+    }
+
     // Verify all files exist in R2 in parallel — one concurrent batch of HEAD requests
     const headResults = await Promise.all(
-      filesToComplete.map(async (f) => {
-        // A custom slug (when set) replaces the random id in the public path.
-        const r2Key = `cdn/${f.slug ?? f.cdnId}/${f.sanitizedName}`
+      resolved.map(async (f) => {
+        const r2Key = f.staging.r2_key
         const head = await headCdnObject(r2Key)
-        return { ...f, r2Key, head }
+        return {
+          cdnId: f.cdnId,
+          folderId: f.folderId,
+          slug: f.staging.slug ?? null,
+          sanitizedName: f.staging.original_name,
+          contentType: f.staging.content_type,
+          r2Key,
+          head,
+        }
       })
     )
 
@@ -127,11 +155,10 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     try {
       await createCdnAssetsBatch(assetInputs)
     } catch (e) {
-      // Slug already taken (lost the race, or the client supplied another user's
-      // slug). We deliberately DO NOT delete the R2 object here: slug, cdnId and
-      // filename are all client-supplied and public, so `cdn/<slug>/<name>` may
-      // be the slug owner's existing object — deleting it would let one user wipe
-      // another's asset. A rare orphan from a legitimate race is the safe trade.
+      // Someone else's init won the slug between our init and this completion.
+      // The R2 object is left in place: the key came from our own staging row,
+      // but the object at it belongs to whoever completed first. A rare orphan
+      // from a legitimate race is the safe trade.
       const taken = assetInputs.find(a => a.slug)?.slug ?? null
       if (errorCode(e) === "23505" && taken) {
         const suggestions = await suggestAvailableCdnSlugs(taken)
@@ -139,6 +166,9 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
       }
       throw e
     }
+
+    // One-shot: the ids can't be completed twice.
+    await Promise.all(assetInputs.map(a => deleteCdnStaging(a.id).catch(() => {})))
 
     // Build response assets array
     const completedAssets = assetInputs.map(a => ({

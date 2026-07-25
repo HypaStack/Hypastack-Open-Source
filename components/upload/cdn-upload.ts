@@ -55,7 +55,7 @@ export async function runCdnUpload(
   }
 
   const { files: initResults } = await initResponse.json()
-  const completedUploads: { cdnId: string; sanitizedName: string; contentType: string; slug: string | null }[] = []
+  const completedUploads: { cdnId: string }[] = []
 
   for (let i = 0; i < files.length; i++) {
     if (i > 0 && deps.uploadDelayMs > 0) {
@@ -65,7 +65,7 @@ export async function runCdnUpload(
     deps.onProgress(0)
 
     const { file } = files[i]
-    const { cdnId, uploadUrl, sanitizedName, contentType, slug } = initResults[i]
+    const { cdnId, uploadUrl, contentType } = initResults[i]
 
     await new Promise<void>((resolve, reject) => {
       const xhr = new XMLHttpRequest()
@@ -90,19 +90,17 @@ export async function runCdnUpload(
       xhr.send(file)
     })
 
-    completedUploads.push({ cdnId, sanitizedName, contentType, slug: slug ?? null })
+    completedUploads.push({ cdnId })
   }
 
   const completeRes = await apiFetch("/api/v2/cdn/upload-complete", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      csrfToken,
       files: completedUploads.map(u => ({
         cdnId: u.cdnId,
-        sanitizedName: u.sanitizedName,
-        contentType: u.contentType,
         folderId: deps.folderId,
-        slug: u.slug,
       })),
     }),
   })

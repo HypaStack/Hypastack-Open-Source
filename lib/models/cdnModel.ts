@@ -113,16 +113,18 @@ export interface CdnStagingRecord {
   r2_key: string
   original_name: string
   content_type: string
+  /** Set when the init carried a custom slug; the r2_key already embeds it. */
+  slug?: string | null
 }
 
-/** Record an in-flight v3 CDN upload so completion can verify the owner. */
+/** Record an in-flight CDN upload so completion can verify the owner. */
 export async function createCdnStaging(input: CdnStagingRecord): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
   await pool.query(
-    `INSERT INTO cdn_staging (id, user_id, r2_key, original_name, content_type)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [input.id, input.user_id, input.r2_key, input.original_name, input.content_type]
+    `INSERT INTO cdn_staging (id, user_id, r2_key, original_name, content_type, slug)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [input.id, input.user_id, input.r2_key, input.original_name, input.content_type, input.slug || null]
   )
 }
 
@@ -130,7 +132,7 @@ export async function getCdnStaging(id: string): Promise<CdnStagingRecord | null
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query<CdnStagingRecord>(
-    `SELECT id, user_id, r2_key, original_name, content_type FROM cdn_staging WHERE id = $1`,
+    `SELECT id, user_id, r2_key, original_name, content_type, slug FROM cdn_staging WHERE id = $1`,
     [id]
   )
   return result.rows[0] ?? null

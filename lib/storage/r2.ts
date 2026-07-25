@@ -134,13 +134,11 @@ export function getCustomExpirationDate(minutes: number): Date {
 // URL Generation
 // ============================================================================
 
-export async function getPresignedCdnUploadUrl(
-  cdnId: string,
-  fileName: string,
+/** Presign a PUT for an already-known CDN key, e.g. replacing an asset in place. */
+export async function getPresignedCdnUploadUrlForKey(
+  r2Key: string,
   contentType: string,
 ): Promise<{ uploadUrl: string; r2Key: string }> {
-  const r2Key = `cdn/${cdnId}/${fileName}`
-
   const command = new PutObjectCommand({
     Bucket: getBucketName(),
     Key: r2Key,
@@ -150,6 +148,14 @@ export async function getPresignedCdnUploadUrl(
 
   const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
   return { uploadUrl, r2Key }
+}
+
+export async function getPresignedCdnUploadUrl(
+  cdnId: string,
+  fileName: string,
+  contentType: string,
+): Promise<{ uploadUrl: string; r2Key: string }> {
+  return getPresignedCdnUploadUrlForKey(`cdn/${cdnId}/${fileName}`, contentType)
 }
 
 export async function headCdnObject(r2Key: string): Promise<{ size: number; contentType: string } | null> {
