@@ -114,13 +114,27 @@ export function isPaidTier(tier: Tier): boolean {
   return tier !== "free"
 }
 
+/**
+ * Per-item pause applied to bulk upload and delete loops. Paid plans are not
+ * throttled at all; free keeps a pause so a single account can't monopolise the
+ * origin with a thousand-item batch.
+ */
 export function getTierDelayMs(tier: Tier): number {
+  return isPaidTier(tier) ? 0 : 3000
+}
+
+/**
+ * How many CDN objects may be PUT to R2 at once. This is the throughput knob
+ * for bulk uploads — the transfers go straight to storage, so the ceiling is
+ * the browser's connection rather than anything of ours.
+ */
+export function getTierUploadConcurrency(tier: Tier): number {
   switch (tier) {
-    case 'ultimate': return 0
-    case 'premium': return 1000
-    case 'essential': return 2000
+    case 'ultimate': return 16
+    case 'premium': return 8
+    case 'essential': return 4
     case 'free':
-    default: return 3000
+    default: return 2
   }
 }
 

@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react"
 import { shouldUseMultipart } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
-import { getTierLimits, FREE_LIMITS, getTierDelayMs, normalizeTier, isPaidTier } from "@/constants/tier-limits"
+import { getTierLimits, FREE_LIMITS, getTierDelayMs, getTierUploadConcurrency, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { formatBytes } from "@/lib/format"
 import type { UploadState, FileWithPreview, UploadZoneProps, InterruptedSession } from "./types"
 import { STORAGE_KEY_INTERRUPTED_UPLOAD } from "@/constants"
@@ -76,6 +76,7 @@ export function useUpload({
   const { user, stats, files: accountFiles, cdnAssets } = useManage()
   const tierLimits = user?.tier ? getTierLimits(user.tier) : FREE_LIMITS
   const uploadDelayMs = getTierDelayMs(normalizeTier(user?.tier))
+  const uploadConcurrency = getTierUploadConcurrency(normalizeTier(user?.tier))
   const MAX_SIZE = uploadType === "cdn" ? tierLimits.maxCdnFileSize : tierLimits.maxNormalUploadSize
   const MAX_FILES = uploadType === "cdn" ? tierLimits.maxCdnFilesPerUpload : tierLimits.maxFilesPerUpload
   const maxSizeLabel = formatBytes(MAX_SIZE)
@@ -323,7 +324,7 @@ export function useUpload({
           turnstileToken,
           folderId: currentFolderId,
           customSlug,
-          uploadDelayMs,
+          concurrency: uploadConcurrency,
           onFileIndex: setUploadingIndex,
           onProgress: setProgress,
           onUploadComplete,

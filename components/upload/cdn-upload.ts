@@ -1,5 +1,10 @@
 import { apiFetch } from "@/lib/http/fetch"
-import { IMMUTABLE_CACHE_CONTROL } from "@/constants/upload"
+import {
+  IMMUTABLE_CACHE_CONTROL,
+  CDN_CONCURRENCY_SMALL_MAX,
+  CDN_CONCURRENCY_MEDIUM_MAX,
+  CDN_CONCURRENCY_MEDIUM_CAP,
+} from "@/constants/upload"
 import type { FileWithPreview, SlugConflictError } from "./types"
 import type { CdnAssetItem } from "@/hooks/useManage"
 
@@ -7,10 +12,23 @@ interface CdnUploadDeps {
   turnstileToken: string
   folderId: string | null
   customSlug: string
-  uploadDelayMs: number
+  /** Upper bound on simultaneous PUTs, from the account's tier. */
+  concurrency: number
   onFileIndex: (i: number) => void
   onProgress: (pct: number) => void
   onUploadComplete?: (asset: CdnAssetItem | null) => void
+}
+
+// Many small files are latency-bound, so a wide window is pure win. Large ones
+// are bandwidth-bound and only contend with each other, so the window narrows.
+function resolveConcurrency(tierCap: number, files: FileWithPreview[]): number {
+  const total = files.reduce((sum, f) => sum + f.file.size, 0)
+  const avg = files.length > 0 ? total / files.length : 0
+  const cap =
+    avg >= CDN_CONCURRENCY_MEDIUM_MAX ? 1 :
+    avg >= CDN_CONCURRENCY_SMALL_MAX ? Math.min(tierCap, CDN_CONCURRENCY_MEDIUM_CAP) :
+    tierCap
+  return Math.max(1, Math.min(cap, files.length))
 }
 
 // Uploads the selected files to the CDN: one batched init (a single Turnstile
@@ -55,54 +73,72 @@ export async function runCdnUpload(
   }
 
   const { files: initResults } = await initResponse.json()
-  const completedUploads: { cdnId: string }[] = []
 
-  for (let i = 0; i < files.length; i++) {
-    if (i > 0 && deps.uploadDelayMs > 0) {
-      await new Promise(resolve => setTimeout(resolve, deps.uploadDelayMs))
-    }
-    deps.onFileIndex(i)
-    deps.onProgress(0)
-
-    const { file } = files[i]
-    const { cdnId, uploadUrl, contentType } = initResults[i]
-
-    await new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest()
-      xhr.upload.addEventListener("progress", (e) => {
-        if (e.lengthComputable) {
-          deps.onProgress((e.loaded / e.total) * 100)
-        }
-      })
-      xhr.addEventListener("load", () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          deps.onProgress(100)
-          resolve()
-        } else {
-          reject(new Error(`R2 upload failed (status ${xhr.status})`))
-        }
-      })
-      xhr.addEventListener("error", () => reject(new Error("Network error uploading to R2")))
-      xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")))
-      xhr.open("PUT", uploadUrl)
-      xhr.setRequestHeader("Content-Type", contentType)
-      xhr.setRequestHeader("Cache-Control", IMMUTABLE_CACHE_CONTROL)
-      xhr.send(file)
-    })
-
-    completedUploads.push({ cdnId })
+  // Progress is aggregated across everything in flight: per-file bytes are
+  // summed against the batch total, so the bar stays monotonic no matter what
+  // order the transfers land in.
+  const totalBytes = files.reduce((sum, f) => sum + f.file.size, 0)
+  const sentBytes = new Array<number>(files.length).fill(0)
+  let done = 0
+  const reportProgress = () => {
+    if (totalBytes <= 0) return
+    const sent = sentBytes.reduce((a, b) => a + b, 0)
+    deps.onProgress(Math.min(100, (sent / totalBytes) * 100))
   }
+
+  const putOne = (i: number) => new Promise<void>((resolve, reject) => {
+    const { file } = files[i]
+    const { uploadUrl, contentType } = initResults[i]
+    const xhr = new XMLHttpRequest()
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable) {
+        sentBytes[i] = e.loaded
+        reportProgress()
+      }
+    })
+    xhr.addEventListener("load", () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        sentBytes[i] = file.size
+        // The tray reads this as "n of N finished"; with parallel transfers it
+        // counts completions rather than pointing at one file.
+        deps.onFileIndex(Math.min(++done, files.length - 1))
+        reportProgress()
+        resolve()
+      } else {
+        reject(new Error(`R2 upload failed (status ${xhr.status})`))
+      }
+    })
+    xhr.addEventListener("error", () => reject(new Error("Network error uploading to R2")))
+    xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")))
+    xhr.open("PUT", uploadUrl)
+    xhr.setRequestHeader("Content-Type", contentType)
+    xhr.setRequestHeader("Cache-Control", IMMUTABLE_CACHE_CONTROL)
+    xhr.send(file)
+  })
+
+  deps.onFileIndex(0)
+  deps.onProgress(0)
+
+  // Fixed pool of workers pulling off a shared cursor: a slot is refilled the
+  // moment its transfer ends, so one slow file can't stall the others.
+  const width = resolveConcurrency(deps.concurrency, files)
+  let cursor = 0
+  const worker = async () => {
+    while (cursor < files.length) {
+      await putOne(cursor++)
+    }
+  }
+  // One rejection fails the batch, matching the old sequential behaviour: the
+  // finalize call never runs, and the staging rows expire on their own.
+  await Promise.all(Array.from({ length: width }, worker))
+
+  const completedUploads: { cdnId: string; folderId: string | null }[] =
+    initResults.map((r: { cdnId: string }) => ({ cdnId: r.cdnId, folderId: deps.folderId }))
 
   const completeRes = await apiFetch("/api/v2/cdn/upload-complete", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      csrfToken,
-      files: completedUploads.map(u => ({
-        cdnId: u.cdnId,
-        folderId: deps.folderId,
-      })),
-    }),
+    body: JSON.stringify({ csrfToken, files: completedUploads }),
   })
 
   if (!completeRes.ok) {

@@ -72,6 +72,17 @@ export const PREVIEWABLE_MIME_REGEX = /^(image|video|audio)\//
 /** Cache-Control for immutable CDN assets (1-year public cache) */
 export const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable"
 
+/**
+ * Average file size at or above which parallel CDN uploads are narrowed. Many
+ * concurrent large transfers just split the same bandwidth and make every
+ * individual file look stalled, so the window shrinks as files grow.
+ */
+export const CDN_CONCURRENCY_SMALL_MAX = 1024 * 1024        // 1 MB
+export const CDN_CONCURRENCY_MEDIUM_MAX = 25 * 1024 * 1024  // 25 MB
+
+/** Window used for medium files, regardless of how high the tier allows. */
+export const CDN_CONCURRENCY_MEDIUM_CAP = 3
+
 /** Default base name for a multi-file zip archive (".zip" is appended) */
 export const DEFAULT_ARCHIVE_NAME = "hypastack-archive"
 

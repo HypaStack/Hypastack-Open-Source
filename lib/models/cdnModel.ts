@@ -128,6 +128,28 @@ export async function createCdnStaging(input: CdnStagingRecord): Promise<void> {
   )
 }
 
+/** Same as createCdnStaging, in one round trip. Used by the batched v2 init. */
+export async function createCdnStagingBatch(inputs: CdnStagingRecord[]): Promise<void> {
+  if (inputs.length === 0) return
+  if (inputs.length === 1) return createCdnStaging(inputs[0])
+  await ensureDatabase()
+  const pool = getPool()
+
+  const COLS = 6
+  const values: unknown[] = []
+  const placeholders = inputs.map((input, i) => {
+    const base = i * COLS
+    values.push(input.id, input.user_id, input.r2_key, input.original_name, input.content_type, input.slug || null)
+    return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6})`
+  }).join(', ')
+
+  await pool.query(
+    `INSERT INTO cdn_staging (id, user_id, r2_key, original_name, content_type, slug)
+     VALUES ${placeholders}`,
+    values
+  )
+}
+
 export async function getCdnStaging(id: string): Promise<CdnStagingRecord | null> {
   await ensureDatabase()
   const pool = getPool()
