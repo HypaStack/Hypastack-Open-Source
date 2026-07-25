@@ -8,8 +8,6 @@ interface PageLogoProps {
   borderRadius?: number
   pulse?: boolean
   className?: string
-  /** @deprecated No longer used - layout animation has been removed */
-  disableLayoutAnimation?: boolean
   darkSrc?: string
 }
 

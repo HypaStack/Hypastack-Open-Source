@@ -56,12 +56,6 @@ export function getWebhookLog(): WebhookLogEntry[] {
   }
 }
 
-export function clearWebhookLog(): void {
-  if (typeof window === "undefined") return
-  localStorage.removeItem(STORAGE_KEY_DISCORD_WEBHOOK_LOG)
-  window.dispatchEvent(new CustomEvent(WEBHOOK_LOG_EVENT))
-}
-
 function pushLog(entry: WebhookLogEntry): void {
   if (typeof window === "undefined") return
   const log = [entry, ...getWebhookLog()].slice(0, WEBHOOK_LOG_MAX_ENTRIES)

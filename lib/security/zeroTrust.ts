@@ -120,15 +120,6 @@ export function sanitizeFilename(filename: string): {
   const extMatch = sanitized.match(/\.([^.]+)$/)
   const extension = extMatch ? extMatch[1].toLowerCase() : ""
 
-  // Block double extensions that hide dangerous types (e.g. "file.php.jpg")
-  // Disabled for normal uploads to allow any file type
-  // const allExts = sanitized.split(".").slice(1).map(e => e.toLowerCase())
-  // for (const ext of allExts) {
-  //   if (BLOCKED_EXTENSIONS_SET.has(ext)) {
-  //     return { sanitized: "", extension: "", isValid: false, error: `Hidden extension "${ext}" detected and blocked` }
-  //   }
-  // }
-
   // Length limit
   if (sanitized.length > 255) {
     sanitized = sanitized.substring(0, 255)

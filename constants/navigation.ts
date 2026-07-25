@@ -20,35 +20,6 @@ export const SECTION_BUTTONS: NavItem[] = [
   { label: "Scratch", href: "/me/dumpster", icon: "delete", hint: "Paste and share text" },
 ]
 
-/** Sub-navigation items for the Drive section */
-export const DRIVE_SUBNAV: NavItem[] = [
-  { label: "Files", href: "/me/files", icon: "folder" },
-]
-
-/** Sub-navigation items for the Funnel section */
-export const FUNNEL_SUBNAV: NavItem[] = [
-  { label: "Inbox", href: "/me/funnel", icon: "inbox" },
-]
-
-/** sub-navigation items for the Edge section */
-export const EDGE_SUBNAV: NavItem[] = [
-  { label: "Assets", href: "/me/cdn", icon: "cloud" },
-]
-
-/** Sub-navigation items for the Scratch section */
-export const SCRATCH_SUBNAV: NavItem[] = [
-  { label: "New Paste", href: "/me/dumpster", icon: "add_notes" },
-]
-
-/** Determines the display order for section slide animations */
-export const SECTION_ORDER: Record<string, number> = {
-  Drive: 0,
-  Edge: 1,
-  Funnel: 2,
-  Peerline: 3,
-  Scratch: 4,
-}
-
 /** width of the secondary (sub-nav) sidebar in pixels */
 export const SIDEBAR_WIDTH = 272
 
