@@ -69,7 +69,6 @@ a:hover .material-symbols-rounded,
   --input: #0a0b0c;
   --ring: rgba(255, 255, 255, 0.2);
   --radius: 0.5rem;
-  /* Charts */
   /* Sidebar (dashboard) */
   --sidebar: #08090a;
   --sidebar-foreground: #f7f8f8;}
@@ -96,9 +95,7 @@ a:hover .material-symbols-rounded,
 }
 
 
-/* Selection highlight is inverted per theme:
-   dark surfaces (default) → white bg / black text
-   light theme → black bg / white text (override below) */
+/* Selection highlight: white bg / black text on the dark surfaces the app uses */
 ::selection {
   background-color: #ffffff;
   color: #000000;
@@ -106,17 +103,6 @@ a:hover .material-symbols-rounded,
 ::-moz-selection {
   background-color: #ffffff;
   color: #000000;
-}
-
-.theme-light ::selection,
-.theme-dashboard.theme-light ::selection {
-  background-color: #000000;
-  color: #ffffff;
-}
-.theme-light ::-moz-selection,
-.theme-dashboard.theme-light ::-moz-selection {
-  background-color: #000000;
-  color: #ffffff;
 }
 
 html.is-dashboard, html.is-dashboard body {
@@ -135,16 +121,6 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: #2c2c2c !important;
   caret-color: #2c2c2c !important;
 }
-
-/* Card-bordered solid border in light mode (global default) */
-
-
-/* Buttons in light mode (global default) */
-
-
-
-
-
 
 /* Dark overrides — restore dark styles inside .theme-dark */
 .theme-dark ::selection {
@@ -166,13 +142,6 @@ input:-webkit-autofill:focus {
 }
 
 
-
-
-
-
-
-
-
 /* Dashboard override — Light mode requested by user */
 .theme-dashboard {
   --background: #ffffff;
@@ -182,266 +151,6 @@ input:-webkit-autofill:focus {
   --accent: #e5e5e5;  --border: #e4e4e7;
   --input: #ffffff;
   --ring: #111111;}
-
-/* Internxt-style row hover + active states */
-.drive-row {
-  transition: background-color 0.12s ease;
-  border-radius: 0px;
-}
-
-.drive-row:hover {
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
-.drive-row[data-selected="true"] {
-  background-color: rgba(155, 155, 155, 0.1);
-}
-
-/* ============================================================================
- * Dashboard LIGHT mode overrides
- *
- * The dashboard UI was built dark-first with hardcoded Tailwind arbitrary
- * values like bg-[#111111]. To flip the entire surface without rewriting
- * every component, we override those exact utility classes here when the
- * dashboard wrapper carries the .theme-light class. Keep the brand blue
- * (#9b9b9b) intact in both modes — only neutrals flip.
- * ========================================================================== */
-.theme-dashboard.theme-light {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --card: #ffffff;  --popover: #ffffff;  --secondary: #f4f4f5;  --muted: #fafafa;
-  --muted-foreground: #6b7280;
-  --border: #e4e4e7;
-  --input: #ffffff;
-}
-
-/* Backgrounds */
-.theme-dashboard.theme-light .bg-\[\#111111\] {
-  background-color: #ffffff !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#18181b\] {
-  background-color: #f7f7f8 !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#2c2c30\] {
-  background-color: #ececef !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#3a3a3b\] {
-  background-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#2a2a2a\] {
-  background-color: #ebf2ff !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#222222\] {
-  background-color: #ebf2ff !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#1f1f23\] {
-  background-color: #f0f0f2 !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#2c2c30\] {
-  background-color: #cfe0ff !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#7d7d7d\] {
-  background-color: #7d7d7d !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#2c2c30\]:hover {
-  background-color: #ececef !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#3a3a3b\]:hover {
-  background-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#444446\]:hover {
-  background-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#1f1f23\]:hover {
-  background-color: #f0f0f2 !important;
-}
-
-/* New squircle palette — light mode */
-.theme-dashboard.theme-light .bg-\[\#121212\] {
-  background-color: #ffffff !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#121212\]\/95 {
-  background-color: rgba(255, 255, 255, 0.97) !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#1a1a1c\] {
-  background-color: #f3f3f5 !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#1e1e22\] {
-  background-color: #ececef !important;
-}
-
-.theme-dashboard.theme-light .bg-\[\#222226\] {
-  background-color: #e4e4e7 !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#222226\]:hover {
-  background-color: #e4e4e7 !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#1e1e22\]:hover {
-  background-color: #ececef !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#2c2c30\]:hover {
-  background-color: #ececef !important;
-}
-
-.theme-dashboard.theme-light .hover\:bg-\[\#222226\]\/50:hover {
-  background-color: rgba(228, 228, 231, 0.5) !important;
-}
-
-
-/* White surfaces stay white in light mode — no inversion needed */
-.theme-dashboard.theme-light .hover\:bg-\[\#e2e2e8\]:hover {
-  background-color: #f0f0f0 !important;
-}
-
-/* Muted gray text → keep readable in light */
-.theme-dashboard.theme-light .text-\[\#7a7a80\] {
-  color: #a1a1aa !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#6b6b70\] {
-  color: #a1a1aa !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#ccc\] {
-  color: #71717a !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#aaa\] {
-  color: #71717a !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#e5e5e5\] {
-  color: #18181b !important;
-}
-
-/* Separator lines */
-.theme-dashboard.theme-light .bg-\[\#222\] {
-  background-color: #e4e4e7 !important;
-}
-
-.theme-dashboard.theme-light .border-\[\#1e1e22\] {
-  border-color: #e4e4e7 !important;
-}
-
-.theme-dashboard.theme-light .border-\[\#222226\] {
-  border-color: #e4e4e7 !important;
-}
-
-/* Borders */
-.theme-dashboard.theme-light .border-\[\#2c2c30\] {
-  border-color: #e4e4e7 !important;
-}
-
-.theme-dashboard.theme-light .border-\[\#3a3a3b\] {
-  border-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .border-\[\#48484b\] {
-  border-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .border-\[\#444446\] {
-  border-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .ring-\[\#3a3a3b\] {
-  --tw-ring-color: #d4d4d8 !important;
-}
-
-.theme-dashboard.theme-light .ring-\[\#333333\] {
-  --tw-ring-color: #cfe0ff !important;
-}
-
-.theme-dashboard.theme-light .divide-\[\#2c2c30\]> :not([hidden])~ :not([hidden]) {
-  border-color: #e4e4e7 !important;
-}
-
-/* Text — invert near-whites to near-blacks; keep #9b9b9b brand blue intact */
-.theme-dashboard.theme-light .text-white {
-  color: #0a0a0a !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#fefeff\] {
-  color: #fefeff !important;
-  /* keep on blue buttons */
-}
-
-.theme-dashboard.theme-light .bg-\[\#9b9b9b\] .text-\[\#fefeff\] {
-  color: #fefeff !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#e2e2e8\] {
-  color: #18181b !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#e5e5eb\] {
-  color: #18181b !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#c7c7cd\] {
-  color: #52525b !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#a1a1aa\] {
-  color: #71717a !important;
-}
-
-.theme-dashboard.theme-light .text-\[\#aeaeb3\] {
-  color: #71717a !important;
-}
-
-/* Some headings/strong text are styled with `text-white` directly — they
-   become near-black above. Buttons that put white text on a blue background
-   need to stay white in both themes. */
-.theme-dashboard.theme-light .bg-\[\#9b9b9b\].text-white,
-.theme-dashboard.theme-light .bg-\[\#9b9b9b\] .text-white {
-  color: #ffffff !important;
-}
-
-/* Text-shadow / placeholder colors */
-.theme-dashboard.theme-light .placeholder\:text-\[\#c7c7cd\]::placeholder {
-  color: #71717a !important;
-}
-
-.theme-dashboard.theme-light .placeholder\:text-\[\#a1a1aa\]::placeholder {
-  color: #71717a !important;
-}
-
-/* Drive row hover/select tweak — flip the white-tint hover to a black-tint */
-.theme-dashboard.theme-light .drive-row {
-  border-bottom-color: #ececef;
-}
-
-.theme-dashboard.theme-light .drive-row:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.theme-dashboard.theme-light .drive-row[data-selected="true"] {
-  background-color: rgba(155, 155, 155, 0.08);
-}
-
-/* Sidebar storage progress track + neutral progress fills */
-.theme-dashboard.theme-light .bg-\[\#2c2c30\].overflow-hidden {
-  background-color: #e4e4e7 !important;
-}
 
 @theme inline {
   --font-sans: "SF Pro Display", system-ui, sans-serif;
@@ -460,12 +169,11 @@ input:-webkit-autofill:focus {
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  --color-sidebar: var(--sidebar);  --color-sidebar-primary: var(--sidebar-primary);  --color-sidebar-accent: var(--sidebar-accent);}
+  --color-sidebar: var(--sidebar);}
 
 /* Tauri desktop app pure black background */
 html.is-tauri,
-html.is-tauri .theme-dashboard,
-html.is-tauri .theme-marketing {
+html.is-tauri .theme-dashboard {
   --background: #0a0a0a;
   --card: #141414;
   -webkit-user-select: none;
@@ -510,11 +218,6 @@ html.is-tauri [contenteditable="true"] {
 
 
 
-
-  /* Main Site Content Wrapper */
-  #app-content-wrapper {
-    /* No animation needed since preloader was removed */
-  }
 
   body {
     font-family: system-ui, sans-serif;
@@ -568,7 +271,6 @@ html.is-tauri [contenteditable="true"] {
     letter-spacing: -0.01em;
   }
 
-  /* Body text uses DM Sans */
   p,
   li,
   label,
@@ -586,12 +288,6 @@ html.is-tauri [contenteditable="true"] {
   textarea,
   select {
     font-weight: 500;
-  }
-
-  /* Light body copy helper */
-  .text-desc,
-  .description {
-    font-weight: 300;
   }
 
   input,
@@ -615,7 +311,7 @@ html.is-tauri [contenteditable="true"] {
     margin: 0;
     width: 1.15rem;
     height: 1.15rem;
-    border: 1px solid var(--secondary-border);
+    border: 1px solid var(--border);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -636,28 +332,10 @@ html.is-tauri [contenteditable="true"] {
   }
 
   input[type="checkbox"]:focus-visible {
-    outline: 2px solid var(--brand);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
 }
-
-/* ── Card with a top→bottom border-color gradient (#2e2e2e → #1f1f1f) ── */
-
-
-
-/* ── Primary button: solid #9b9b9b ── */
-
-
-/* ── Secondary button: #2c2c30 with #3a3a3b border ── */
-
-
-/* ── Launch pill ── */
-
-/* ── Divider lines ── */
-
-/* Upload progress bar — swirling color shimmer */
-
-
 
 /* ── Blog prose typography ──────────────────────────────────────────── */
 .blog-prose h1 { font-family: "SF Pro Display", system-ui, sans-serif; font-size: clamp(28px,4.5vw,48px); font-weight: 700; color: #f7f8f8; letter-spacing: -0.025em; line-height: 1.1; margin-top: 2.5rem; margin-bottom: 1.25rem; }
