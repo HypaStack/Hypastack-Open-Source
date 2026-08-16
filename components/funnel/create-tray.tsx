@@ -8,8 +8,7 @@ import { LoadingSvg } from "@/components/ui/loading-svg"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { getSessionKey } from "@/lib/security/cryptoClient"
 import { TextInput } from "@/components/ui/text-input"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { generateWrappedFunnelKeypair } from "@/lib/security/funnelCrypto"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -104,16 +103,16 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                 One-time drop link
               </p>
             </div>
-            <SecondaryButton
+            <Button
               variant="ghost"
-              iconOnly
-              size="xs"
-              onClick={onClose}
+              isIconOnly
+              size="sm"
+              onPress={onClose}
               aria-label="Close"
               style={{ height: 28, width: 28, borderRadius: 9999 }}
             >
               <MIcon name="close" size={18} />
-            </SecondaryButton>
+            </Button>
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-0.5 [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -183,46 +182,52 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
 
             {!link ? (
               <div className="flex items-center gap-1.5">
-                <SecondaryButton
+                <Button
+                  variant="tertiary"
                   size="sm"
-                  onClick={onClose}
+                  onPress={onClose}
                   className="flex-1"
-                  style={{ height: 36, borderRadius: 9 }}
+                  style={{ height: 36 }}
                 >
                   Cancel
-                </SecondaryButton>
-                <ShineButton
+                </Button>
+                <Button
+                  variant="primary"
                   size="sm"
-                  onClick={create}
-                  disabled={creating}
+                  onPress={create}
+                  isDisabled={creating}
                   className="flex-1"
-                  style={{ height: 36, borderRadius: 9, gap: 6 }}
+                  style={{ height: 36, gap: 6 }}
                 >
                   <MIcon name="add_link" size={16} />
                   Create
-                </ShineButton>
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-1.5">
-                <SecondaryButton
+                <Button
+                  variant="tertiary"
                   size="sm"
-                  onClick={() => { setLink(""); setCustomSlug(""); setCopied(false) }}
+                  onPress={() => { setLink(""); setCustomSlug(""); setCopied(false) }}
                   className="flex-1"
-                  style={{ height: 36, borderRadius: 9 }}
+                  style={{ height: 36 }}
                 >
                   New
-                </SecondaryButton>
-                <ShineButton
+                </Button>
+                <Button
+                  variant="primary"
                   size="sm"
-                  onClick={copy}
+                  onPress={copy}
                   className="flex-1"
-                  color={copied ? "#059669" : undefined}
-                  hoverColor={copied ? "#047857" : undefined}
-                  style={{ height: 36, borderRadius: 9, gap: 6 }}
+                  style={
+                    copied
+                      ? { height: 36, gap: 6, ["--button-bg" as string]: "#059669", ["--button-bg-hover" as string]: "#047857" }
+                      : { height: 36, gap: 6 }
+                  }
                 >
                   <MIcon name={copied ? "check" : "content_copy"} size={16} />
                   {copied ? "Copied" : "Copy link"}
-                </ShineButton>
+                </Button>
               </div>
             )}
           </div>

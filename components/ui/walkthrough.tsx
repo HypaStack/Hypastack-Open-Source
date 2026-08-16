@@ -1,7 +1,7 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
@@ -65,18 +65,17 @@ export function Walkthrough({ id, steps, currentStep }: WalkthroughProps) {
         </span>
 
         {/* Skip button */}
-        <SecondaryButton
+        <Button
           variant="ghost"
-          iconOnly
-          size="xs"
-          onClick={handleSkip}
+          isIconOnly
+          size="sm"
+          onPress={handleSkip}
           className="ml-0.5"
-          title="Skip walkthrough"
           aria-label="Skip walkthrough"
           style={{ height: 24, width: 24, borderRadius: 9999 }}
         >
           <MIcon name="close" size={14} />
-        </SecondaryButton>
+        </Button>
       </motion.div>
     </AnimatePresence>
   )

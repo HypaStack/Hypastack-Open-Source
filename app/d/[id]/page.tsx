@@ -7,8 +7,7 @@ import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/storage/multipart";
 import { motion } from "motion/react";
 import { apiFetch } from "@/lib/http/fetch"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { ShineCard } from "@/components/ui/shine-card"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { LoadingSvg } from "@/components/ui/loading-svg"
@@ -246,9 +245,10 @@ export default function DownloadPage() {
 
   // Primary action button, full-width at the bottom of the card.
   const downloadButton = downloaded ? (
-    <SecondaryButton
-      onClick={!burned ? handleDownload : undefined}
-      disabled={burned || downloadCooldown > 0}
+    <Button
+      variant="tertiary"
+      onPress={!burned ? handleDownload : undefined}
+      isDisabled={burned || downloadCooldown > 0}
       size="lg"
       fullWidth
       style={{ gap: 8 }}
@@ -260,11 +260,12 @@ export default function DownloadPage() {
       ) : (
         <><MIcon name="download" size={16} />Download again</>
       )}
-    </SecondaryButton>
+    </Button>
   ) : (
-    <SecondaryButton
-      onClick={handleDownload}
-      disabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
+    <Button
+      variant="tertiary"
+      onPress={handleDownload}
+      isDisabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
       size="lg"
       fullWidth
       style={{ gap: 8 }}
@@ -278,7 +279,7 @@ export default function DownloadPage() {
       ) : (
         <><MIcon name="download" size={16} />Download</>
       )}
-    </SecondaryButton>
+    </Button>
   );
 
   if (missingKey) {
@@ -331,15 +332,17 @@ export default function DownloadPage() {
                 {error === "File has expired" ? "This file has been permanently deleted from our servers." : "The file you're looking for doesn't exist or has been removed."}
               </p>
               <div className="flex gap-2">
-                <ShineButton
-                  onClick={() => router.push("/me/files")}
+                <Button
+                  variant="primary"
+                  onPress={() => router.push("/me/files")}
                   className="flex-1"
-                >Upload a file</ShineButton>
-                <SecondaryButton
+                >Upload a file</Button>
+                <Button
+                  variant="tertiary"
                   size="lg"
-                  onClick={() => router.push("/")}
+                  onPress={() => router.push("/")}
                   className="flex-1"
-                >Home</SecondaryButton>
+                >Home</Button>
               </div>
             </ShineCard>
           </motion.div>

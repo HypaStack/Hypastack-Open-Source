@@ -10,8 +10,8 @@ import { Loader } from "@/components/ui/loader"
 import { useAuth } from "@/hooks/useAuth"
 import { apiFetch } from "@/lib/http/fetch"
 import { TextInput } from "@/components/ui/text-input"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { errorMessage } from "@/lib/errors"
 import { formatBytes } from "@/lib/format"
@@ -199,21 +199,23 @@ export default function ForumNewPage() {
               Files uploaded to the forum are <strong className="text-[#f7f8f8] ">not encrypted</strong> and will be <strong className="text-[#f7f8f8] ">publicly visible and freely downloadable</strong> by anyone. Do not upload private, sensitive, or confidential files here.
             </p>
             <div className="flex gap-3 justify-center">
-              <SecondaryButton
+              <ButtonLink
                 href="/forum"
                 as={Link}
+                variant="tertiary"
                 size="md"
                 style={{ borderRadius: 9999 }}
               >
                 Go back
-              </SecondaryButton>
-              <ShineButton
+              </ButtonLink>
+              <Button
+                variant="primary"
                 size="md"
-                onClick={() => setWarningDismissed(true)}
+                onPress={() => setWarningDismissed(true)}
                 style={{ borderRadius: 9999 }}
               >
                 I understand, continue
-              </ShineButton>
+              </Button>
             </div>
           </div>
         </section>
@@ -284,9 +286,9 @@ export default function ForumNewPage() {
                     className="inline-flex items-center gap-1 text-[11px] font-medium text-[#444]  bg-[rgba(255,255,255,0.04)]  px-2.5 py-1 rounded-full"
                   >
                     {tag}
-                    <SecondaryButton variant="ghost" danger iconOnly size="xs" onClick={() => handleRemoveTag(tag)} aria-label={`Remove ${tag}`} style={{ height: 14, width: 14, borderRadius: 9999 }}>
+                    <Button variant="danger-soft" isIconOnly size="sm" onPress={() => handleRemoveTag(tag)} aria-label={`Remove ${tag}`} style={{ height: 14, width: 14, borderRadius: 9999 }}>
                       <MIcon name="close" size={10} />
-                    </SecondaryButton>
+                    </Button>
                   </span>
                 ))}
               </div>
@@ -368,17 +370,16 @@ export default function ForumNewPage() {
                         </p>
                       </div>
                       {pf.status === "pending" && (
-                        <SecondaryButton
-                          variant="ghost"
-                          danger
-                          iconOnly
-                          size="xs"
-                          onClick={() => handleRemoveFile(i)}
+                        <Button
+                          variant="danger-soft"
+                          isIconOnly
+                          size="sm"
+                          onPress={() => handleRemoveFile(i)}
                           aria-label="Remove file"
-                          style={{ height: 24, width: 24, borderRadius: 6 }}
+                          style={{ height: 24, width: 24 }}
                         >
                           <MIcon name="close" size={14} />
-                        </SecondaryButton>
+                        </Button>
                       )}
                     </div>
                   ))}
@@ -395,10 +396,11 @@ export default function ForumNewPage() {
 
             {/* Submit */}
             <div className="flex justify-end pt-2">
-              <ShineButton
+              <Button
+                variant="primary"
                 type="submit"
                 size="md"
-                disabled={!title.trim() || files.length === 0 || submitting}
+                isDisabled={!title.trim() || files.length === 0 || submitting}
                 style={{ borderRadius: 9999, gap: 8 }}
               >
                 {submitting ? (
@@ -412,7 +414,7 @@ export default function ForumNewPage() {
                     Publish
                   </>
                 )}
-              </ShineButton>
+              </Button>
             </div>
           </form>
         </div>

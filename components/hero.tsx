@@ -6,8 +6,9 @@ import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
 import { Loader } from "@/components/ui/loader";
 import { MIcon } from "@/components/ui/material-icon";
-import { ShineButton } from "@/components/ui/shine-button";
-import { SecondaryButton } from "@/components/ui/secondary-button";
+import { Button } from "@heroui/react";
+import { ButtonLink } from "@/components/ui/button-link";
+import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
 
 // One-time bouncy blur-in on mount. Driven by a useSpring MotionValue (0 -> 1)
@@ -77,7 +78,7 @@ export function Hero() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.07)] transition-colors py-1 pl-1 pr-3 no-underline"
             >
-              {/* Mirrors ShineButton's primary gloss — a span rather than the
+              {/* Mirrors the primary button's gloss — a span rather than the
                   component itself, since a nested <a>/<button> is invalid here. */}
               <span
                 className="inline-flex items-center gap-1 rounded-full text-white"
@@ -109,12 +110,12 @@ export function Hero() {
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
             <div className="flex flex-wrap items-center gap-3">
-              <ShineButton size="md" onClick={handleLoginClick}>
+              <Button variant="primary" size="md" onPress={toPressHandler(handleLoginClick)}>
                 Get started
-              </ShineButton>
-              <SecondaryButton href="/pricing" as={Link} size="md">
+              </Button>
+              <ButtonLink href="/pricing" as={Link} variant="tertiary" size="md">
                 View pricing
-              </SecondaryButton>
+              </ButtonLink>
             </div>
           </PopIn>
           <PopIn delay={320} fromY={44} className="w-full mt-28 sm:mt-40">
@@ -141,9 +142,9 @@ export function Hero() {
                     <p className="text-[14px] leading-relaxed text-[#898e97] max-w-[320px]">
                       You're on mobile so we couldn't load this video for you to ensure a smooth experience
                     </p>
-                    <SecondaryButton size="sm" onClick={() => setForceLoad(true)}>
+                    <Button variant="tertiary" size="sm" onPress={() => setForceLoad(true)}>
                       Load regardless
-                    </SecondaryButton>
+                    </Button>
                   </div>
                 ) : (
                   <>

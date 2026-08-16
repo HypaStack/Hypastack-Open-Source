@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { SecondaryButton } from "@/components/ui/secondary-button"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { useManage } from "@/hooks/useManage"
 import { hypaToast, hypaError, hypaConfirm } from "@/components/ui/hypa-notif"
@@ -161,9 +161,9 @@ export default function FunnelInboxPage() {
             Funnels are available on the Essential, Pro and Max plans.
           </AlertMessage>
           <div className="mt-5">
-            <ShineButton href="/pricing" size="md" aria-label="See plans">
+            <ButtonLink href="/pricing" variant="primary" size="md" aria-label="See plans">
               See plans
-            </ShineButton>
+            </ButtonLink>
           </div>
         </div>
       </div>
@@ -181,13 +181,13 @@ export default function FunnelInboxPage() {
           {selected.size > 0 ? (
             <>
               <motion.div layout>
-                <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                <Button variant="tertiary" size="md" onPress={handleSelectAll} style={{ gap: 8 }}>
                   <MIcon name={allSelected ? "deselect" : "select_all"} size={15} className="shrink-0" />
                   <span className="hidden sm:inline">{allSelected ? "Deselect all" : "Select all"}</span>
-                </SecondaryButton>
+                </Button>
               </motion.div>
               <motion.div layout>
-                <SecondaryButton size="md" onClick={handleDownload} disabled={working} style={{ gap: 8 }}>
+                <Button variant="tertiary" size="md" onPress={handleDownload} isDisabled={working} style={{ gap: 8 }}>
                   {working ? (
                     <LoadingSvg size={16} className="shrink-0" />
                   ) : (
@@ -196,20 +196,19 @@ export default function FunnelInboxPage() {
                   <span className="hidden sm:inline">
                     Download{selected.size > 1 ? ` (${selected.size})` : ""}
                   </span>
-                </SecondaryButton>
+                </Button>
               </motion.div>
               <motion.div layout>
-                <ShineButton
+                <Button
+                  variant="danger"
                   size="md"
-                  onClick={handleDelete}
-                  disabled={working}
-                  color="#dc2626"
-                  hoverColor="#b91c1c"
+                  onPress={handleDelete}
+                  isDisabled={working}
                   style={{ gap: 8 }}
                 >
                   <MIcon name="delete" size={16} className="shrink-0" />
                   Delete {selected.size}
-                </ShineButton>
+                </Button>
               </motion.div>
             </>
           ) : (
@@ -217,18 +216,18 @@ export default function FunnelInboxPage() {
               <AnimatePresence mode="popLayout">
                 {files.length > 0 && (
                   <motion.div key="select-all" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
-                    <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                    <Button variant="tertiary" size="md" onPress={handleSelectAll} style={{ gap: 8 }}>
                       <MIcon name="select_all" size={15} className="shrink-0" />
                       <span className="hidden sm:inline">Select all</span>
-                    </SecondaryButton>
+                    </Button>
                   </motion.div>
                 )}
               </AnimatePresence>
               <motion.div layout>
-                <SecondaryButton size="md" onClick={() => setTrayOpen(true)} style={{ gap: 8 }}>
+                <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
                   <MIcon name="add_link" size={15} className="shrink-0" />
                   <span>Create funnel</span>
-                </SecondaryButton>
+                </Button>
               </motion.div>
             </>
           )}
@@ -243,10 +242,10 @@ export default function FunnelInboxPage() {
         <div className="flex flex-col items-center justify-center text-center min-h-[60vh] h-full">
           <MIcon name="inbox" size={40} style={{ color: "#555", marginBottom: 12 }} />
           <p style={{ fontSize: 15, color: "#a1a1aa", marginBottom: 16 }}>No files yet</p>
-          <SecondaryButton size="md" onClick={() => setTrayOpen(true)} style={{ gap: 8 }}>
+          <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
             <MIcon name="add_link" size={14} />
             Create funnel
-          </SecondaryButton>
+          </Button>
         </div>
       ) : (
         <motion.div

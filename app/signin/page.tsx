@@ -10,8 +10,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, isBiometricEnrolled, enrollBiometric, unlockWithBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { TextInput } from "@/components/ui/text-input"
 import { Loader } from "@/components/ui/loader"
@@ -129,9 +129,9 @@ export default function SignInPage() {
           >
             Sign in on this device with Face ID, Touch ID or your fingerprint instead of pasting your identifier. It stays on this device and never reaches the server.
           </AlertMessage>
-          <ShineButton onClick={handleEnroll} disabled={enrolling} fullWidth size="lg" variant="primary">
+          <Button variant="primary" onPress={handleEnroll} isDisabled={enrolling} fullWidth size="lg">
             {enrolling ? "Setting up…" : "Enable"}
-          </ShineButton>
+          </Button>
           <button
             onClick={goToApp}
             disabled={enrolling}
@@ -182,14 +182,15 @@ export default function SignInPage() {
                     style={{ fontFamily: "var(--font-mono, monospace)" }}
                     leading={<MIcon name="key" size={16} />}
                     trailing={
-                      <SecondaryButton
-                        iconOnly
-                        size="xs"
-                        onClick={() => setShowKey(!showKey)}
+                      <Button
+                        variant="tertiary"
+                        isIconOnly
+                        size="sm"
+                        onPress={() => setShowKey(!showKey)}
                         aria-label={showKey ? "Hide" : "Show"}
                       >
                         {showKey ? <MIcon name="visibility_off" size={18} /> : <MIcon name="visibility" size={18} />}
-                      </SecondaryButton>
+                      </Button>
                     }
                   />
 
@@ -199,11 +200,11 @@ export default function SignInPage() {
                     <AlertMessage tone="error" style={{ marginBottom: 0 }}>{error}</AlertMessage>
                   </div>
                 )}
-                <ShineButton
-                  type="submit"
-                  disabled={isLoading || !accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
-                  fullWidth
+                <Button
                   variant="primary"
+                  type="submit"
+                  isDisabled={isLoading || !accessKey || (!turnstileToken && process.env.NODE_ENV !== "development")}
+                  fullWidth
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -211,12 +212,13 @@ export default function SignInPage() {
                       Signing in…
                     </span>
                   ) : "Sign in"}
-                </ShineButton>
+                </Button>
                 {bioEnrolled && (
-                  <SecondaryButton
+                  <Button
+                    variant="tertiary"
                     type="button"
-                    onClick={handleBiometricUnlock}
-                    disabled={bioStage !== null || isLoading || (!turnstileToken && process.env.NODE_ENV !== "development")}
+                    onPress={handleBiometricUnlock}
+                    isDisabled={bioStage !== null || isLoading || (!turnstileToken && process.env.NODE_ENV !== "development")}
                     fullWidth
                     size="lg"
                   >
@@ -224,7 +226,7 @@ export default function SignInPage() {
                       {bioStage === "verifying" ? <Loader size={16} /> : bioStage === "success" ? <MIcon name="check" size={18} /> : <MIcon name="fingerprint" size={18} />}
                       {bioStage === "verifying" ? "Verifying…" : bioStage === "success" ? "Success" : "Unlock with biometrics"}
                     </span>
-                  </SecondaryButton>
+                  </Button>
                 )}
                 {process.env.NODE_ENV !== "development" && (
                   <div className="flex justify-center pt-1">
@@ -258,14 +260,15 @@ export default function SignInPage() {
               <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
                 Found a bug or vulnerability? Let us know.
               </h2>
-              <SecondaryButton
+              <ButtonLink
                 href="https://github.com/HypaStack/Hypastack-Open-Source"
                 target="_blank"
                 rel="noopener noreferrer"
+                variant="tertiary"
                 size="md"
               >
                 Source code
-              </SecondaryButton>
+              </ButtonLink>
             </div>
           </div>
         )}

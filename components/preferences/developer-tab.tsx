@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { Loader } from "@/components/ui/loader"
 import { apiFetch } from "@/lib/http/fetch"
 import { getTierLimits, isPaidTier, V3_REQUESTS_PER_MINUTE } from "@/constants"
@@ -66,10 +66,10 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
               Every endpoint, every error code, with copyable examples.
             </p>
           </div>
-          <SecondaryButton size="sm" href="/docs/developer-api" style={{ height: 32, gap: 6 }}>
+          <ButtonLink href="/docs/developer-api" variant="tertiary" size="sm" style={{ height: 32, gap: 6 }}>
             Read the docs
             <MIcon name="open_in_new" size={14} />
-          </SecondaryButton>
+          </ButtonLink>
         </div>
       </div>
 
@@ -81,15 +81,16 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
               {unlocked ? `${keys.length} of ${maxKeys} used on ${getTierLimits(tier).label}` : "No keys on Free"}
             </p>
           </div>
-          <ShineButton
+          <Button
+            variant="primary"
             size="sm"
-            disabled={!unlocked || atLimit}
-            onClick={() => setDialogOpen(true)}
+            isDisabled={!unlocked || atLimit}
+            onPress={() => setDialogOpen(true)}
             style={{ height: 32, gap: 6 }}
           >
             <MIcon name="add" size={15} />
             New key
-          </ShineButton>
+          </Button>
         </div>
 
         {loading && (

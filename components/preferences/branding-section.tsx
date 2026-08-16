@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { useManage } from "@/hooks/useManage"
@@ -62,7 +62,7 @@ export function BrandingSection({ user }: { user: PreferencesUser }) {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {active && (
-            <SecondaryButton size="sm" onClick={() => setModalOpen(true)}>Edit</SecondaryButton>
+            <Button variant="tertiary" size="sm" onPress={() => setModalOpen(true)}>Edit</Button>
           )}
           <ToggleSwitch checked={active} onChange={handleToggle} disabled={removing} aria-label="Download page branding" />
         </div>

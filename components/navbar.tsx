@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { ShineButton } from "@/components/ui/shine-button";
-import { SecondaryButton } from "@/components/ui/secondary-button";
+import { ButtonLink } from "@/components/ui/button-link";
 
 export function Navbar() {
   const [, setScrolled] = useState(false);
@@ -45,22 +44,24 @@ export function Navbar() {
           <img decoding="async" src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" alt="Hypastack" className="w-[32px] h-[32px] object-contain select-none pointer-events-none" draggable={false} />
         </Link>
         <div className="flex items-center gap-2">
-          <SecondaryButton
+          <ButtonLink
             href="/signin"
             as={Link}
             onClick={handleLoginClick}
+            variant="tertiary"
             size="sm"
           >
             Log in
-          </SecondaryButton>
-          <ShineButton
+          </ButtonLink>
+          <ButtonLink
             href="/about"
             as={Link}
+            variant="primary"
             size="sm"
             aria-label="Learn more about Hypastack"
           >
             Learn more
-          </ShineButton>
+          </ButtonLink>
         </div>
       </div>
     </header>

@@ -1,7 +1,7 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { apiFetch } from "@/lib/http/fetch"
 import { type ApiKeySummary, formatUsed } from "./api-key-types"
@@ -43,10 +43,10 @@ export function ApiKeyList({ keys, onChanged }: { keys: ApiKeySummary[]; onChang
               {key.overLimit ? "Inactive until you upgrade or revoke an older key" : formatUsed(key.lastUsedAt)}
             </p>
           </div>
-          <SecondaryButton size="xs" danger onClick={() => revoke(key)} style={{ height: 26, gap: 5 }}>
+          <Button variant="danger-soft" size="sm" onPress={() => revoke(key)} style={{ height: 26, gap: 5 }}>
             <MIcon name="delete" size={13} />
             Revoke
-          </SecondaryButton>
+          </Button>
         </div>
       ))}
     </div>

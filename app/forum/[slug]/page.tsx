@@ -12,8 +12,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { API_BASE } from "@/constants"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { TextInput } from "@/components/ui/text-input"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 
 interface ForumFile {
   id: string
@@ -149,14 +148,14 @@ function CommentComponent({
         {!comment.deleted && (
           <div className="flex items-center gap-3 mt-1.5">
             {userId && depth === 0 && (
-              <SecondaryButton variant="ghost" size="xs" onClick={() => setReplying(!replying)} style={{ height: 20, padding: "0 6px", fontSize: 11, borderRadius: 6 }}>
+              <Button variant="ghost" size="sm" onPress={() => setReplying(!replying)} style={{ height: 20, padding: "0 6px", fontSize: 11 }}>
                 Reply
-              </SecondaryButton>
+              </Button>
             )}
             {userId === comment.user_id && (
-              <SecondaryButton variant="ghost" danger size="xs" onClick={handleDelete} style={{ height: 20, padding: "0 6px", fontSize: 11, borderRadius: 6 }}>
+              <Button variant="danger-soft" size="sm" onPress={handleDelete} style={{ height: 20, padding: "0 6px", fontSize: 11 }}>
                 Delete
-              </SecondaryButton>
+              </Button>
             )}
           </div>
         )}
@@ -173,14 +172,15 @@ function CommentComponent({
               size="sm"
               maxLength={2000}
             />
-            <ShineButton
+            <Button
+              variant="primary"
               type="submit"
               size="sm"
-              disabled={!replyBody.trim() || submitting}
-              style={{ height: 32, borderRadius: 8, fontSize: 12 }}
+              isDisabled={!replyBody.trim() || submitting}
+              style={{ height: 32, fontSize: 12 }}
             >
               Reply
-            </ShineButton>
+            </Button>
           </form>
         )}
       </div>
@@ -406,15 +406,15 @@ export default function ForumPostPage() {
 
           {/* Actions */}
           <div className="flex items-center gap-3 mb-10 pb-8 border-b border-[rgba(255,255,255,0.08)] ">
-            <SecondaryButton variant="ghost" size="xs" onClick={handleReport} style={{ gap: 6, borderRadius: 6 }}>
+            <Button variant="ghost" size="sm" onPress={handleReport} style={{ gap: 6 }}>
               <MIcon name="flag" size={13} />
               Report
-            </SecondaryButton>
+            </Button>
             {userId === post.user_id && (
-              <SecondaryButton variant="ghost" danger size="xs" onClick={handleDelete} disabled={deleting} style={{ gap: 6, borderRadius: 6 }}>
+              <Button variant="danger-soft" size="sm" onPress={handleDelete} isDisabled={deleting} style={{ gap: 6 }}>
                 <MIcon name="delete" size={13} />
                 {deleting ? "Deleting..." : "Delete post"}
-              </SecondaryButton>
+              </Button>
             )}
           </div>
 
@@ -436,14 +436,15 @@ export default function ForumPostPage() {
                   className="w-full px-4 py-3 rounded-xl bg-[#08090a]  border border-[rgba(255,255,255,0.08)]  text-[13px] text-[#f7f8f8]  placeholder:text-[#555]  focus:outline-none focus:border-[#898e97]  transition-colors resize-none"
                 />
                 <div className="flex justify-end mt-2">
-                  <ShineButton
+                  <Button
+                    variant="primary"
                     type="submit"
                     size="sm"
-                    disabled={!commentBody.trim() || submitting}
-                    style={{ height: 32, borderRadius: 8, fontSize: 12 }}
+                    isDisabled={!commentBody.trim() || submitting}
+                    style={{ height: 32, fontSize: 12 }}
                   >
                     {submitting ? "Posting..." : "Post comment"}
-                  </ShineButton>
+                  </Button>
                 </div>
               </form>
             ) : (

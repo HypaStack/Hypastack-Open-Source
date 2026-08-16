@@ -2,8 +2,8 @@
 
 import { useEffect, useState, use } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { ShineCard } from "@/components/ui/shine-card"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import Link from "next/link"
@@ -91,17 +91,19 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 {error || "The paste you're looking for doesn't exist or has expired."}
               </p>
               <div className="flex gap-2">
-                <ShineButton
+                <ButtonLink
                   href="/me/dumpster"
                   as={Link}
+                  variant="primary"
                   className="flex-1"
-                >New Paste</ShineButton>
-                <SecondaryButton
+                >New Paste</ButtonLink>
+                <ButtonLink
                   href="/"
                   as={Link}
+                  variant="tertiary"
                   size="lg"
                   className="flex-1"
-                >Home</SecondaryButton>
+                >Home</ButtonLink>
               </div>
             </ShineCard>
           </motion.div>
@@ -144,23 +146,24 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
               <div className="px-3 pb-3">
                 <div className="flex gap-2">
-                  <ShineButton
-                    onClick={copyToClipboard}
+                  <Button
+                    variant="primary"
+                    onPress={copyToClipboard}
                     className="flex-1"
                     style={{ gap: 8 }}
                   >
                     <MIcon name={copied ? "check" : "content_copy"} size={16} />
                     {copied ? "Copied" : "Copy to Clipboard"}
-                  </ShineButton>
-                  <SecondaryButton
-                    onClick={handleRaw}
+                  </Button>
+                  <Button
+                    variant="tertiary"
+                    onPress={handleRaw}
                     size="lg"
-                    iconOnly
-                    title="View Raw"
+                    isIconOnly
                     aria-label="View Raw"
                   >
                     <MIcon name="code" size={18} />
-                  </SecondaryButton>
+                  </Button>
                 </div>
               </div>
 

@@ -7,9 +7,8 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { SecondaryButton } from "@/components/ui/secondary-button"
 import { MenuItem } from "@/components/ui/menu-item"
 import { Tooltip } from "@/components/ui/tooltip"
 import { ShineBadge } from "@/components/ui/shine-badge"
@@ -275,17 +274,16 @@ function ManageLayoutInner({
                     </div>
                     <p className="mt-0.5 truncate text-[11px] text-[#898e97] dark:text-[#898e97]">{user.id}</p>
                   </div>
-                  <SecondaryButton
+                  <Button
                     variant="ghost"
-                    iconOnly
-                    size="xs"
-                    onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
-                    title={copiedId ? "Copied" : "Copy UUID"}
+                    isIconOnly
+                    size="sm"
+                    onPress={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
                     aria-label="Copy UUID"
                     style={copiedId ? { color: "#34d399" } : undefined}
                   >
                     <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
-                  </SecondaryButton>
+                  </Button>
                 </div>
 
                 <div className="mt-1.5 space-y-0.5">
@@ -315,17 +313,16 @@ function ManageLayoutInner({
                 </div>
 
                 <div className="mt-1.5">
-                  <ShineButton
+                  <Button
+                    variant="danger"
                     size="md"
                     fullWidth
-                    onClick={() => { setMenuOpen(false); logout(); }}
-                    color="#dc2626"
-                    hoverColor="#b91c1c"
+                    onPress={() => { setMenuOpen(false); logout(); }}
                     style={{ gap: 8 }}
                   >
                     <MIcon name="logout" size={16} />
                     Log out
-                  </ShineButton>
+                  </Button>
                 </div>
                 </motion.div>
               )}
@@ -384,13 +381,14 @@ function ManageLayoutInner({
         </div>
 
         <div className="px-2 pb-3 shrink-0">
-          <ShineButton
-            onClick={() => openPreferences("plans")}
+          <Button
+            variant="primary"
+            onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
           >
             Upgrade plan
-          </ShineButton>
+          </Button>
         </div>
       </aside>
 
@@ -468,23 +466,22 @@ function ManageLayoutInner({
                   <p className="truncate text-[15px] font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
                   <p className="text-[12px] text-[#888] dark:text-[#898e97]">{tierLimits.label} plan</p>
                 </div>
-                <SecondaryButton
+                <Button
                   variant="ghost"
-                  iconOnly
-                  onClick={() => { setDrawerOpen(false); openPreferences("general") }}
+                  isIconOnly
+                  onPress={() => { setDrawerOpen(false); openPreferences("general") }}
                   aria-label="Settings"
-                  style={{ width: 40, height: 40, borderRadius: 12 }}
+                  style={{ width: 40, height: 40 }}
                 >
                   <MIcon name="settings" size={18} />
-                </SecondaryButton>
-                <SecondaryButton
-                  variant="ghost"
-                  danger
-                  onClick={() => { setDrawerOpen(false); logout() }}
-                  style={{ height: 40, borderRadius: 12, fontSize: 14, paddingLeft: 12, paddingRight: 12 }}
+                </Button>
+                <Button
+                  variant="danger-soft"
+                  onPress={() => { setDrawerOpen(false); logout() }}
+                  style={{ height: 40, fontSize: 14, paddingLeft: 12, paddingRight: 12 }}
                 >
                   Sign out
-                </SecondaryButton>
+                </Button>
               </div>
             </motion.div>
         )}
@@ -495,10 +492,10 @@ function ManageLayoutInner({
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-[#121212] lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
-          <SecondaryButton
+          <Button
             variant="ghost"
-            iconOnly
-            onClick={() => setDrawerOpen(true)}
+            isIconOnly
+            onPress={() => setDrawerOpen(true)}
             aria-label="Open menu"
             style={{ width: 40, height: 40, borderRadius: '50%', marginLeft: -4 }}
           >
@@ -507,7 +504,7 @@ function ManageLayoutInner({
               <line x1="4" y1="12" x2="20" y2="12"></line>
               <line x1="4" y1="18" x2="20" y2="18"></line>
             </svg>
-          </SecondaryButton>
+          </Button>
         </header>
 
         <div className="flex-1 relative overflow-hidden">
@@ -562,16 +559,17 @@ function ManageLayoutInner({
               >
                 Donate
               </a>
-              <SecondaryButton
-                onClick={() => {
+              <Button
+                variant="tertiary"
+                onPress={() => {
                   setShowDonationNotice(false)
                   localStorage.setItem(STORAGE_KEY_DONATION_NOTICE, "true")
                 }}
                 size="sm"
-                style={{ height: 34, borderRadius: 6 }}
+                style={{ height: 34 }}
               >
                 Hide notification
-              </SecondaryButton>
+              </Button>
             </div>
           </div>
         </motion.div>

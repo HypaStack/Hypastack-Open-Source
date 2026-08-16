@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef, type CSSProperties, type InputHTMLAttributes, type TextareaHTMLAttributes, type ReactNode } from "react"
+import { Input, TextArea } from "@heroui/react"
 import { useThemeMode, type ThemeMode } from "./use-theme-mode"
 
 const PALETTE = {
@@ -119,7 +120,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
   }
 
   const input = (
-    <input
+    <Input
       ref={ref}
       disabled={disabled}
       className={[`hs-input-${mode}`, className].filter(Boolean).join(" ")}
@@ -137,7 +138,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
     return (
       <>
         {placeholderCss}
-        <textarea
+        <TextArea
           rows={rows}
           disabled={disabled}
           className={[`hs-input-${mode}`, className].filter(Boolean).join(" ")}

@@ -1,20 +1,19 @@
-import { LineSpinner } from "ldrs/react"
-import "ldrs/react/LineSpinner.css"
+"use client"
+
+import { Spinner } from "@heroui/react"
 
 interface LoaderProps {
   /** Diameter in px. */
   size?: number | string
-  /** Line thickness in px. */
-  stroke?: number | string
-  speed?: number | string
   /** Defaults to currentColor so it inherits the surrounding text colour. */
   color?: string
 }
 
 /**
- * The single app-wide loading spinner (ldrs line-spinner). Use this for every
- * loading state; don't hand-roll spinners elsewhere.
+ * The single app-wide loading spinner — HeroUI's real Spinner component, sized
+ * to an exact px diameter (HeroUI's own size scale is sm/md/lg/xl only) so it
+ * drops into any spot the old fixed-size spinner used to.
  */
-export function Loader({ size = 28, stroke = 2, speed = 1, color = "currentColor" }: LoaderProps) {
-  return <LineSpinner size={size} stroke={stroke} speed={speed} color={color} />
+export function Loader({ size = 28, color = "currentColor" }: LoaderProps) {
+  return <Spinner style={{ width: size, height: size, color }} />
 }

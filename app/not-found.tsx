@@ -4,8 +4,7 @@ import { AlertMessage } from "@/components/ui/alert-message"
 import { MIcon } from "@/components/ui/material-icon"
 import { motion } from "motion/react"
 import { useRouter } from "next/navigation"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 
 export default function NotFoundPage() {
   const router = useRouter()
@@ -33,19 +32,21 @@ export default function NotFoundPage() {
             The page you're looking for doesn't exist or has been moved.
           </AlertMessage>
           <div className="flex gap-3">
-            <ShineButton
-              onClick={() => router.push("/me/files")}
+            <Button
+              variant="primary"
+              onPress={() => router.push("/me/files")}
               className="flex-1"
             >
               Upload a file
-            </ShineButton>
-            <SecondaryButton
+            </Button>
+            <Button
+              variant="tertiary"
               size="lg"
-              onClick={() => router.push("/")}
+              onPress={() => router.push("/")}
               className="flex-1"
             >
               Home
-            </SecondaryButton>
+            </Button>
           </div>
         </div>
       </motion.div>

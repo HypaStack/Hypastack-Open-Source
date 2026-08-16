@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { type PreferencesTab, type PreferencesUser, type PreferencesStorage } from "./preferences/shared"
 import { GeneralTab } from "./preferences/general-tab"
 import { AccountTab } from "./preferences/account-tab"
@@ -80,15 +80,16 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
               <div className="sm:hidden shrink-0 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-transparent dark:border-[rgba(255,255,255,0.06)] pt-3 pb-1 rounded-md flex flex-col">
                 <div className="flex items-center justify-between px-4 pb-3 pt-1">
                   <span className="text-[17px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0]">Settings</span>
-                  <SecondaryButton
-                    iconOnly
+                  <Button
+                    variant="tertiary"
+                    isIconOnly
                     size="sm"
-                    onClick={onClose}
+                    onPress={onClose}
                     aria-label="Close"
                     style={{ width: 32, height: 32, borderRadius: 9999 }}
                   >
                     <MIcon name="close" size={18} />
-                  </SecondaryButton>
+                  </Button>
                 </div>
                 <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
                   <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" />
@@ -135,15 +136,15 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
 
 function TabButton({ active, onClick, label, fullWidth = false }: { active: boolean; onClick: () => void; label: string; fullWidth?: boolean }) {
   return (
-    <SecondaryButton
-      variant={active ? "solid" : "ghost"}
+    <Button
+      variant={active ? "tertiary" : "ghost"}
       size="md"
       fullWidth={fullWidth}
-      onClick={onClick}
+      onPress={onClick}
       style={{ justifyContent: "flex-start" }}
     >
       {label}
-    </SecondaryButton>
+    </Button>
   )
 }
 

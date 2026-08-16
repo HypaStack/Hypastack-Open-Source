@@ -14,7 +14,7 @@ interface LoadingSvgProps {
 }
 
 // Thin adapter kept so existing call sites keep working: every loader in the app
-// now renders the single ldrs line-spinner (see components/ui/loader.tsx).
+// now renders HeroUI's Spinner (see components/ui/loader.tsx).
 export function LoadingSvg({ size = 28, variant = "theme", className = "" }: LoadingSvgProps) {
   const color = variant === "white" ? "#f7f8f8" : variant === "dark" ? "#171717" : "currentColor"
   return (

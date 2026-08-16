@@ -4,8 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { MIcon } from "@/components/ui/material-icon";
-import { ShineButton } from "@/components/ui/shine-button";
-import { SecondaryButton } from "@/components/ui/secondary-button";
+import { ButtonLink } from "@/components/ui/button-link";
 
 export function CtaSection() {
   const { isAuthenticated } = useAuth();
@@ -38,12 +37,12 @@ export function CtaSection() {
                   Pick up right where you left off.
                 </p>
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <ShineButton href="/me" as={Link} size="lg">
+                  <ButtonLink href="/me" as={Link} variant="primary" size="lg">
                     Go to Dashboard
-                  </ShineButton>
-                  <SecondaryButton href="/me/files" as={Link} size="lg">
+                  </ButtonLink>
+                  <ButtonLink href="/me/files" as={Link} variant="tertiary" size="lg">
                     My Files
-                  </SecondaryButton>
+                  </ButtonLink>
                 </div>
               </>
             ) : (
@@ -58,12 +57,12 @@ export function CtaSection() {
                   Make an account in seconds. No email and no tracking.
                 </p>
                 <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <ShineButton href="/new" as={Link} size="lg">
+                  <ButtonLink href="/new" as={Link} variant="primary" size="lg">
                     Register
-                  </ShineButton>
-                  <SecondaryButton href="/signin" as={Link} size="lg">
+                  </ButtonLink>
+                  <ButtonLink href="/signin" as={Link} variant="tertiary" size="lg">
                     Sign in
-                  </SecondaryButton>
+                  </ButtonLink>
                 </div>
               </>
             )}

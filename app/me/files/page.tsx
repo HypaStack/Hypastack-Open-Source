@@ -9,8 +9,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -393,20 +392,20 @@ function FilesPageInner() {
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedFiles.size > 0 ? (
             <>
-              <SecondaryButton
+              <Button
+                variant="tertiary"
                 size="md"
-                onClick={() => setMoveOpen(true)}
+                onPress={() => setMoveOpen(true)}
                 style={{ gap: 8 }}
               >
                 <MIcon name="drive_file_move" size={16} className="shrink-0" />
                 <span className="hidden sm:inline">Move</span>
-              </SecondaryButton>
-              <ShineButton
+              </Button>
+              <Button
+                variant="danger"
                 size="md"
-                onClick={handleBulkDelete}
-                disabled={deleteLoading === "bulk"}
-                color="#dc2626"
-                hoverColor="#b91c1c"
+                onPress={handleBulkDelete}
+                isDisabled={deleteLoading === "bulk"}
                 style={{ gap: 8 }}
               >
                 {deleteLoading === "bulk" ? (
@@ -420,26 +419,28 @@ function FilesPageInner() {
                     Delete {selectedFiles.size}
                   </>
                 )}
-              </ShineButton>
+              </Button>
             </>
           ) : (
             <>
-              <SecondaryButton
+              <Button
+                variant="tertiary"
                 size="md"
-                onClick={handleCreateFolder}
+                onPress={handleCreateFolder}
                 style={{ gap: 8 }}
               >
                 <MIcon name="create_new_folder" size={17} className="shrink-0" />
                 <span className="hidden sm:inline">New Folder</span>
-              </SecondaryButton>
-              <ShineButton
+              </Button>
+              <Button
+                variant="primary"
                 size="md"
-                onClick={triggerFilePicker}
+                onPress={triggerFilePicker}
                 style={{ gap: 8 }}
               >
                 <MIcon name="cloud_upload" size={15} className="shrink-0" />
                 <span>Upload files</span>
-              </ShineButton>
+              </Button>
             </>
           )}
 
@@ -505,22 +506,22 @@ function FilesPageInner() {
             Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
           </p>
           <div className="flex items-center gap-1.5">
-            <SecondaryButton
+            <Button
+              variant="tertiary"
               size="md"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              style={{ borderRadius: 6 }}
+              onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              isDisabled={currentPage === 1}
             >
               Previous
-            </SecondaryButton>
-            <SecondaryButton
+            </Button>
+            <Button
+              variant="tertiary"
               size="md"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              style={{ borderRadius: 6 }}
+              onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              isDisabled={currentPage === totalPages}
             >
               Next
-            </SecondaryButton>
+            </Button>
           </div>
         </div>
       )}
@@ -560,15 +561,15 @@ function FilesPageInner() {
               >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] shrink-0">
                   <h2 className="text-[18px] font-semibold text-[#171717] dark:text-[#e3e3e3]">Upload files</h2>
-                  <SecondaryButton
+                  <Button
                     variant="ghost"
-                    iconOnly
+                    isIconOnly
                     size="sm"
-                    onClick={closeUpload}
+                    onPress={closeUpload}
                     aria-label="Close"
                   >
                     <MIcon name="close" size={20} />
-                  </SecondaryButton>
+                  </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 bg-transparent">
                   <UploadZone 

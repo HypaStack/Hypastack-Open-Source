@@ -1,21 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
-import { createPortal } from "react-dom"
-import { motion, AnimatePresence } from "motion/react"
-import { useThemeMode, type ThemeMode } from "./use-theme-mode"
-import { SURFACE_HEX } from "./surface"
+import type { CSSProperties, ReactNode } from "react"
+import { Tooltip as HeroTooltip } from "@heroui/react"
 
 export type TooltipPlacement = "top" | "right" | "bottom" | "left"
-
-// Matches the app's elevated surface (popovers, menus) so a tooltip reads as
-// the same material as everything else that floats.
-const PALETTE = {
-  dark: { bg: SURFACE_HEX.dark, text: "#f0f0f0" },
-  light: { bg: SURFACE_HEX.light, text: "#171717" },
-} as const
-
-const ARROW = 5
 
 interface TooltipProps {
   /** Tooltip body. Nothing renders when this is empty. */
@@ -26,202 +14,32 @@ interface TooltipProps {
   delay?: number
   /** Gap between the trigger and the tooltip, in px. */
   offset?: number
-  /** "auto" follows the app's dark class / prefers-color-scheme. */
-  theme?: ThemeMode
   disabled?: boolean
   /** Wrapper display — inline-flex suits buttons, block suits full-width rows. */
   display?: CSSProperties["display"]
   children: ReactNode
 }
 
-interface Coords {
-  left: number
-  top: number
-  transform: string
-}
-
-function place(rect: DOMRect, placement: TooltipPlacement, offset: number): Coords {
-  const cx = rect.left + rect.width / 2
-  const cy = rect.top + rect.height / 2
-  switch (placement) {
-    case "top":
-      return { left: cx, top: rect.top - offset, transform: "translate(-50%, -100%)" }
-    case "bottom":
-      return { left: cx, top: rect.bottom + offset, transform: "translate(-50%, 0)" }
-    case "left":
-      return { left: rect.left - offset, top: cy, transform: "translate(-100%, -50%)" }
-    default:
-      return { left: rect.right + offset, top: cy, transform: "translate(0, -50%)" }
-  }
-}
-
-function arrowStyle(placement: TooltipPlacement, bg: string): CSSProperties {
-  const base: CSSProperties = {
-    position: "absolute",
-    width: ARROW * 2,
-    height: ARROW * 2,
-    backgroundColor: bg,
-    transform: "rotate(45deg)",
-  }
-  switch (placement) {
-    case "top":
-      return { ...base, bottom: -ARROW, left: "50%", marginLeft: -ARROW }
-    case "bottom":
-      return { ...base, top: -ARROW, left: "50%", marginLeft: -ARROW }
-    case "left":
-      return { ...base, right: -ARROW, top: "50%", marginTop: -ARROW }
-    default:
-      return { ...base, left: -ARROW, top: "50%", marginTop: -ARROW }
-  }
-}
-
-// Slide a couple of px out of the trigger as it fades in.
-function enterOffset(placement: TooltipPlacement): { x: number; y: number } {
-  switch (placement) {
-    case "top":
-      return { x: 0, y: 4 }
-    case "bottom":
-      return { x: 0, y: -4 }
-    case "left":
-      return { x: 4, y: 0 }
-    default:
-      return { x: -4, y: 0 }
-  }
-}
-
-/**
- * Hover tooltip with an arrow pointing at its trigger.
- *
- * Portals to <body> with fixed coords taken from the trigger's rect, so it is
- * never clipped by an ancestor's overflow or trapped in its stacking context.
- */
+/** Hover tooltip with an arrow — HeroUI's real Tooltip (portaled, collision-aware placement). */
 export function Tooltip({
   content,
   placement = "right",
   delay = 120,
   offset = 10,
-  theme = "auto",
   disabled = false,
   display = "block",
   children,
 }: TooltipProps) {
-  const [mounted, setMounted] = useState(false)
-  const [coords, setCoords] = useState<Coords | null>(null)
-  const triggerRef = useRef<HTMLSpanElement>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Set on click so the tooltip stays down until the pointer actually leaves.
-  const suppressedRef = useRef(false)
-  const c = PALETTE[useThemeMode(theme)]
-
-  useEffect(() => setMounted(true), [])
-
-  const hide = () => {
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = null
-    setCoords(null)
+  if (disabled || !content) {
+    return <span style={{ display }}>{children}</span>
   }
-
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
-
-  // Fixed coords go stale the moment anything moves underneath.
-  useEffect(() => {
-    if (!coords) return
-    window.addEventListener("scroll", hide, true)
-    window.addEventListener("resize", hide)
-    return () => {
-      window.removeEventListener("scroll", hide, true)
-      window.removeEventListener("resize", hide)
-    }
-  }, [coords])
-
-  const show = () => {
-    if (disabled || !content || suppressedRef.current) return
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      const el = triggerRef.current
-      if (!el) return
-      setCoords(place(el.getBoundingClientRect(), placement, offset))
-    }, delay)
-  }
-
-  const leave = () => {
-    suppressedRef.current = false
-    hide()
-  }
-
-  // A mouse click focuses the trigger, which would otherwise re-open what the
-  // click just dismissed. Only keyboard focus should surface it.
-  const focusShow = (e: React.FocusEvent) => {
-    if (e.target instanceof Element && e.target.matches(":focus-visible")) show()
-  }
-
-  const press = () => {
-    suppressedRef.current = true
-    hide()
-  }
-
-  const from = enterOffset(placement)
 
   return (
-    <>
-      <span
-        ref={triggerRef}
-        style={{ display }}
-        onMouseEnter={show}
-        onMouseLeave={leave}
-        onFocus={focusShow}
-        onBlur={hide}
-        onPointerDown={press}
-      >
-        {children}
-      </span>
-
-      {mounted &&
-        createPortal(
-          <AnimatePresence>
-            {coords && (
-              <motion.div
-                key="tooltip"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-                style={{
-                  position: "fixed",
-                  left: coords.left,
-                  top: coords.top,
-                  transform: coords.transform,
-                  zIndex: 200,
-                  pointerEvents: "none",
-                }}
-              >
-                <motion.div
-                  role="tooltip"
-                  initial={{ x: from.x, y: from.y }}
-                  animate={{ x: 0, y: 0 }}
-                  exit={{ x: from.x, y: from.y }}
-                  transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-                  style={{
-                    position: "relative",
-                    backgroundColor: c.bg,
-                    color: c.text,
-                    borderRadius: 8,
-                    padding: "6px 10px",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    lineHeight: "16px",
-                    whiteSpace: "nowrap",
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
-                  }}
-                >
-                  <span style={arrowStyle(placement, c.bg)} />
-                  <span style={{ position: "relative" }}>{content}</span>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
-    </>
+    <HeroTooltip delay={delay}>
+      <HeroTooltip.Trigger style={{ display }}>{children}</HeroTooltip.Trigger>
+      <HeroTooltip.Content placement={placement} offset={offset} showArrow>
+        {content}
+      </HeroTooltip.Content>
+    </HeroTooltip>
   )
 }

@@ -5,8 +5,7 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { ButtonLink } from "@/components/ui/button-link"
 import { ShineCard } from "@/components/ui/shine-card"
 import { TIER_ORDER, getTierLimits, formatTierSize, isUnlimited, type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
@@ -157,13 +156,13 @@ export function PricingCards() {
               {/* CTA */}
               <div className="mt-auto pt-9">
                 {green ? (
-                  <ShineButton href="/signin" as={Link} fullWidth aria-label={`Get ${label}`}>
+                  <ButtonLink href="/signin" as={Link} variant="primary" size="lg" fullWidth aria-label={`Get ${label}`}>
                     Get {label}
-                  </ShineButton>
+                  </ButtonLink>
                 ) : (
-                  <SecondaryButton href="/signin" as={Link} size="lg" fullWidth aria-label={`Get ${label}`}>
+                  <ButtonLink href="/signin" as={Link} variant="tertiary" size="lg" fullWidth aria-label={`Get ${label}`}>
                     Get {label}
-                  </SecondaryButton>
+                  </ButtonLink>
                 )}
               </div>
             </>

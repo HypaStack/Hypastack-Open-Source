@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
 import { Dropdown } from "@/components/ui/dropdown"
 import { isBiometricSupported, isBiometricEnrolled, clearBiometric } from "@/lib/security/biometric"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
@@ -119,9 +119,9 @@ export function SecurityTab({ user }: { user: PreferencesUser }) {
             </div>
           </div>
           {bioEnrolled && (
-            <ShineButton size="sm" onClick={handleRemoveBio} color="#dc2626" hoverColor="#b91c1c" style={{ flexShrink: 0 }}>
+            <Button variant="danger" size="sm" onPress={handleRemoveBio} style={{ flexShrink: 0 }}>
               Remove
-            </ShineButton>
+            </Button>
           )}
         </div>
       )}
@@ -136,9 +136,9 @@ export function SecurityTab({ user }: { user: PreferencesUser }) {
             </p>
           </div>
         </div>
-        <ShineButton size="sm" onClick={handleClearSessions} disabled={clearingSessions} color="#dc2626" hoverColor="#b91c1c" style={{ flexShrink: 0 }}>
+        <Button variant="danger" size="sm" onPress={handleClearSessions} isDisabled={clearingSessions} style={{ flexShrink: 0 }}>
           {clearingSessions ? "..." : "Clear"}
-        </ShineButton>
+        </Button>
       </div>
 
       <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4" style={{ borderRadius: 12, padding: '12px 16px' }}>

@@ -4,8 +4,8 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { MIcon } from "@/components/ui/material-icon"
 import { motion } from "motion/react"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 
 export default function ErrorPage({
   error,
@@ -51,17 +51,18 @@ export default function ErrorPage({
             </p>
           )}
           <div className="flex gap-3">
-            <ShineButton onClick={reset} className="flex-1">
+            <Button variant="primary" onPress={reset} className="flex-1">
               Try again
-            </ShineButton>
-            <SecondaryButton
+            </Button>
+            <ButtonLink
               href="/"
               as={Link}
+              variant="tertiary"
               size="lg"
               className="flex-1"
             >
               Home
-            </SecondaryButton>
+            </ButtonLink>
           </div>
         </div>
       </motion.div>

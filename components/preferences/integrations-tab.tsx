@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { getWebhookConfig, setWebhookConfig } from "@/lib/integrations/discordWebhook"
 import { WebhookDialog } from "./webhook-dialog"
@@ -60,7 +60,7 @@ export function IntegrationsTab() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {enabled && (
-              <SecondaryButton size="sm" onClick={() => setModalOpen(true)}>Edit</SecondaryButton>
+              <Button variant="tertiary" size="sm" onPress={() => setModalOpen(true)}>Edit</Button>
             )}
             <ToggleSwitch checked={enabled} onChange={handleToggle} aria-label="Enable Discord webhook" />
           </div>

@@ -5,26 +5,28 @@ import { createPortal } from "react-dom"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SURFACE } from "@/components/ui/surface"
+import { Button, Separator, menuVariants, menuItemVariants } from "@heroui/react"
 
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
-const TONE: Record<string, { color: string; hover: string }> = {
-  danger: { color: "#dc2626", hover: "#b91c1c" },
-  warning: { color: "#d97706", hover: "#b45309" },
-  success: { color: "#059669", hover: "#047857" },
-  primary: { color: "#2680bf", hover: "#1f6ba0" },
+const TONE_VAR: Record<string, string> = {
+  danger: "var(--danger)",
+  warning: "var(--warning)",
+  success: "var(--success)",
+  primary: "var(--accent)",
 }
 
 const EDGE = 8
-const PANEL =
-  "rounded-[14px] p-1.5 " + SURFACE.panel + " shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)]"
-const ROW =
-  "w-full flex items-center gap-2.5 rounded-[12px] text-left text-[14px] font-medium transition-colors " +
-  "text-[#333] dark:text-[#e3e3e3] hover:bg-[#f4f4f5] dark:hover:bg-[rgba(255,255,255,0.07)]"
-const ROW_STYLE: React.CSSProperties = { height: 40, paddingLeft: 10, paddingRight: 10 }
+const PANEL = menuVariants() + " shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)] bg-[var(--overlay)]"
+const ROW = menuItemVariants() + " text-left"
 
+/**
+ * Right-click context menu: portaled, positioned at the click coordinates and
+ * clamped back inside the viewport. No HeroUI component anchors to arbitrary
+ * cursor coordinates (their Menu triggers off a real DOM element), so this
+ * positioning shell stays custom — everything it renders (panel, rows,
+ * dividers) uses HeroUI's real menu classes/tokens/Separator.
+ */
 export function ContextMenu({
   isOpen,
   pos,
@@ -90,7 +92,7 @@ export function ContextMenu({
           exit={{ opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
           style={{ top: (at ?? pos).y, left: (at ?? pos).x, width }}
-          className={`fixed z-[120] flex flex-col gap-0.5 ${PANEL}`}
+          className={`fixed z-[120] ${PANEL}`}
           onContextMenu={(e) => { e.preventDefault(); e.stopPropagation() }}
         >
           {children}
@@ -116,8 +118,7 @@ export function ContextMenuItem({
   disabled?: boolean
   trailing?: React.ReactNode
 }) {
-  const tint =
-    accent === "danger" ? "#ef4444" : accent === "success" ? "#10b981" : accent === "warning" ? "#f59e0b" : undefined
+  const tint = accent ? TONE_VAR[accent] : undefined
 
   return (
     <button
@@ -126,7 +127,7 @@ export function ContextMenuItem({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={`${ROW} ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-      style={{ ...ROW_STYLE, ...(tint ? { color: tint } : {}) }}
+      style={tint ? { color: tint } : undefined}
     >
       <MIcon name={icon} size={18} className="shrink-0" style={tint ? { color: tint } : undefined} />
       <span className="flex-1 min-w-0 truncate">{label}</span>
@@ -149,7 +150,7 @@ export function ContextMenuLink({
   target?: string
 }) {
   return (
-    <Link href={href} target={target} onClick={onClick} role="menuitem" className={ROW} style={ROW_STYLE}>
+    <Link href={href} target={target} onClick={onClick} role="menuitem" className={ROW}>
       <MIcon name={icon} size={18} className="shrink-0" />
       <span className="flex-1 min-w-0 truncate">{label}</span>
       {target === "_blank" && <MIcon name="north_east" size={15} className="shrink-0 opacity-50" />}
@@ -204,8 +205,7 @@ export function ContextMenuSub({
         role="menuitem"
         aria-haspopup="menu"
         aria-expanded={open}
-        className={`${ROW} cursor-pointer ${open ? "bg-[#f4f4f5] dark:bg-[rgba(255,255,255,0.07)]" : ""}`}
-        style={ROW_STYLE}
+        className={`${ROW} cursor-pointer ${open ? "bg-[var(--default)]" : ""}`}
       >
         <MIcon name={icon} size={18} className="shrink-0" />
         <span className="flex-1 min-w-0 truncate">{label}</span>
@@ -219,7 +219,7 @@ export function ContextMenuSub({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: flip ? 4 : -4 }}
             transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
-            className={`absolute top-0 z-[121] flex flex-col gap-0.5 max-h-[300px] overflow-y-auto ${PANEL} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
+            className={`absolute top-0 z-[121] max-h-[300px] overflow-y-auto ${PANEL} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
             style={{ width, ...(flip ? { right: "100%", marginRight: 6 } : { left: "100%", marginLeft: 6 }) }}
           >
             {title && (
@@ -266,8 +266,7 @@ export function ContextMenuTreeItem({
       role="menuitem"
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      className={`${ROW} ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-      style={{ ...ROW_STYLE, paddingLeft: 6, gap: 0 }}
+      className={`${ROW} ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"} !pl-1.5 !gap-0`}
     >
       {ancestorsLast.slice(0, depth).map((wasLast, i) => (
         <span key={i} className="self-stretch relative shrink-0" style={{ width: RAIL }}>
@@ -303,23 +302,29 @@ export function ContextMenuAction({
   tone?: "danger" | "warning" | "success" | "primary"
   disabled?: boolean
 }) {
-  const t = TONE[tone]
+  const color = TONE_VAR[tone]
   return (
-    <ShineButton
+    <Button
+      variant="primary"
       size="md"
       fullWidth
-      onClick={onClick}
-      disabled={disabled}
-      color={t.color}
-      hoverColor={t.hover}
-      style={{ gap: 10, justifyContent: "flex-start", paddingLeft: 10, paddingRight: 10 }}
+      onPress={onClick}
+      isDisabled={disabled}
+      style={{
+        ["--button-bg" as string]: color,
+        ["--button-bg-hover" as string]: color,
+        gap: 10,
+        justifyContent: "flex-start",
+        paddingLeft: 10,
+        paddingRight: 10,
+      }}
     >
       <MIcon name={icon} size={18} />
       {label}
-    </ShineButton>
+    </Button>
   )
 }
 
 export function ContextMenuDivider() {
-  return <div className="h-px w-full bg-[rgba(0,0,0,0.07)] dark:bg-[rgba(255,255,255,0.07)] my-1" />
+  return <Separator className="my-1" />
 }

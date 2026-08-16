@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { TextInput } from "@/components/ui/text-input"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { AlertMessage } from "@/components/ui/alert-message"
@@ -112,10 +111,11 @@ export function CreateKeyDialog({
                 </div>
                 <div className="flex gap-2" style={{ padding: 2 }}>
                   <div className="flex-1">
-                    <SecondaryButton
+                    <Button
+                      variant="tertiary"
                       size="md"
                       fullWidth
-                      onClick={() => {
+                      onPress={() => {
                         navigator.clipboard.writeText(created.key)
                         setCopied(true)
                         setTimeout(() => setCopied(false), 2000)
@@ -123,10 +123,10 @@ export function CreateKeyDialog({
                     >
                       <MIcon name={copied ? "check" : "content_copy"} size={15} />
                       {copied ? "Copied" : "Copy"}
-                    </SecondaryButton>
+                    </Button>
                   </div>
                   <div className="flex-1">
-                    <ShineButton size="md" fullWidth onClick={onClose}>Done</ShineButton>
+                    <Button variant="primary" size="md" fullWidth onPress={onClose}>Done</Button>
                   </div>
                 </div>
               </div>
@@ -180,12 +180,12 @@ export function CreateKeyDialog({
 
                 <div className="flex gap-2" style={{ padding: 4 }}>
                   <div className="flex-1">
-                    <SecondaryButton size="md" fullWidth onClick={onClose}>Cancel</SecondaryButton>
+                    <Button variant="tertiary" size="md" fullWidth onPress={onClose}>Cancel</Button>
                   </div>
                   <div className="flex-1">
-                    <ShineButton size="md" fullWidth onClick={handleCreate} disabled={!canSave}>
+                    <Button variant="primary" size="md" fullWidth onPress={handleCreate} isDisabled={!canSave}>
                       {saving ? <span className="flex items-center justify-center gap-2"><Loader size={16} /> Creating…</span> : "Create key"}
-                    </ShineButton>
+                    </Button>
                   </div>
                 </div>
               </>
