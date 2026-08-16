@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { TextInput } from "@/components/ui/text-input"
 import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
@@ -133,13 +132,13 @@ export function BrandingDialog({
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleBannerFile(f); e.target.value = "" }}
                 className="hidden"
               />
-              <ShineButton size="md" fullWidth onClick={() => fileRef.current?.click()} disabled={uploading}>
+              <Button variant="primary" size="md" fullWidth onPress={() => fileRef.current?.click()} isDisabled={uploading}>
                 {uploading ? (
                   <span className="flex items-center justify-center gap-2"><Loader size={16} color="#ffffff" /> Uploading…</span>
                 ) : (
                   <span className="flex items-center justify-center gap-2"><MIcon name="image" size={16} /> {user.bannerUrl ? "Change banner" : "Upload banner"}</span>
                 )}
-              </ShineButton>
+              </Button>
 
               <p className="text-[12px] font-medium text-[#888] dark:text-[#898e97] mt-4 mb-1.5">Display name</p>
               <TextInput
@@ -167,14 +166,14 @@ export function BrandingDialog({
 
             <div className="flex gap-2" style={{ padding: 4 }}>
               <div className="flex-1">
-                <SecondaryButton size="md" fullWidth onClick={onClose}>Close</SecondaryButton>
+                <Button variant="tertiary" size="md" fullWidth onPress={onClose}>Close</Button>
               </div>
               <div className="flex-1">
-                <ShineButton size="md" fullWidth onClick={handleSave} disabled={savingName || !nameChanged || nameCooldownMs > 0}>
+                <Button variant="primary" size="md" fullWidth onPress={handleSave} isDisabled={savingName || !nameChanged || nameCooldownMs > 0}>
                   {savingName ? (
                     <span className="flex items-center justify-center gap-2"><Loader size={16} color="#ffffff" /> Saving…</span>
                   ) : "Save name"}
-                </ShineButton>
+                </Button>
               </div>
             </div>
           </motion.div>

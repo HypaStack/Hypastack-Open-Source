@@ -10,8 +10,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { TextInput } from "@/components/ui/text-input"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { ShineCard } from "@/components/ui/shine-card"
@@ -39,14 +39,15 @@ const RightPanel = () => (
       <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
         See Hypastack under the hood
       </h2>
-      <SecondaryButton
+      <ButtonLink
         href="https://github.com/HypaStack/Hypastack-Open-Source"
         target="_blank"
         rel="noopener noreferrer"
+        variant="tertiary"
         size="md"
       >
         Take a look
-      </SecondaryButton>
+      </ButtonLink>
     </div>
   </div>
 )
@@ -153,10 +154,10 @@ export default function CreateAccountPage() {
             <ShineCard highlight radius={16} className="mb-5 p-4">
               <div className="w-full flex items-center justify-between mb-3">
                 <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Identifier</span>
-                <SecondaryButton onClick={handleCopy} size="xs" style={{ gap: 6 }}>
+                <Button variant="tertiary" onPress={handleCopy} size="sm" style={{ gap: 6 }}>
                   <MIcon name={copied ? "check" : "content_copy"} size={13} />
                   {copied ? "Copied" : "Copy"}
-                </SecondaryButton>
+                </Button>
               </div>
               <div className="w-full text-[12.5px] text-[#f7f8f8] break-all leading-[1.7] font-mono blur-[5px] select-none pointer-events-none">
                 {generatedKey}
@@ -170,9 +171,10 @@ export default function CreateAccountPage() {
                   Biometric unlock enabled on this device
                 </div>
               ) : (
-                <SecondaryButton
-                  onClick={handleEnrollBio}
-                  disabled={bioEnrolling}
+                <Button
+                  variant="tertiary"
+                  onPress={handleEnrollBio}
+                  isDisabled={bioEnrolling}
                   fullWidth
                   size="lg"
                   style={{ marginBottom: 12 }}
@@ -181,17 +183,18 @@ export default function CreateAccountPage() {
                     <MIcon name="fingerprint" size={18} />
                     {bioEnrolling ? "Setting up…" : "Enable biometric unlock"}
                   </span>
-                </SecondaryButton>
+                </Button>
               )
             )}
 
-            <ShineButton
-              onClick={() => { window.location.href = "/me/files" }}
+            <Button
+              variant="primary"
+              onPress={() => { window.location.href = "/me/files" }}
               size="lg"
               fullWidth
             >
               Continue
-            </ShineButton>
+            </Button>
           </div>
         </div>
         {!isDesktop && <RightPanel />}
@@ -268,14 +271,14 @@ export default function CreateAccountPage() {
                 </span>
               </Checkmark>
 
-              <ShineButton
-                type="submit"
-                disabled={!canSubmit}
-                fullWidth
+              <Button
                 variant="primary"
+                type="submit"
+                isDisabled={!canSubmit}
+                fullWidth
               >
                 {isLoading ? "Creating…" : "Create account"}
-              </ShineButton>
+              </Button>
 
               {process.env.NODE_ENV !== "development" && (
                 <div className="flex justify-center pt-1">

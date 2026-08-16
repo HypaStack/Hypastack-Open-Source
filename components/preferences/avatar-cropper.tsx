@@ -4,8 +4,7 @@ import { useState, useCallback } from "react"
 import Image from "next/image"
 import { motion } from "motion/react"
 import Cropper, { type Area } from "react-easy-crop"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { AVATAR_MAX_DIMENSION } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 
@@ -127,12 +126,12 @@ export function AvatarCropperModal({
         </div>
 
         <div className="flex gap-3 px-4 py-4">
-          <SecondaryButton size="md" onClick={onClose} className="flex-1">
+          <Button variant="tertiary" size="md" onPress={onClose} className="flex-1">
             Cancel
-          </SecondaryButton>
-          <ShineButton size="md" onClick={handleUpload} className="flex-1">
+          </Button>
+          <Button variant="primary" size="md" onPress={handleUpload} className="flex-1">
             Save
-          </ShineButton>
+          </Button>
         </div>
         </div>
       </motion.div>

@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { TextInput } from "@/components/ui/text-input"
 import { Loader } from "@/components/ui/loader"
 import { AlertMessage } from "@/components/ui/alert-message"
@@ -151,16 +150,17 @@ export function EditProfileDialog({
 
             <div className="flex gap-2" style={{ padding: 4 }}>
               <div className="flex-1">
-                <SecondaryButton size="md" fullWidth onClick={onClose} disabled={saving}>
+                <Button variant="tertiary" size="md" fullWidth onPress={onClose} isDisabled={saving}>
                   Cancel
-                </SecondaryButton>
+                </Button>
               </div>
               <div className="flex-1">
-                <ShineButton
+                <Button
+                  variant="primary"
                   size="md"
                   fullWidth
-                  onClick={handleSave}
-                  disabled={saving || !isNicknameValid || nickCooldownLocked}
+                  onPress={handleSave}
+                  isDisabled={saving || !isNicknameValid || nickCooldownLocked}
                 >
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">
@@ -168,7 +168,7 @@ export function EditProfileDialog({
                       Saving...
                     </span>
                   ) : "Save"}
-                </ShineButton>
+                </Button>
               </div>
             </div>
           </motion.div>

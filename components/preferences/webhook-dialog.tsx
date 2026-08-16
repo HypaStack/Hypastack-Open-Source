@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { TextInput } from "@/components/ui/text-input"
 import { Loader } from "@/components/ui/loader"
 import { AlertMessage } from "@/components/ui/alert-message"
@@ -115,19 +114,19 @@ export function WebhookDialog({
             )}
 
             <div style={{ padding: '0 4px 4px' }}>
-              <SecondaryButton size="md" fullWidth onClick={handleTest} disabled={!testable || testing}>
+              <Button variant="tertiary" size="md" fullWidth onPress={handleTest} isDisabled={!testable || testing}>
                 {testing ? (
                   <span className="flex items-center justify-center gap-2"><Loader size={16} /> Testing…</span>
                 ) : "Test webhook"}
-              </SecondaryButton>
+              </Button>
             </div>
 
             <div className="flex gap-2" style={{ padding: 4 }}>
               <div className="flex-1">
-                <SecondaryButton size="md" fullWidth onClick={onClose}>Cancel</SecondaryButton>
+                <Button variant="tertiary" size="md" fullWidth onPress={onClose}>Cancel</Button>
               </div>
               <div className="flex-1">
-                <ShineButton size="md" fullWidth onClick={handleSave} disabled={!testable}>Save</ShineButton>
+                <Button variant="primary" size="md" fullWidth onPress={handleSave} isDisabled={!testable}>Save</Button>
               </div>
             </div>
           </motion.div>

@@ -18,6 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.997.0",
     "@aws-sdk/s3-request-presigner": "^3.997.0",
+    "@heroui/react": "^3.2.4",
     "@smithy/node-http-handler": "^4.4.12",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.2",
@@ -33,6 +34,7 @@
     "next": "^16.2.7",
     "next-mdx-remote": "^6.0.0",
     "pg": "^8.20.0",
+    "qrcode": "^1.5.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-easy-crop": "^6.0.2",
@@ -47,6 +49,7 @@
     "@types/jsdom": "^28.0.1",
     "@types/node": "^26",
     "@types/pg": "^8.20.0",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.39.5",

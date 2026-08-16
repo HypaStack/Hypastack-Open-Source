@@ -1,7 +1,8 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
+import { toPressHandler } from "@/components/ui/button-press"
 
 export function FolderTile({
   name,
@@ -18,21 +19,20 @@ export function FolderTile({
       className="group relative flex flex-col items-center gap-0.5 py-2 w-[88px] mx-auto cursor-pointer select-none"
     >
       {/*
-        Opacity lives on this wrapper, not the button: ShineButton sets opacity
+        Opacity lives on this wrapper, not the button: Button sets opacity
         inline, which would beat any class we put on it.
         Always reachable on touch, hover-revealed on pointer devices.
       */}
       <span className="absolute top-1 right-1 z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
-        <ShineButton
-          size="xs"
-          iconOnly
-          color="#dc2626"
-          hoverColor="#b91c1c"
-          onClick={onDelete}
+        <Button
+          variant="danger"
+          size="sm"
+          isIconOnly
+          onPress={toPressHandler(onDelete)}
           aria-label={`Delete folder ${name}`}
         >
           <MIcon name="delete" size={14} />
-        </ShineButton>
+        </Button>
       </span>
       <img
         loading="lazy"

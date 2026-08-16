@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "./material-icon"
 import { TextInput } from "./text-input"
-import { ShineButton } from "./shine-button"
-import { SecondaryButton } from "./secondary-button"
+import { Button } from "@heroui/react"
 import { ProgressBar } from "./progress-bar"
 import { AlertMessage } from "./alert-message"
 import { Loader } from "./loader"
@@ -149,14 +148,14 @@ function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: s
       </div>
       <div className="flex gap-2" style={{ padding: 4 }}>
         <div className="flex-1">
-          <SecondaryButton size="md" fullWidth onClick={handleCancel}>
+          <Button variant="tertiary" size="md" fullWidth onPress={handleCancel}>
             {notif.cancelText ?? "Cancel"}
-          </SecondaryButton>
+          </Button>
         </div>
         <div className="flex-1">
-          <ShineButton size="md" fullWidth onClick={handleConfirm} disabled={!value.trim()}>
+          <Button variant="primary" size="md" fullWidth onPress={handleConfirm} isDisabled={!value.trim()}>
             {notif.confirmText ?? "Create"}
-          </ShineButton>
+          </Button>
         </div>
       </div>
     </>
@@ -199,18 +198,17 @@ function ConfirmNotif({ notif, destructive, onResolve }: { notif: NotifState; de
       )}
       <div className="flex gap-2" style={{ padding: 4 }}>
         <div className="flex-1">
-          <SecondaryButton size="md" fullWidth disabled={loading} onClick={() => onResolve(notif.id, false)}>
+          <Button variant="tertiary" size="md" fullWidth isDisabled={loading} onPress={() => onResolve(notif.id, false)}>
             {notif.cancelText || "Cancel"}
-          </SecondaryButton>
+          </Button>
         </div>
         <div className="flex-1">
-          <ShineButton
+          <Button
+            variant={destructive ? "danger" : "primary"}
             size="md"
             fullWidth
-            disabled={loading}
-            onClick={confirm}
-            color={destructive ? "#dc2626" : undefined}
-            hoverColor={destructive ? "#b91c1c" : undefined}
+            isDisabled={loading}
+            onPress={confirm}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -218,7 +216,7 @@ function ConfirmNotif({ notif, destructive, onResolve }: { notif: NotifState; de
                 {notif.loadingText ?? notif.confirmText ?? "Confirm"}
               </span>
             ) : (notif.confirmText || "Confirm")}
-          </ShineButton>
+          </Button>
         </div>
       </div>
     </>
@@ -272,8 +270,10 @@ export function HypaNotifProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden bg-[#f7f7f8]/95 dark:bg-[#171717]/95 backdrop-blur-xl border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
+          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden backdrop-blur-xl border rounded-[16px]"
             style={{
+              backgroundColor: "var(--overlay)",
+              borderColor: "var(--border)",
               boxShadow: '0 12px 40px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)',
               padding: 6,
             }}
@@ -335,9 +335,9 @@ export function HypaNotifProvider() {
               <InputNotif notif={notif} onResolve={handleResolve} />
             ) : notif.confirmOnly ? (
               <div style={{ padding: 4 }}>
-                <SecondaryButton size="md" fullWidth onClick={() => handleResolve(notif.id, true)}>
+                <Button variant="tertiary" size="md" fullWidth onPress={() => handleResolve(notif.id, true)}>
                   {notif.confirmText || "Dismiss"}
-                </SecondaryButton>
+                </Button>
               </div>
             ) : (
               <ConfirmNotif notif={notif} destructive={destructive} onResolve={handleResolve} />

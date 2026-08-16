@@ -3,9 +3,8 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { SecondaryButton } from "@/components/ui/secondary-button"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { useManage } from "@/hooks/useManage"
 import { useDeveloperMode } from "@/hooks/useDeveloperMode"
@@ -163,9 +162,10 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
             <p className="text-[22px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
           </div>
           <div className="mt-auto pt-2 flex gap-2">
-            <SecondaryButton
-              size="xs"
-              onClick={() => {
+            <Button
+              variant="tertiary"
+              size="sm"
+              onPress={() => {
                 navigator.clipboard.writeText(user.id)
                 setCopiedId(true)
                 setTimeout(() => setCopiedId(false), 2000)
@@ -174,15 +174,16 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
             >
               <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
               {copiedId ? "Copied" : "Copy user ID"}
-            </SecondaryButton>
-            <SecondaryButton
-              size="xs"
-              onClick={() => setEditing(true)}
+            </Button>
+            <Button
+              variant="tertiary"
+              size="sm"
+              onPress={() => setEditing(true)}
               style={{ height: 26, gap: 6 }}
             >
               <MIcon name="edit" size={13} />
               Edit
-            </SecondaryButton>
+            </Button>
           </div>
         </div>
       </div>
@@ -215,21 +216,22 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
           <div>
             <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
             <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
-            <ShineButton size="md" onClick={() => onSwitchTab?.("plans")} style={{ height: 36 }}>
+            <Button variant="primary" size="md" onPress={() => onSwitchTab?.("plans")} style={{ height: 36 }}>
               Upgrade
-            </ShineButton>
+            </Button>
           </div>
           <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-4">
             <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
             <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
-            <SecondaryButton
+            <Button
+              variant="tertiary"
               size="md"
-              onClick={handleEmptyTrash}
-              disabled={trashLoading || files.length === 0}
+              onPress={handleEmptyTrash}
+              isDisabled={trashLoading || files.length === 0}
               style={{ height: 36 }}
             >
               {trashLoading ? "Deleting..." : "Empty trash"}
-            </SecondaryButton>
+            </Button>
           </div>
         </div>
       )}
@@ -266,15 +268,14 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
           </p>
         </div>
         <div className="pt-4 flex justify-end">
-          <ShineButton
+          <Button
+            variant="danger"
             size="sm"
-            onClick={handleDeleteAccount}
-            disabled={deleteAccountLoading}
-            color="#dc2626"
-            hoverColor="#b91c1c"
+            onPress={handleDeleteAccount}
+            isDisabled={deleteAccountLoading}
           >
             {deleteAccountLoading ? "Deleting..." : "Delete account"}
-          </ShineButton>
+          </Button>
         </div>
       </div>
     </div>

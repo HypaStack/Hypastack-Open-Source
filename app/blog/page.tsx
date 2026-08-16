@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { blogPosts } from "@/lib/blogPosts"
-import { ShineButton } from "@/components/ui/shine-button"
+import { ButtonLink } from "@/components/ui/button-link"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -57,13 +56,17 @@ export default function BlogPage() {
                 </p>
 
                 <div className="mt-4">
-                  <ShineButton
+                  {/* Plain anchor, not next/link's Link: this is a Server Component
+                      (it exports `metadata`), and passing a Client Component
+                      reference like Link as a prop across that boundary isn't
+                      serializable. A full navigation here is a fine tradeoff. */}
+                  <ButtonLink
                     href={`/blog/${post.slug}`}
-                    as={Link}
+                    variant="primary"
                     size="sm"
                   >
                     Read post
-                  </ShineButton>
+                  </ButtonLink>
                 </div>
               </div>
             ))}

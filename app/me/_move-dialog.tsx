@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { Loader } from "@/components/ui/loader"
 
 export interface MoveTarget {
@@ -148,10 +147,10 @@ export function MoveDialog({
           </div>
 
           <div className="flex justify-end gap-2 px-3 pb-3">
-            <SecondaryButton size="md" onClick={onCancel} disabled={moving}>
+            <Button variant="tertiary" size="md" onPress={onCancel} isDisabled={moving}>
               Cancel
-            </SecondaryButton>
-            <ShineButton size="md" onClick={submit} disabled={moving || isCurrent} style={{ gap: 8 }}>
+            </Button>
+            <Button variant="primary" size="md" onPress={submit} isDisabled={moving || isCurrent} style={{ gap: 8 }}>
               {moving ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader size={16} color="#ffffff" />
@@ -163,7 +162,7 @@ export function MoveDialog({
                   Move here
                 </>
               )}
-            </ShineButton>
+            </Button>
           </div>
         </motion.div>
       </div>

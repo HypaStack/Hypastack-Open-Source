@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
-import { ShineButton } from "@/components/ui/shine-button";
-import { SecondaryButton } from "@/components/ui/secondary-button";
+import { Button } from "@heroui/react";
 import { Loader } from "@/components/ui/loader";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
@@ -69,15 +68,16 @@ export function TierAnnouncementModal() {
             className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[720px] rounded-[20px] overflow-hidden"
             style={{ backgroundColor: '#121212', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
           >
-            <SecondaryButton
-              iconOnly
-              size="xs"
-              onClick={handleDismiss}
+            <Button
+              variant="tertiary"
+              isIconOnly
+              size="sm"
+              onPress={handleDismiss}
               aria-label="Dismiss"
               style={{ position: 'absolute', top: 14, right: 14, zIndex: 10 }}
             >
               <MIcon name="close" size={18} />
-            </SecondaryButton>
+            </Button>
 
             <div className="grid grid-cols-1 sm:grid-cols-2">
               <div className="flex flex-col items-start text-left px-8 pt-11 pb-10">
@@ -97,21 +97,21 @@ export function TierAnnouncementModal() {
                   uploads, CDN storage, and retention windows.
                 </p>
 
-                <ShineButton
-                  theme="dark"
+                <Button
+                  variant="primary"
                   size="md"
                   fullWidth
                   className="mt-auto"
-                  onClick={handleDismiss}
-                  disabled={closing}
+                  onPress={handleDismiss}
+                  isDisabled={closing}
                 >
                   {closing ? (
                     <span className="inline-flex items-center gap-2">
-                      <Loader size={16} stroke={2} />
+                      <Loader size={16} />
                       Closing..
                     </span>
                   ) : "Alright"}
-                </ShineButton>
+                </Button>
               </div>
 
               <div className="px-8 py-11 border-t sm:border-t-0 sm:border-l border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">

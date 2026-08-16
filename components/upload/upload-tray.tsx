@@ -5,12 +5,13 @@ import { createPortal } from "react-dom"
 import { motion, AnimatePresence, useSpring } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { TextInput } from "@/components/ui/text-input"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
+import { toPressHandler } from "@/components/ui/button-press"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { Slider } from "@/components/ui/slider"
-import { SecondaryButton } from "@/components/ui/secondary-button"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
+import { QrCodePopover } from "@/components/ui/qr-code-popover"
 import { SURFACE } from "@/components/ui/surface"
 import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
@@ -42,6 +43,7 @@ export function UploadTray({
   copied,
   copiedIndex,
   shareUrl,
+  shareUrls,
   errorMessage,
   isUploading,
   burnOnRead,
@@ -144,15 +146,15 @@ export function UploadTray({
                 {files.length} item{files.length !== 1 ? "s" : ""} · {uploadType === "cdn" ? "CDN" : "Files"}
               </p>
             </div>
-            <SecondaryButton
+            <Button
               variant="ghost"
-              iconOnly
+              isIconOnly
               size="sm"
-              onClick={() => setTrayCollapsed((v) => !v)}
+              onPress={() => setTrayCollapsed((v) => !v)}
               aria-label={trayCollapsed ? "Expand uploads" : "Collapse uploads"}
             >
               <MIcon name={trayCollapsed ? "expand_less" : "expand_more"} size={18} />
-            </SecondaryButton>
+            </Button>
           </div>
 
           {!trayCollapsed && (
@@ -197,6 +199,7 @@ export function UploadTray({
                         showCopy={state === "done"}
                         copied={copied}
                         onCopy={handleCopy}
+                        url={state === "done" ? shareUrl : undefined}
                         error={state === "error"}
                       />
                     ) : (
@@ -230,6 +233,7 @@ export function UploadTray({
                             showCopy={state === "done"}
                             copied={copiedIndex === index}
                             onCopy={() => handleCopyOne(index)}
+                            url={state === "done" ? shareUrls[index] : undefined}
                             error={state === "error" && index === uploadingIndex}
                           />
                         )
@@ -423,48 +427,53 @@ export function UploadTray({
 
                 {state === "selected" ? (
                   <div className="flex items-center justify-between gap-2">
-                    <SecondaryButton size="sm" onClick={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={handleReset}>
                       Cancel
-                    </SecondaryButton>
-                    <ShineButton
+                    </Button>
+                    <Button
+                      variant="primary"
                       size="sm"
-                      onClick={handleUpload}
-                      disabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
+                      onPress={handleUpload}
+                      isDisabled={isUploading || (!turnstileReady && process.env.NODE_ENV !== "development")}
                       style={{ gap: 8 }}
                     >
                       <MIcon name="arrow_upward" size={16} />
                       Start
-                    </ShineButton>
+                    </Button>
                   </div>
                 ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
                   <div className="flex items-center justify-between gap-2">
-                    <SecondaryButton size="sm" onClick={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={handleReset}>
                       Done
-                    </SecondaryButton>
-                    <ShineButton
+                    </Button>
+                    <Button
+                      variant="primary"
                       size="sm"
-                      onClick={handleCopy}
-                      color={copied ? "#059669" : undefined}
-                      hoverColor={copied ? "#047857" : undefined}
-                      style={{ gap: 8 }}
+                      onPress={handleCopy}
+                      style={
+                        copied
+                          ? { gap: 8, ["--button-bg" as string]: "#059669", ["--button-bg-hover" as string]: "#047857" }
+                          : { gap: 8 }
+                      }
                     >
                       <MIcon name={copied ? "check" : "content_copy"} size={16} />
                       {copied ? "Copied" : "Copy all"}
-                    </ShineButton>
+                    </Button>
                   </div>
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <SecondaryButton size="sm" onClick={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={handleReset}>
                       Clear
-                    </SecondaryButton>
-                    <SecondaryButton
+                    </Button>
+                    <Button
+                      variant="tertiary"
                       size="sm"
-                      onClick={() => inputRef.current?.click()}
+                      onPress={() => inputRef.current?.click()}
                       style={{ gap: 8 }}
                     >
                       <MIcon name="add" size={16} />
                       Add more
-                    </SecondaryButton>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -526,6 +535,7 @@ function TrayFileRow({
   showCopy = false,
   copied = false,
   onCopy,
+  url,
   error = false,
 }: {
   name: string
@@ -537,6 +547,8 @@ function TrayFileRow({
   showCopy?: boolean
   copied?: boolean
   onCopy?: () => void
+  /** The uploaded file's share link — enables the QR code trigger next to Copy. */
+  url?: string
   error?: boolean
 }) {
   const smooth = useSmoothPercent(progressPct ?? 0)
@@ -566,13 +578,17 @@ function TrayFileRow({
           </>
         )}
         {showCopy && onCopy && (
-          <SecondaryButton
-            size="xs"
-            onClick={(e) => { e.stopPropagation(); onCopy() }}
-            style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8, borderRadius: 7 }}
-          >
-            {copied ? "Copied" : "Copy link"}
-          </SecondaryButton>
+          <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+            {url && <QrCodePopover url={url} size={24} />}
+            <Button
+              variant="tertiary"
+              size="sm"
+              onPress={toPressHandler((e) => { e.stopPropagation(); onCopy() })}
+              style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+            >
+              {copied ? "Copied" : "Copy link"}
+            </Button>
+          </span>
         )}
       </div>
     </div>
@@ -692,13 +708,14 @@ function CustomLinkField({
           {slugError.suggestions.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {slugError.suggestions.map((s) => (
-                <SecondaryButton
+                <Button
                   key={s}
-                  size="xs"
-                  onClick={() => { setCustomSlug(s); setSlugError(null) }}
+                  variant="tertiary"
+                  size="sm"
+                  onPress={() => { setCustomSlug(s); setSlugError(null) }}
                 >
                   {s}
-                </SecondaryButton>
+                </Button>
               ))}
             </div>
           )}

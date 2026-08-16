@@ -3,8 +3,8 @@
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { toPressHandler } from "@/components/ui/button-press"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
 import { useManage, type CdnAssetItem } from "@/hooks/useManage"
@@ -561,42 +561,42 @@ export default function CdnPage() {
           {selectedAssets.size > 0 ? (
               <>
                 <motion.div layout>
-                  <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                  <Button variant="tertiary" size="md" onPress={handleSelectAll} style={{ gap: 8 }}>
                     <MIcon name={allInFolderSelected ? "deselect" : "select_all"} size={15} className="shrink-0" />
                     <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
-                  </SecondaryButton>
+                  </Button>
                 </motion.div>
                 {/* Copy — all selected */}
                 <motion.div layout>
-                  <SecondaryButton
+                  <Button
+                    variant="tertiary"
                     size="md"
-                    onClick={handleCopySelected}
+                    onPress={handleCopySelected}
                     style={{ gap: 8, ...(copiedSelection ? { color: "#34d399" } : {}) }}
                   >
                     <MIcon name={copiedSelection ? "check" : "content_copy"} size={14} className="shrink-0" />
                     <span className="hidden sm:inline">{copiedSelection ? "Copied!" : `Copy${selectedAssets.size > 1 ? ` (${selectedAssets.size})` : ""}`}</span>
-                  </SecondaryButton>
+                  </Button>
                 </motion.div>
                 <AnimatePresence mode="popLayout">
                   {/* View — single selection only */}
                   {selectedAssets.size === 1 && (
                     <motion.div key="view" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
-                      <SecondaryButton size="md" onClick={handleViewSelected} style={{ gap: 8 }}>
+                      <Button variant="tertiary" size="md" onPress={handleViewSelected} style={{ gap: 8 }}>
                         <MIcon name="open_in_new" size={14} className="shrink-0" />
                         <span className="hidden sm:inline">View</span>
-                      </SecondaryButton>
+                      </Button>
                     </motion.div>
                   )}
                   {/* Hot Swap — single selection only */}
                   {selectedAssets.size === 1 && (
                     <motion.div key="swap" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
-                      <ShineButton
+                      <Button
+                        variant="primary"
                         size="md"
-                        onClick={handleHotSwapClick}
-                        disabled={swapLoading !== null}
-                        color="#d97706"
-                        hoverColor="#b45309"
-                        style={{ gap: 8 }}
+                        onPress={handleHotSwapClick}
+                        isDisabled={swapLoading !== null}
+                        style={{ ["--button-bg" as string]: "#d97706", ["--button-bg-hover" as string]: "#b45309", gap: 8 }}
                       >
                         {swapLoading !== null ? (
                           <span className="flex items-center justify-center gap-2">
@@ -609,25 +609,24 @@ export default function CdnPage() {
                             <span className="hidden sm:inline">Swap</span>
                           </>
                         )}
-                      </ShineButton>
+                      </Button>
                     </motion.div>
                   )}
                 </AnimatePresence>
                 {/* Move */}
                 <motion.div layout>
-                  <SecondaryButton size="md" onClick={() => setMoveOpen(true)} style={{ gap: 8 }}>
+                  <Button variant="tertiary" size="md" onPress={() => setMoveOpen(true)} style={{ gap: 8 }}>
                     <MIcon name="drive_file_move" size={15} className="shrink-0" />
                     <span className="hidden sm:inline">Move</span>
-                  </SecondaryButton>
+                  </Button>
                 </motion.div>
                 {/* Delete */}
                 <motion.div layout>
-                  <ShineButton
+                  <Button
+                    variant="danger"
                     size="md"
-                    onClick={handleBulkDelete}
-                    disabled={deleteLoading === "bulk"}
-                    color="#dc2626"
-                    hoverColor="#b91c1c"
+                    onPress={handleBulkDelete}
+                    isDisabled={deleteLoading === "bulk"}
                     style={{ gap: 8, position: "relative", overflow: "hidden" }}
                   >
                     {deleteLoading === "bulk" ? (
@@ -656,30 +655,30 @@ export default function CdnPage() {
                         Delete {selectedAssets.size}
                       </>
                     )}
-                  </ShineButton>
+                  </Button>
                 </motion.div>
               </>
             ) : (
               <>
                 {filteredAssets.length > 0 && (
                   <motion.div layout>
-                    <SecondaryButton size="md" onClick={handleSelectAll} style={{ gap: 8 }}>
+                    <Button variant="tertiary" size="md" onPress={handleSelectAll} style={{ gap: 8 }}>
                       <MIcon name="select_all" size={15} className="shrink-0" />
                       <span className="hidden sm:inline">Select all</span>
-                    </SecondaryButton>
+                    </Button>
                   </motion.div>
                 )}
                 <motion.div layout>
-                  <SecondaryButton size="md" onClick={handleCreateFolder} style={{ gap: 8 }}>
+                  <Button variant="tertiary" size="md" onPress={handleCreateFolder} style={{ gap: 8 }}>
                     <MIcon name="create_new_folder" size={15} className="shrink-0" />
                     <span className="hidden sm:inline">New Folder</span>
-                  </SecondaryButton>
+                  </Button>
                 </motion.div>
                 <motion.div layout>
-                  <ShineButton size="md" onClick={() => fileInputRef.current?.click()} style={{ gap: 8 }}>
+                  <Button variant="primary" size="md" onPress={() => fileInputRef.current?.click()} style={{ gap: 8 }}>
                     <MIcon name="cloud_upload" size={14} className="shrink-0" />
                     <span>Upload files</span>
-                  </ShineButton>
+                  </Button>
                 </motion.div>
               </>
             )}
@@ -708,11 +707,11 @@ export default function CdnPage() {
             <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
               Hold CTRL and click or drag over files to quickly select many files
             </span>
-            <SecondaryButton
+            <Button
               variant="ghost"
-              iconOnly
-              size="xs"
-              onClick={() => {
+              isIconOnly
+              size="sm"
+              onPress={() => {
                 localStorage.setItem(STORAGE_KEY_HIDE_CTRL_HINT, '1')
                 window.dispatchEvent(new Event(CTRL_HINT_EVENT))
               }}
@@ -720,7 +719,7 @@ export default function CdnPage() {
               aria-label="Dismiss hint"
             >
               <MIcon name="close" size={16} />
-            </SecondaryButton>
+            </Button>
           </div>
         )}
       </div>
@@ -765,14 +764,15 @@ export default function CdnPage() {
               <div className="flex flex-col items-center justify-center text-center min-h-[60vh] h-full">
                 <MIcon name="folder_open" size={40} style={{ color: '#555', marginBottom: 12 }} />
                 <p style={{ fontSize: 15, color: '#a1a1aa', marginBottom: 16 }}>This folder is empty</p>
-                <SecondaryButton
+                <Button
+                  variant="tertiary"
                   size="md"
-                  onClick={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
+                  onPress={() => setCurrentFolderId(breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2].id : null)}
                   style={{ gap: 8 }}
                 >
                   <MIcon name="arrow_back" size={14} />
                   Go back
-                </SecondaryButton>
+                </Button>
               </div>
             )}
 
@@ -828,31 +828,31 @@ export default function CdnPage() {
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">
-            <SecondaryButton
+            <Button
               variant="ghost"
-              iconOnly
-              size="xs"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              isIconOnly
+              size="sm"
+              onPress={() => setCurrentPage(p => Math.max(1, p - 1))}
+              isDisabled={currentPage === 1}
               aria-label="Previous page"
-              style={{ width: 28, height: 28, borderRadius: 6 }}
+              style={{ width: 28, height: 28 }}
             >
               <MIcon name="chevron_left" size={16} />
-            </SecondaryButton>
+            </Button>
             <span className="text-[#171717] dark:text-[#e3e3e3]" style={{ fontSize: 13, fontWeight: 500, minWidth: 40, textAlign: 'center' }}>
               {currentPage}/{totalPages}
             </span>
-            <SecondaryButton
+            <Button
               variant="ghost"
-              iconOnly
-              size="xs"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              isIconOnly
+              size="sm"
+              onPress={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              isDisabled={currentPage === totalPages}
               aria-label="Next page"
-              style={{ width: 28, height: 28, borderRadius: 6 }}
+              style={{ width: 28, height: 28 }}
             >
               <MIcon name="chevron_right" size={16} />
-            </SecondaryButton>
+            </Button>
           </div>
         </div>
       )}

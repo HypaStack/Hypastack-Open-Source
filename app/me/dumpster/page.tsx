@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/http/fetch"
@@ -50,18 +49,20 @@ export default function DumpsterPage() {
         </h1>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <SecondaryButton
+          <Button
+            variant="tertiary"
             size="md"
-            onClick={() => setContent("")}
-            disabled={saving || !content}
+            onPress={() => setContent("")}
+            isDisabled={saving || !content}
             style={{ gap: 8 }}
           >
             <MIcon name="clear_all" size={17} className="shrink-0" />
             <span className="hidden sm:inline">Clear</span>
-          </SecondaryButton>
-          <ShineButton
-            onClick={handleSave}
-            disabled={saving || !content.trim()}
+          </Button>
+          <Button
+            variant="primary"
+            onPress={handleSave}
+            isDisabled={saving || !content.trim()}
             size="md"
             style={{ gap: 8 }}
           >
@@ -71,7 +72,7 @@ export default function DumpsterPage() {
               <MIcon name="save" size={15} className="shrink-0" />
             )}
             <span>Save Paste</span>
-          </ShineButton>
+          </Button>
         </div>
       </div>
 

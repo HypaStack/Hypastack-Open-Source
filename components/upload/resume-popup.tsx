@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 import { MenuItem } from "@/components/ui/menu-item"
 import type { UseUploadReturn } from "./use-upload"
 
@@ -55,16 +55,16 @@ export function ResumePopup({
                 <p className="text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
                   Continue upload?
                 </p>
-                <SecondaryButton
+                <Button
                   variant="ghost"
-                  iconOnly
-                  size="xs"
-                  onClick={() => setShowResumePopup(false)}
+                  isIconOnly
+                  size="sm"
+                  onPress={() => setShowResumePopup(false)}
                   aria-label="Dismiss"
-                  style={{ height: 24, width: 24, borderRadius: 6 }}
+                  style={{ height: 24, width: 24 }}
                 >
                   <MIcon name="close" size={16} />
-                </SecondaryButton>
+                </Button>
               </div>
               <p className="text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
                 You have an unfinished upload from a previous session. Resume it where you left off?
@@ -87,18 +87,16 @@ export function ResumePopup({
             {/* Actions */}
             <div className="bg-[#121212] rounded-[10px] border border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
               <MenuItem
-                theme="dark"
                 onClick={handleResumeUpload}
                 icon={<MIcon name="play_arrow" size={15} />}
-                style={{ height: 36, borderRadius: 8, paddingLeft: 12, paddingRight: 12 }}
+                style={{ height: 36, paddingLeft: 12, paddingRight: 12 }}
               >
                 Resume upload
               </MenuItem>
               <MenuItem
-                theme="dark"
                 onClick={handleAbortUpload}
                 icon={<MIcon name="delete_outline" size={15} />}
-                style={{ height: 36, borderRadius: 8, paddingLeft: 12, paddingRight: 12, fontWeight: 400 }}
+                style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontWeight: 400 }}
               >
                 Cancel upload
               </MenuItem>

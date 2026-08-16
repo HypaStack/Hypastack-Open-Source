@@ -7,8 +7,8 @@ import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { ShineCard } from "@/components/ui/shine-card"
-import { ShineButton } from "@/components/ui/shine-button"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { apiFetch } from "@/lib/http/fetch"
 import { dropFile, type DropState } from "@/components/funnel/transport"
@@ -115,8 +115,8 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                 This drop link has already been used or doesn&apos;t exist. Funnel links work exactly once.
               </p>
               <div className="flex gap-2">
-                <ShineButton href="/" as={Link} className="flex-1">Go home</ShineButton>
-                <SecondaryButton href="/pricing" as={Link} size="lg" className="flex-1">Get Hypastack</SecondaryButton>
+                <ButtonLink href="/" as={Link} variant="primary" className="flex-1">Go home</ButtonLink>
+                <ButtonLink href="/pricing" as={Link} variant="tertiary" size="lg" className="flex-1">Get Hypastack</ButtonLink>
               </div>
             </ShineCard>
           </motion.div>
@@ -199,15 +199,14 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                         <p className="mt-0.5 text-[12px] text-[#898e97]">{fmt(file.size)}</p>
                       </div>
                       {!busy && (
-                        <SecondaryButton
+                        <Button
                           variant="ghost"
-                          theme="dark"
-                          size="xs"
-                          onClick={() => selectFile(null)}
+                          size="sm"
+                          onPress={() => selectFile(null)}
                           aria-label="Remove file"
                         >
                           Remove
-                        </SecondaryButton>
+                        </Button>
                       )}
                     </div>
                   )}
@@ -249,9 +248,10 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
 
               {!done && (
                 <div className="px-3 pb-3">
-                  <SecondaryButton
-                    onClick={handleSend}
-                    disabled={!canSend}
+                  <Button
+                    variant="tertiary"
+                    onPress={handleSend}
+                    isDisabled={!canSend}
                     size="lg"
                     fullWidth
                     style={{ gap: 8 }}
@@ -261,7 +261,7 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                     ) : (
                       <><MIcon name="send" size={16} />Send file</>
                     )}
-                  </SecondaryButton>
+                  </Button>
                 </div>
               )}
             </ShineCard>

@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { formatBytes, timeAgo } from "@/lib/format"
 import { API_BASE } from "@/constants"
 import { TextInput } from "@/components/ui/text-input"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
 
 interface ForumFile {
   id: string
@@ -98,14 +98,14 @@ function ForumCard({ post }: { post: ForumPost }) {
 
 function TagPill({ tag, active, onClick }: { tag: string; active: boolean; onClick: () => void }) {
   return (
-    <SecondaryButton
-      variant={active ? "solid" : "ghost"}
-      size="xs"
-      onClick={onClick}
+    <Button
+      variant={active ? "tertiary" : "ghost"}
+      size="sm"
+      onPress={onClick}
       style={{ borderRadius: 9999 }}
     >
       {tag}
-    </SecondaryButton>
+    </Button>
   )
 }
 
@@ -123,45 +123,45 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
 
   return (
     <div className="flex items-center justify-center gap-1.5 mt-10">
-      <SecondaryButton
+      <Button
         variant="ghost"
-        iconOnly
+        isIconOnly
         size="sm"
-        onClick={() => onPageChange(page - 1)}
-        disabled={page <= 1}
+        onPress={() => onPageChange(page - 1)}
+        isDisabled={page <= 1}
         aria-label="Previous page"
-        style={{ height: 32, width: 32, borderRadius: 8 }}
+        style={{ height: 32, width: 32 }}
       >
         <MIcon name="chevron_left" size={16} />
-      </SecondaryButton>
+      </Button>
       {pages.map((p, i) =>
         p === "..." ? (
           <span key={`dots-${i}`} className="w-8 h-8 flex items-center justify-center text-[13px] text-[#999]">...</span>
         ) : (
-          <SecondaryButton
+          <Button
             key={p}
-            variant={p === page ? "solid" : "ghost"}
-            iconOnly
+            variant={p === page ? "tertiary" : "ghost"}
+            isIconOnly
             size="sm"
-            onClick={() => onPageChange(p)}
+            onPress={() => onPageChange(p)}
             aria-label={`Page ${p}`}
-            style={{ height: 32, width: 32, borderRadius: 8 }}
+            style={{ height: 32, width: 32 }}
           >
             {p}
-          </SecondaryButton>
+          </Button>
         )
       )}
-      <SecondaryButton
+      <Button
         variant="ghost"
-        iconOnly
+        isIconOnly
         size="sm"
-        onClick={() => onPageChange(page + 1)}
-        disabled={page >= totalPages}
+        onPress={() => onPageChange(page + 1)}
+        isDisabled={page >= totalPages}
         aria-label="Next page"
-        style={{ height: 32, width: 32, borderRadius: 8 }}
+        style={{ height: 32, width: 32 }}
       >
         <MIcon name="chevron_right" size={16} />
-      </SecondaryButton>
+      </Button>
     </div>
   )
 }
@@ -277,14 +277,14 @@ export default function ForumPage() {
                 />
               ))}
               {activeTag && (
-                <SecondaryButton
+                <Button
                   variant="ghost"
-                  size="xs"
-                  onClick={() => { setActiveTag(null); setPage(1) }}
+                  size="sm"
+                  onPress={() => { setActiveTag(null); setPage(1) }}
                   className="ml-1"
                 >
                   Clear filter
-                </SecondaryButton>
+                </Button>
               )}
             </div>
           )}

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { SecondaryButton } from "@/components/ui/secondary-button"
+import { Button } from "@heroui/react"
+import { toPressHandler } from "@/components/ui/button-press"
 import { Checkmark } from "@/components/ui/checkmark"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider } from "@/components/ui/context-menu"
 import { type CdnAsset, gridItemVariants } from "./_helpers"
@@ -125,15 +126,16 @@ export function CdnAssetTile({
               <span className="truncate min-w-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>{baseName}</span>
               {dotIdx > 0 && <span className="shrink-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>}
             </p>
-            <SecondaryButton
-              size="xs"
-              onClick={(e) => {
+            <Button
+              variant="tertiary"
+              size="sm"
+              onPress={toPressHandler((e) => {
                 e.stopPropagation()
                 setRevealed(true)
-              }}
+              })}
             >
               Load
-            </SecondaryButton>
+            </Button>
           </div>
         )}
 

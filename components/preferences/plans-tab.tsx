@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ShineButton } from "@/components/ui/shine-button"
+import { Button } from "@heroui/react"
 import { ShineBadge } from "@/components/ui/shine-badge"
-import { SecondaryButton } from "@/components/ui/secondary-button"
 import { type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 import { type PreferencesTab, type PreferencesUser, resolveTier } from "./shared"
@@ -25,22 +24,22 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
     <div>
       <div className="flex items-center justify-center mb-5">
         <div className="inline-flex p-1 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12 }}>
-          <SecondaryButton
-            variant={billing === "monthly" ? "solid" : "ghost"}
+          <Button
+            variant={billing === "monthly" ? "tertiary" : "ghost"}
             size="sm"
-            onClick={() => setBilling("monthly")}
+            onPress={() => setBilling("monthly")}
             style={{ borderRadius: 8, fontSize: 14 }}
           >
             Monthly
-          </SecondaryButton>
-          <SecondaryButton
-            variant={billing === "annual" ? "solid" : "ghost"}
+          </Button>
+          <Button
+            variant={billing === "annual" ? "tertiary" : "ghost"}
             size="sm"
-            onClick={() => setBilling("annual")}
+            onPress={() => setBilling("annual")}
             style={{ borderRadius: 8, fontSize: 14 }}
           >
             Annual
-          </SecondaryButton>
+          </Button>
         </div>
       </div>
 
@@ -83,14 +82,14 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
 
           <div className="mt-auto">
             {!isSelectedCurrent && selectedPlan.key !== "free" && (
-              <ShineButton size="md" fullWidth onClick={() => onSwitchTab?.("billing")}>
+              <Button variant="primary" size="md" fullWidth onPress={() => onSwitchTab?.("billing")}>
                 Switch to {selectedPlan.label}
-              </ShineButton>
+              </Button>
             )}
             {!isSelectedCurrent && selectedPlan.key === "free" && (
-              <SecondaryButton size="md" fullWidth onClick={() => onSwitchTab?.("billing")}>
+              <Button variant="tertiary" size="md" fullWidth onPress={() => onSwitchTab?.("billing")}>
                 Downgrade to Free
-              </SecondaryButton>
+              </Button>
             )}
           </div>
         </div>

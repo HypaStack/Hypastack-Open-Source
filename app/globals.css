@@ -1,7 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@heroui/react/styles";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* HeroUI's Spinner icon SVG has no intrinsic width/height (viewBox only), so
+   without this it renders at the UA default (300x150) instead of filling its
+   [data-slot="spinner"] span. */
+[data-slot="spinner"] svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
 /* Override react-easy-crop's default blue crop area border */
 .reactEasyCrop_CropArea {
@@ -354,3 +364,50 @@ html.is-tauri [contenteditable="true"] {
 .blog-prose code { font-family: var(--font-mono); font-size: 13px; background: #0a0b0c; border: 1px solid rgba(255,255,255,0.08); color: #f7f8f8; padding: 2px 6px; border-radius: 5px; }
 .blog-prose pre { font-family: var(--font-mono); font-size: 13px; background: #0a0b0c; border: 1px solid rgba(255,255,255,0.08); border-radius: calc(var(--radius) - 2px); padding: 1.25rem; overflow-x: auto; margin: 1.5rem 0; color: #f7f8f8; }
 .blog-prose pre code { background: none; border: none; padding: 0; }
+
+/* ── HeroUI theme bridge ──────────────────────────────────────────────
+   This must be higher-specificity than a bare `.dark`/`:root` and must NOT
+   rely on source order: Hypastack's pre-existing shadcn-style `:root` block
+   (above) already defines `--accent` and `--muted` for its own unrelated
+   purposes (a neutral gray fill and a dark muted-background, respectively —
+   nothing to do with HeroUI's brand-color and muted-text tokens of the same
+   name). Both blocks are unlayered with equal (class-level) specificity, so
+   the textually-later declaration wins outright regardless of who "should"
+   win conceptually — which used to be that legacy block, silently
+   overriding HeroUI's real accent blue with a neutral gray. `html.dark`
+   (element+class) outranks both, but only for properties actually
+   redeclared here — `--accent`/`--muted` MUST be restated (as HeroUI's own
+   real default values, not new colors) precisely because of the collision;
+   leaving them out here does not mean "inherit HeroUI's default", it means
+   "let the legacy block keep winning". */
+html.dark,
+html[data-theme="dark"] {
+  --background: #08090a;
+  --foreground: #f7f8f8;
+
+  --surface: #0a0b0c;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #111111;
+  --surface-tertiary: #161616;
+
+  --overlay: #0d0e0f;
+  --overlay-foreground: var(--foreground);
+
+  --default: #1a1b1c;
+  --default-foreground: var(--foreground);
+
+  /* HeroUI's real dark-mode defaults, reclaimed from the colliding legacy tokens above. */
+  --accent: #0485f7;
+  --accent-foreground: #ffffff;
+  --muted: #9f9fa9;
+
+  --border: rgba(255,255,255,0.08);
+  --separator: rgba(255,255,255,0.06);
+  --link: var(--foreground);
+
+  --field-background: #0a0b0c;
+  --field-foreground: var(--foreground);
+  --field-border: rgba(255,255,255,0.08);
+
+  --backdrop: rgba(0,0,0,0.6);
+}

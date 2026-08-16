@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState, type CSSProperties, type ReactNode, type MouseEvent as ReactMouseEvent } from "react"
+import { Card } from "@heroui/react"
 
 interface ShineCardProps {
   children: ReactNode
@@ -18,10 +19,10 @@ interface ShineCardProps {
 
 /**
  * Frosted-glass card with a cursor-following gradient border and radial glow,
- * plus a subtle 3D tilt that eases back on mouse leave.
- *
- * Portable: all essential styling is inline and the pointer effects are handled
- * in JS, so no global CSS or Tailwind is required.
+ * plus a subtle 3D tilt that eases back on mouse leave — built on HeroUI's Card
+ * (variant="transparent", so its own background stays out of the way) with the
+ * pointer-tracking effects layered on top, since that interaction has no HeroUI
+ * equivalent to defer to.
  */
 export function ShineCard({
   children,
@@ -53,16 +54,14 @@ export function ShineCard({
   const onLeave = () => setFx((f) => ({ ...f, rx: 0, ry: 0, hover: false }))
 
   return (
-    <div
+    <Card
       ref={ref}
+      variant="transparent"
       onMouseMove={onMove}
       onMouseEnter={() => setFx((f) => ({ ...f, hover: true }))}
       onMouseLeave={onLeave}
       className={className}
       style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
         boxSizing: "border-box",
         overflow: "hidden",
         borderRadius: radius,
@@ -110,9 +109,9 @@ export function ShineCard({
           filter: "blur(10px)",
         }}
       />
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flex: 1, flexDirection: "column" }}>
+      <Card.Content style={{ position: "relative", zIndex: 1, flex: 1, gap: 0 }}>
         {children}
-      </div>
-    </div>
+      </Card.Content>
+    </Card>
   )
 }
