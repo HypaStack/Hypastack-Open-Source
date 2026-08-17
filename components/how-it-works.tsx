@@ -51,17 +51,17 @@ export function HowItWorks() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 sm:mt-10">
-              <Card className="h-full p-8">
+              <Card variant="tertiary" className="h-full p-8">
                 <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Built for purpose</Card.Title>
                 <Card.Description className="text-[17px] leading-relaxed">Shaped by what creators actually need. Tools that just work.</Card.Description>
               </Card>
 
-              <Card className="h-full p-8">
+              <Card variant="tertiary" className="h-full p-8">
                 <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Powered by Cloudflare</Card.Title>
                 <Card.Description className="text-[17px] leading-relaxed">A secure spot to pass encrypted files plus a fast CDN that strips tracking automatically.</Card.Description>
               </Card>
 
-              <Card className="h-full p-8">
+              <Card variant="tertiary" className="h-full p-8">
                 <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Designed for speed</Card.Title>
                 <Card.Description className="text-[17px] leading-relaxed">A lightweight network that stays out of your way and serves files near-instantly.</Card.Description>
               </Card>
@@ -102,15 +102,15 @@ export function HowItWorks() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 sm:mt-8">
-                <Card className="h-full p-8">
+                <Card variant="tertiary" className="h-full p-8">
                   <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Hidden Telemetry</Card.Title>
                   <Card.Description className="text-[17px] leading-relaxed">Other platforms quietly log what you do. We can't, our source is public.</Card.Description>
                 </Card>
-                <Card className="h-full p-8">
+                <Card variant="tertiary" className="h-full p-8">
                   <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Data Harvesting</Card.Title>
                   <Card.Description className="text-[17px] leading-relaxed">Read the code and see exactly how your files are handled. No blind faith needed.</Card.Description>
                 </Card>
-                <Card className="h-full p-8">
+                <Card variant="tertiary" className="h-full p-8">
                   <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Vendor Lock-in</Card.Title>
                   <Card.Description className="text-[17px] leading-relaxed">Your files download in their original format with nothing proprietary, so you can pick up and leave anytime.</Card.Description>
                 </Card>

@@ -69,7 +69,7 @@ export function AccordionItem({
             width: "100%",
             padding: 16,
             textAlign: "left",
-            backgroundColor: "var(--surface)",
+            backgroundColor: "var(--surface-tertiary)",
             ...headerStyle,
           }}
         >
@@ -93,7 +93,7 @@ export function AccordionItem({
         </Disclosure.Trigger>
       </Disclosure.Heading>
       <Disclosure.Content>
-        <Disclosure.Body style={{ padding: 16, backgroundColor: "var(--surface)", ...panelStyle }}>
+        <Disclosure.Body style={{ padding: 16, backgroundColor: "var(--surface-tertiary)", ...panelStyle }}>
           <div style={{ fontSize: 14, lineHeight: "20px", color: "var(--muted)" }}>{children}</div>
         </Disclosure.Body>
       </Disclosure.Content>
