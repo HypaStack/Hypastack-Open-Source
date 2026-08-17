@@ -211,8 +211,8 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="w-full flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-surface text-foreground hover:bg-default"
-              style={{ height: 40, paddingLeft: 8, paddingRight: 8 }}
+              className="w-full flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5"
+              style={{ height: 38, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
                 src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
@@ -225,7 +225,7 @@ function ManageLayoutInner({
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="bottom" className="w-(--trigger-width) p-1.5">
+            <Dropdown.Popover placement="bottom" className="w-(--trigger-width) p-1.5 bg-black border border-white/10 rounded-2xl">
               <div className="flex items-center gap-2.5 px-2.5 py-2.5">
                 <img
                   decoding="async"
@@ -271,8 +271,8 @@ function ManageLayoutInner({
 
               <div className="mt-1.5">
                 <Button
-                  variant="danger"
-                  size="md"
+                  variant="danger-soft"
+                  size="sm"
                   fullWidth
                   onPress={logout}
                   style={{ gap: 8 }}
@@ -302,7 +302,7 @@ function ManageLayoutInner({
         </div>
 
         <div className="px-2 pb-2 shrink-0">
-          <div className="rounded-3xl bg-surface px-3 py-3">
+          <div className="rounded-2xl bg-black border border-white/10 px-3 py-3">
             <div className="text-xs text-muted font-medium mb-3">
               Usage
             </div>
@@ -337,7 +337,7 @@ function ManageLayoutInner({
 
         <div className="px-2 pb-3 shrink-0">
           <Button
-            variant="primary"
+            variant="outline"
             onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
@@ -442,7 +442,7 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[24px] bg-white dark:bg-black border border-transparent dark:border-white/10 shadow-none overflow-hidden relative">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-black border border-transparent dark:border-white/15 shadow-none overflow-hidden relative">
         <header
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-black lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
