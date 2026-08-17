@@ -5,52 +5,15 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
-import { isTauri } from "@/lib/tauri"
 import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
-import { Button } from "@heroui/react"
-import { ButtonLink } from "@/components/ui/button-link"
-import { TextInput } from "@/components/ui/text-input"
+import { Button, TextField, Label, InputGroup } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { ShineCard } from "@/components/ui/shine-card"
 import { Checkmark } from "@/components/ui/checkmark"
 import { errorMessage } from "@/lib/errors"
-
-const FEATURES = [
-  { icon: "shield", label: "Zero-knowledge encryption" },
-  { icon: "bolt", label: "Instant CDN delivery" },
-  { icon: "link", label: "Permanent shareable links" },
-  { icon: "lock", label: "No email. No tracking." },
-]
-
-const RightPanel = () => (
-  <div
-    className="hidden lg:flex w-[440px] xl:w-[540px] shrink-0 flex-col justify-center items-start p-10 xl:p-14 bg-[#121212] border-l border-[rgba(255,255,255,0.1)] relative overflow-hidden"
-  >
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)] pointer-events-none" />
-    <div className="w-full relative z-10">
-      <img
-        src="https://r2.hypastack.com/cdn/8pnp1fg9kk1f/dashboard.png"
-        alt="Behind the scenes"
-        className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
-      />
-      <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
-        See Hypastack under the hood
-      </h2>
-      <ButtonLink
-        href="https://github.com/HypaStack/Hypastack-Open-Source"
-        target="_blank"
-        rel="noopener noreferrer"
-        variant="tertiary"
-        size="md"
-      >
-        Take a look
-      </ButtonLink>
-    </div>
-  </div>
-)
 
 export default function CreateAccountPage() {
   const router = useRouter()
@@ -61,13 +24,11 @@ export default function CreateAccountPage() {
   const [copied, setCopied] = useState(false)
   const [ageConfirmed, setAgeConfirmed] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
-  const [isDesktop, setIsDesktop] = useState(false)
   const [bioSupported, setBioSupported] = useState(false)
   const [bioEnrolling, setBioEnrolling] = useState(false)
   const [bioEnabled, setBioEnabled] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
-  useEffect(() => { setIsDesktop(isTauri()) }, [])
   useEffect(() => { isBiometricSupported().then(setBioSupported) }, [])
 
   const handleEnrollBio = async () => {
@@ -132,13 +93,12 @@ export default function CreateAccountPage() {
 
   if (generatedKey) {
     return (
-      <div className="flex min-h-screen bg-[#0d0d0d]">
-        <div className="relative flex flex-1 flex-col items-center lg:items-start lg:pl-[12%] xl:pl-[16%] justify-center px-8 py-12">
-          <div className="relative z-10 w-full max-w-[360px]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8 py-12">
+        <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
-              <img 
-                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
-                alt="Hypastack" 
+              <img
+                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+                alt="Hypastack"
                 className="w-[44px] h-[44px] object-contain"
               />
             </div>
@@ -195,23 +155,19 @@ export default function CreateAccountPage() {
             >
               Continue
             </Button>
-          </div>
         </div>
-        {!isDesktop && <RightPanel />}
       </div>
     )
   }
 
   return (
     <>
-      <div className="flex min-h-screen bg-[#0d0d0d]">
-
-        <div className="relative flex flex-1 flex-col items-center lg:items-start lg:pl-[12%] xl:pl-[16%] justify-center px-8 py-12">
-          <div className="relative z-10 w-full max-w-[360px]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8 py-12">
+        <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
-              <img 
-                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
-                alt="Hypastack" 
+              <img
+                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+                alt="Hypastack"
                 className="w-[44px] h-[44px] object-contain"
               />
             </div>
@@ -231,23 +187,24 @@ export default function CreateAccountPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-[13px] font-medium text-[#f7f8f8] mb-2 pl-1">Username</label>
-
-                <TextInput
-                  type="text"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  placeholder="Your name"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  data-lpignore="true"
-                  data-1p-ignore="true"
-                  required
-                  fullWidth
-                  trailing={<MIcon name="person" size={16} style={{ marginRight: -10 }} />}
-                />
+                <TextField isRequired value={nickname} onChange={setNickname} className="w-full">
+                  <Label>Username</Label>
+                  <InputGroup fullWidth>
+                    <InputGroup.Input
+                      type="text"
+                      placeholder="Your name"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                      data-lpignore="true"
+                      data-1p-ignore="true"
+                    />
+                    <InputGroup.Suffix>
+                      <MIcon name="person" size={16} />
+                    </InputGroup.Suffix>
+                  </InputGroup>
+                </TextField>
               </div>
 
               {nicknameError && (
@@ -297,10 +254,7 @@ export default function CreateAccountPage() {
                 Sign in
               </Link>
             </p>
-          </div>
         </div>
-
-        {!isDesktop && <RightPanel />}
       </div>
     </>
   )
