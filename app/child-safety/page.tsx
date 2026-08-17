@@ -14,7 +14,7 @@ export default function ChildSafety() {
       
       <section className="flex-1 pt-32 pb-20">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             Child Safety Policy
           </h1>
           
@@ -29,7 +29,7 @@ export default function ChildSafety() {
             </p>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>My Position</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>My Position</h2>
               <p className="mb-4">
                 Any content that sexually exploits or endangers children will be removed immediately 
                 upon discovery or report. The associated account will be terminated. All available 
@@ -39,7 +39,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Can Provide to Authorities</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>What I Can Provide to Authorities</h2>
               <p className="mb-4">
                 For files uploaded through the website, my zero-knowledge architecture limits the data I can provide to:
               </p>
@@ -64,7 +64,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Prevention Measures</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Prevention Measures</h2>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Dangerous file types (executables, scripts) are strictly blocked for CDN uploads</li>
                 <li>File type verification checks magic bytes, not just extensions</li>
@@ -79,7 +79,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Age Requirements</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Age Requirements</h2>
               <p className="mb-4">
                 Minimum age to use Hypastack: 18. 
                 I cannot verify age because I do not collect identity information. 
@@ -88,7 +88,7 @@ export default function ChildSafety() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Reporting</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Reporting</h2>
               <p className="mb-4">
                 If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="font-medium">#...</code> fragment) via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. I will act within 24 hours.
               </p>

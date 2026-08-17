@@ -14,7 +14,7 @@ import { apiFetch } from "@/lib/http/fetch"
 
 const CARD =
   "bg-[#f7f7f8] dark:bg-[rgba(255,255,255,0.035)] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-[12px]"
-const TITLE_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
+const TITLE_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [mounted, setMounted] = useState(false)

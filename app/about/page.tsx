@@ -17,13 +17,13 @@ export default function About() {
       
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             What is Hypastack?
           </h1>
           
           <div className="space-y-10 text-[15px] leading-relaxed text-[#898e97]">
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Zero-Knowledge Architecture</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Zero-Knowledge Architecture</h2>
               <p className="mb-4 text-[#f7f8f8]">
                 Hypastack is a secure, high-performance file sharing and CDN platform built from the ground up to ensure absolute privacy for the files you share through this website. I achieve this by utilizing a strictly zero-knowledge architecture for that pipeline. Two other pipelines are deliberately not encrypted, and I would rather say so plainly than let you assume otherwise: CDN assets are public by design and have only their metadata stripped, and uploads made through the developer API are stored as received and are readable by me.
               </p>
@@ -36,7 +36,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Verifiable Security</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Verifiable Security</h2>
               <p className="mb-4">
                 Since I never receive your key, I am mathematically incapable of decrypting your files. I cannot scan them, I cannot read them, and I cannot hand them over to third parties. If you lose your URL, the file is permanently and unrecoverably locked forever. 
               </p>
@@ -46,7 +46,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Secure File Sharing vs. Permanent CDN Hosting</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Secure File Sharing vs. Permanent CDN Hosting</h2>
               <p className="mb-4">
                 Hypastack offers two distinct pipelines tailored for different privacy needs: <strong>Secure File Sharing</strong> and <strong>Permanent CDN Hosting</strong>.
               </p>

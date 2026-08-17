@@ -32,7 +32,7 @@ const LABEL = "text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]"
 const MUTED = "text-[12px] text-[#6b6b70] dark:text-[#a1a1aa]"
 const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]"
 const ICON = "text-[#898e97] dark:text-[#898e97]"
-const TITLE_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
+const TITLE_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 type UploadTrayProps = UseUploadReturn
 

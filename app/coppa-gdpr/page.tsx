@@ -14,7 +14,7 @@ export default function CoppaGdpr() {
       
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             COPPA & GDPR Compliance
           </h1>
           
@@ -25,7 +25,7 @@ export default function CoppaGdpr() {
           
           <div className="space-y-16 text-[15px] leading-relaxed text-[#898e97]">
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>1. Zero-Knowledge and Regulatory Compliance</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>1. Zero-Knowledge and Regulatory Compliance</h2>
               <p className="mb-4 text-[#f7f8f8] font-medium">
                 Regulatory frameworks like the General Data Protection Regulation (GDPR) and the Children's Online Privacy Protection Act (COPPA) are primarily designed to govern the collection, processing, and sale of Personally Identifiable Information (PII).
               </p>
@@ -35,7 +35,7 @@ export default function CoppaGdpr() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>2. GDPR (General Data Protection Regulation)</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>2. GDPR (General Data Protection Regulation)</h2>
               <p className="mb-4">
                 The GDPR imposes strict rules on those who host and process the personal data of EU citizens. Hypastack acts strictly as a data transport and storage conduit for encrypted ciphertext.
               </p>
@@ -47,7 +47,7 @@ export default function CoppaGdpr() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>3. COPPA (Children's Online Privacy Protection Act)</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>3. COPPA (Children's Online Privacy Protection Act)</h2>
               <p className="mb-4">
                 COPPA regulates the online collection of personal information from children under the age of 13 in the United States.
               </p>
@@ -59,7 +59,7 @@ export default function CoppaGdpr() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>4. Submitting a Privacy Request</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>4. Submitting a Privacy Request</h2>
               <p className="mb-4">
                 If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact me via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
               </p>

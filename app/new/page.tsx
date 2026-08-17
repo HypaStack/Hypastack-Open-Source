@@ -36,7 +36,7 @@ const RightPanel = () => (
         alt="Behind the scenes"
         className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
       />
-      <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+      <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
         See Hypastack under the hood
       </h2>
       <ButtonLink
@@ -145,7 +145,7 @@ export default function CreateAccountPage() {
 
             <h1
               className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-1"
-              style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+              style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               Account created
             </h1>
@@ -218,7 +218,7 @@ export default function CreateAccountPage() {
 
             <h1
               className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-6"
-              style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+              style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               Create account
             </h1>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
 }
 
-const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
+const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 export default function Pricing() {
   return (

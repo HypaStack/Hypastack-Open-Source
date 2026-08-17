@@ -14,7 +14,7 @@ export default function DmcaPolicy() {
       
       <section className="flex-1 pt-32 pb-20">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             DMCA Policy
           </h1>
           
@@ -29,7 +29,7 @@ export default function DmcaPolicy() {
             </p>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>How to File a Takedown</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>How to File a Takedown</h2>
               <p className="mb-4">
                 Send a message via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
               </p>
@@ -44,7 +44,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>What I Do</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>What I Do</h2>
               <p className="mb-4">
                 When I receive a valid DMCA notice, I remove the content. I cannot reliably notify
                 the uploader — I do not have their email address or any contact information, whether
@@ -57,7 +57,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Counter-Notification</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Counter-Notification</h2>
               <p className="mb-4">
                 If your content was removed and you believe it was not infringing, you may submit 
                 a counter-notification via <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
@@ -72,7 +72,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Repeat Infringers</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Repeat Infringers</h2>
               <p>
                 I will terminate accounts of repeat infringers when I can identify them. Given
                 my account model, identification is limited to the hashed nickname and
@@ -81,7 +81,7 @@ export default function DmcaPolicy() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>Contact</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Contact</h2>
               <p>
                 Telegram: <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>
               </p>

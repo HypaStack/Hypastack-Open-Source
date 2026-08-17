@@ -14,7 +14,7 @@ export default function TermsOfService() {
       
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             Terms of Service
           </h1>
           
@@ -25,7 +25,7 @@ export default function TermsOfService() {
           
           <div className="space-y-16 text-[15px] leading-relaxed text-[#898e97]">
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>1. Acceptance of Terms</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>1. Acceptance of Terms</h2>
               <p className="mb-4 text-[#f7f8f8] font-medium">
                 By accessing, browsing, or utilizing any portion of the Hypastack platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
               </p>
@@ -35,7 +35,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>2. Service Description and Architecture</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>2. Service Description and Architecture</h2>
               <p className="mb-4">
                 Hypastack provides a globally distributed Content Delivery Network (CDN) and file-sharing utility. For files uploaded through this website, the service operates as a zero-knowledge transport and storage layer. It also offers unencrypted permanent hosting for public assets via my CDN pipeline, and an unencrypted developer API.
               </p>
@@ -48,7 +48,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>3. User Responsibilities and Liability</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>3. User Responsibilities and Liability</h2>
               <p className="mb-4">
                 Because Hypastack operates a zero-knowledge architecture, the sole responsibility for the contents, legality, and dissemination of the uploaded data rests entirely with the User. 
               </p>
@@ -60,7 +60,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>4. Service Availability and Modifications</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>4. Service Availability and Modifications</h2>
               <p className="mb-4">
                 While I strive for high availability and rapid edge delivery, Hypastack is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, either express or implied.
               </p>
@@ -70,7 +70,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>5. Intellectual Property</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>5. Intellectual Property</h2>
               <p className="mb-4">
                 You retain all rights and ownership to the original plaintext data you encrypt and upload to the platform. By uploading the encrypted ciphertext to Hypastack, you grant me a worldwide, non-exclusive, royalty-free license strictly limited to hosting, copying, transmitting, and delivering that encrypted blob across my CDN architecture to facilitate your requested downloads.
               </p>
@@ -80,7 +80,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>6. Termination</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>6. Termination</h2>
               <p>
                 I may terminate or suspend your access to the platform immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the platform will immediately cease, and any associated encrypted ciphertext hosted on my network may be asynchronously purged. All provisions of the Terms which by their nature should survive termination shall survive termination, including ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
               </p>

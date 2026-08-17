@@ -10,7 +10,7 @@ import { ShineCard } from "@/components/ui/shine-card"
 import { TIER_ORDER, getTierLimits, formatTierSize, isUnlimited, type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 
-const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
+const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 // Tier rendered as the green "best value" card. Visual-only rename premium → Pro.
 const POPULAR: PreferencesTier = "premium"

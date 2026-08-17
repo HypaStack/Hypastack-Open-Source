@@ -18,19 +18,11 @@
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* SF Pro Display Fonts */
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/653dqtjzdkpj/SFPRODISPLAYTHINITALIC.OTF") format("opentype"); font-weight: 100; font-style: italic; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/1gfrds9j81dq/SFPRODISPLAYULTRALIGHTITALIC.OTF") format("opentype"); font-weight: 200; font-style: italic; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/t5bovpvjzslc/SFPRODISPLAYLIGHTITALIC.OTF") format("opentype"); font-weight: 300; font-style: italic; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/58kpu13r0tb0/SFPRODISPLAYREGULAR.OTF") format("opentype"); font-weight: 400; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/58kpu13r0tb0/SFPRODISPLAYREGULAR.OTF") format("opentype"); font-weight: 500; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/rqid9rynsfmy/SFPRODISPLAYMEDIUM.OTF") format("opentype"); font-weight: 600; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/rqid9rynsfmy/SFPRODISPLAYMEDIUM.OTF") format("opentype"); font-weight: 700; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/roeuomwrgm9f/SFPRODISPLAYBOLD.OTF") format("opentype"); font-weight: 800; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/roeuomwrgm9f/SFPRODISPLAYBOLD.OTF") format("opentype"); font-weight: 900; font-style: normal; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/2o6ef0gdwdkl/SFPRODISPLAYSEMIBOLDITALIC.OTF") format("opentype"); font-weight: 600; font-style: italic; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/5wu6tscm8kgn/SFPRODISPLAYHEAVYITALIC.OTF") format("opentype"); font-weight: 800; font-style: italic; font-display: swap; size-adjust: 115%; }
-@font-face { font-family: "SF Pro Display"; src: url("https://r2.hypastack.com/cdn/f0fb2j8oc6q7/SFPRODISPLAYBLACKITALIC.OTF") format("opentype"); font-weight: 900; font-style: italic; font-display: swap; size-adjust: 115%; }
+/* Instrument Sans Fonts (variable, weights 400-700) */
+@font-face { font-family: "Instrument Sans"; font-style: normal; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1ZuWi3hKpA.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Instrument Sans"; font-style: normal; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Instrument Sans"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu2ZGRqXp6pRwM.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Instrument Sans"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu15GRqXp6pQ.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
 /* Material Symbols Rounded — global config */
 .material-symbols-rounded {
@@ -163,9 +155,9 @@ input:-webkit-autofill:focus {
   --ring: #111111;}
 
 @theme inline {
-  --font-sans: "SF Pro Display", system-ui, sans-serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
-  --font-display: "SF Pro Display", system-ui, sans-serif;
+  --font-display: "Instrument Sans", system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

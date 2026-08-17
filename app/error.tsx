@@ -38,7 +38,7 @@ export default function ErrorPage({
         <div className="w-full bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
           <div className="flex items-center gap-2.5 mb-3">
             <MIcon name="error" className="text-red-500" size={20} />
-            <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+            <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
               Something went wrong
             </h2>
           </div>

@@ -1,6 +1,6 @@
 /** Shared tokens for the docs pages, matching the marketing pages' language. */
 
-export const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }
+export const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 /** The frosted panel every docs surface sits on, same material as ShineCard. */
 export const PANEL = {

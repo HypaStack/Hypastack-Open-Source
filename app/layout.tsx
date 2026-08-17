@@ -138,13 +138,12 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://hypastack.com" />
         <link rel="dns-prefetch" href="https://hypastack.com" />
 
-        {/* Font origin: preconnect + preload the primary SF Pro Display weights
-            (Regular → 400/500, Medium → 600/700) so they arrive before first
-            paint and avoid the fallback-font flash (FOUC). */}
-        <link rel="preconnect" href="https://r2.hypastack.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://r2.hypastack.com" />
-        <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/58kpu13r0tb0/SFPRODISPLAYREGULAR.OTF" />
-        <link rel="preload" as="font" type="font/otf" crossOrigin="anonymous" href="https://r2.hypastack.com/cdn/rqid9rynsfmy/SFPRODISPLAYMEDIUM.OTF" />
+        {/* Font origin: preconnect + preload the variable Instrument Sans font
+            (covers weights 400-700) so it arrives before first paint and
+            avoids the fallback-font flash (FOUC). */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="preload" as="font" type="font/woff2" crossOrigin="anonymous" href="https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2" />
         
         {/* PWA */}
         <meta name="mobile-web-app-capable" content="yes" />

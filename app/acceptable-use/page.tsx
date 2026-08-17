@@ -14,7 +14,7 @@ export default function AcceptableUse() {
       
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+          <h1 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-tight text-[#f7f8f8] mb-8 leading-[1.05] -ml-0.5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
             Acceptable Use Policy
           </h1>
           
@@ -34,7 +34,7 @@ export default function AcceptableUse() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>1. Zero-Tolerance Content (Strict Prohibition)</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>1. Zero-Tolerance Content (Strict Prohibition)</h2>
               <p className="mb-4">
                 You must under no circumstances upload, distribute, or facilitate access to the following categories of content. Violation of this section will result in immediate network bans and cooperation with relevant global law enforcement agencies:
               </p>
@@ -48,7 +48,7 @@ export default function AcceptableUse() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>2. Network Abuse and Operational Constraints</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>2. Network Abuse and Operational Constraints</h2>
               <p className="mb-4">
                 The Hypastack CDN is designed for the rapid delivery of legitimate assets. To maintain high availability for all users, you must not engage in activities that degrade the network:
               </p>
@@ -61,7 +61,7 @@ export default function AcceptableUse() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>3. Enforcement Under Zero-Knowledge</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>3. Enforcement Under Zero-Knowledge</h2>
               <p className="mb-4">
                 Because Hypastack employs client-side AES-GCM encryption for website uploads, I am mathematically incapable of proactively scanning the contents of those files. I cannot implement traditional hash-matching or keyword-scanning algorithms on ciphertext. This constraint applies to that pipeline alone: CDN assets and developer API uploads are stored unencrypted, and I am technically able to inspect them when I have cause to.
               </p>
@@ -82,7 +82,7 @@ export default function AcceptableUse() {
             </section>
 
             <section>
-              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>4. Reporting Abuse</h2>
+              <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>4. Reporting Abuse</h2>
               <p className="mb-4">
                 If you encounter content hosted on Hypastack that violates this policy, send a report to <strong><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with the file link and a brief description of the violation.
               </p>

@@ -118,7 +118,7 @@ export default function SignInPage() {
         <div className="w-full max-w-[360px]">
           <h1
             className="text-[22px] font-semibold tracking-tight text-[#f7f8f8] mb-4"
-            style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+            style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
           >
             Enable biometric unlock?
           </h1>
@@ -158,7 +158,7 @@ export default function SignInPage() {
             </div>
             <h1
               className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-6"
-              style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+              style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               Sign in
             </h1>
@@ -257,7 +257,7 @@ export default function SignInPage() {
                 alt="Behind the scenes" 
                 className="w-full h-auto mb-5 object-cover rounded-[12px] border border-[rgba(255,255,255,0.08)] shadow-2xl"
               />
-              <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}>
+              <h2 className="text-[18px] font-medium tracking-wide text-[#f7f8f8] mb-4 leading-snug text-left" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
                 Found a bug or vulnerability? Let us know.
               </h2>
               <ButtonLink

@@ -88,7 +88,7 @@ export function TierAnnouncementModal() {
                 <h2
                   id="tier-announcement-title"
                   className="text-[26px] tracking-tight text-[#f7f8f8] mb-2"
-                  style={{ fontWeight: 600, letterSpacing: '-0.02em', fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" }}
+                  style={{ fontWeight: 600, letterSpacing: '-0.02em', fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
                 >
                   You're now on {tierLabel}
                 </h2>
