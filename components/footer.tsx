@@ -1,15 +1,11 @@
 import Link from "next/link";
-import { Card, cn, linkVariants } from "@heroui/react";
+import { Card, Dropdown, cn, linkVariants } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { ButtonLink } from "@/components/ui/button-link";
 import { FOOTER_COLUMNS } from "@/constants/footer";
 
 // Brand column sits first; only the link columns the design keeps are rendered.
 const columns = FOOTER_COLUMNS.filter((c) => c.title !== "Company");
-
-const linkClass = cn(
-  linkVariants().base(),
-  "text-white/55 hover:text-white text-[13px] font-light no-underline hover:no-underline transition-colors duration-200 hover:bg-[#121212] rounded-lg px-2 py-1.5 w-fit relative right-2",
-);
 
 const legalClass = cn(
   linkVariants().base(),
@@ -96,30 +92,43 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Link columns — grouped on the right, close together */}
-          <div className="flex gap-12 sm:gap-16">
+          {/* Link columns — each collapsed behind a dropdown button */}
+          <div className="flex gap-2 sm:gap-3">
             {columns.map((col) => (
-              <div key={col.title} className="flex flex-col">
-                <h3 className="text-[13px] font-medium text-white/90 mb-3">{col.title}</h3>
-                {col.links.map((link) =>
-                  link.href.startsWith("http") ? (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={linkClass}
-                      title={link.label}
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link key={link.label} href={link.href} className={linkClass} title={link.label}>
-                      {link.label}
-                    </Link>
-                  ),
-                )}
-              </div>
+              <Dropdown key={col.title}>
+                <Dropdown.Trigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1.5")}>
+                  {col.title}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </Dropdown.Trigger>
+                <Dropdown.Popover placement="top">
+                  <Dropdown.Menu aria-label={col.title}>
+                    {col.links.map((link) => (
+                      <Dropdown.Item
+                        key={link.href}
+                        id={link.href}
+                        href={link.href}
+                        target={link.href.startsWith("http") ? "_blank" : undefined}
+                        rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      >
+                        {link.label}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown.Popover>
+              </Dropdown>
             ))}
           </div>
         </div>

@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { safeJsonLd } from "@/lib/seo/jsonLd";
 import { Navbar } from "@/components/navbar";
 import { StatusBanner } from "@/components/status-banner";
 import { Hero } from "@/components/hero";
-
-import { HowItWorks } from "@/components/how-it-works";
-import { Faq } from "@/components/faq";
-import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
-import { faqs } from "@/components/faq-data";
 
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION, PREVIEW_URL } from "@/constants";
 
@@ -41,33 +35,12 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      {/* FAQ rich results + answer engines read this; content mirrors the visible FAQ below */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: safeJsonLd({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "@id": `${SITE_URL}/#faq`,
-            mainEntity: faqs.map(({ q, a }) => ({
-              "@type": "Question",
-              name: q,
-              acceptedAnswer: { "@type": "Answer", text: a },
-            })),
-          }),
-        }}
-      />
       <Navbar />
       <main className="relative min-h-screen bg-black text-foreground w-full overflow-hidden">
         <Suspense fallback={null}>
           <StatusBanner />
         </Suspense>
         <Hero />
-        <div className="flex flex-col gap-[80px] sm:gap-[120px] lg:gap-[180px] pb-[100px] sm:pb-[150px]">
-          <HowItWorks />
-          <Faq />
-          <CtaSection />
-        </div>
         <Footer />
       </main>
     </>
