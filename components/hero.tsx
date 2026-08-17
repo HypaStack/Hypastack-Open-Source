@@ -8,6 +8,7 @@ import { Loader } from "@/components/ui/loader";
 import { MIcon } from "@/components/ui/material-icon";
 import { Button } from "@heroui/react";
 import { ButtonLink } from "@/components/ui/button-link";
+import { ShineBadge } from "@/components/ui/shine-badge";
 import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -78,25 +79,10 @@ export function Hero() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.07)] transition-colors py-1 pl-1 pr-3 no-underline"
             >
-              {/* Mirrors the primary button's gloss — a span rather than the
-                  component itself, since a nested <a>/<button> is invalid here. */}
-              <span
-                className="inline-flex items-center gap-1 rounded-full text-white"
-                style={{
-                  height: 22,
-                  padding: "0 9px",
-                  fontSize: 11,
-                  fontWeight: 500,
-                  backgroundColor: "#2680bf",
-                  backgroundImage: "linear-gradient(rgba(255,255,255,0.12), rgba(255,255,255,0))",
-                  borderTop: "1px solid rgba(255,255,255,0.6)",
-                  boxShadow:
-                    "rgba(0,0,0,0.05) 0px 1px 0px 0px, rgba(0,0,0,0.1) 0px 4px 4px 0px, rgba(0,0,0,0.15) 0px 10px 10px 0px, rgba(0,0,0,0.4) 0px -2px 0px 0px inset",
-                }}
-              >
+              <ShineBadge primary>
                 <MIcon name="celebration" size={12} />
                 NEW
-              </span>
+              </ShineBadge>
               <span className="text-[13px] text-[#c9ced6]">Read our changelog</span>
             </Link>
           </PopIn>
