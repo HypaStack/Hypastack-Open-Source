@@ -109,11 +109,11 @@ export default function CreateAccountPage() {
             </h1>
             <p className="text-[14px] text-[#898e97] mb-8">Save your identifier somewhere safe, it's the only way to sign in.</p>
 
-            <Button variant="tertiary" onPress={handleCopy} fullWidth size="lg" style={{ gap: 8 }}>
+            <p className="mb-2 text-[12px] text-[#898e97]">You will need this in a second.</p>
+            <Button variant="tertiary" onPress={handleCopy} fullWidth size="lg" className="mb-5" style={{ gap: 8 }}>
               <MIcon name={copied ? "check" : "content_copy"} size={16} />
               {copied ? "Copied" : "Copy identifier"}
             </Button>
-            <p className="mt-2 mb-5 text-[12px] text-[#898e97]">You will need this in a second.</p>
 
             {bioSupported && (
               bioEnabled ? (
