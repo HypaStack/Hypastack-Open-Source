@@ -62,7 +62,7 @@ export function Hero() {
             >
               I&rsquo;m one developer who thinks big tech
               <br />
-              is <em className="italic">waaaay</em> too creepy.
+              is <em className="italic" style={{ fontStyle: "italic" }}>waaaay</em> too creepy.
             </h1>
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
