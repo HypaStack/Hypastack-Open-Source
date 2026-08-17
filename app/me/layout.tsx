@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Dropdown } from "@heroui/react"
-import { ProgressBar } from "@/components/ui/progress-bar"
 import { Tooltip } from "@/components/ui/tooltip"
 import { ShineBadge } from "@/components/ui/shine-badge"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
@@ -17,8 +16,6 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
-import { TipCard } from "./_tip-card"
-import { formatStoragePct } from "@/lib/format"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -26,7 +23,7 @@ import {
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
-import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -113,7 +110,7 @@ function ManageLayoutInner({
   const router = useRouter()
   const pathname = usePathname()
   const { isAuthenticated } = useAuth()
-  const { user, stats, files, cdnAssets, isLoading, logout } = useManage()
+  const { user, stats, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
@@ -191,15 +188,8 @@ function ManageLayoutInner({
   }
 
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
-  const usedPct = stats?.storagePercent ?? 0
 
-  // Sidebar usage indicators for shared file links and CDN assets, against the
-  // user's tier caps. Bar goes gray → yellow (past halfway) → red (at the cap).
   const tierLimits = getTierLimits(normalizeTier(user.tier))
-  const sharedUsed = files?.length ?? 0
-  const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
-  const sharedPct = isUnlimited(tierLimits.maxFileLinks) || tierLimits.maxFileLinks <= 0 ? 0 : (sharedUsed / tierLimits.maxFileLinks) * 100
-  const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -207,7 +197,19 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="relative z-20 shrink-0 pt-4 pb-3 px-2">
+        <nav className="flex-1 min-h-0 px-2 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="space-y-1">
+            {SECTION_BUTTONS.map((item) => (
+              <NavRow
+                key={item.href}
+                item={item}
+                active={isSectionActive(pathname, item.href)}
+              />
+            ))}
+          </div>
+        </nav>
+
+        <div className="relative z-20 shrink-0 px-2 pt-3 pb-2">
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
@@ -215,25 +217,25 @@ function ManageLayoutInner({
               style={{ height: 38, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
-                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                 alt={user.nickname}
                 className="h-7 w-7 shrink-0 object-cover rounded-full select-none pointer-events-none"
                 draggable={false}
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
               />
               <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="bottom" className="w-(--trigger-width) p-1.5 bg-black border border-white/10 rounded-2xl">
+            <Dropdown.Popover placement="top" className="w-(--trigger-width) p-1.5 bg-black border border-white/10 rounded-2xl">
               <div className="flex items-center gap-2.5 px-2.5 py-2.5">
                 <img
                   decoding="async"
-                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                   alt={user.nickname}
                   className="h-8 w-8 shrink-0 rounded-full object-cover select-none pointer-events-none"
                   draggable={false}
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -283,56 +285,6 @@ function ManageLayoutInner({
               </div>
             </Dropdown.Popover>
           </Dropdown>
-        </div>
-
-        <nav className="flex-1 min-h-0 px-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="space-y-1">
-            {SECTION_BUTTONS.map((item) => (
-              <NavRow
-                key={item.href}
-                item={item}
-                active={isSectionActive(pathname, item.href)}
-              />
-            ))}
-          </div>
-        </nav>
-
-        <div className="px-2 pt-3 pb-2 shrink-0">
-          <TipCard />
-        </div>
-
-        <div className="px-2 pb-2 shrink-0">
-          <div className="rounded-2xl bg-black border border-white/10 px-3 py-3">
-            <div className="text-xs text-muted font-medium mb-3">
-              Usage
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-foreground">Storage</span>
-                  <span className="text-muted">{formatStoragePct(usedPct)}%</span>
-                </div>
-                <ProgressBar value={usedPct} aria-label="Storage used" />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-foreground">Shared Links</span>
-                  <span className="text-muted">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
-                </div>
-                {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-foreground">Edge Assets</span>
-                  <span className="text-muted">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
-                </div>
-                {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="px-2 pb-3 shrink-0">
@@ -411,11 +363,11 @@ function ManageLayoutInner({
               <div className="mx-3 mt-1 border-t border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" />
               <div className="flex items-center gap-3 px-4 pt-3" style={{ paddingBottom: 'calc(18px + env(safe-area-inset-bottom))' }}>
                 <img
-                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                   alt={user.nickname}
                   className="h-10 w-10 shrink-0 rounded-full object-cover select-none pointer-events-none"
                   draggable={false}
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[15px] font-semibold text-[#171717] dark:text-[#f7f8f8]">{user.nickname}</p>
