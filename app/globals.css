@@ -70,7 +70,7 @@ a:hover .material-symbols-rounded,
   --border-bottom: rgba(255, 255, 255, 0.05);
   --input: #0a0b0c;
   --ring: rgba(255, 255, 255, 0.2);
-  --radius: 0.25rem;
+  --radius: 0.125rem;
   --field-radius: 0.5rem;
   /* Sidebar (dashboard) */
   --sidebar: #08090a;
