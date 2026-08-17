@@ -54,17 +54,17 @@ export function Hero() {
   return (
     <section className="relative w-full flex-1 flex">
       <div className="w-full relative overflow-visible flex flex-col items-center justify-center bg-black">
-        <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
+        <div className="flex flex-col items-center px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
-              className="text-left text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
+              className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              I&rsquo;m just one developer who thinks the big tech platforms are way too creepy.
+              I&rsquo;m one developer who thinks big tech is way too creepy.
             </h1>
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <Button variant="primary" size="md" onPress={toPressHandler(handleLoginClick)}>
                 Get started
               </Button>
