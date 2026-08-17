@@ -1,15 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState } from "react";
+import { Accordion } from "@heroui/react";
 import { faqs } from "@/components/faq-data";
-import { Accordion, AccordionItem } from "@/components/ui/accordion";
 
 const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', sans-serif" };
 
 export function Faq() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
     <section id="faq" className="relative flex flex-col items-center overflow-visible">
 
@@ -34,23 +31,41 @@ The stuff people usually ask us.
         </motion.div>
 
         <div className="w-full px-8 sm:px-6 pb-16">
-          <Accordion className="relative z-10">
+          <Accordion
+            variant="surface"
+            defaultExpandedKeys={[0]}
+            className="relative z-10"
+            style={{ "--surface": "var(--surface-tertiary)" } as React.CSSProperties}
+          >
             {faqs.map((item, i) => (
-              <AccordionItem
-                key={item.q}
-                open={open === i}
-                onOpenChange={(next) => setOpen(next ? i : null)}
-                delay={i * 0.04}
-                title={
-                  <span className="text-[15px] sm:text-[16px] text-[#f7f8f8] leading-[1.4]" style={{ ...HEADING_FONT, fontWeight: 600 }}>
-                    {item.q}
-                  </span>
-                }
-                headerStyle={{ padding: "20px 32px" }}
-                panelStyle={{ padding: "0 32px 24px" }}
-              >
-                <p className="text-[16px] leading-relaxed text-[#898e97] max-w-3xl">{item.a}</p>
-              </AccordionItem>
+              <Accordion.Item key={item.q} id={i}>
+                <Accordion.Heading>
+                  <Accordion.Trigger>
+                    <span className="text-[15px] sm:text-[16px] text-[#f7f8f8] leading-[1.4]" style={{ ...HEADING_FONT, fontWeight: 600 }}>
+                      {item.q}
+                    </span>
+                    <Accordion.Indicator>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </Accordion.Indicator>
+                  </Accordion.Trigger>
+                </Accordion.Heading>
+                <Accordion.Panel>
+                  <Accordion.Body>
+                    <p className="text-[16px] leading-relaxed text-[#898e97] max-w-3xl">{item.a}</p>
+                  </Accordion.Body>
+                </Accordion.Panel>
+              </Accordion.Item>
             ))}
           </Accordion>
         </div>
