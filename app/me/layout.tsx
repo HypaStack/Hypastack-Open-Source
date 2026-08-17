@@ -18,7 +18,6 @@ import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
-import { SURFACE } from "@/components/ui/surface"
 import { TipCard } from "./_tip-card"
 import { formatStoragePct } from "@/lib/format"
 import {
@@ -75,8 +74,8 @@ function NavRow({
       onClick={onNavigate}
       className={`group relative flex items-center gap-3 rounded-[12px] text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
-          ? `${SURFACE.active} text-[#171717] dark:text-[#f7f8f8]`
-          : `text-[#666] dark:text-[#898e97] ${SURFACE.hover} hover:text-[#171717] dark:hover:text-[#f7f8f8]`
+          ? "bg-surface text-foreground"
+          : "text-muted hover:bg-default hover:text-foreground"
       }`}
       style={{
         height: 40,
@@ -87,7 +86,7 @@ function NavRow({
       <MIcon
         name={item.icon}
         size={20}
-        className={`shrink-0 transition-colors ${active ? 'text-[#171717] dark:text-[#f7f8f8]' : 'text-[#666] dark:text-[#898e97] group-hover:text-[#171717] dark:group-hover:text-[#f7f8f8]'}`} 
+        className={`shrink-0 transition-colors ${active ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
         <span className="truncate">{item.label}</span>
@@ -231,7 +230,7 @@ function ManageLayoutInner({
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Account menu"
-              className={`w-full flex items-center gap-2.5 rounded-[12px] transition-colors duration-150 cursor-pointer ${SURFACE.panel} text-[#171717] dark:text-[#e3e3e3] hover:brightness-105 dark:hover:brightness-125`}
+              className="w-full flex items-center gap-2.5 rounded-[12px] transition-colors duration-150 cursor-pointer bg-surface text-foreground hover:bg-default"
               style={{ height: 40, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
@@ -242,7 +241,7 @@ function ManageLayoutInner({
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
               />
               <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
-              <MIcon name="expand_more" size={18} className="shrink-0 text-[#666] dark:text-[#898e97]" />
+              <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </button>
 
             <AnimatePresence>
@@ -253,10 +252,7 @@ function ManageLayoutInner({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                  className={`absolute top-full left-0 right-0 mt-1.5 ${SURFACE.panel} rounded-[14px] p-1.5`}
-                  style={{
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)'
-                  }}
+                  className="absolute top-full left-0 right-0 mt-1.5 bg-overlay rounded-[14px] p-1.5 shadow-overlay"
                 >
                 <div className="flex items-center gap-2.5 px-2.5 py-2.5">
                   <img
@@ -269,10 +265,10 @@ function ManageLayoutInner({
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#f0f0f0]">{user.nickname}</p>
+                      <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-foreground">{user.nickname}</p>
                       <ShineBadge>{tierLimits.label}</ShineBadge>
                     </div>
-                    <p className="mt-0.5 truncate text-[11px] text-[#898e97] dark:text-[#898e97]">{user.id}</p>
+                    <p className="mt-0.5 truncate text-[11px] text-muted">{user.id}</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -280,7 +276,7 @@ function ManageLayoutInner({
                     size="sm"
                     onPress={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
                     aria-label="Copy UUID"
-                    style={copiedId ? { color: "#34d399" } : undefined}
+                    className={copiedId ? "text-success" : undefined}
                   >
                     <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
                   </Button>
@@ -347,32 +343,32 @@ function ManageLayoutInner({
         </div>
 
         <div className="px-2 pb-2 shrink-0">
-          <div className={`rounded-[10px] ${SURFACE.panel} px-3 py-3`}>
-            <div className="text-xs text-[#555] dark:text-[#a1a1aa] font-medium mb-3">
+          <div className="rounded-[10px] bg-surface px-3 py-3">
+            <div className="text-xs text-muted font-medium mb-3">
               Usage
             </div>
 
             <div className="space-y-3">
               <div>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">Storage</span>
-                  <span className="text-[#666] dark:text-[#888]">{formatStoragePct(usedPct)}%</span>
+                  <span className="text-foreground">Storage</span>
+                  <span className="text-muted">{formatStoragePct(usedPct)}%</span>
                 </div>
                 <ProgressBar value={usedPct} aria-label="Storage used" />
               </div>
 
               <div>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">Shared Links</span>
-                  <span className="text-[#666] dark:text-[#888]">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
+                  <span className="text-foreground">Shared Links</span>
+                  <span className="text-muted">{sharedUsed}/{isUnlimited(tierLimits.maxFileLinks) ? "∞" : tierLimits.maxFileLinks}</span>
                 </div>
                 {!isUnlimited(tierLimits.maxFileLinks) && <ProgressBar value={sharedPct} aria-label="Shared links used" />}
               </div>
 
               <div>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-[#333] dark:text-[#ccc]">Edge Assets</span>
-                  <span className="text-[#666] dark:text-[#888]">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
+                  <span className="text-foreground">Edge Assets</span>
+                  <span className="text-muted">{cdnUsed}/{isUnlimited(tierLimits.maxCdnLinks) ? "∞" : tierLimits.maxCdnLinks}</span>
                 </div>
                 {!isUnlimited(tierLimits.maxCdnLinks) && <ProgressBar value={cdnPct} aria-label="CDN assets used" />}
               </div>
