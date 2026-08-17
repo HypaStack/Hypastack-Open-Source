@@ -7,9 +7,10 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Dropdown } from "@heroui/react"
+import { Button, Dropdown, Meter, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
 import { ShineBadge } from "@/components/ui/shine-badge"
+import { formatStoragePct } from "@/lib/format"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
@@ -23,7 +24,7 @@ import {
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
-import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -37,6 +38,12 @@ function formatStorageSize(bytes: number): string {
   const sizes = ["B", "KB", "MB", "GB", "TB"]
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1)
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i]
+}
+
+function meterColor(pct: number): "success" | "warning" | "danger" {
+  if (pct >= 85) return "danger"
+  if (pct >= 60) return "warning"
+  return "success"
 }
 
 function sectionTitle(pathname: string): string {
@@ -110,7 +117,7 @@ function ManageLayoutInner({
   const router = useRouter()
   const pathname = usePathname()
   const { isAuthenticated } = useAuth()
-  const { user, stats, isLoading, logout } = useManage()
+  const { user, stats, files, cdnAssets, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
@@ -119,6 +126,9 @@ function ManageLayoutInner({
   const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("general")
   const [copiedId, setCopiedId] = useState(false)
   const [showDonationNotice, setShowDonationNotice] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [feedbackLinkAccount, setFeedbackLinkAccount] = useState(true)
+  const [feedbackText, setFeedbackText] = useState("")
 
   const openPreferences = useCallback((tab: PreferencesTab) => {
     setPreferencesTab(tab)
@@ -188,8 +198,15 @@ function ManageLayoutInner({
   }
 
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
+  const usedPct = stats?.storagePercent ?? 0
 
+  // Sidebar usage indicators for shared file links and CDN assets, against the
+  // user's tier caps. Meter color goes success → warning (60%) → danger (85%).
   const tierLimits = getTierLimits(normalizeTier(user.tier))
+  const sharedUsed = files?.length ?? 0
+  const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
+  const sharedPct = isUnlimited(tierLimits.maxFileLinks) || tierLimits.maxFileLinks <= 0 ? 0 : (sharedUsed / tierLimits.maxFileLinks) * 100
+  const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -227,60 +244,109 @@ function ManageLayoutInner({
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="top" className="w-(--trigger-width) p-1.5 bg-black border border-white/10 rounded-2xl">
-              <div className="flex items-center gap-2.5 px-2.5 py-2.5">
+            <Dropdown.Popover placement="top" className="w-(--trigger-width) min-w-[280px] p-0 bg-black border border-white/10 rounded-2xl overflow-hidden">
+              <div className="flex items-start justify-between gap-3 px-4 pt-4 pb-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
+                    <ShineBadge>{tierLimits.label}</ShineBadge>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
+                    className="mt-1 flex items-center gap-1 truncate text-[12px] text-muted hover:text-foreground transition-colors"
+                  >
+                    <span className="truncate">{user.id}</span>
+                    <MIcon name={copiedId ? "check" : "content_copy"} size={12} className="shrink-0" />
+                  </button>
+                </div>
                 <img
                   decoding="async"
                   src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                   alt={user.nickname}
-                  className="h-8 w-8 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                  className="h-9 w-9 shrink-0 rounded-full object-cover select-none pointer-events-none"
                   draggable={false}
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                 />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-foreground">{user.nickname}</p>
-                    <ShineBadge>{tierLimits.label}</ShineBadge>
-                  </div>
-                  <p className="mt-0.5 truncate text-[11px] text-muted">{user.id}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  isIconOnly
-                  size="sm"
-                  onPress={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
-                  aria-label="Copy UUID"
-                  className={copiedId ? "text-success" : undefined}
-                >
-                  <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
-                </Button>
               </div>
 
-              <Dropdown.Menu aria-label="Account actions">
-                <Dropdown.Item id="account" onAction={() => openPreferences("account")} textValue="Account settings">
-                  <MIcon name="person" size={18} />
-                  Account settings
+              <div className="h-px bg-white/10" />
+
+              <Dropdown.Menu aria-label="Account actions" className="p-1.5">
+                <Dropdown.Item id="account" onAction={() => openPreferences("account")} textValue="Account settings" className="flex items-center justify-between gap-2">
+                  <span>Account settings</span>
+                  <MIcon name="person" size={18} className="text-muted" />
                 </Dropdown.Item>
-                <Dropdown.Item id="general" onAction={() => openPreferences("general")} textValue="Workspace settings">
-                  <MIcon name="settings" size={18} />
-                  Workspace settings
+                <Dropdown.Item id="general" onAction={() => openPreferences("general")} textValue="Workspace settings" className="flex items-center justify-between gap-2">
+                  <span>Workspace settings</span>
+                  <MIcon name="settings" size={18} className="text-muted" />
                 </Dropdown.Item>
-                <Dropdown.Item id="refer" textValue="Refer and earn">
-                  <MIcon name="card_giftcard" size={18} />
-                  Refer and earn
+                <Dropdown.Item id="refer" textValue="Refer and earn" className="flex items-center justify-between gap-2">
+                  <span>Refer and earn</span>
+                  <MIcon name="card_giftcard" size={18} className="text-muted" />
+                </Dropdown.Item>
+                <Dropdown.Item id="feedback" onAction={() => setFeedbackOpen(true)} textValue="Feedback" className="flex items-center justify-between gap-2">
+                  <span>Feedback</span>
+                  <MIcon name="sentiment_satisfied" size={18} className="text-muted" />
                 </Dropdown.Item>
               </Dropdown.Menu>
 
-              <div className="mt-1.5">
+              <div className="h-px bg-white/10" />
+
+              <div className="px-4 py-3 space-y-3">
+                <div>
+                  <div className="flex items-center justify-between text-[12px] mb-1.5">
+                    <span className="text-muted">Storage</span>
+                    <span className="text-muted">{formatStoragePct(usedPct)}%</span>
+                  </div>
+                  <Meter value={usedPct} minValue={0} maxValue={100} color={meterColor(usedPct)} aria-label="Storage used">
+                    <Meter.Track>
+                      <Meter.Fill />
+                    </Meter.Track>
+                  </Meter>
+                </div>
+
+                {!isUnlimited(tierLimits.maxFileLinks) && (
+                  <div>
+                    <div className="flex items-center justify-between text-[12px] mb-1.5">
+                      <span className="text-muted">Shared Links</span>
+                      <span className="text-muted">{sharedUsed}/{tierLimits.maxFileLinks}</span>
+                    </div>
+                    <Meter value={sharedPct} minValue={0} maxValue={100} color={meterColor(sharedPct)} aria-label="Shared links used">
+                      <Meter.Track>
+                        <Meter.Fill />
+                      </Meter.Track>
+                    </Meter>
+                  </div>
+                )}
+
+                {!isUnlimited(tierLimits.maxCdnLinks) && (
+                  <div>
+                    <div className="flex items-center justify-between text-[12px] mb-1.5">
+                      <span className="text-muted">Edge Assets</span>
+                      <span className="text-muted">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
+                    </div>
+                    <Meter value={cdnPct} minValue={0} maxValue={100} color={meterColor(cdnPct)} aria-label="CDN assets used">
+                      <Meter.Track>
+                        <Meter.Fill />
+                      </Meter.Track>
+                    </Meter>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px bg-white/10" />
+
+              <div className="p-1.5">
                 <Button
-                  variant="danger-soft"
-                  size="sm"
+                  variant="ghost"
                   fullWidth
                   onPress={logout}
-                  style={{ gap: 8 }}
+                  className="flex items-center justify-between text-danger hover:text-danger"
+                  style={{ paddingLeft: 12, paddingRight: 12 }}
                 >
-                  <MIcon name="logout" size={16} />
-                  Log out
+                  <span>Sign out</span>
+                  <MIcon name="logout" size={18} />
                 </Button>
               </div>
             </Dropdown.Popover>
@@ -439,6 +505,47 @@ function ManageLayoutInner({
 
       <TierAnnouncementModal />
       <HypaNotifProvider />
+
+      <Modal isOpen={feedbackOpen} onOpenChange={setFeedbackOpen}>
+        <Modal.Backdrop isDismissable className="bg-black/60">
+          <Modal.Container placement="center" size="sm">
+            <Modal.Dialog className="bg-black border border-white/10 rounded-2xl">
+              <Modal.Header className="flex items-center justify-between">
+                <Modal.Heading className="text-[16px] font-semibold text-foreground">Send feedback</Modal.Heading>
+                <Modal.CloseTrigger />
+              </Modal.Header>
+              <Modal.Body className="space-y-4">
+                <TextField value={feedbackText} onChange={setFeedbackText} className="w-full">
+                  <Label>What's on your mind?</Label>
+                  <TextArea rows={4} placeholder="Tell us what's working, what's not..." />
+                </TextField>
+                <Switch isSelected={feedbackLinkAccount} onChange={setFeedbackLinkAccount}>
+                  <Switch.Content>
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                    <span>Link my account to this feedback</span>
+                  </Switch.Content>
+                </Switch>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="tertiary" onPress={() => setFeedbackOpen(false)}>Cancel</Button>
+                <Button
+                  variant="primary"
+                  isDisabled={!feedbackText.trim()}
+                  onPress={() => {
+                    setFeedbackOpen(false)
+                    setFeedbackText("")
+                    setFeedbackLinkAccount(true)
+                  }}
+                >
+                  Submit
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
 
     </div>
 
