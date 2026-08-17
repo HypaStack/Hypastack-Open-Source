@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen bg-black text-foreground w-full overflow-hidden">
+      <main className="relative min-h-screen bg-black text-foreground w-full overflow-hidden flex flex-col">
         <Suspense fallback={null}>
           <StatusBanner />
         </Suspense>

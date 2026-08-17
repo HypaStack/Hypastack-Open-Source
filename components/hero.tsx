@@ -52,8 +52,8 @@ export function Hero() {
     router.push(isAuthenticated ? "/me/files" : "/signin");
   }
   return (
-    <section className="relative w-full">
-      <div className="w-full relative overflow-visible flex flex-col items-center justify-start bg-black pt-[20vh] sm:pt-[15vh]">
+    <section className="relative w-full flex-1 flex">
+      <div className="w-full relative overflow-visible flex flex-col items-center justify-center bg-black">
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={150} fromY={28} className="w-full">
             <h1

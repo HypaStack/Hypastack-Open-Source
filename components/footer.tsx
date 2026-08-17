@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="w-full max-w-[1200px] p-2 mx-auto flex items-center justify-center gap-2 sm:gap-3">
       {columns.map((col) => (
         <Dropdown key={col.title}>
-          <Dropdown.Trigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1.5")}>
+          <Dropdown.Trigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "inline-flex items-center gap-1.5")}>
             {col.title}
             <svg
               xmlns="http://www.w3.org/2000/svg"
