@@ -92,7 +92,7 @@ export default function CreateAccountPage() {
 
   if (generatedKey) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8 py-12">
+      <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
               <img
@@ -161,7 +161,7 @@ export default function CreateAccountPage() {
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8 py-12">
+      <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
               <img

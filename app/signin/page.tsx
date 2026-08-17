@@ -108,7 +108,7 @@ export default function SignInPage() {
 
   if (showEnroll) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8">
+      <div className="flex min-h-screen items-center justify-center bg-black px-8">
         <div className="w-full max-w-[360px]">
           <h1
             className="text-[22px] font-semibold tracking-tight text-[#f7f8f8] mb-4"
@@ -140,7 +140,7 @@ export default function SignInPage() {
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-[#0d0d0d] px-8 py-12">
+      <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
               <img
