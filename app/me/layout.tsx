@@ -1,15 +1,14 @@
 "use client"
 
-import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useLayoutEffect, useState, useCallback } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Dropdown } from "@heroui/react"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { MenuItem } from "@/components/ui/menu-item"
 import { Tooltip } from "@/components/ui/tooltip"
 import { ShineBadge } from "@/components/ui/shine-badge"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
@@ -30,9 +29,6 @@ import {
 import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
-
-// MenuItem defaults to a 6px radius; match the 12px the buttons beside it use.
-const MENU_ROW = { borderRadius: 12, height: 40 }
 
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
@@ -72,7 +68,7 @@ function NavRow({
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={`group relative flex items-center gap-3 rounded-[12px] text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
+      className={`group relative flex items-center gap-3 rounded-3xl text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
           ? "bg-surface text-foreground"
           : "text-muted hover:bg-default hover:text-foreground"
@@ -121,7 +117,6 @@ function ManageLayoutInner({
   const { resolvedTheme } = useTheme()
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("general")
@@ -131,10 +126,8 @@ function ManageLayoutInner({
   const openPreferences = useCallback((tab: PreferencesTab) => {
     setPreferencesTab(tab)
     setPreferencesOpen(true)
-    setMenuOpen(false)
     setDrawerOpen(false)
   }, [])
-  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -146,16 +139,6 @@ function ManageLayoutInner({
   useEffect(() => {
     if (shouldRedirect) router.push("/signin")
   }, [shouldRedirect, router])
-
-  useEffect(() => {
-    const onMouseDown = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", onMouseDown)
-    return () => document.removeEventListener("mousedown", onMouseDown)
-  }, [])
 
   useEffect(() => {
     document.title = `${sectionTitle(pathname)} | Hypastack`
@@ -219,18 +202,16 @@ function ManageLayoutInner({
   const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
-    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#0d0d0d] text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
+    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div ref={menuRef} className="relative z-20 shrink-0 pt-4 pb-3 px-2">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(!menuOpen)}
+        <div className="relative z-20 shrink-0 pt-4 pb-3 px-2">
+          <Dropdown>
+            <Dropdown.Trigger
               aria-label="Account menu"
-              className="w-full flex items-center gap-2.5 rounded-[12px] transition-colors duration-150 cursor-pointer bg-surface text-foreground hover:bg-default"
+              className="w-full flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-surface text-foreground hover:bg-default"
               style={{ height: 40, paddingLeft: 8, paddingRight: 8 }}
             >
               <img decoding="async"
@@ -242,88 +223,66 @@ function ManageLayoutInner({
               />
               <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
-            </button>
+            </Dropdown.Trigger>
 
-            <AnimatePresence>
-              {menuOpen && (
-                <motion.div
-                  key="account-popover"
-                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                  transition={{ duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                  className="absolute top-full left-0 right-0 mt-1.5 bg-overlay rounded-[14px] p-1.5 shadow-overlay"
-                >
-                <div className="flex items-center gap-2.5 px-2.5 py-2.5">
-                  <img
-                    decoding="async"
-                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
-                    alt={user.nickname}
-                    className="h-8 w-8 shrink-0 rounded-full object-cover select-none pointer-events-none"
-                    draggable={false}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-foreground">{user.nickname}</p>
-                      <ShineBadge>{tierLimits.label}</ShineBadge>
-                    </div>
-                    <p className="mt-0.5 truncate text-[11px] text-muted">{user.id}</p>
+            <Dropdown.Popover placement="bottom" className="w-(--trigger-width) p-1.5">
+              <div className="flex items-center gap-2.5 px-2.5 py-2.5">
+                <img
+                  decoding="async"
+                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'}
+                  alt={user.nickname}
+                  className="h-8 w-8 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                  draggable={false}
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="min-w-0 truncate text-[13px] font-semibold leading-tight text-foreground">{user.nickname}</p>
+                    <ShineBadge>{tierLimits.label}</ShineBadge>
                   </div>
-                  <Button
-                    variant="ghost"
-                    isIconOnly
-                    size="sm"
-                    onPress={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
-                    aria-label="Copy UUID"
-                    className={copiedId ? "text-success" : undefined}
-                  >
-                    <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
-                  </Button>
+                  <p className="mt-0.5 truncate text-[11px] text-muted">{user.id}</p>
                 </div>
+                <Button
+                  variant="ghost"
+                  isIconOnly
+                  size="sm"
+                  onPress={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
+                  aria-label="Copy UUID"
+                  className={copiedId ? "text-success" : undefined}
+                >
+                  <MIcon name={copiedId ? "check" : "content_copy"} size={14} />
+                </Button>
+              </div>
 
-                <div className="mt-1.5 space-y-0.5">
-                  <MenuItem
-                    icon={<MIcon name="person" size={18} />}
-                    onClick={() => { setMenuOpen(false); openPreferences("account"); }}
-                    style={MENU_ROW}
-                  >
-                    Account settings
-                  </MenuItem>
+              <Dropdown.Menu aria-label="Account actions">
+                <Dropdown.Item id="account" onAction={() => openPreferences("account")} textValue="Account settings">
+                  <MIcon name="person" size={18} />
+                  Account settings
+                </Dropdown.Item>
+                <Dropdown.Item id="general" onAction={() => openPreferences("general")} textValue="Workspace settings">
+                  <MIcon name="settings" size={18} />
+                  Workspace settings
+                </Dropdown.Item>
+                <Dropdown.Item id="refer" textValue="Refer and earn">
+                  <MIcon name="card_giftcard" size={18} />
+                  Refer and earn
+                </Dropdown.Item>
+              </Dropdown.Menu>
 
-                  <MenuItem
-                    icon={<MIcon name="settings" size={18} />}
-                    onClick={() => { setMenuOpen(false); openPreferences("general"); }}
-                    style={MENU_ROW}
-                  >
-                    Workspace settings
-                  </MenuItem>
-
-                  <MenuItem
-                    icon={<MIcon name="card_giftcard" size={18} />}
-                    onClick={() => { setMenuOpen(false); }}
-                    style={MENU_ROW}
-                  >
-                    Refer and earn
-                  </MenuItem>
-                </div>
-
-                <div className="mt-1.5">
-                  <Button
-                    variant="danger"
-                    size="md"
-                    fullWidth
-                    onPress={() => { setMenuOpen(false); logout(); }}
-                    style={{ gap: 8 }}
-                  >
-                    <MIcon name="logout" size={16} />
-                    Log out
-                  </Button>
-                </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+              <div className="mt-1.5">
+                <Button
+                  variant="danger"
+                  size="md"
+                  fullWidth
+                  onPress={logout}
+                  style={{ gap: 8 }}
+                >
+                  <MIcon name="logout" size={16} />
+                  Log out
+                </Button>
+              </div>
+            </Dropdown.Popover>
+          </Dropdown>
         </div>
 
         <nav className="flex-1 min-h-0 px-2 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -343,7 +302,7 @@ function ManageLayoutInner({
         </div>
 
         <div className="px-2 pb-2 shrink-0">
-          <div className="rounded-[10px] bg-surface px-3 py-3">
+          <div className="rounded-3xl bg-surface px-3 py-3">
             <div className="text-xs text-muted font-medium mb-3">
               Usage
             </div>
