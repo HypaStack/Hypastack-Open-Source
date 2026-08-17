@@ -60,7 +60,9 @@ export function Hero() {
               className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              I&rsquo;m one developer who thinks big tech is way too creepy.
+              I&rsquo;m one developer who thinks big tech
+              <br />
+              is <em className="italic">waaaay</em> too creepy.
             </h1>
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
