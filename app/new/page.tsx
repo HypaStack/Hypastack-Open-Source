@@ -11,7 +11,6 @@ import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
 import { Button, TextField, Label, Input, Checkbox } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
-import { ShineCard } from "@/components/ui/shine-card"
 import { errorMessage } from "@/lib/errors"
 
 export default function CreateAccountPage() {
@@ -110,18 +109,11 @@ export default function CreateAccountPage() {
             </h1>
             <p className="text-[14px] text-[#898e97] mb-8">Save your identifier somewhere safe, it's the only way to sign in.</p>
 
-            <ShineCard highlight radius={16} className="mb-5 p-4">
-              <div className="w-full flex items-center justify-between mb-3">
-                <span className="text-[10px] font-semibold text-[#898e97] uppercase tracking-widest">Identifier</span>
-                <Button variant="tertiary" onPress={handleCopy} size="sm" style={{ gap: 6 }}>
-                  <MIcon name={copied ? "check" : "content_copy"} size={13} />
-                  {copied ? "Copied" : "Copy"}
-                </Button>
-              </div>
-              <div className="w-full text-[12.5px] text-[#f7f8f8] break-all leading-[1.7] font-mono blur-[5px] select-none pointer-events-none">
-                {generatedKey}
-              </div>
-            </ShineCard>
+            <Button variant="tertiary" onPress={handleCopy} fullWidth size="lg" style={{ gap: 8 }}>
+              <MIcon name={copied ? "check" : "content_copy"} size={16} />
+              {copied ? "Copied" : "Copy identifier"}
+            </Button>
+            <p className="mt-2 mb-5 text-[12px] text-[#898e97]">You will need this in a second.</p>
 
             {bioSupported && (
               bioEnabled ? (
