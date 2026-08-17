@@ -84,8 +84,8 @@ export function Hero() {
                   draggable={false}
                 />
                 <span
-                  className="inline-flex items-center justify-center rounded-full bg-[#1a1b1c] text-[#f7f8f8] select-none relative shrink-0 overflow-hidden whitespace-nowrap leading-none"
-                  style={{ width: "0.85em", height: "0.85em", minWidth: "0.85em", marginLeft: "-0.25em", transform: "rotate(6deg)", zIndex: 4, fontSize: "0.26em" }}
+                  className="inline-flex items-center justify-center rounded-full bg-[#1a1b1c] text-[#f7f8f8] font-semibold select-none relative shrink-0 whitespace-nowrap leading-none"
+                  style={{ width: "1.05em", height: "1.05em", minWidth: "1.05em", marginLeft: "-0.25em", transform: "rotate(6deg)", zIndex: 4, fontSize: "0.4em" }}
                 >
                   +17
                 </span>
