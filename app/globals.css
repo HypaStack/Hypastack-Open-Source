@@ -85,7 +85,15 @@ a:hover .material-symbols-rounded,
   --accent: #9b9b9b;  --destructive: #e5484d;  --border: #3a3a3b;
   --border-bottom: #2c2c30;
   --input: #2c2c30;
-  --ring: #9b9b9b;}
+  --ring: #9b9b9b;
+  /* HeroUI real accent/muted, reclaimed -- this class sits on a descendant
+     div, so its own --accent above (legacy neutral gray, unrelated to
+     HeroUI's brand-blue meaning of the same name) wins for every HeroUI
+     component nested inside it unless restated here. */
+  --accent: #0485f7;
+  --accent-foreground: #ffffff;
+  --muted: #9f9fa9;
+}
 
 /* iOS safe area utilities */
 .safe-area-bottom {
@@ -153,7 +161,12 @@ input:-webkit-autofill:focus {
   --muted-foreground: #6b7280;
   --accent: #e5e5e5;  --border: #e4e4e7;
   --input: #ffffff;
-  --ring: #111111;}
+  --ring: #111111;
+  /* HeroUI real accent/muted, reclaimed -- same collision as .theme-dark. */
+  --accent: #0485f7;
+  --accent-foreground: #ffffff;
+  --muted: #6b7280;
+}
 
 @theme inline {
   --font-sans: "Instrument Sans", system-ui, sans-serif;
