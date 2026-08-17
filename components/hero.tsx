@@ -60,7 +60,30 @@ export function Hero() {
               className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              I&rsquo;m one developer who thinks big tech
+              I&rsquo;m one developer who thinks{" "}
+              <span className="inline-flex items-center gap-[0.15em] align-middle">
+                <img
+                  src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
+                  alt="Dropbox"
+                  className="inline-block rounded-full object-cover select-none pointer-events-none"
+                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(-9deg)" }}
+                  draggable={false}
+                />
+                <img
+                  src="https://r2.hypastack.com/cdn/i9tog2bv4rtq/google-logo.png"
+                  alt="Google"
+                  className="inline-block rounded-full object-cover select-none pointer-events-none"
+                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(7deg)" }}
+                  draggable={false}
+                />
+                <img
+                  src="https://r2.hypastack.com/cdn/kghokwn73xbl/microslop-logo.png"
+                  alt="Microsoft"
+                  className="inline-block rounded-full object-cover select-none pointer-events-none"
+                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(-5deg)" }}
+                  draggable={false}
+                />
+              </span>
               <br />
               is <em className="italic" style={{ fontStyle: "italic" }}>waaaay</em> too creepy.
             </h1>
