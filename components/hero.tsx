@@ -83,6 +83,12 @@ export function Hero() {
                   style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(-5deg)", zIndex: 3 }}
                   draggable={false}
                 />
+                <span
+                  className="inline-flex items-center justify-center rounded-full bg-[#1a1b1c] text-[#f7f8f8] select-none relative"
+                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(6deg)", zIndex: 4, fontSize: "0.32em" }}
+                >
+                  +17
+                </span>
               </span>
               <br />
               is <em className="italic" style={{ fontStyle: "italic" }}>waaaay</em> too creepy.
