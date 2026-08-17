@@ -57,7 +57,7 @@ export function Hero() {
         <div className="flex flex-col items-start px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
-              className="text-left text-[clamp(22px,3vw,36px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
+              className="text-left text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               I&rsquo;m just one developer who thinks the big tech platforms are way too creepy.
