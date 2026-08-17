@@ -19,7 +19,7 @@ const legalClass = cn(
 export function Footer() {
   return (
     <footer className="w-full max-w-[1200px] p-2 mx-auto">
-      <Card className="px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8">
+      <Card variant="tertiary" className="px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
           {/* Brand */}
           <div className="flex flex-col items-start gap-3 max-w-[300px]">

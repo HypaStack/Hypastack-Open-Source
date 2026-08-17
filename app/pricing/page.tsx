@@ -17,7 +17,7 @@ const HEADING_FONT = { fontFamily: "'SF Pro Display', var(--font-syne), 'Syne', 
 
 export default function Pricing() {
   return (
-    <main className="flex min-h-screen flex-col bg-[#08090a]">
+    <main className="flex min-h-screen flex-col bg-black">
       <Navbar />
 
       <section className="flex-1 pt-32 pb-40">

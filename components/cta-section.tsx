@@ -13,7 +13,7 @@ export function CtaSection() {
     <section className="relative flex flex-col items-center overflow-visible">
 
       <div className="relative w-full max-w-[1200px]">
-      <div className="relative w-full flex flex-col bg-[#0d0e10] z-[60]">
+      <div className="relative w-full flex flex-col bg-black z-[60]">
         <div className="w-full px-8 sm:px-6 pt-16 pb-16 text-left relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
