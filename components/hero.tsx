@@ -61,26 +61,26 @@ export function Hero() {
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               I&rsquo;m one developer who thinks{" "}
-              <span className="inline-flex items-center align-middle">
+              <span className="inline-flex items-center align-middle isolate">
                 <img
                   src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
                   alt="Dropbox"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative z-10"
-                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(-9deg)" }}
+                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
+                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(-9deg)", zIndex: 1 }}
                   draggable={false}
                 />
                 <img
                   src="https://r2.hypastack.com/cdn/i9tog2bv4rtq/google-logo.png"
                   alt="Google"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative z-20"
-                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(7deg)" }}
+                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
+                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(7deg)", zIndex: 2 }}
                   draggable={false}
                 />
                 <img
                   src="https://r2.hypastack.com/cdn/kghokwn73xbl/microslop-logo.png"
                   alt="Microsoft"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative z-30"
-                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(-5deg)" }}
+                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
+                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(-5deg)", zIndex: 3 }}
                   draggable={false}
                 />
               </span>
