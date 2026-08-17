@@ -391,12 +391,15 @@ html[data-theme="dark"] {
   --background: #08090a;
   --foreground: #f7f8f8;
 
-  --surface: #0a0b0c;
+  /* Bumped off the background (#08090a) so a plain bg-surface is visible on
+     its own, without every caller having to remember to reach for the
+     -secondary/-tertiary step just to be seen against the page. */
+  --surface: #161616;
   --surface-foreground: var(--foreground);
-  --surface-secondary: #111111;
-  --surface-tertiary: #161616;
+  --surface-secondary: #1c1c1c;
+  --surface-tertiary: #222222;
 
-  --overlay: #0d0e0f;
+  --overlay: #1e1e1f;
   --overlay-foreground: var(--foreground);
 
   --default: #1a1b1c;
