@@ -2,8 +2,8 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform, useMotionTemplate, type MotionValue } from "motion/react";
+import { Card } from "@heroui/react";
 import { ButtonLink } from "@/components/ui/button-link";
-import { ShineCard } from "@/components/ui/shine-card";
 
 const TESTIMONIAL =
   "\"We switched to Hypastack for hosting our files and haven't looked back. It delivers huge files near-instantly with zero overhead and absolute privacy.\"";
@@ -51,20 +51,20 @@ export function HowItWorks() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 sm:mt-10">
-              <ShineCard className="h-full p-8">
-                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Built for purpose</h3>
-                <p className="text-[17px] leading-relaxed text-[#898e97]">Shaped by what creators actually need. Tools that just work.</p>
-              </ShineCard>
+              <Card className="h-full p-8">
+                <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Built for purpose</Card.Title>
+                <Card.Description className="text-[17px] leading-relaxed">Shaped by what creators actually need. Tools that just work.</Card.Description>
+              </Card>
 
-              <ShineCard className="h-full p-8">
-                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Powered by Cloudflare</h3>
-                <p className="text-[17px] leading-relaxed text-[#898e97]">A secure spot to pass encrypted files plus a fast CDN that strips tracking automatically.</p>
-              </ShineCard>
+              <Card className="h-full p-8">
+                <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Powered by Cloudflare</Card.Title>
+                <Card.Description className="text-[17px] leading-relaxed">A secure spot to pass encrypted files plus a fast CDN that strips tracking automatically.</Card.Description>
+              </Card>
 
-              <ShineCard className="h-full p-8">
-                <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Designed for speed</h3>
-                <p className="text-[17px] leading-relaxed text-[#898e97]">A lightweight network that stays out of your way and serves files near-instantly.</p>
-              </ShineCard>
+              <Card className="h-full p-8">
+                <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Designed for speed</Card.Title>
+                <Card.Description className="text-[17px] leading-relaxed">A lightweight network that stays out of your way and serves files near-instantly.</Card.Description>
+              </Card>
             </div>
           </motion.div>
         </div>
@@ -102,18 +102,18 @@ export function HowItWorks() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 sm:mt-8">
-                <ShineCard className="h-full p-8">
-                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Hidden Telemetry</h3>
-                  <p className="text-[17px] leading-relaxed text-[#898e97]">Other platforms quietly log what you do. We can't, our source is public.</p>
-                </ShineCard>
-                <ShineCard className="h-full p-8">
-                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Data Harvesting</h3>
-                  <p className="text-[17px] leading-relaxed text-[#898e97]">Read the code and see exactly how your files are handled. No blind faith needed.</p>
-                </ShineCard>
-                <ShineCard className="h-full p-8">
-                  <h3 className="text-[18px] font-medium text-[#f7f8f8] mb-3 tracking-wide">Vendor Lock-in</h3>
-                  <p className="text-[17px] leading-relaxed text-[#898e97]">Your files download in their original format with nothing proprietary, so you can pick up and leave anytime.</p>
-                </ShineCard>
+                <Card className="h-full p-8">
+                  <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Hidden Telemetry</Card.Title>
+                  <Card.Description className="text-[17px] leading-relaxed">Other platforms quietly log what you do. We can't, our source is public.</Card.Description>
+                </Card>
+                <Card className="h-full p-8">
+                  <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Data Harvesting</Card.Title>
+                  <Card.Description className="text-[17px] leading-relaxed">Read the code and see exactly how your files are handled. No blind faith needed.</Card.Description>
+                </Card>
+                <Card className="h-full p-8">
+                  <Card.Title className="text-[18px] font-medium mb-3 tracking-wide">Vendor Lock-in</Card.Title>
+                  <Card.Description className="text-[17px] leading-relaxed">Your files download in their original format with nothing proprietary, so you can pick up and leave anytime.</Card.Description>
+                </Card>
               </div>
             </motion.div>
           </div>
