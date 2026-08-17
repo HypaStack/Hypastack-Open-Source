@@ -9,13 +9,12 @@ import { useAuth } from "@/hooks/useAuth"
 import { deriveMasterKey, storeSessionKey, extractUserIdFromAccessKey } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, isBiometricEnrolled, enrollBiometric, unlockWithBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
-import { Button, TextField, Label, InputGroup } from "@heroui/react"
+import { Button, TextField, Label, Input } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
 import { errorMessage } from "@/lib/errors"
 export default function SignInPage() {
   const router = useRouter()
-  const [showKey, setShowKey] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [accessKey, setAccessKey] = useState("")
@@ -160,35 +159,16 @@ export default function SignInPage() {
               <div>
                   <TextField isRequired isDisabled={isLoading} value={accessKey} onChange={setAccessKey} className="w-full">
                     <Label>Identifier</Label>
-                    <InputGroup fullWidth>
-                      <InputGroup.Prefix>
-                        <MIcon name="key" size={16} />
-                      </InputGroup.Prefix>
-                      <InputGroup.Input
-                        type={showKey ? "text" : "password"}
-                        placeholder="cid_..."
-                        autoComplete="new-password"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck={false}
-                        data-lpignore="true"
-                        data-1p-ignore="true"
-                        style={{ fontFamily: "var(--font-mono, monospace)" }}
-                      />
-                      <InputGroup.Suffix>
-                        <Button
-                          variant="tertiary"
-                          isIconOnly
-                          size="sm"
-                          onPress={() => setShowKey(!showKey)}
-                          aria-label={showKey ? "Hide" : "Show"}
-                        >
-                          {showKey ? <MIcon name="visibility_off" size={18} /> : <MIcon name="visibility" size={18} />}
-                        </Button>
-                      </InputGroup.Suffix>
-                    </InputGroup>
+                    <Input
+                      type="password"
+                      autoComplete="new-password"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                      data-lpignore="true"
+                      data-1p-ignore="true"
+                    />
                   </TextField>
-
                 </div>
                 {error && (
                   <div>

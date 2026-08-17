@@ -9,10 +9,9 @@ import { useAuth } from "@/hooks/useAuth"
 import { generateUserIdClient, generateIdentifierClient, deriveMasterKey, encryptE2E, storeSessionKey } from "@/lib/security/cryptoClient"
 import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
-import { Button, TextField, Label, InputGroup } from "@heroui/react"
+import { Button, TextField, Label, Input, Checkbox } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { ShineCard } from "@/components/ui/shine-card"
-import { Checkmark } from "@/components/ui/checkmark"
 import { errorMessage } from "@/lib/errors"
 
 export default function CreateAccountPage() {
@@ -189,21 +188,15 @@ export default function CreateAccountPage() {
               <div>
                 <TextField isRequired value={nickname} onChange={setNickname} className="w-full">
                   <Label>Username</Label>
-                  <InputGroup fullWidth>
-                    <InputGroup.Input
-                      type="text"
-                      placeholder="Your name"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                      spellCheck={false}
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                    />
-                    <InputGroup.Suffix>
-                      <MIcon name="person" size={16} />
-                    </InputGroup.Suffix>
-                  </InputGroup>
+                  <Input
+                    type="text"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                  />
                 </TextField>
               </div>
 
@@ -215,18 +208,19 @@ export default function CreateAccountPage() {
                 )
               )}
 
-              <Checkmark
-                checked={ageConfirmed}
-                onChange={setAgeConfirmed}
-                size={16}
-              >
-                <span className="text-[12px] text-[#c4c9d2]">
-                  I accept the{" "}
-                  <Link href="/terms" className="text-[#f7f8f8] font-semibold hover:underline">Terms</Link>
-                  {" "}&amp;{" "}
-                  <Link href="/privacy" className="text-[#f7f8f8] font-semibold hover:underline">Privacy Policy</Link>
-                </span>
-              </Checkmark>
+              <Checkbox isSelected={ageConfirmed} onChange={setAgeConfirmed}>
+                <Checkbox.Content>
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <span>
+                    I accept the{" "}
+                    <Link href="/terms" className="font-semibold hover:underline">Terms</Link>
+                    {" "}&amp;{" "}
+                    <Link href="/privacy" className="font-semibold hover:underline">Privacy Policy</Link>
+                  </span>
+                </Checkbox.Content>
+              </Checkbox>
 
               <Button
                 variant="primary"

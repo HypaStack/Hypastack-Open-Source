@@ -397,7 +397,7 @@ html[data-theme="dark"] {
   --separator: rgba(255,255,255,0.06);
   --link: var(--foreground);
 
-  --field-background: #0a0b0c;
+  --field-background: #1a1b1c;
   --field-foreground: var(--foreground);
   --field-border: rgba(255,255,255,0.08);
 
