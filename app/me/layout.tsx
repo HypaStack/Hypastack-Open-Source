@@ -247,6 +247,9 @@ function ManageLayoutInner({
                   />
                   <p className="min-w-0 truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
                   <Chip size="sm" variant="soft" className="shrink-0">{tierLimits.label}</Chip>
+                  <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0">
+                    Sign out
+                  </Button>
                 </div>
                 <button
                   type="button"
@@ -268,19 +271,6 @@ function ManageLayoutInner({
                   Feedback
                 </Dropdown.Item>
               </Dropdown.Menu>
-
-              <div className="h-px bg-white/10" />
-
-              <div className="p-1.5">
-                <Button
-                  variant="danger-soft"
-                  fullWidth
-                  onPress={logout}
-                  style={{ paddingLeft: 12, paddingRight: 12 }}
-                >
-                  Sign out
-                </Button>
-              </div>
             </Dropdown.Popover>
           </Dropdown>
         </div>
