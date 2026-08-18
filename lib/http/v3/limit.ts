@@ -4,16 +4,7 @@ import { V3_REQUESTS_PER_MINUTE, V3_GLOBAL_REQUESTS_PER_MINUTE } from "@/constan
 import type { Tier } from "@/constants/tier-limits"
 import type { V3RateHeaders } from "./respond"
 
-/**
- * The only limiter entry point in v3. Everything above it sees this signature
- * and nothing else, which is what makes the hypalimit swap a one-file change.
- *
- * Phase 1 (here): the existing Redis INCR path, with the Postgres fallback and
- * fail-closed behaviour it already has.
- * Phase 2: the hypalimit Elixir sidecar over a Unix socket. The numbers stay
- * identical; the shape tightens from a fixed window to a token bucket, which is
- * why v3.0 documents the number and promises nothing about bursts.
- */
+// The only v3 limiter entry point — swapping in the hypalimit sidecar later is a one-file change.
 
 export interface V3LimitResult {
   allowed: boolean
@@ -40,21 +31,9 @@ function globalWindowKey(now: number): { key: string; secondsLeft: number } {
   return { key: `hs:v3:global:${minute}`, secondsLeft: 60 - Math.floor((now % 60_000) / 1000) }
 }
 
-/**
- * The hard ceiling across all v3 traffic. Checked before anything else in the
- * request, so a request shed here costs one Redis INCR and no database work —
- * which is the entire point: v3 must never be able to take down the site it is
- * bolted to.
- *
- * Redis-only, deliberately. The per-account limiter falls back to a Postgres
- * upsert when Redis is down, which is fine for a counter split across many rows
- * — but this is ONE counter taking every v3 request, and 30k writes a minute
- * contending on a single row would cause exactly the outage this exists to
- * prevent. With no Redis there is no safe way to count, so it fails closed.
- *
- * The bucket key embeds the minute, so windows roll over without a separate
- * EXPIRE round-trip and an abandoned bucket simply ages out.
- */
+// Hard ceiling across all v3 traffic, checked before any DB work. Redis-only —
+// unlike the per-account limiter, this is one counter for every request, so a
+// Postgres fallback would just move the outage instead of preventing it.
 export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {
   const redis = getRedis()
   const { key, secondsLeft } = globalWindowKey(Date.now())
@@ -87,18 +66,7 @@ export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {
   }
 }
 
-/**
- * What to do when the ceiling can't be evaluated.
- *
- * Production fails closed: without a counter there is no bound on a flood, and
- * refusing v3 is strictly better than letting it take the website with it.
- *
- * Development fails open, because dev machines don't run Redis and a v3 that
- * answers every request with 503 locally is untestable. Same reasoning the
- * upload routes use to skip Turnstile outside production — and it is scoped to
- * NODE_ENV rather than a config flag so it can't be switched on in prod by
- * accident.
- */
+// Prod fails closed (no counter = no bound on a flood); dev fails open since dev has no Redis.
 export function unreachable(
   secondsLeft: number,
   isProduction = process.env.NODE_ENV === "production",

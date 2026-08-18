@@ -9,16 +9,9 @@ declare global {
 
 type DbSsl = { ca: string; rejectUnauthorized: true; servername?: string } | { rejectUnauthorized: false }
 
-/**
- * Returns the pg SSL config. If a CA is pinned (DB_CA_CERT inline PEM, or
- * DB_CA_CERT_PATH file), TLS certificate validation is ENFORCED against it.
- * DB_TLS_SERVERNAME overrides the hostname checked against the cert's SAN —
- * needed when the app connects to Postgres by IP but the cert is issued for a
- * hostname (e.g. a Cloudflare Origin CA cert for db.hypastack.com).
- *
- * Until a CA is provided, we fall back to the prior behavior (encrypted but
- * unauthenticated) so existing deployments keep working.
- */
+// If a CA is pinned (DB_CA_CERT/_PATH), TLS is enforced against it; DB_TLS_SERVERNAME
+// overrides the SAN hostname check (e.g. connecting by IP to a cert issued for a hostname).
+// No CA pinned → falls back to encrypted-but-unauthenticated, for existing deployments.
 function getDbSsl(): DbSsl {
   const caInline = process.env.DB_CA_CERT
   const caPath = process.env.DB_CA_CERT_PATH
@@ -515,12 +508,8 @@ export async function initDatabase(): Promise<void> {
         created_at TIMESTAMPTZ  DEFAULT NOW()
       )` },
       { version: '2026-07-08-funnel-staging-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_staging_created_at ON funnel_staging(created_at)` },
-      // Paid-plan auto-expiry. A paid tier lasts one month from the upgrade, then
-      // hypasched flips it back to 'free' (files are never touched — they keep
-      // their own expiry). The trigger stamps tier_expires_at on any transition
-      // to a paid tier and clears it on downgrade, so a plain
-      // `UPDATE users SET tier='premium'` is enough; pass an explicit
-      // tier_expires_at in the same statement to override the one-month default.
+      // Paid tier lasts 1 month, then hypasched flips it back to 'free' (files keep
+      // their own expiry). Trigger stamps tier_expires_at on upgrade, clears on downgrade.
       { version: '2026-07-16-user-tier-expiry', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS tier_expires_at TIMESTAMPTZ` },
       { version: '2026-07-16-tier-expiry-trigger', sql: `
 CREATE OR REPLACE FUNCTION set_tier_expiry() RETURNS trigger AS $fn$

@@ -1,16 +1,4 @@
-/**
- * lib/fetch.ts
- *
- * Drop-in replacement for `fetch()` on the client side.
- * Automatically fetches and caches a short-lived proxy token, then injects it
- * as the `x-hypastack-proxy-key` header on every request.
- * On a 401, silently calls /api/v2/auth/refresh to rotate the access token,
- * then retries the original request once.
- *
- * Usage:
- *   import { apiFetch } from "@/lib/http/fetch"
- *   const res = await apiFetch("/api/v2/files", { method: "GET" })
- */
+// Client-side fetch wrapper: injects the proxy token, retries once through /auth/refresh on 401.
 
 import { API_BASE, PROXY_HEADER, PROXY_TOKEN_TTL_S, API_FETCH_TIMEOUT_MS } from "@/constants"
 

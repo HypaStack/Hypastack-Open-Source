@@ -54,11 +54,7 @@ export const MAX_PROXY_UPLOAD_SIZE = 50 * 1024 * 1024
 /** Default chunk size for multipart uploads (10 MB) */
 export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024
 
-/** Maximum number of concurrent chunk upload workers. Kept at the classic
- *  browser per-origin connection ceiling (6) — going higher queues extra PUTs
- *  behind that limit, which under real-world sustained upload load (not what
- *  a speedtest measures) shows up as spurious "Chunk upload network error"s
- *  rather than a clean queue. Matches RESUME_MAX_CONCURRENT_CHUNKS below. */
+/** Max concurrent chunk workers — capped at the browser's per-origin connection ceiling. */
 export const MAX_CONCURRENT_CHUNKS = 6
 
 /** Concurrent chunk workers when resuming an interrupted multipart upload */

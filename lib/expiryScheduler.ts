@@ -3,19 +3,9 @@ import { bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
 import { errorMessage } from "@/lib/errors"
 
-/**
- * Precise, in-process expiry deletion for short-lived files.
- *
- * The hourly cleanup sweep is too coarse for custom expirations that can be as
- * short as 1 minute: an expired row (and its slug reservation) would linger for
- * up to an hour. For any file expiring within the next hour we arm an exact
- * timer that deletes the R2 object AND the DB row the moment it expires, so the
- * file disappears from the dashboard and its slug frees up immediately.
- *
- * Longer-lived files are left to the hourly sweep. Timers are in-process only;
- * `scheduleUpcomingExpiries` re-arms them after a restart and for files that
- * cross into the one-hour window between sweeps.
- */
+// Exact in-process timers for files expiring within the hour — the hourly
+// sweep alone is too coarse for a 1-minute custom expiration. In-process only;
+// scheduleUpcomingExpiries re-arms them after a restart.
 
 const IMMEDIATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
 
