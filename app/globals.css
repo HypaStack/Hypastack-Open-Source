@@ -86,12 +86,12 @@ a:hover .material-symbols-rounded,
   --border-bottom: #2c2c30;
   --input: #2c2c30;
   --ring: #9b9b9b;
-  /* HeroUI real accent/muted, reclaimed -- this class sits on a descendant
+  /* Hypastack brand primary, reclaimed -- this class sits on a descendant
      div, so its own --accent above (legacy neutral gray, unrelated to
-     HeroUI's brand-blue meaning of the same name) wins for every HeroUI
+     HeroUI's brand meaning of the same name) wins for every HeroUI
      component nested inside it unless restated here. */
-  --accent: #0485f7;
-  --accent-foreground: #ffffff;
+  --accent: #80DBA2;
+  --accent-foreground: #000000;
   --muted: #9f9fa9;
 }
 
@@ -162,9 +162,9 @@ input:-webkit-autofill:focus {
   --accent: #e5e5e5;  --border: #e4e4e7;
   --input: #ffffff;
   --ring: #111111;
-  /* HeroUI real accent/muted, reclaimed -- same collision as .theme-dark. */
-  --accent: #0485f7;
-  --accent-foreground: #ffffff;
+  /* Hypastack brand primary, reclaimed -- same collision as .theme-dark. */
+  --accent: #80DBA2;
+  --accent-foreground: #000000;
   --muted: #6b7280;
 }
 
