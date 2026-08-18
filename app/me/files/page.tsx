@@ -287,21 +287,33 @@ function FilesPageInner() {
 
   const moveFiles = async (ids: string[], folderId: string | null) => {
     if (ids.length === 0) return
+
+    // Dropping a file back where it already lives isn't worth a request.
+    const toMove = ids.filter((id) => files.find((f) => f.id === id)?.folderId !== folderId)
+    if (toMove.length === 0) {
+      toast.warning(
+        ids.length === 1
+          ? "That file is already in this folder"
+          : "Those files are already in this folder"
+      )
+      return
+    }
+
     try {
       const res = await apiFetch("/api/v2/files", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileIds: ids, folderId }),
+        body: JSON.stringify({ fileIds: toMove, folderId }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         hypaError(data.message || "Failed to move files")
         return
       }
-      const movedIds = new Set(ids)
+      const movedIds = new Set(toMove)
       setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
       setSelectedIds(new Set())
-      toast.success(`Moved ${ids.length} file${ids.length === 1 ? "" : "s"}`)
+      toast.success(`Moved ${toMove.length} file${toMove.length === 1 ? "" : "s"}`)
     } catch (err) {
       console.error("Move error:", err)
       hypaError("Failed to move files")
@@ -469,7 +481,12 @@ function FilesPageInner() {
       {/* Dropping a dragged file anywhere in the panel but not on a folder row
           sends it back to the Drive root. Drops handled by the table itself
           (onto a folder, or its own root area) never reach here. */}
-      <Tabs.Panel id="drive" className="flex-1 flex flex-col p-0" ref={rootDropRef}>
+      <Tabs.Panel id="drive" className="flex-1 flex flex-col p-0">
+        {/* Plain div rather than the Panel itself: Tabs.Panel is a function
+            component that only spreads props, so the drop ref isn't guaranteed
+            to reach a DOM node. flex-1 makes the zone cover the empty area
+            below the table. */}
+        <div ref={rootDropRef} className="flex-1 flex flex-col">
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
@@ -518,6 +535,7 @@ function FilesPageInner() {
             </div>
           </div>
         )}
+        </div>
       </Tabs.Panel>
 
       {/* 
