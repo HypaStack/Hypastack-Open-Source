@@ -21,7 +21,7 @@ export default function Pricing() {
 
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
-          <div className="relative text-center mb-12">
+          <div className="relative flex flex-col items-center text-center mb-12">
             <Typography type="h1" className="relative text-[clamp(40px,4.6vw,58px)] text-foreground">
               Pricing
             </Typography>

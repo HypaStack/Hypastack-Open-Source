@@ -127,30 +127,35 @@ export function PricingCards() {
                 }`}
               >
                 <Card.Header className="p-7 pb-0">
-                  <Card.Title className="text-3xl">{label}</Card.Title>
-                  <Card.Description>{TAGLINE[tier]}</Card.Description>
+                  <Card.Title className="text-4xl">{label}</Card.Title>
+                  <Card.Description className="mt-2 text-[15px]">{TAGLINE[tier]}</Card.Description>
                 </Card.Header>
 
                 <Card.Content className="flex-1 p-7">
                   {/* price */}
                   <div className="flex items-baseline gap-2">
-                    <Typography type="h2" className="text-foreground">{priceAmount(tier, annual)}</Typography>
+                    <Typography type="h1" className="text-5xl text-foreground">{priceAmount(tier, annual)}</Typography>
                     <Typography type="body-sm" color="muted">/ {annual ? "year" : "month"}</Typography>
                   </div>
 
                   {/* headline metric box (storage) */}
-                  <div
-                    className={`mt-7 flex items-center justify-between rounded-[16px] border px-4 py-3.5 ${
+                  <Card
+                    variant="transparent"
+                    className={`mt-7 !p-4 flex-row items-center justify-between rounded-[16px] border !border-solid ${
                       green ? "border-accent/40 bg-accent/10" : "border-separator bg-surface"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <MIcon name="database" size={18} className="text-foreground" />
-                      <Typography type="body" weight="semibold" className="text-foreground">{storage}</Typography>
-                      {green && <Chip size="sm" variant="soft">Best value</Chip>}
+                    <div className="flex items-center gap-3">
+                      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${green ? "bg-accent/20 text-accent" : "bg-white/10 text-foreground"}`}>
+                        <MIcon name="database" size={18} />
+                      </span>
+                      <div className="flex flex-col">
+                        <Typography type="body" weight="semibold" className="text-foreground leading-tight">{storage}</Typography>
+                        <Typography type="body-xs" color="muted">of storage</Typography>
+                      </div>
                     </div>
-                    <Typography type="body-xs" color="muted">of storage</Typography>
-                  </div>
+                    {green && <Chip size="sm" variant="soft">Best value</Chip>}
+                  </Card>
 
                   {/* features */}
                   <div className="mt-7">
