@@ -297,6 +297,7 @@ function ManageLayoutInner({
             onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
+            className="border-white/10"
           >
             Upgrade plan
           </Button>
