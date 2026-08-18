@@ -55,7 +55,7 @@ export function Hero() {
   return (
     <section className="relative w-full flex-1 flex">
       <div className="w-full relative overflow-visible flex flex-col items-center justify-center bg-black">
-        <div className="flex flex-col items-center px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
+        <div className="flex flex-col items-center px-6 sm:px-6 w-full max-w-[1320px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={80} fromY={16} className="mb-4">
             <ButtonLink href="/changelog" as={Link} variant="secondary" size="sm" style={{ gap: 8 }}>
               <MIcon name="rocket_launch" size={14} />
@@ -64,7 +64,7 @@ export function Hero() {
           </PopIn>
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
-              className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
+              className="text-center text-[clamp(28px,4.5vw,52px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
               Built private cloud storage
