@@ -130,7 +130,7 @@ html.is-dashboard, html.is-dashboard body {
 }
 
 html.is-dashboard.dark, html.is-dashboard.dark body {
-  background-color: #0d0d0d !important;
+  background-color: #0c0c0d !important;
 }
 
 
@@ -416,10 +416,11 @@ html[data-theme="dark"] {
   --surface-secondary: #1c1c1c;
   --surface-tertiary: #222222;
 
-  /* Pure black, matching the dashboard page + upload tray, so every overlay
-     surface (modals, popovers, dropdowns) reads the same without per-component
-     bg overrides. */
-  --overlay: #000000;
+  /* Matches the dashboard page background, so every overlay surface (modals,
+     popovers, dropdowns, the upload tray) reads the same without per-component
+     bg overrides. Declared here rather than on .theme-dark because overlays
+     portal to <body>, outside that wrapper, and would never see it. */
+  --overlay: #0c0c0d;
   --overlay-foreground: var(--foreground);
 
   --default: #1a1b1c;
@@ -474,4 +475,10 @@ html[data-theme="dark"] {
   .toast--top-end {
     animation: toast-slide-top-in 350ms var(--ease-out-quart);
   }
+}
+
+/* Toast is the only overlay HeroUI paints with --surface instead of --overlay,
+   which leaves it a step lighter than every modal/popover. Level it out. */
+.toast {
+  background-color: var(--overlay);
 }
