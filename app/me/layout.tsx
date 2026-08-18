@@ -81,11 +81,11 @@ function NavRow({
       }}
     >
       {/* size as a string so MIcon's +2px nudge doesn't apply — a hair over the
-          15px label. Unfilled, lighter grade, larger optical size. */}
+          15px label. Filled, lighter grade, larger optical size. */}
       <MIcon
         name={item.icon}
         size="16px"
-        style={{ fontVariationSettings: "'FILL' 0, 'wght' 700, 'GRAD' -25, 'opsz' 48" }}
+        style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' -25, 'opsz' 48" }}
         className="shrink-0"
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
