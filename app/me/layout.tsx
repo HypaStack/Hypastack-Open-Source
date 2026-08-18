@@ -11,7 +11,6 @@ import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toas
 import { Tooltip } from "@/components/ui/tooltip"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
-import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
@@ -444,7 +443,6 @@ function ManageLayoutInner({
       />
 
       <TierAnnouncementModal />
-      <HypaNotifProvider />
 
       <Modal isOpen={feedbackOpen} onOpenChange={setFeedbackOpen}>
         <Modal.Backdrop isDismissable variant="blur">
