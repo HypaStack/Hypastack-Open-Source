@@ -20,7 +20,7 @@ export function Footer() {
           style={{ width: "1em", height: "1em" }}
           draggable={false}
         />
-        I&rsquo;m Kiko!
+        Kiko&rsquo;s portfolio
       </a>
       <div className="flex items-center gap-2 sm:gap-3">
       {columns.map((col) => (
