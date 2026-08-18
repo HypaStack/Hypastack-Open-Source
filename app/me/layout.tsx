@@ -75,16 +75,16 @@ function NavRow({
           : "text-muted hover:bg-default hover:text-foreground"
       }`}
       style={{
-        height: 32,
+        height: 35,
         paddingLeft: 12,
         paddingRight: 12,
       }}
     >
-      {/* size as a string so MIcon's +2px nudge doesn't apply — these match the
-          15px label exactly. Unfilled, lighter grade, larger optical size. */}
+      {/* size as a string so MIcon's +2px nudge doesn't apply — a hair over the
+          15px label. Unfilled, lighter grade, larger optical size. */}
       <MIcon
         name={item.icon}
-        size="15px"
+        size="16px"
         style={{ fontVariationSettings: "'FILL' 0, 'wght' 500, 'GRAD' -25, 'opsz' 40" }}
         className={`shrink-0 transition-colors ${active ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
       />
