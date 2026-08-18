@@ -138,24 +138,13 @@ export function PricingCards() {
                     <Typography type="body-sm" color="muted">/ {annual ? "year" : "month"}</Typography>
                   </div>
 
-                  {/* headline metric box (storage) */}
-                  <Card
-                    variant="transparent"
-                    className={`mt-7 !p-4 flex-row items-center justify-between rounded-[16px] border !border-solid ${
-                      green ? "border-accent/40 bg-accent/10" : "border-separator bg-surface"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${green ? "bg-accent/20 text-accent" : "bg-white/10 text-foreground"}`}>
-                        <MIcon name="database" size={18} />
-                      </span>
-                      <div className="flex flex-col">
-                        <Typography type="body" weight="semibold" className="text-foreground leading-tight">{storage}</Typography>
-                        <Typography type="body-xs" color="muted">of storage</Typography>
-                      </div>
-                    </div>
+                  {/* headline metric (storage) */}
+                  <div className="mt-7 flex items-center gap-3">
+                    <Typography type="h3" className={`text-2xl ${green ? "text-accent" : "text-foreground"}`}>
+                      {storage} Storage
+                    </Typography>
                     {green && <Chip size="sm" variant="soft">Best value</Chip>}
-                  </Card>
+                  </div>
 
                   {/* features */}
                   <div className="mt-7">
