@@ -21,7 +21,14 @@ import {
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
-import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier, type Tier } from "@/constants/tier-limits"
+
+const TIER_CHIP_COLOR: Record<Tier, "default" | "accent" | "warning" | "danger"> = {
+  free: "default",
+  essential: "accent",
+  premium: "warning",
+  ultimate: "danger",
+}
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -214,7 +221,9 @@ function ManageLayoutInner({
 
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
 
-  const tierLimits = getTierLimits(normalizeTier(user.tier))
+  const tier = normalizeTier(user.tier)
+  const tierLimits = getTierLimits(tier)
+  const tierChipColor = TIER_CHIP_COLOR[tier]
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-background text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -348,7 +357,10 @@ function ManageLayoutInner({
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                   />
                   <p className="min-w-0 truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
-                  <Chip size="sm" variant="soft" className="shrink-0">{tierLimits.label}</Chip>
+                  <Chip size="sm" color={tierChipColor} className="shrink-0 text-[11px]">
+                    <MIcon name="check_circle" size={12} />
+                    {tierLimits.label}
+                  </Chip>
                   {/* h-5/px-2/text-xs/rounded-2xl matches Chip sm — no Button size is that small,
                       and the Button's own rounded-3xl (12px) turns into a pill at 20px tall. */}
                   <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0 h-5 px-2 text-xs md:h-5 rounded-2xl">
