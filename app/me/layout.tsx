@@ -220,9 +220,10 @@ function ManageLayoutInner({
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-background text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       {/* Collapsed: the sidebar is gone and only the dock button stays, on the
-          left of the main panel, as the way back. */}
+          left of the main panel, as the way back. my-2 + pt-2 repeats the
+          aside's own offsets so the button doesn't shift vertically. */}
       {sidebarCollapsed && (
-        <div className="hidden lg:flex shrink-0 items-start my-2 ml-2 mr-1">
+        <div className="hidden lg:flex shrink-0 items-start my-2 ml-2 mr-1 pt-2">
           <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
         </div>
       )}
@@ -481,7 +482,9 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-background shadow-none overflow-hidden relative">
+      {/* Panel and page share --background, so without a border its edge is
+          invisible and nothing separates content from the sidebar. */}
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] border border-white/10 bg-white dark:bg-background shadow-none overflow-hidden relative">
         <header
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-background lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
