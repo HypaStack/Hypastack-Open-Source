@@ -236,7 +236,7 @@ function ManageLayoutInner({
                 <Dropdown.Item
                   id="current"
                   textValue={user.nickname}
-                  onAction={() => toast.warning("You're already logged in on this account")}
+                  onAction={() => toast.info("You're already logged in on this account")}
                   className="flex items-center gap-2"
                 >
                   <img decoding="async"
@@ -252,7 +252,7 @@ function ManageLayoutInner({
                 <Dropdown.Item
                   id="add-account"
                   textValue="Add another account"
-                  onAction={() => toast.warning("We're working on that, stay tuned!")}
+                  onAction={() => toast.info("We're working on that, stay tuned!")}
                   className="flex items-center gap-2"
                 >
                   <MIcon name="add" size={20} className="shrink-0" />
