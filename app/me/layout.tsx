@@ -27,6 +27,12 @@ import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limi
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
+// The account menu trigger/popover and the Upgrade button all live inside a
+// px-2 (8px each side) wrapper in the sidebar — this is that shared content
+// width, so the trigger and its popover always render pixel-identical no
+// matter what state either is in.
+const SIDEBAR_CONTENT_WIDTH = SIDEBAR_WIDTH - 16
+
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
 }
@@ -229,21 +235,22 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="w-full flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5"
-              style={{ height: 38, paddingLeft: 8, paddingRight: 8 }}
+              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5"
+              style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
                 src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                 alt={user.nickname}
-                className="h-7 w-7 shrink-0 object-cover rounded-full select-none pointer-events-none"
+                className="shrink-0 object-cover rounded-full select-none pointer-events-none"
+                style={{ width: "1.3em", height: "1.3em" }}
                 draggable={false}
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
               />
-              <span className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">{user.nickname}</span>
+              <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="top" className="w-(--trigger-width) p-0 bg-black border border-white/10 rounded-2xl overflow-hidden">
+            <Dropdown.Popover placement="top" className="p-0 bg-black border border-white/10 rounded-2xl overflow-hidden" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
               <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <img
@@ -282,7 +289,7 @@ function ManageLayoutInner({
 
               <div className="h-px bg-white/10" />
 
-              <div className="px-4 py-2.5 space-y-1.5">
+              <div className="px-1.5 py-2.5 space-y-1.5">
                 <div>
                   <div className="flex items-center justify-between text-[11px] mb-0.5">
                     <span className="text-muted">Storage</span>
