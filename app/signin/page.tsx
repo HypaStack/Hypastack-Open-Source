@@ -56,7 +56,7 @@ export default function SignInPage() {
     // cid_ identifiers don't embed the id, so the server returns it; legacy
     // hpsk_ keys fall back to extracting it locally.
     const userId = data.userId || extractUserIdFromAccessKey(key)
-    if (!userId) throw new Error("Invalid identifier format")
+    if (!userId) throw new Error("Invalid passkey format")
     const masterKey = await deriveMasterKey(key, userId)
     await storeSessionKey(masterKey)
   }
@@ -121,7 +121,7 @@ export default function SignInPage() {
             icon={<MIcon name="fingerprint" size={18} style={{ flexShrink: 0, marginRight: 8, marginTop: 1 }} />}
             style={{ marginBottom: 24 }}
           >
-            Sign in on this device with Face ID, Touch ID or your fingerprint instead of pasting your identifier. It stays on this device and never reaches the server.
+            Sign in on this device with Face ID, Touch ID or your fingerprint instead of pasting your passkey. It stays on this device and never reaches the server.
           </AlertMessage>
           <Button variant="primary" onPress={handleEnroll} isDisabled={enrolling} fullWidth size="lg">
             {enrolling ? "Setting up…" : "Enable"}
@@ -155,16 +155,16 @@ export default function SignInPage() {
                 Sign in
               </h1>
               <p className="mt-0.5 text-[14px] text-[#898e97]">
-                Enter your identifier here.
+                Enter your passkey here.
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                   <TextField isRequired isDisabled={isLoading} value={accessKey} onChange={setAccessKey} className="w-full">
-                    <Label>Identifier</Label>
+                    <Label>Passkey</Label>
                     <Input
                       type="password"
-                      placeholder="Identifier"
+                      placeholder="Passkey"
                       autoComplete="new-password"
                       autoCorrect="off"
                       autoCapitalize="off"
