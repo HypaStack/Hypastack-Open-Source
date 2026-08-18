@@ -31,6 +31,14 @@ export function PreferencesModal({ open, initialTab = "account", onClose, user, 
     if (open) setActive(initialTab)
   }, [open, initialTab])
 
+  // Tab title reflects the modal while it's open, restored to whatever it was on close.
+  useEffect(() => {
+    if (!open) return
+    const previousTitle = document.title
+    document.title = `${user.nickname} (Preferences)`
+    return () => { document.title = previousTitle }
+  }, [open, user.nickname])
+
   // Turning developer mode off while sitting on its tab would leave the modal
   // on a tab with no way back to it.
   useEffect(() => {
