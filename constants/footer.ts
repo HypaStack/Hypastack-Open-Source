@@ -3,6 +3,7 @@ export const FOOTER_COLUMNS = [
     title: "Platform",
     links: [
       { label: "Dashboard", href: "/new" },
+      { label: "Mailing", href: "https://hypamail.me/" },
       { label: "Pricing", href: "/pricing" },
       { label: "Uptime", href: "https://status.hypastack.com" },
     ],
