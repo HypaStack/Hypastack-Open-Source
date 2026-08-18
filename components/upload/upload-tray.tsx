@@ -4,15 +4,13 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence, useSpring } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { TextInput } from "@/components/ui/text-input"
-import { Button } from "@heroui/react"
+import { Button, Chip, TextField, Label, Input, TextArea, InputGroup } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { Slider } from "@/components/ui/slider"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
 import { QrCodePopover } from "@/components/ui/qr-code-popover"
-import { SURFACE } from "@/components/ui/surface"
 import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
@@ -27,11 +25,11 @@ const TurnstileWithRef = Turnstile as React.ComponentType<
 // One horizontal gutter for every row. No nested cards and no inner rules —
 // the shell is the only surface, matching the sidebar usage card.
 const PAD = "px-3"
-const RULE = "border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
-const LABEL = "text-[13px] font-medium text-[#333] dark:text-[#e3e3e3]"
-const MUTED = "text-[12px] text-[#6b6b70] dark:text-[#a1a1aa]"
-const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]"
-const ICON = "text-[#898e97] dark:text-[#898e97]"
+const RULE = "border-t border-white/10"
+const LABEL = "text-[13px] font-medium text-foreground"
+const MUTED = "text-[12px] text-muted"
+const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-muted"
+const ICON = "text-muted"
 const TITLE_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 type UploadTrayProps = UseUploadReturn
@@ -133,16 +131,16 @@ export function UploadTray({
             opacity: { duration: 0.25, ease: "easeOut" },
             filter: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           }}
-          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[470px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] ${SURFACE.panel}`}
+          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[470px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] bg-black border border-white/10`}
           style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
         >
           {/* ── Header ── */}
           <div className="flex shrink-0 items-center justify-between gap-3 px-3 pt-3 pb-2">
             <div className="flex min-w-0 flex-col">
-              <h3 className="text-[15px] font-semibold tracking-tight text-[#111] dark:text-[#f0f0f0]" style={TITLE_FONT}>
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground" style={TITLE_FONT}>
                 Uploads
               </h3>
-              <p className="text-[12px] text-[#898e97] dark:text-[#898e97]">
+              <p className="text-[12px] text-muted">
                 {files.length} item{files.length !== 1 ? "s" : ""} · {uploadType === "cdn" ? "CDN" : "Files"}
               </p>
             </div>
@@ -264,7 +262,7 @@ export function UploadTray({
                           Expires after
                         </span>
                         {slugLocked ? <LockBadge /> : (
-                          <span className="text-[12px] font-semibold text-[#111] dark:text-[#f0f0f0]">{currentExpLabel}</span>
+                          <span className="text-[12px] font-semibold text-foreground">{currentExpLabel}</span>
                         )}
                       </div>
                       <Slider
@@ -279,7 +277,7 @@ export function UploadTray({
                       {slugLocked ? (
                         <UpgradeLink text="Upgrade to choose a custom expiry" />
                       ) : (
-                        <div className="mt-1.5 flex justify-between text-[11px] text-[#898e97] dark:text-[#898e97]">
+                        <div className="mt-1.5 flex justify-between text-[11px] text-muted">
                           <span>1 min</span>
                           <span>30 days</span>
                         </div>
@@ -298,14 +296,9 @@ export function UploadTray({
                         {zipMultipleFiles ? (
                           <>
                             <FieldBlock icon="folder_zip" label="Archive name">
-                              <TextInput
-                                type="text"
-                                size="md"
-                                fullWidth
-                                value={customFilename}
-                                onChange={(e) => setCustomFilename(e.target.value)}
-                                placeholder="hypastack-archive"
-                              />
+                              <TextField aria-label="Archive name" value={customFilename} onChange={setCustomFilename} className="w-full">
+                                <Input placeholder="hypastack-archive" />
+                              </TextField>
                             </FieldBlock>
                             {/* Zipped = one share link, so a custom link applies */}
                             <CustomLinkField
@@ -326,14 +319,9 @@ export function UploadTray({
                     ) : (
                       <>
                         <FieldBlock icon="edit" label="Rename file">
-                          <TextInput
-                            type="text"
-                            size="md"
-                            fullWidth
-                            value={customFilename}
-                            onChange={(e) => setCustomFilename(e.target.value)}
-                            placeholder={files[0]?.file.name || "example.pdf"}
-                          />
+                          <TextField aria-label="Rename file" value={customFilename} onChange={setCustomFilename} className="w-full">
+                            <Input placeholder={files[0]?.file.name || "example.pdf"} />
+                          </TextField>
                         </FieldBlock>
                         <CustomLinkField
                           slugLocked={slugLocked}
@@ -349,16 +337,9 @@ export function UploadTray({
                     )}
 
                     <FieldBlock icon="article" label="Note">
-                      <TextInput
-                        multiline
-                        rows={2}
-                        size="md"
-                        fullWidth
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        placeholder="Optional message…"
-                        maxLength={100}
-                      />
+                      <TextField aria-label="Note" value={note} onChange={setNote} className="w-full" maxLength={100}>
+                        <TextArea rows={2} placeholder="Optional message…" />
+                      </TextField>
                     </FieldBlock>
                   </div>
                 )}
@@ -400,9 +381,9 @@ export function UploadTray({
 
                 {normalizeTier(user?.tier) !== "ultimate" && (
                   <div className={`${PAD} pb-3 pt-2`}>
-                    <p className="text-[11px] text-[#898e97] dark:text-[#898e97]">
+                    <p className="text-[11px] text-muted">
                       Want faster uploads and deletes?{" "}
-                      <a href="/pricing" className="underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
+                      <a href="/pricing" className="underline hover:text-foreground transition-colors">
                         Upgrade your plan
                       </a>
                       .
@@ -415,13 +396,13 @@ export function UploadTray({
               <div className={`shrink-0 ${RULE} px-3 py-2.5`}>
                 <div className="mb-2.5 flex items-center gap-2 px-0.5">
                   {(state === "uploading" || state === "zipping") && (
-                    <span className="shrink-0 text-[#898e97] dark:text-[#898e97]">
+                    <span className="shrink-0 text-muted">
                       <Loader size={18} />
                     </span>
                   )}
                   <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-[13px] font-semibold leading-none text-[#111] dark:text-[#ededed]">{footerTitle}</span>
-                    <span className="line-clamp-1 text-[12px] leading-none text-[#898e97] dark:text-[#898e97]">{footerSub}</span>
+                    <span className="text-[13px] font-semibold leading-none text-foreground">{footerTitle}</span>
+                    <span className="line-clamp-1 text-[12px] leading-none text-muted">{footerSub}</span>
                   </div>
                 </div>
 
@@ -554,18 +535,18 @@ function TrayFileRow({
   const smooth = useSmoothPercent(progressPct ?? 0)
   return (
     <div
-      className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-black/[0.02] dark:bg-white/[0.02] px-3"
+      className="flex shrink-0 items-center gap-2.5 rounded-[10px] border border-white/10 bg-white/5 px-3"
       style={{ height: 38 }}
     >
-      <MIcon name="attach_file" size={17} className="shrink-0 text-[#898e97] dark:text-[#898e97]" />
+      <MIcon name="attach_file" size={17} className="shrink-0 text-muted" />
 
-      <p className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight text-[#111] dark:text-[#ededed]">
+      <p className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-tight text-foreground">
         {name}
       </p>
 
-      <div className="flex shrink-0 items-center gap-2 text-[12px] tabular-nums text-[#898e97] dark:text-[#898e97]">
+      <div className="flex shrink-0 items-center gap-2 text-[12px] tabular-nums text-muted">
         {error ? (
-          <span className="text-red-500 dark:text-red-400">{status}</span>
+          <span className="text-danger">{status}</span>
         ) : (
           <>
             {uploading && (
@@ -640,15 +621,15 @@ function FieldBlock({ icon, label, children }: { icon: string; label: string; ch
 
 function LockBadge() {
   return (
-    <span className="flex shrink-0 items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#898e97] dark:text-[#898e97]">
+    <Chip size="sm" variant="soft" className="shrink-0 gap-1 uppercase">
       <MIcon name="lock" size={12} /> Essential+
-    </span>
+    </Chip>
   )
 }
 
 function UpgradeLink({ text }: { text: string }) {
   return (
-    <a href="/pricing" className="mt-2 inline-block text-[11px] text-[#898e97] dark:text-[#898e97] underline hover:text-[#111] dark:hover:text-[#f0f0f0] transition-colors">
+    <a href="/pricing" className="mt-2 inline-block text-[11px] text-muted underline hover:text-foreground transition-colors">
       {text}
     </a>
   )
@@ -685,26 +666,28 @@ function CustomLinkField({
         </span>
         {slugLocked && <LockBadge />}
       </div>
-      <TextInput
-        type="text"
-        size="md"
-        fullWidth
+      <TextField
+        aria-label="Custom link"
+        isDisabled={slugLocked}
         value={slugLocked ? "" : customSlug}
-        onChange={(e) => {
+        onChange={(v) => {
           if (slugLocked) return
-          setCustomSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
+          setCustomSlug(v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
           if (slugError) setSlugError(null)
         }}
-        placeholder={slugLocked ? "available on paid plans" : placeholder}
         maxLength={64}
-        disabled={slugLocked}
-        leading={<span className="text-[13px]">{prefix}</span>}
-      />
+        className="w-full"
+      >
+        <InputGroup>
+          <InputGroup.Prefix>{prefix}</InputGroup.Prefix>
+          <InputGroup.Input placeholder={slugLocked ? "available on paid plans" : placeholder} />
+        </InputGroup>
+      </TextField>
       {slugLocked ? (
         <UpgradeLink text="Upgrade to Essential to use custom links" />
       ) : slugError ? (
         <div className="mt-2">
-          <p className="text-[11px] text-red-500">{slugError.message}</p>
+          <p className="text-[11px] text-danger">{slugError.message}</p>
           {slugError.suggestions.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {slugError.suggestions.map((s) => (
@@ -722,7 +705,7 @@ function CustomLinkField({
         </div>
       ) : (
         customSlug.trim() && (
-          <p className="mt-2 truncate text-[11px] text-[#898e97] dark:text-[#898e97]">
+          <p className="mt-2 truncate text-[11px] text-muted">
             {previewBase}{customSlug.trim()}
           </p>
         )
