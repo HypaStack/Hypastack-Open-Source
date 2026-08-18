@@ -67,7 +67,15 @@ export function Hero() {
               className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              I&rsquo;m one developer who thinks{" "}
+              I&rsquo;m{" "}
+              <img
+                src="https://r2.hypastack.com/cdn/jxvmdjwe4dnu/hellbound.png"
+                alt="Kiko"
+                className="inline-block rounded-full object-cover select-none pointer-events-none align-middle"
+                style={{ width: "0.8em", height: "0.8em" }}
+                draggable={false}
+              />{" "}
+              Kiko, and i built a private cloud storage service, because i was tired of{" "}
               <span className="inline-flex items-center align-middle isolate">
                 <img
                   src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
@@ -91,8 +99,7 @@ export function Hero() {
                   draggable={false}
                 />
               </span>
-              <br />
-              is <em className="italic" style={{ fontStyle: "italic" }}>waaaay</em> too creepy.
+              .
             </h1>
           </PopIn>
           <PopIn delay={230} fromY={20} className="mt-4 sm:mt-5">
