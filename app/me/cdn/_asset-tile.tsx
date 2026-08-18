@@ -65,13 +65,6 @@ export function CdnAssetTile({
     return () => clearTimeout(t)
   }, [revealed, showImage, imgLoading])
   
-  const ext = asset.name.includes(".") ? asset.name.split(".").pop()?.toLowerCase() || "file" : "file"
-
-  // Split the name so the label can truncate the base while always keeping the
-  // extension intact.
-  const dotIdx = asset.name.lastIndexOf(".")
-  const baseName = dotIdx > 0 ? asset.name.slice(0, dotIdx) : asset.name
-
   let typeLabel = "FILE"
   if (asset.contentType) {
     const sub = asset.contentType.split("/")[1]
@@ -115,11 +108,6 @@ export function CdnAssetTile({
       >
         {!revealed && isImage && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-surface">
-            <Typography type="body-xs" color="muted" className="flex items-center justify-center w-full min-w-0 mb-2.5">
-              <span className="shrink-0">Load&nbsp;</span>
-              <span className="truncate min-w-0 font-medium text-foreground">{baseName}</span>
-              {dotIdx > 0 && <span className="shrink-0 font-medium text-foreground">.{ext}</span>}
-            </Typography>
             <Button
               variant="tertiary"
               size="sm"
