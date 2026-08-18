@@ -44,8 +44,8 @@ export default function Home() {
         <div className="absolute -inset-6 z-0 pointer-events-none" aria-hidden="true">
           <DotGrid
             className="pointer-events-none"
-            dotSize={5}
-            gap={14}
+            dotSize={8}
+            gap={22}
             baseColor="#383838"
             activeColor="#0056ff"
             proximity={140}
