@@ -207,6 +207,56 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
+        <div className="relative z-20 shrink-0 px-0 pt-2">
+          <Dropdown>
+            <Dropdown.Trigger
+              aria-label="Switch account"
+              className="flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"
+              style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
+            >
+              <img decoding="async"
+                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
+                alt={user.nickname}
+                className="shrink-0 object-cover rounded-full select-none pointer-events-none"
+                style={{ width: "1.3em", height: "1.3em" }}
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
+              />
+              <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
+            </Dropdown.Trigger>
+
+            <Dropdown.Popover
+              placement="bottom"
+              containerPadding={8}
+              offset={8}
+              className="p-0 overflow-hidden"
+              style={{ width: SIDEBAR_CONTENT_WIDTH }}
+            >
+              <Dropdown.Menu aria-label="Accounts" className="p-1.5">
+                <Dropdown.Item id="current" textValue={user.nickname} className="flex items-center gap-2">
+                  <img decoding="async"
+                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
+                    alt={user.nickname}
+                    className="h-5 w-5 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
+                  />
+                  <span className="min-w-0 truncate">{user.nickname}</span>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="add-account"
+                  textValue="Add another account"
+                  onAction={() => toast.danger("We're working on that, stay tuned!")}
+                  className="flex items-center gap-2"
+                >
+                  <MIcon name="add" size={20} className="shrink-0" />
+                  <span>Add another account</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
+        </div>
+
         <nav className="flex-1 min-h-0 px-0 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="space-y-1">
             {SECTION_BUTTONS.map((item) => (
