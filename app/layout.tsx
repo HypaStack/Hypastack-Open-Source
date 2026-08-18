@@ -105,8 +105,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: "dark light",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#000000" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#08090a" },
+    { media: "(prefers-color-scheme: dark)", color: "#08090a" },
   ],
   viewportFit: "cover",
 }
@@ -119,7 +119,7 @@ export default async function RootLayout({
   // Turnstile's api.js loads here with the CSP nonce, per-page client loading wasn't nonced.
   const nonce = (await headers()).get("x-nonce") ?? undefined
   return (
-    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning style={{ backgroundColor: '#000000' }}>
+    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning style={{ backgroundColor: '#08090a' }}>
       <head>
         {process.env.NODE_ENV !== "development" && (
           <Script

@@ -5,12 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
     "seo:audit": "node scripts/seo-audit.js",
-    "sitemap": "next-sitemap",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"

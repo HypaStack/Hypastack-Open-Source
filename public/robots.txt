@@ -1,8 +1,8 @@
-# hypastack.com — robots.txt
+# hypastack.com robots.txt
 #
 # Search engines and AI assistants are welcome to crawl the public site.
 # The disallowed paths below are private user content (share links, pastes,
-# the dashboard) and API endpoints — nothing there is meant to be indexed.
+# the dashboard) and API endpoints. Nothing there is meant to be indexed.
 
 # Content preferences (contentsignals.org): index us for search, but don't
 # train models on our content and don't feed it into AI answer/input pipelines.

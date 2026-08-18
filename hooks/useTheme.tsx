@@ -55,7 +55,7 @@ export function useTheme() {
 
     if (resolvedTheme === "dark") {
       root.classList.add("dark")
-      metaTheme.setAttribute('content', '#111111')
+      metaTheme.setAttribute('content', '#08090a')
     } else {
       root.classList.remove("dark")
       metaTheme.setAttribute('content', isDashboard ? '#f0f0f0' : '#ffffff')
