@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
-import { Loader } from "@/components/ui/loader"
+import { Button, Chip, ListBox, Modal, typographyVariants } from "@heroui/react"
+import type { Selection } from "react-aria-components"
+
+/** Stands in for the Drive root, which has no folder id. */
+const ROOT_KEY = "__root"
 
 export interface MoveTarget {
   id: string
@@ -86,6 +88,13 @@ export function MoveDialog({
   const rows = toPaths(folders)
   const isCurrent = target === currentFolderId
 
+  // ListBox keys are strings, so the Drive root travels as ROOT_KEY.
+  const handleSelection = (keys: Selection) => {
+    if (keys === "all") return
+    const key = [...keys][0]
+    setTarget(key === undefined || key === ROOT_KEY ? null : String(key))
+  }
+
   const submit = async () => {
     setMoving(true)
     try {
@@ -96,76 +105,49 @@ export function MoveDialog({
   }
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.15 }}
-        className="fixed inset-0 z-[60] bg-black/30"
-        onClick={onCancel}
-      />
-      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97, y: 6 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative w-full max-w-md flex flex-col rounded-[16px] bg-white dark:bg-[#121212] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] overflow-hidden pointer-events-auto"
-        >
-          <div className="px-5 pt-4 pb-3">
-            <h2 className="text-[16px] font-semibold text-[#171717] dark:text-[#e3e3e3]">
-              Move {count} {count === 1 ? "item" : "items"}
-            </h2>
-            <p className="text-[13px] text-[#666] dark:text-[#898e97] mt-1">Pick where they should end up.</p>
-          </div>
+    <Modal isOpen onOpenChange={(isOpen) => { if (!isOpen) onCancel() }}>
+      <Modal.Backdrop isDismissable variant="blur">
+        <Modal.Container placement="center" size="md" scroll="inside">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>
+                Move {count} {count === 1 ? "item" : "items"}
+              </Modal.Heading>
+              <Modal.CloseTrigger />
+            </Modal.Header>
 
-          <div className="max-h-[280px] overflow-y-auto px-3 pb-3 flex flex-col gap-1">
-            {[{ id: null as string | null, path: rootLabel }, ...rows].map(row => {
-              const selected = target === row.id
-              return (
-                <button
-                  key={row.id ?? "__root"}
-                  type="button"
-                  onClick={() => setTarget(row.id)}
-                  className={`flex items-center gap-2.5 px-3 h-[38px] rounded-[8px] text-left transition-colors ${
-                    selected
-                      ? "bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.08)]"
-                      : "hover:bg-[#f6f6f6] dark:hover:bg-[rgba(255,255,255,0.04)]"
-                  }`}
-                >
-                  <MIcon
-                    name={row.id === null ? "home_storage" : "folder"}
-                    size={16}
-                    className="text-[#666] dark:text-[#898e97] shrink-0"
-                  />
-                  <span className="text-[14px] text-[#111] dark:text-[#f7f8f8] truncate flex-1">{row.path}</span>
-                  {row.id === currentFolderId && (
-                    <span className="text-[11px] text-[#888] dark:text-[#898e97] shrink-0">Current</span>
-                  )}
-                  {selected && <MIcon name="check" size={15} className="text-[#111] dark:text-[#f7f8f8] shrink-0" />}
-                </button>
-              )
-            })}
-          </div>
+            <Modal.Body className="max-h-[280px]">
+              <p className="mb-2">Pick where they should end up.</p>
+              <ListBox
+                aria-label="Destination folder"
+                selectionMode="single"
+                disallowEmptySelection
+                selectedKeys={[target ?? ROOT_KEY]}
+                onSelectionChange={handleSelection}
+              >
+                {[{ id: null as string | null, path: rootLabel }, ...rows].map((row) => (
+                  <ListBox.Item key={row.id ?? ROOT_KEY} id={row.id ?? ROOT_KEY} textValue={row.path}>
+                    <MIcon name={row.id === null ? "home_storage" : "folder"} size={16} className="shrink-0 text-muted" />
+                    <span className="min-w-0 flex-1 truncate">{row.path}</span>
+                    {row.id === currentFolderId && (
+                      <Chip size="sm" variant="soft" className="shrink-0">Current</Chip>
+                    )}
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Modal.Body>
 
-          <div className="flex justify-end gap-2 px-3 pb-3">
-            <Button variant="tertiary" size="md" onPress={onCancel} isDisabled={moving}>
-              Cancel
-            </Button>
-            <Button variant="primary" size="md" onPress={submit} isDisabled={moving || isCurrent} style={{ gap: 8 }}>
-              {moving ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader size={16} color="#ffffff" />
-                  Moving…
-                </span>
-              ) : (
-                <>
-                  <MIcon name="drive_file_move" size={15} className="shrink-0" />
-                  Move here
-                </>
-              )}
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    </>
+            <Modal.Footer>
+              <Button variant="tertiary" isDisabled={moving} onPress={onCancel}>Cancel</Button>
+              <Button variant="primary" isPending={moving} isDisabled={moving || isCurrent} onPress={submit}>
+                <MIcon name="drive_file_move" size={15} className="shrink-0" />
+                {moving ? "Moving…" : "Move here"}
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   )
 }
