@@ -263,7 +263,7 @@ function ManageLayoutInner({
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                   />
                   <span className="min-w-0 truncate">{user.nickname}</span>
-                  <Chip size="sm" variant="soft" className="ml-auto shrink-0">Logged in</Chip>
+                  <Chip size="sm" color="accent" className="ml-auto shrink-0">Logged in</Chip>
                 </Dropdown.Item>
                 <Dropdown.Item
                   id="add-account"
