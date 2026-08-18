@@ -112,6 +112,14 @@ export function ListView({
       const { droppedFileIds, droppedFolderIds } = splitDropped(await readDroppedItems(e.items))
       if (droppedFileIds.length > 0 || droppedFolderIds.length > 0) onMoveItems(droppedFileIds, droppedFolderIds, null)
     },
+    // Default preview only shows the single row under the cursor — make a
+    // multi-item drag visibly read as "N items" instead of looking dropped.
+    renderDragPreview: (items) => (
+      <div className="flex items-center gap-1.5 rounded-[8px] bg-overlay border border-white/10 px-2.5 py-1.5 text-[13px] font-medium text-foreground shadow-lg">
+        <MIcon name={items.length > 1 ? "select_all" : "drag_indicator"} size={14} className="text-muted" />
+        {items.length} item{items.length === 1 ? "" : "s"}
+      </div>
+    ),
   })
 
   return (
