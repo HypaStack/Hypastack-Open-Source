@@ -108,7 +108,7 @@ export function ListView({
                           onPointerDown={(e) => e.stopPropagation()}
                           onClick={(e) => { e.stopPropagation(); toggleExpanded(row.folder.id) }}
                           aria-label={expandedFolders.has(row.folder.id) ? `Collapse ${row.folder.name}` : `Expand ${row.folder.name}`}
-                          className="flex items-center justify-center h-7 w-7 -mx-1 shrink-0 text-muted hover:text-foreground transition-colors"
+                          className="flex items-center justify-center h-5 w-7 -mx-1 shrink-0 text-muted hover:text-foreground transition-colors"
                         >
                           <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={16} />
                         </button>
@@ -127,7 +127,7 @@ export function ListView({
                         variant="ghost"
                         isIconOnly
                         size="sm"
-                        style={{ height: 26, width: 26 }}
+                        style={{ height: 20, width: 26 }}
                         onPress={() => onDeleteFolder(row.folder.id)}
                         aria-label={`Delete folder ${row.folder.name}`}
                       >
