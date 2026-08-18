@@ -228,7 +228,7 @@ export default function CreateAccountPage() {
                   <span>
                     I accept all the{" "}
                     <Link href="/terms" className="font-semibold hover:underline">Policies</Link>
-                    , and I confirm my age is above 18.
+                    , and I confirm I&rsquo;m of age.
                   </span>
                 </Checkbox.Content>
               </Checkbox>
