@@ -142,19 +142,22 @@ export default function SignInPage() {
     <>
       <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
-            <div className="mb-9">
+            <div className="mb-9 flex flex-col items-center text-center">
               <img
                 src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
                 alt="Hypastack"
-                className="w-[44px] h-[44px] object-contain"
+                className="w-[44px] h-[44px] object-contain mb-4"
               />
+              <h1
+                className="text-[28px] font-semibold tracking-tight text-[#f7f8f8]"
+                style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
+              >
+                Sign in
+              </h1>
+              <p className="mt-1.5 text-[14px] text-[#898e97]">
+                Enter your identifier to access your files.
+              </p>
             </div>
-            <h1
-              className="text-[28px] font-semibold tracking-tight text-[#f7f8f8] mb-6"
-              style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
-            >
-              Sign in
-            </h1>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                   <TextField isRequired isDisabled={isLoading} value={accessKey} onChange={setAccessKey} className="w-full">
