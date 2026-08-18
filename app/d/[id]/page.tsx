@@ -7,10 +7,10 @@ import { MIcon } from "@/components/ui/material-icon";
 import { importKeyFromBase64, decryptChunk, MULTIPART_THRESHOLD } from "@/lib/storage/multipart";
 import { motion } from "motion/react";
 import { apiFetch } from "@/lib/http/fetch"
-import { Button } from "@heroui/react"
-import { ShineCard } from "@/components/ui/shine-card"
+import { Button, Card, Chip, Typography } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { SideAd } from "@/components/ui/side-ad"
 
 interface FileInfo {
   id: string; name: string; size: number; contentType: string; expiresAt: string;
@@ -246,45 +246,36 @@ export default function DownloadPage() {
   // Primary action button, full-width at the bottom of the card.
   const downloadButton = downloaded ? (
     <Button
-      variant="tertiary"
+      variant="primary"
       onPress={!burned ? handleDownload : undefined}
       isDisabled={burned || downloadCooldown > 0}
-      size="lg"
       fullWidth
-      style={{ gap: 8 }}
     >
-      {burned ? (
-        <><MIcon name="local_fire_department" className="text-red-400" size={16} />Burned</>
-      ) : downloadCooldown > 0 ? (
-        <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
-      ) : (
-        <><MIcon name="download" size={16} />Download again</>
-      )}
+      {burned ? "Burned" : downloadCooldown > 0 ? `Wait ${downloadCooldown}s` : "Download again"}
     </Button>
   ) : (
     <Button
-      variant="tertiary"
+      variant="primary"
       onPress={handleDownload}
       isDisabled={downloading || downloadCooldown > 0 || !encryptionKeyBase64 || forceLocked}
-      size="lg"
       fullWidth
-      style={{ gap: 8 }}
+      style={downloading && !forceLocked ? { gap: 8 } : undefined}
     >
       {downloading && !forceLocked ? (
         <><LoadingSvg size={16} />Downloading…</>
       ) : downloadCooldown > 0 ? (
-        <><MIcon name="schedule" size={16} />Wait {downloadCooldown}s</>
+        `Wait ${downloadCooldown}s`
       ) : !encryptionKeyBase64 || forceLocked ? (
-        <><MIcon name="lock" size={16} />Locked</>
+        "Locked"
       ) : (
-        <><MIcon name="download" size={16} />Download</>
+        "Download"
       )}
     </Button>
   );
 
   if (missingKey) {
     return (
-      <main className="min-h-screen relative font-sans bg-[#08090a]">
+      <main className="min-h-screen relative font-sans bg-background">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -305,7 +296,8 @@ export default function DownloadPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-[#08090a]">
+    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-background">
+      <SideAd />
       <div className="relative w-full max-w-[440px]">
         <div className="flex justify-center mb-8">
           <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
@@ -321,17 +313,16 @@ export default function DownloadPage() {
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <ShineCard radius={16} className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <MIcon name="error" className="text-red-500" size={28} />
-                <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
+            <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
+              <Card.Header className="gap-2">
+                <Card.Title className="text-xl">
                   {error === "File has expired" ? "Link expired" : "File not found"}
-                </h2>
-              </div>
-              <p className="text-[13px] text-[#898e97] mb-6 leading-relaxed">
-                {error === "File has expired" ? "This file has been permanently deleted from our servers." : "The file you're looking for doesn't exist or has been removed."}
-              </p>
-              <div className="flex gap-2">
+                </Card.Title>
+                <Card.Description>
+                  {error === "File has expired" ? "This file has been permanently deleted from our servers." : "The file you're looking for doesn't exist or has been removed."}
+                </Card.Description>
+              </Card.Header>
+              <Card.Footer className="gap-2">
                 <Button
                   variant="primary"
                   onPress={() => router.push("/me/files")}
@@ -343,27 +334,27 @@ export default function DownloadPage() {
                   onPress={() => router.push("/")}
                   className="flex-1"
                 >Home</Button>
-              </div>
-            </ShineCard>
+              </Card.Footer>
+            </Card>
           </motion.div>
         )}
 
         {fileInfo && !error && !missingKey && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <ShineCard radius={16} tilt={0}>
+            <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px] !p-0">
               {uploader && (
-                <div className="h-[150px] w-full bg-[#151616]">
+                <div className="h-[150px] w-full bg-muted rounded-t-[16px] overflow-hidden">
                   <img decoding="async" src={uploader.bannerUrl} alt="" className="w-full h-full object-cover select-none pointer-events-none" draggable={false} />
                 </div>
               )}
 
-              <div className="px-5 pt-4 pb-4">
+              <Card.Header className="px-4 pt-4">
                 {uploader && (
                   <div className="flex items-start">
                     <img
                       src={uploader.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
                       alt=""
-                      className="-mt-[59px] h-[86px] w-[86px] rounded-md object-cover border-2 border-[#1a1a1a] bg-[#151616] select-none pointer-events-none"
+                      className="-mt-[59px] h-[86px] w-[86px] rounded-md object-cover border-2 border-overlay bg-muted select-none pointer-events-none"
                       draggable={false}
                       onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
                     />
@@ -372,7 +363,7 @@ export default function DownloadPage() {
 
                 {uploader?.displayName && (
                   <div className="mt-3 flex items-center gap-1.5 min-w-0">
-                    <p className="text-[22px] font-bold tracking-tight text-[#f7f8f8] truncate leading-tight">@{uploader.displayName}</p>
+                    <p className="text-[22px] font-bold tracking-tight text-foreground truncate leading-tight">@{uploader.displayName}</p>
                     {uploader.verified && (
                       <span title="Verified account" className="shrink-0 inline-flex items-center text-[#3ba7ff]">
                         <MIcon name="verified" size={19} />
@@ -381,99 +372,94 @@ export default function DownloadPage() {
                   </div>
                 )}
 
-                <div className={uploader?.displayName ? "mt-1.5" : uploader ? "mt-3" : "mt-1"}>
-                  <div className="flex items-center gap-2 min-w-0">
-                    <h1 className={`flex items-baseline min-w-0 text-[18px] font-semibold tracking-tight leading-snug ${!encryptionKeyBase64 ? 'text-[#898e97] italic' : 'text-[#c9ccd1]'}`}>
+                <div className={uploader?.displayName ? "mt-1.5" : uploader ? "mt-3" : ""}>
+                  <div className="flex items-center justify-between gap-3 min-w-0">
+                    <Card.Title className={`flex items-baseline min-w-0 text-lg leading-snug ${!encryptionKeyBase64 ? 'text-muted italic' : 'text-foreground'}`}>
                       {encryptionKeyBase64 ? (
                         <>
                           <span className="truncate min-w-0">{baseName}</span>
                           {extSuffix && <span className="shrink-0">{extSuffix}</span>}
                         </>
                       ) : "Unavailable"}
-                    </h1>
-                    {encryptionKeyBase64 && <span className="shrink-0 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-[#898e97] rounded-[5px] px-[6px] py-[2px] text-[10px] font-semibold tracking-wide uppercase">{ext}</span>}
-                    <span className="shrink-0 text-[13px] text-[#898e97]">
-                      {encryptionKeyBase64 ? fmt(fileInfo.size) : <span className="flex items-center gap-1.5"><MIcon name="visibility_off" size={14} />Unavailable</span>}
-                    </span>
+                    </Card.Title>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {encryptionKeyBase64 && (
+                        <Chip size="sm" variant="soft" className="gap-1">
+                          <MIcon name="schedule" size={14} />
+                          {timeLeft(fileInfo.expiresAt)}
+                        </Chip>
+                      )}
+                      {!!fileInfo.burnOnRead && !!encryptionKeyBase64 && (
+                        <Chip size="sm" variant="soft" color={burned ? "danger" : undefined} className="gap-1">
+                          <MIcon name="local_fire_department" size={14} />
+                          {burned ? "Burned" : "Burns on download"}
+                        </Chip>
+                      )}
+                      {encryptionKeyBase64 && <Chip size="sm" variant="soft" className="uppercase tracking-wider text-[10px] font-semibold">{ext}</Chip>}
+                      <Typography type="body-sm" color="muted">
+                        {encryptionKeyBase64 ? fmt(fileInfo.size) : <span className="flex items-center gap-1.5"><MIcon name="visibility_off" size={14} />Unavailable</span>}
+                      </Typography>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Card.Header>
 
               {fileInfo.note && fileInfo.note.trim() && encryptionKeyBase64 && (
-                <div className="mx-3 mb-3 p-4 rounded-[10px] bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.08)]">
-                  <p className="text-[13px] font-medium text-[#f7f8f8] break-words leading-relaxed">{fileInfo.note}</p>
-                  <p className="text-[11px] text-[#898e97] mt-2.5 leading-relaxed">This note and file were attached by the uploader. Hypastack isn't responsible for their content.</p>
-                </div>
+                <Card.Content className="px-4">
+                  <Card variant="transparent" className="!p-3 bg-surface rounded-[10px]">
+                    <Typography type="body-sm" weight="medium" className="break-words">{fileInfo.note}</Typography>
+                    <Typography type="body-xs" color="muted" className="mt-2">This note and file were attached by the uploader. Hypastack isn't responsible for their content.</Typography>
+                  </Card>
+                </Card.Content>
               )}
 
-              <div className="mx-3 mb-3 rounded-[10px] bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.08)] overflow-hidden">
-                {[
-                  { icon: "schedule", label: "Expires", value: encryptionKeyBase64 ? timeLeft(fileInfo.expiresAt) : "Unavailable", show: true, color: !encryptionKeyBase64 ? "text-[#898e97]" : "text-[#f7f8f8]" },
-                  { icon: "local_fire_department", label: "Burn after download", value: burned ? "Burned" : "Active", show: !!fileInfo.burnOnRead && !!encryptionKeyBase64, color: burned ? "text-red-500" : "text-[#f7f8f8]" },
-                  { icon: "shield", label: "Encryption", value: "End-to-end", show: true, color: encryptionKeyBase64 ? "text-[#f7f8f8]" : "text-[#898e97]" },
-                ].filter(r => r.show).map((r, i, arr) => (
-                  <div key={i}>
-                    <div className="flex items-center justify-between px-4 h-[44px]">
-                      <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
-                        <MIcon name={r.icon} size={15} className="text-[#898e97]" />
-                        {r.label}
-                      </span>
-                      <span className={`text-[13px] font-semibold ${r.color || "text-[#f7f8f8]"}`}>{r.value}</span>
-                    </div>
-                    {i < arr.length - 1 && <div className="h-px mx-4 bg-[rgba(255,255,255,0.07)]" />}
-                  </div>
-                ))}
-              </div>
 
               {downloadPhase !== 'idle' && (
-                <div className="mx-3 mb-3">
+                <Card.Content className="px-4">
                   <AlertMessage tone={downloadPhase === 'done' ? 'success' : 'info'} style={{ marginBottom: 0 }}>
                     {downloadPhase === 'done'
                       ? "Your file finished downloading and should be saved to your device now."
                       : "Your file is downloading securely in the background. It will automatically save to your device once finished, this may take a moment depending on your connection speed."}
                   </AlertMessage>
-                </div>
+                </Card.Content>
               )}
 
               {(downloadPhase === 'downloading' || downloadPhase === 'decrypting') && (
-                <div className="mx-3 mb-3 p-3.5 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded-[6px]">
-                  <p className="text-[12px] text-[#898e97] mb-1.5">
-                    {downloadPhase === 'downloading' ? `Downloading... ${downloadProgress}%` : `Decrypting... ${decryptProgress}%`}
-                  </p>
-                  <div className="w-full h-1.5 rounded-full bg-[rgba(255,255,255,0.08)] overflow-hidden">
-                    <div
-                      className="h-full bg-[#f7f8f8] rounded-full transition-all duration-300"
-                      style={{ width: `${downloadPhase === 'downloading' ? downloadProgress : decryptProgress}%` }}
-                    />
+                <Card.Content className="px-4">
+                  <div className="p-3.5 bg-surface border border-separator rounded-[6px]">
+                    <Typography type="body-xs" color="muted" className="mb-1.5">
+                      {downloadPhase === 'downloading' ? `Downloading... ${downloadProgress}%` : `Decrypting... ${decryptProgress}%`}
+                    </Typography>
+                    <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div
+                        className="h-full bg-foreground rounded-full transition-all duration-300"
+                        style={{ width: `${downloadPhase === 'downloading' ? downloadProgress : decryptProgress}%` }}
+                      />
+                    </div>
                   </div>
-                </div>
+                </Card.Content>
               )}
 
-              {(rateLimitError || downloadCooldown > 0 || (downloaded && burned)) && (
-                <div className="mx-3 mb-3">
-                  {(rateLimitError || downloadCooldown > 0) && (
-                    <AlertMessage tone="error" style={{ marginBottom: 0 }}>
-                      <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
-                      <span className="block text-[11px] opacity-70 mt-0.5">Try again in {downloadCooldown}s</span>
-                    </AlertMessage>
-                  )}
-                  {downloaded && burned && (
-                    <p className="text-[12px] text-[#898e97] text-center mt-3">This file has been permanently deleted after download.</p>
-                  )}
-                </div>
+              {(rateLimitError || downloadCooldown > 0) && (
+                <Card.Content className="px-4">
+                  <AlertMessage tone="error" style={{ marginBottom: 0 }}>
+                    <span className="font-medium">{rateLimitError?.message || "Too many downloads."}</span>
+                    <span className="block text-[11px] opacity-70 mt-0.5">Try again in {downloadCooldown}s</span>
+                  </AlertMessage>
+                </Card.Content>
               )}
 
-              <div className="px-3 pb-3">
+              <Card.Footer className="px-4 pb-4">
                 {downloadButton}
-              </div>
-            </ShineCard>
+              </Card.Footer>
+            </Card>
 
             {uploader && (
-              <p className="mt-3 px-2 text-[11px] leading-relaxed text-[#6b7076] text-center">
+              <Typography type="body-xs" color="muted" className="mt-3 px-2 leading-relaxed text-center">
                 Anyone can set a name and banner. Hypastack doesn&apos;t vet profiles, so a banner alone proves nothing. Only accounts showing a{" "}
-                <span className="inline-flex items-center gap-0.5 align-middle text-[#898e97]"><MIcon name="verified" size={12} />Verified</span>{" "}
+                <span className="inline-flex items-center gap-0.5 align-middle text-muted"><MIcon name="verified" size={12} />Verified</span>{" "}
                 badge are confirmed. Don&apos;t trust a file just because it looks branded.
-              </p>
+              </Typography>
             )}
           </motion.div>
         )}

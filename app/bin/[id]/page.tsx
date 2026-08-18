@@ -2,10 +2,10 @@
 
 import { useEffect, useState, use } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Card, Chip, Typography } from "@heroui/react"
 import { ButtonLink } from "@/components/ui/button-link"
-import { ShineCard } from "@/components/ui/shine-card"
 import { LoadingSvg } from "@/components/ui/loading-svg"
+import { SideAd } from "@/components/ui/side-ad"
 import Link from "next/link"
 import { motion } from "motion/react"
 import { apiFetch } from "@/lib/http/fetch"
@@ -59,7 +59,8 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
   const retentionDays = createdAt ? 180 - Math.floor((now - new Date(createdAt).getTime()) / 864e5) : 180
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-[#08090a]">
+    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-background">
+      <SideAd />
       <div className="relative w-full max-w-[440px]">
         <div className="flex justify-center mb-8">
           <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
@@ -80,94 +81,50 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
 
         {error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-            <ShineCard radius={16} className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <MIcon name="error" className="text-red-500" size={28} />
-                <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight">
-                  Paste not found
-                </h2>
-              </div>
-              <p className="text-[13px] text-[#898e97] mb-6 leading-relaxed">
-                {error || "The paste you're looking for doesn't exist or has expired."}
-              </p>
-              <div className="flex gap-2">
-                <ButtonLink
-                  href="/me/dumpster"
-                  as={Link}
-                  variant="primary"
-                  className="flex-1"
-                >New Paste</ButtonLink>
-                <ButtonLink
-                  href="/"
-                  as={Link}
-                  variant="tertiary"
-                  size="lg"
-                  className="flex-1"
-                >Home</ButtonLink>
-              </div>
-            </ShineCard>
+            <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
+              <Card.Header className="gap-2">
+                <Card.Title className="text-xl">Paste not found</Card.Title>
+                <Card.Description>
+                  {error || "The paste you're looking for doesn't exist or has expired."}
+                </Card.Description>
+              </Card.Header>
+              <Card.Footer className="gap-2">
+                <ButtonLink href="/me/bin" as={Link} variant="primary" className="flex-1">
+                  New Paste
+                </ButtonLink>
+                <ButtonLink href="/" as={Link} variant="tertiary" size="lg" className="flex-1">
+                  Home
+                </ButtonLink>
+              </Card.Footer>
+            </Card>
           </motion.div>
         )}
 
         {content !== null && !error && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <ShineCard radius={16} tilt={0}>
-              <div className="p-5 pb-4">
-                <h1 className="text-[18px] font-semibold tracking-tight break-all leading-snug mb-2 text-[#f7f8f8]">
-                  {id}.txt
-                </h1>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-semibold tracking-wider uppercase text-[#898e97] bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded-[5px]">TXT</span>
-                  <span className="text-[13px] text-[#898e97]">
-                    {fmtBytes(new Blob([content]).size)}
-                  </span>
+            <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
+              <Card.Header className="flex-row items-center justify-between gap-3">
+                <Card.Title className="text-lg break-all">{id}.txt</Card.Title>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Chip size="sm" variant="soft" className="gap-1">
+                    <MIcon name="schedule" size={14} />
+                    ~{Math.max(0, retentionDays)} days
+                  </Chip>
+                  <Chip size="sm" variant="soft" className="uppercase tracking-wider text-[10px] font-semibold">TXT</Chip>
+                  <Typography type="body-sm" color="muted">{fmtBytes(new Blob([content]).size)}</Typography>
                 </div>
-              </div>
+              </Card.Header>
 
-              <div className="mx-3 mb-3 rounded-[6px] bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] p-1">
-                <div
-                  className="flex items-center justify-between hover:bg-[rgba(255,255,255,0.04)] transition-all duration-150 h-[38px] px-3 rounded-[6px]"
-                >
-                  <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
-                    <MIcon name="schedule" size={14} className="opacity-70" />Retention
-                  </span>
-                  <span className="text-[13px] font-medium text-[#f7f8f8]">~{Math.max(0, retentionDays)} days</span>
-                </div>
-                <div className="h-[1px] mx-2 bg-[rgba(255,255,255,0.04)]" />
-                <div
-                  className="flex items-center justify-between hover:bg-[rgba(255,255,255,0.04)] transition-all duration-150 h-[38px] px-3 rounded-[6px]"
-                >
-                  <span className="flex items-center gap-2.5 text-[13px] text-[#898e97]">
-                    <MIcon name="visibility_off" size={14} className="opacity-70" />Privacy
-                  </span>
-                  <span className="text-[13px] font-medium text-[#f7f8f8]">Anonymous</span>
-                </div>
-              </div>
-
-              <div className="px-3 pb-3">
-                <div className="flex gap-2">
-                  <Button
-                    variant="primary"
-                    onPress={copyToClipboard}
-                    className="flex-1"
-                    style={{ gap: 8 }}
-                  >
-                    <MIcon name={copied ? "check" : "content_copy"} size={16} />
-                    {copied ? "Copied" : "Copy to Clipboard"}
-                  </Button>
-                  <Button
-                    variant="tertiary"
-                    onPress={handleRaw}
-                    size="lg"
-                    isIconOnly
-                    aria-label="View Raw"
-                  >
-                    <MIcon name="code" size={18} />
-                  </Button>
-                </div>
-              </div>
-
-            </ShineCard>
+              <Card.Footer className="gap-2">
+                <Button variant="primary" onPress={copyToClipboard} className="flex-1" style={{ gap: 8 }}>
+                  <MIcon name={copied ? "check" : "content_copy"} size={16} />
+                  {copied ? "Copied" : "Copy to Clipboard"}
+                </Button>
+                <Button variant="tertiary" onPress={handleRaw} size="lg" isIconOnly aria-label="View Raw">
+                  <MIcon name="code" size={18} />
+                </Button>
+              </Card.Footer>
+            </Card>
           </motion.div>
         )}
       </div>
