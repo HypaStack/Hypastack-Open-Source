@@ -16,7 +16,7 @@ export default function ChangelogPage() {
     <main className="flex min-h-screen flex-col bg-background">
       <Navbar />
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[720px] px-6">
+        <div className="mx-auto max-w-[880px] px-6">
           <ChangelogList />
         </div>
       </section>
