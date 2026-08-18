@@ -199,7 +199,7 @@ function ManageLayoutInner({
   const tierLimits = getTierLimits(normalizeTier(user.tier))
   return (
     <>
-    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
+    <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-background text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
@@ -220,7 +220,7 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
+              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
               style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
@@ -399,9 +399,9 @@ function ManageLayoutInner({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-black shadow-none overflow-hidden relative">
+      <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-background shadow-none overflow-hidden relative">
         <header
-          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-black lg:hidden safe-area-top relative z-10"
+          className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-background lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
         >
           <Button

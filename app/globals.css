@@ -80,7 +80,8 @@ a:hover .material-symbols-rounded,
 
 /* Dark theme — scoped to /me dashboard */
 .theme-dark {
-  --background: #111111;
+  /* Not pure black — a touch of gray so the panels read as surfaces against it. */
+  --background: #0c0c0d;
   --foreground: #fafafa;
   --card: #18181b;
   --popover: #18181b;
