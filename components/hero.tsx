@@ -58,9 +58,7 @@ export function Hero() {
           <PopIn delay={80} fromY={16} className="mb-4">
             <ButtonGroup variant="secondary" size="sm">
               <Button>V3</Button>
-              <ButtonGroup.Separator />
               <Button>New update</Button>
-              <ButtonGroup.Separator />
               <Button>See what&rsquo;s new</Button>
             </ButtonGroup>
           </PopIn>
