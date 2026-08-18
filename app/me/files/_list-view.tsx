@@ -136,12 +136,7 @@ export function ListView({
             <Table.Column className="w-10 pr-2 py-2">
               <SelectionCheckbox />
             </Table.Column>
-            {/* HeroUI's own .table__column/.table__cell ship a 16px left
-                padding as unlayered CSS, which silently beats a plain `pl-*`
-                utility, both this and the row cells below need `!` to
-                actually win. 32px = the rows' own 8px cell padding + the
-                chevron column (w-7 with -mx-1 = 20px) + the gap-1 after it,
-                so "Name" lines up exactly where the names start. */}
+            {/* !pl-8 fights HeroUI's unlayered 16px cell padding so Name lines up with rows. */}
             <Table.Column isRowHeader className="py-2 !pl-8">Name</Table.Column>
             <Table.Column className="w-28 text-right py-2">Size</Table.Column>
           </Table.Header>
@@ -198,8 +193,7 @@ export function ListView({
                     <SelectionCheckbox />
                   </Table.Cell>
                   <Table.Cell className="py-2 !pl-2">
-                    {/* The empty span stands in for the folder rows' expand
-                        chevron, so file and folder names share one column. */}
+                    {/* Empty span stands in for the folder rows' chevron, keeps names aligned. */}
                     <div className="flex items-center gap-1 min-w-0" style={{ paddingLeft: row.depth * 20 }}>
                       <span className="h-5 w-7 -mx-1 shrink-0" />
                       <div

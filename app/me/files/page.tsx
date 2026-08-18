@@ -520,10 +520,7 @@ function FilesPageInner() {
         </div>
       </div>
 
-      {/* Dropping a dragged file anywhere in the panel but not on a folder row
-          sends it back to the Drive root. Drops handled by the table itself
-          (onto a folder, or its own root area) never reach here. flex-1 makes
-          the zone cover the empty area below the table. */}
+      {/* Drop anywhere here but not a folder row sends the file back to root. */}
       <div className="flex-1 flex flex-col" onDragOver={handleRootDragOver} onDrop={handleRootDrop}>
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
@@ -575,11 +572,7 @@ function FilesPageInner() {
         )}
       </div>
 
-      {/*
-        When files were pre-selected via the OS picker, render the UploadZone
-        outside any modal so only the bottom-right tray appears, no drop zone.
-        The full modal is only used when opening the upload area without pre-selected files.
-      */}
+      {/* Pre-selected files skip the modal and go straight to the tray. */}
       {uploadOpen && pendingUploadFiles && (
         <UploadZone
           initialFiles={pendingUploadFiles}

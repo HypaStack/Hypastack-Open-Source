@@ -139,9 +139,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://hypastack.com" />
         <link rel="dns-prefetch" href="https://hypastack.com" />
 
-        {/* Font origin: preconnect + preload the variable Instrument Sans font
-            (covers weights 400-700) so it arrives before first paint and
-            avoids the fallback-font flash (FOUC). */}
+        {/* Preconnect + preload the font so it arrives before first paint, avoids FOUC. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preload" as="font" type="font/woff2" crossOrigin="anonymous" href="https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2" />
@@ -156,8 +154,7 @@ export default async function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="format-detection" content="telephone=no" />
         
-        {/* Structured Data - JSON-LD. Facts here must stay consistent with the
-            visible site (FAQ, tier limits), search and answer engines cross-check. */}
+        {/* JSON-LD facts must stay consistent with the visible site, search engines cross-check. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

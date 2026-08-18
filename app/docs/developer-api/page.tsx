@@ -69,11 +69,7 @@ export default function DeveloperApiDocs() {
           </div>
 
           <div className="flex gap-12">
-            {/* One element does the sticking and the scrolling. A definite
-                height (not max-height) is what actually makes it overflow, and
-                self-start stops the flex row stretching it to full page height.
-                Scrollbars are hidden app-wide, so the bottom edge fades out to
-                signal there's more below. */}
+            {/* Fixed height (not max-height) is what makes this scroll, self-start stops it stretching. */}
             <aside
               className="hidden lg:block w-[190px] shrink-0 self-start sticky top-28 h-[calc(100vh-9rem)] overflow-y-auto overscroll-contain pr-1"
               style={{

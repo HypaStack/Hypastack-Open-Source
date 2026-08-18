@@ -282,9 +282,7 @@ export default function DownloadPage() {
           className="absolute inset-0 flex flex-col justify-center items-center px-4"
         >
           <div className="max-w-[440px] w-full">
-            {/* Stays deliberately ambiguous between "no such file" and "exists
-                but you lack the key": saying which would confirm to a stranger
-                that a given id is real. */}
+            {/* Deliberately ambiguous, confirming which case it is would leak that the id is real. */}
             <AlertMessage tone="error" style={{ marginBottom: 0 }}>
               This link is missing its key. A Hypastack link carries it after the <code>#</code> — if yours got cut
               short, ask whoever sent it for the whole thing. (Or the file is gone.)

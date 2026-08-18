@@ -56,10 +56,7 @@ export default function BlogPage() {
                 </p>
 
                 <div className="mt-4">
-                  {/* Plain anchor, not next/link's Link: this is a Server Component
-                      (it exports `metadata`), and passing a Client Component
-                      reference like Link as a prop across that boundary isn't
-                      serializable. A full navigation here is a fine tradeoff. */}
+                  {/* Plain anchor: Link can't cross the Server/Client boundary here. */}
                   <ButtonLink
                     href={`/blog/${post.slug}`}
                     variant="primary"

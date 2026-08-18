@@ -18,11 +18,7 @@ export function FolderTile({
       onClick={onOpen}
       className="group relative flex flex-col items-center gap-0.5 py-2 w-[88px] mx-auto cursor-pointer select-none"
     >
-      {/*
-        Opacity lives on this wrapper, not the button: Button sets opacity
-        inline, which would beat any class we put on it.
-        Always reachable on touch, hover-revealed on pointer devices.
-      */}
+      {/* Opacity lives here, not on Button, it sets its own opacity inline. */}
       <span className="absolute top-1 right-1 z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
         <Button
           variant="danger"

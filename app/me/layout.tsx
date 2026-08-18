@@ -100,8 +100,7 @@ function NavRow({
         paddingRight: 12,
       }}
     >
-      {/* size as a string so MIcon's +2px nudge doesn't apply, a hair over the
-          15px label. Filled, lighter grade, larger optical size. */}
+      {/* size as a string skips MIcon's +2px nudge, a hair over the 15px label. */}
       <MIcon
         name={item.icon}
         size="16px"
@@ -328,9 +327,7 @@ function ManageLayoutInner({
               <MIcon name="expand_all" size={10} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            {/* containerPadding matches the sidebar's own 8px margin, react-aria's
-                12px default pushes the popover right to clear the viewport edge,
-                knocking it off the trigger. offset is the gap above the trigger. */}
+            {/* containerPadding matches the sidebar's 8px margin, not react-aria's default 12px. */}
             <Dropdown.Popover
               placement="top"
               containerPadding={8}
@@ -353,8 +350,7 @@ function ManageLayoutInner({
                     <MIcon name="check_circle" size={12} />
                     {tierLimits.label}
                   </Chip>
-                  {/* h-5/px-2/text-xs/rounded-2xl matches Chip sm, no Button size is that small,
-                      and the Button's own rounded-3xl (12px) turns into a pill at 20px tall. */}
+                  {/* Manually sized to match Chip sm, no Button size is that small. */}
                   <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0 h-5 px-2 text-xs md:h-5 rounded-2xl">
                     Sign out
                   </Button>
@@ -391,11 +387,7 @@ function ManageLayoutInner({
             fullWidth
             className="relative border-transparent"
           >
-            {/* Single ring border, fading from full accent at the bottom edge to
-                the normal border color by the vertical midpoint. A plain
-                border-color can't do this, so it's a masked gradient overlay
-                instead. Button's own border is transparent so this is the only
-                ring drawn, keeping it pixel-aligned with the rounded corners. */}
+            {/* Masked gradient ring, plain border-color can't fade top-to-bottom. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 rounded-[inherit]"
@@ -510,9 +502,7 @@ function ManageLayoutInner({
       </AnimatePresence>
 
       <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-transparent shadow-none overflow-hidden relative">
-        {/* Docked: the sidebar claims no width at all and the button sits on the
-            page's first line, left of the headline. top-2 puts it on the same
-            line as the sidebar's own top row (aside my-2 + pt-2 = 16px). */}
+        {/* Docked: sidebar claims no width, top-2 lines this up with its top row. */}
         {sidebarCollapsed && (
           <div className="hidden lg:block absolute left-6 top-2 z-20">
             <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
@@ -539,10 +529,7 @@ function ManageLayoutInner({
         </header>
 
         <div className="flex-1 relative overflow-hidden">
-          {/* Indent lives here, not on <main>: main already carries px-3/sm:px-5/
-              lg:px-6 and a second padding utility on the same element loses the
-              ordering race. This element carries none, and padding (unlike a
-              parent's) still applies inside an inset-0 box. */}
+          {/* Indent lives here, not on main, a second padding utility there would lose. */}
           <div className={`absolute inset-0 overflow-y-auto ${sidebarCollapsed ? "lg:pl-[50px]" : ""}`}>
             <motion.main
               key={pathname}
@@ -611,8 +598,7 @@ function ManageLayoutInner({
 
     </div>
 
-    {/* Always mounted so a fresh page load can still detect an interrupted
-        upload and show "Continue upload?", the on-demand modal isn't mounted yet. */}
+    {/* Always mounted so a fresh load can still detect an interrupted upload. */}
     <UploadZone />
     </>
   )
