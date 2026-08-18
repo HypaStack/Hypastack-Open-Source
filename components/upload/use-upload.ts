@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
+import { toast } from "@heroui/react"
 import { shouldUseMultipart } from "@/lib/storage/multipart"
 import { useManage } from "@/hooks/useManage"
 import { getTierLimits, FREE_LIMITS, getTierDelayMs, getTierUploadConcurrency, normalizeTier, isPaidTier } from "@/constants/tier-limits"
@@ -246,6 +247,7 @@ export function useUpload({
           setShareUrl(urls.join("\n"))
           setErrorMessage(errMsg(err, "Upload partially failed."))
           setState("error")
+          toast.danger(errMsg(err, "Upload partially failed."))
           return false
         }
         throw err
@@ -319,6 +321,22 @@ export function useUpload({
     uploadedBytesRef.current = 0
     abortControllerRef.current = new AbortController()
 
+    // Outcome toast. Settled by hand rather than by wrapping the run itself,
+    // because aborts and slug conflicts bail out early and are not failures.
+    let outcomeSettled = false
+    let settleUpload!: { resolve: () => void; reject: (err: unknown) => void }
+    const uploadOutcome = new Promise<void>((resolve, reject) => {
+      settleUpload = {
+        resolve: () => { outcomeSettled = true; resolve() },
+        reject: (err) => { outcomeSettled = true; reject(err) },
+      }
+    })
+    const uploadToastId = toast.promise(uploadOutcome, {
+      loading: files.length > 1 ? `Uploading ${files.length} files…` : "Uploading…",
+      success: files.length > 1 ? `Uploaded ${files.length} files` : "Upload complete",
+      error: (err) => errMsg(err, "Upload failed. Please try again."),
+    })
+
     try {
       if (uploadType === "cdn") {
         const { text, urls } = await runCdnUpload(files, currentCsrfToken, {
@@ -357,6 +375,7 @@ export function useUpload({
         }
       }
       setState("done")
+      settleUpload.resolve()
       if (onUploadComplete && uploadType !== "cdn") {
         onUploadComplete(null)
       }
@@ -377,9 +396,13 @@ export function useUpload({
       }
       setErrorMessage(errMsg(error, "Upload failed. Please try again."))
       setState("error")
+      settleUpload.reject(error)
     } finally {
       setIsUploading(false)
       abortControllerRef.current = null
+      // Aborted, slug conflict, or a partial batch failure the tray reports
+      // itself — drop the loading toast instead of leaving it spinning.
+      if (!outcomeSettled) toast.close(uploadToastId)
     }
   }
 
@@ -557,6 +580,7 @@ export function useUpload({
       console.error("[Upload] Resume failed:", err)
       setErrorMessage(errMsg(err, "Resume failed"))
       setState("error")
+      toast.danger(errMsg(err, "Resume failed"))
       setIsUploading(false)
       setResuming(false)
     }
