@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
-import { Button, ButtonGroup } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
@@ -56,11 +56,7 @@ export function Hero() {
       <div className="w-full relative overflow-visible flex flex-col items-center justify-center bg-black">
         <div className="flex flex-col items-center px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={80} fromY={16} className="mb-4">
-            <ButtonGroup variant="secondary" size="sm">
-              <Button>V3</Button>
-              <Button>New update</Button>
-              <Button>See what&rsquo;s new</Button>
-            </ButtonGroup>
+            <Button variant="secondary" size="sm">See what&rsquo;s new in V3</Button>
           </PopIn>
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
