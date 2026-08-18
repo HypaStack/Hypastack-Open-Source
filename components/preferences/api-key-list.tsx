@@ -11,7 +11,6 @@ export function ApiKeyList({ keys, onChanged }: { keys: ApiKeySummary[]; onChang
     const confirmed = await hypaConfirm({
       title: `Revoke "${key.name}"?`,
       description: "Anything using this key stops working right away. This cannot be undone.",
-      items: [],
       confirmText: "Revoke",
       cancelText: "Cancel",
     })

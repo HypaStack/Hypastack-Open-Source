@@ -40,7 +40,6 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
     const confirmed = await hypaConfirm({
       title: `Delete all ${files.length} file(s) permanently?`,
       description: "This will wipe every file in your Drive. This cannot be undone.",
-      items: files.slice(0, 10).map(f => f.name),
       confirmText: "Wipe all",
       cancelText: "Cancel",
     })
@@ -67,7 +66,6 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
     const confirmed = await hypaConfirm({
       title: "Delete your account permanently?",
       description: "All files, Edge assets, and your account will be permanently erased. This cannot be undone.",
-      items: [],
       confirmText: "Delete forever",
       cancelText: "Cancel",
     })

@@ -42,7 +42,7 @@ export function ListView({
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
   onOpenFolder: (id: string) => void
-  onDeleteFolder: (id: string, name: string) => void
+  onDeleteFolder: (id: string) => void
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
@@ -128,7 +128,7 @@ export function ListView({
                         isIconOnly
                         size="sm"
                         style={{ height: 26, width: 26 }}
-                        onPress={() => onDeleteFolder(row.folder.id, row.folder.name)}
+                        onPress={() => onDeleteFolder(row.folder.id)}
                         aria-label={`Delete folder ${row.folder.name}`}
                       >
                         <MIcon name="delete" size={16} />

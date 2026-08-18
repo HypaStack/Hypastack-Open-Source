@@ -169,10 +169,8 @@ function FilesPageInner() {
   }
 
   const handleDelete = async (fileId: string) => {
-    const file = files.find(f => f.id === fileId)
     await hypaConfirm({
       title: "Are you sure you want to delete this file forever?",
-      items: file ? [file.name] : [],
       confirmText: "Delete",
       cancelText: "Cancel",
       onConfirm: async () => {
@@ -203,14 +201,10 @@ function FilesPageInner() {
 
     const fileIds = Array.from(selectedIds).filter((id) => files.some((f) => f.id === id))
     const folderIds = Array.from(selectedIds).filter((id) => folders.some((f) => f.id === id))
-    const names = [
-      ...fileIds.map((id) => files.find((f) => f.id === id)?.name || "Unknown file"),
-      ...folderIds.map((id) => folders.find((f) => f.id === id)?.name || "Unknown folder"),
-    ]
+    const itemCount = fileIds.length + folderIds.length
     const confirmed = await hypaConfirm({
-      title: `Are you sure you want to delete ${names.length} item(s) forever?`,
+      title: `Are you sure you want to delete ${itemCount} item(s) forever?`,
       description: folderIds.length > 0 ? "Deleting a folder also deletes everything inside it. This cannot be undone." : undefined,
-      items: names,
       confirmText: "Delete",
       cancelText: "Cancel",
     })
@@ -271,7 +265,7 @@ function FilesPageInner() {
       }
 
       setSelectedIds(new Set())
-      toast.success(`Deleted ${names.length} item${names.length === 1 ? "" : "s"}`)
+      toast.success(`Deleted ${itemCount} item${itemCount === 1 ? "" : "s"}`)
     } catch (err) {
       hypaError("Failed to delete", errorMessage(err))
     } finally {
@@ -337,11 +331,10 @@ function FilesPageInner() {
     }
   }
 
-  const handleDeleteFolder = async (folderId: string, folderName: string) => {
+  const handleDeleteFolder = async (folderId: string) => {
     const confirmed = await hypaConfirm({
-      title: `Delete folder "${folderName}"?`,
+      title: "Delete this folder?",
       description: "This will permanently delete this folder and all files inside it. This cannot be undone.",
-      items: [],
       confirmText: "Wipe",
       cancelText: "Cancel",
     })

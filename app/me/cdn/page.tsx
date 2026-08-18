@@ -139,7 +139,7 @@ export default function CdnPage() {
   const handleDeleteFolder = async (folderId: string) => {
     const folder = folders.find(f => f.id === folderId)
     const confirmed = await hypaConfirm({
-      title: `Delete folder "${folder?.name || "Unknown"}" and all its contents?`,
+      title: "Delete this folder and all its contents?",
       confirmText: "Delete",
       cancelText: "Cancel",
     })
@@ -234,10 +234,8 @@ export default function CdnPage() {
   }
 
   const handleDelete = async (assetId: string) => {
-    const asset = assets.find((a) => a.id === assetId)
     await hypaConfirm({
       title: "Are you sure you want to delete this asset forever?",
-      items: asset ? [asset.name] : [],
       confirmText: "Delete",
       cancelText: "Cancel",
       onConfirm: async () => {
@@ -427,10 +425,8 @@ export default function CdnPage() {
     if (selectedAssets.size === 0) return
 
     const ids = Array.from(selectedAssets)
-    const assetNames = ids.map(id => assets.find(a => a.id === id)?.name || "Unknown asset")
     const confirmed = await hypaConfirm({
       title: `Are you sure you want to delete ${ids.length} asset(s) forever?`,
-      items: assetNames,
       confirmText: "Delete",
       cancelText: "Cancel",
     })

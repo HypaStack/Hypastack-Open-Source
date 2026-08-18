@@ -7,7 +7,6 @@ import { AlertMessage } from "./alert-message"
 export interface HypaNotifOptions {
   title: string
   description?: string
-  items?: string[]
   confirmText?: string
   cancelText?: string
   destructive?: boolean
@@ -144,11 +143,6 @@ function NotifDialog({ notif, onResolve }: { notif: NotifState; onResolve: (id: 
             </Modal.Header>
             <Modal.Body className="space-y-3">
               {notif.description && <p>{notif.description}</p>}
-              {notif.items && notif.items.length > 0 && (
-                <ul className="max-h-[140px] overflow-y-auto">
-                  {notif.items.map((item) => <li key={item} className="truncate">{item}</li>)}
-                </ul>
-              )}
               {notif.isInput && (
                 <TextField
                   value={value}
