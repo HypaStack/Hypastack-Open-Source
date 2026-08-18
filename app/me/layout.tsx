@@ -207,12 +207,12 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="relative z-20 shrink-0 px-0 pt-2">
+        <div className="relative z-20 shrink-0 flex items-center gap-2 px-0 pt-2" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Switch account"
-              className="flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"
-              style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
+              className="flex min-w-0 flex-1 items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"
+              style={{ height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
                 src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
@@ -236,7 +236,7 @@ function ManageLayoutInner({
                 <Dropdown.Item
                   id="current"
                   textValue={user.nickname}
-                  onAction={() => toast.info("You're already logged in on this account")}
+                  onAction={() => toast.warning("You're already logged in on this account")}
                   className="flex items-center gap-2"
                 >
                   <img decoding="async"
@@ -252,7 +252,7 @@ function ManageLayoutInner({
                 <Dropdown.Item
                   id="add-account"
                   textValue="Add another account"
-                  onAction={() => toast.info("We're working on that, stay tuned!")}
+                  onAction={() => toast.warning("We're working on that, stay tuned!")}
                   className="flex items-center gap-2"
                 >
                   <MIcon name="add" size={20} className="shrink-0" />
@@ -261,6 +261,16 @@ function ManageLayoutInner({
               </Dropdown.Menu>
             </Dropdown.Popover>
           </Dropdown>
+
+          <Button
+            variant="outline"
+            isIconOnly
+            aria-label="Collapse sidebar"
+            className="border-white/10 shrink-0"
+            style={{ height: 38, width: 38 }}
+          >
+            <MIcon name="dock_to_right" size={18} />
+          </Button>
         </div>
 
         <nav className="flex-1 min-h-0 px-0 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
