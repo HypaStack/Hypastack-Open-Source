@@ -40,13 +40,22 @@ export const metadata: Metadata = {
   ],
   creator: "Kiko",
   publisher: "Hypastack",
+  // Set GOOGLE_SITE_VERIFICATION / BING_SITE_VERIFICATION once you have real
+  // codes from Search Console / Bing Webmaster Tools. No-op until then.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+      : undefined,
+  },
+  // Safety net: any non-production build (a staging/preview instance) never gets indexed.
   robots: {
-    index: true,
-    follow: true,
+    index: process.env.NODE_ENV === "production",
+    follow: process.env.NODE_ENV === "production",
     nocache: false,
     googleBot: {
-      index: true,
-      follow: true,
+      index: process.env.NODE_ENV === "production",
+      follow: process.env.NODE_ENV === "production",
       noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
