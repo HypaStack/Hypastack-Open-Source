@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { MIcon } from "@/components/ui/material-icon"
 import { motion } from "motion/react"
-import { Button } from "@heroui/react"
+import { Button, Card, Typography } from "@heroui/react"
 import { ButtonLink } from "@/components/ui/button-link"
 
 export default function ErrorPage({
@@ -19,7 +19,7 @@ export default function ErrorPage({
   }, [error])
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#08090a] px-4 sm:px-6 py-12">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4 sm:px-6 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -35,22 +35,22 @@ export default function ErrorPage({
           />
         </Link>
 
-        <div className="w-full bg-[#0a0b0c] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-6">
-          <div className="flex items-center gap-2.5 mb-3">
-            <MIcon name="error" className="text-red-500" size={20} />
-            <h2 className="text-[20px] font-semibold text-[#f7f8f8] tracking-tight" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>
-              Something went wrong
-            </h2>
-          </div>
-          <p className="text-[14px] text-[#898e97] mb-6 leading-relaxed text-left">
-            An unexpected error occurred. Please try again or contact support if the problem persists.
-          </p>
-          {error?.digest && (
-            <p className="text-[11px] text-[#6b7075] font-mono mb-6 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2">
-              ref: {error.digest}
-            </p>
-          )}
-          <div className="flex gap-3">
+        <Card variant="transparent" className="w-full bg-overlay border !border-solid border-white/10 rounded-[16px]">
+          <Card.Header>
+            <div className="flex items-center gap-2.5">
+              <MIcon name="error" className="text-danger" size={20} />
+              <Card.Title className="text-xl">Something went wrong</Card.Title>
+            </div>
+            <Card.Description>
+              An unexpected error occurred. Please try again or contact support if the problem persists.
+            </Card.Description>
+            {error?.digest && (
+              <Typography type="body-xs" color="muted" className="font-mono bg-white/[0.03] border border-white/10 rounded-md px-3 py-2">
+                ref: {error.digest}
+              </Typography>
+            )}
+          </Card.Header>
+          <Card.Footer className="gap-3">
             <Button variant="primary" onPress={reset} className="flex-1">
               Try again
             </Button>
@@ -63,8 +63,8 @@ export default function ErrorPage({
             >
               Home
             </ButtonLink>
-          </div>
-        </div>
+          </Card.Footer>
+        </Card>
       </motion.div>
     </main>
   )

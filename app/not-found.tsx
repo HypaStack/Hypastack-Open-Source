@@ -1,55 +1,36 @@
 "use client"
 
-import { AlertMessage } from "@/components/ui/alert-message"
-import { MIcon } from "@/components/ui/material-icon"
-import { motion } from "motion/react"
-import { useRouter } from "next/navigation"
-import { Button } from "@heroui/react"
+import Link from "next/link"
+import { Typography, linkVariants } from "@heroui/react"
 
 export default function NotFoundPage() {
-  const router = useRouter()
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#08090a] px-4 sm:px-6 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex w-full max-w-md flex-col items-center"
+    <main className="relative min-h-screen overflow-hidden bg-background px-4 sm:px-6">
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center font-bold text-foreground opacity-5 select-none pointer-events-none"
+        style={{ fontSize: "clamp(220px, 40vw, 440px)" }}
       >
-        <img
-          src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
-          alt="Hypastack"
-          className="w-[52px] h-auto object-contain select-none mb-6"
-          draggable={false}
-        />
+        404
+      </span>
 
-        <div className="w-full">
-          <AlertMessage
-            tone="error"
-            icon={<MIcon name="info" size={16} style={{ flexShrink: 0, marginRight: 8, marginTop: 2 }} />}
-            style={{ marginBottom: 16 }}
-          >
-            The page you're looking for doesn't exist or has been moved.
-          </AlertMessage>
-          <div className="flex gap-3">
-            <Button
-              variant="primary"
-              onPress={() => router.push("/me/files")}
-              className="flex-1"
-            >
-              Upload a file
-            </Button>
-            <Button
-              variant="tertiary"
-              size="lg"
-              onPress={() => router.push("/")}
-              className="flex-1"
-            >
-              Home
-            </Button>
-          </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <Typography type="h1" className="text-foreground text-6xl sm:text-7xl">OOOPS!</Typography>
+        <Typography type="body" color="muted" className="mt-4 text-2xl">
+          This is not the page you are looking for.
+        </Typography>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 pb-12 px-4 text-center">
+        <Typography type="body" color="muted" className="text-xl">
+          Here&apos;s some helpful links instead:
+        </Typography>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-lg">
+          <Link href="/me/files" className={linkVariants().base()}>Dashboard</Link>
+          <Link href="/" className={linkVariants().base()}>Home</Link>
+          <Link href="/docs/developer-api" className={linkVariants().base()}>Developer API</Link>
         </div>
-      </motion.div>
+      </div>
     </main>
   )
 }
