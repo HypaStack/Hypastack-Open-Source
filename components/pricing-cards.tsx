@@ -4,15 +4,12 @@ import { useState } from "react"
 import Link from "next/link"
 import { motion } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { ButtonLink } from "@/components/ui/button-link"
-import { ShineCard } from "@/components/ui/shine-card"
+import { Card, Chip, Switch, Typography } from "@heroui/react"
 import { TIER_ORDER, getTierLimits, formatTierSize, isUnlimited, type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 
-const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
-
-// Tier rendered as the green "best value" card. Visual-only rename premium → Pro.
+// Tier rendered as the accent "best value" card. Visual-only rename premium → Pro.
 const POPULAR: PreferencesTier = "premium"
 
 const PAID_TIERS = TIER_ORDER.filter((t) => t !== "free")
@@ -93,11 +90,17 @@ export function PricingCards() {
   return (
     <>
       <div className="mb-10 flex items-center justify-center gap-3">
-        <span className={`text-[14px] ${!annual ? "text-[#f7f8f8] font-medium" : "text-[#898e97]"}`}>Monthly</span>
-        <ToggleSwitch checked={annual} onChange={setAnnual} aria-label="Toggle annual billing" />
-        <span className={`text-[14px] ${annual ? "text-[#f7f8f8] font-medium" : "text-[#898e97]"}`}>
-          Yearly <span className="text-[#a5b4fc]">· save 20%</span>
-        </span>
+        <Typography type="body-sm" className={!annual ? "font-medium text-foreground" : "text-muted"}>Monthly</Typography>
+        <Switch isSelected={annual} onChange={setAnnual} aria-label="Toggle annual billing">
+          <Switch.Content>
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+          </Switch.Content>
+        </Switch>
+        <Typography type="body-sm" className={annual ? "font-medium text-foreground" : "text-muted"}>
+          Yearly <span className="text-accent">· save 20%</span>
+        </Typography>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -108,66 +111,6 @@ export function PricingCards() {
           const storage = formatTierSize(getTierLimits(tier).maxCdnStorage)
           const plusHeader = PLUS_HEADER[tier]
 
-          const inner = (
-            <>
-              {/* header */}
-              <div>
-                <h3 className="text-[30px] font-semibold text-[#f7f8f8] leading-none" style={HEADING_FONT}>{label}</h3>
-                <p className="mt-2 text-[14px] text-[#898e97]">{TAGLINE[tier]}</p>
-              </div>
-
-              {/* price */}
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="text-[40px] font-semibold text-[#f7f8f8] tracking-tight leading-none" style={HEADING_FONT}>
-                  {priceAmount(tier, annual)}
-                </span>
-                <span className="text-[14px] text-[#898e97]">/ {annual ? "year" : "month"}</span>
-              </div>
-
-              {/* headline metric box (storage) */}
-              <div
-                className={`mt-7 flex items-center justify-between rounded-[16px] border px-4 py-3.5 ${
-                  green ? "border-[rgba(79,70,229,0.4)] bg-[rgba(79,70,229,0.08)]" : "border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <MIcon name="database" size={18} className="text-[#f7f8f8]" />
-                  <span className="text-[17px] font-semibold text-[#f7f8f8]">{storage}</span>
-                  {green && (
-                    <span className="rounded-md bg-[rgba(79,70,229,0.25)] px-1.5 py-0.5 text-[11px] font-semibold text-[#a5b4fc]">Best value</span>
-                  )}
-                </div>
-                <span className="text-[13px] text-[#898e97]">of storage</span>
-              </div>
-
-              {/* features */}
-              <div className="mt-7">
-                {plusHeader && <p className="mb-4 text-[14px] font-semibold text-[#f7f8f8]">{plusHeader}</p>}
-                <ul className="space-y-3.5">
-                  {bullets(tier).map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <MIcon name="check" size={17} className={`shrink-0 mt-0.5 ${green ? "text-[#a5b4fc]" : "text-[#f7f8f8]"}`} />
-                      <span className="text-[15px] leading-snug text-[#d4d6d9]">{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* CTA */}
-              <div className="mt-auto pt-9">
-                {green ? (
-                  <ButtonLink href="/signin" as={Link} variant="primary" size="lg" fullWidth aria-label={`Get ${label}`}>
-                    Get {label}
-                  </ButtonLink>
-                ) : (
-                  <ButtonLink href="/signin" as={Link} variant="tertiary" size="lg" fullWidth aria-label={`Get ${label}`}>
-                    Get {label}
-                  </ButtonLink>
-                )}
-              </div>
-            </>
-          )
-
           return (
             <motion.div
               key={tier}
@@ -177,13 +120,58 @@ export function PricingCards() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.2, 0.8, 0.2, 1] }}
             >
-              <ShineCard
-                bg={green ? "rgba(64,64,64,0.3)" : "rgba(38,38,38,0.3)"}
-                highlight={green}
-                className="h-full p-7"
+              <Card
+                variant="transparent"
+                className={`h-full !p-0 !gap-0 flex flex-col bg-overlay border !border-solid rounded-[16px] ${
+                  green ? "border-accent/40" : "border-white/10"
+                }`}
               >
-                {inner}
-              </ShineCard>
+                <Card.Header className="p-7 pb-0">
+                  <Card.Title className="text-3xl">{label}</Card.Title>
+                  <Card.Description>{TAGLINE[tier]}</Card.Description>
+                </Card.Header>
+
+                <Card.Content className="flex-1 p-7">
+                  {/* price */}
+                  <div className="flex items-baseline gap-2">
+                    <Typography type="h2" className="text-foreground">{priceAmount(tier, annual)}</Typography>
+                    <Typography type="body-sm" color="muted">/ {annual ? "year" : "month"}</Typography>
+                  </div>
+
+                  {/* headline metric box (storage) */}
+                  <div
+                    className={`mt-7 flex items-center justify-between rounded-[16px] border px-4 py-3.5 ${
+                      green ? "border-accent/40 bg-accent/10" : "border-separator bg-surface"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <MIcon name="database" size={18} className="text-foreground" />
+                      <Typography type="body" weight="semibold" className="text-foreground">{storage}</Typography>
+                      {green && <Chip size="sm" variant="soft">Best value</Chip>}
+                    </div>
+                    <Typography type="body-xs" color="muted">of storage</Typography>
+                  </div>
+
+                  {/* features */}
+                  <div className="mt-7">
+                    {plusHeader && <Typography type="body-sm" weight="semibold" className="mb-4 text-foreground">{plusHeader}</Typography>}
+                    <ul className="space-y-3.5">
+                      {bullets(tier).map((b) => (
+                        <li key={b} className="flex items-start gap-3">
+                          <MIcon name="check" size={17} className={`shrink-0 mt-0.5 ${green ? "text-accent" : "text-foreground"}`} />
+                          <Typography type="body-sm" className="leading-snug text-foreground">{b}</Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Card.Content>
+
+                <Card.Footer className="p-7 pt-0">
+                  <ButtonLink href="/signin" as={Link} variant={green ? "primary" : "tertiary"} size="lg" fullWidth aria-label={`Get ${label}`}>
+                    Get {label}
+                  </ButtonLink>
+                </Card.Footer>
+              </Card>
             </motion.div>
           )
         })}

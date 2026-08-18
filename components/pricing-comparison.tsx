@@ -1,9 +1,11 @@
 import { MIcon } from "@/components/ui/material-icon"
+import { Table, Typography } from "@heroui/react"
 import { getTierLimits, formatTierSize, isUnlimited, type PreferencesTier, type TierLimits } from "@/constants"
 
 // Columns align with the three plan cards above (Essential, Pro, Max).
 const TIERS: PreferencesTier[] = ["essential", "premium", "ultimate"]
 const LIMITS = TIERS.map(getTierLimits)
+const TIER_LABELS = ["Essential", "Pro", "Max"]
 
 type Cell = { on: boolean; main: string; suffix?: string; infinity?: boolean }
 type Row = [Cell, Cell, Cell]
@@ -81,22 +83,22 @@ const SECTIONS: Section[] = [
 function CellView({ c }: { c: Cell }) {
   if (!c.on) {
     return (
-      <div className="flex items-center gap-2.5 text-[#585c63]">
+      <div className="flex items-center justify-center gap-2.5 text-muted">
         <span className="w-4 shrink-0 text-center">—</span>
-        <span className="text-[15px]">
+        <Typography type="body-sm">
           {c.main}
           {c.suffix ? ` ${c.suffix}` : ""}
-        </span>
+        </Typography>
       </div>
     )
   }
   return (
-    <div className="flex items-center gap-2.5">
-      <MIcon name={c.infinity ? "all_inclusive" : "check"} size={16} className="shrink-0 text-[#e6e7e9]" />
-      <span className="text-[15px] text-[#f7f8f8]">
+    <div className="flex items-center justify-center gap-2.5">
+      <MIcon name={c.infinity ? "all_inclusive" : "check"} size={16} className="shrink-0 text-foreground" />
+      <Typography type="body-sm" className="text-foreground">
         {c.main}
-        {c.suffix ? <span className="text-[#6b7076]"> {c.suffix}</span> : null}
-      </span>
+        {c.suffix ? <span className="text-muted"> {c.suffix}</span> : null}
+      </Typography>
     </div>
   )
 }
@@ -106,17 +108,35 @@ export function PricingComparison() {
     <div className="mt-20">
       {SECTIONS.map((section) => (
         <div key={section.title} className="mt-12 first:mt-0">
-          <div className="flex items-center gap-2.5 pb-4 border-b border-[rgba(255,255,255,0.1)]">
-            <MIcon name={section.icon} size={19} className="text-[#f7f8f8]" />
-            <span className="text-[15px] font-semibold text-[#f7f8f8]">{section.title}</span>
+          <div className="flex items-center gap-2.5 pb-4">
+            <MIcon name={section.icon} size={19} className="text-foreground" />
+            <Typography type="body-sm" weight="semibold" className="text-foreground">{section.title}</Typography>
           </div>
-          {section.rows.map((row, i) => (
-            <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4 border-b border-[rgba(255,255,255,0.06)]">
-              {row.map((cell, j) => (
-                <CellView key={j} c={cell} />
-              ))}
-            </div>
-          ))}
+
+          <Table>
+            <Table.ScrollContainer>
+              <Table.Content aria-label={`${section.title} plan comparison`}>
+                <Table.Header>
+                  {TIER_LABELS.map((label, i) => (
+                    <Table.Column key={label} isRowHeader={i === 0} className="text-center">
+                      {label}
+                    </Table.Column>
+                  ))}
+                </Table.Header>
+                <Table.Body>
+                  {section.rows.map((row, i) => (
+                    <Table.Row key={i} id={`${section.title}-${i}`}>
+                      {row.map((cell, j) => (
+                        <Table.Cell key={j}>
+                          <CellView c={cell} />
+                        </Table.Cell>
+                      ))}
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
         </div>
       ))}
     </div>

@@ -2,6 +2,7 @@ import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { PricingCards } from "@/components/pricing-cards"
 import { PricingComparison } from "@/components/pricing-comparison"
+import { Typography, Link } from "@heroui/react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -13,11 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
-const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
-
 export default function Pricing() {
   return (
-    <main className="flex min-h-screen flex-col bg-black">
+    <main className="flex min-h-screen flex-col bg-background">
       <Navbar />
 
       <section className="flex-1 pt-32 pb-40">
@@ -25,24 +24,24 @@ export default function Pricing() {
           <div className="relative text-center mb-12">
             {/* soft spotlight behind the title */}
             <div className="pointer-events-none absolute left-1/2 -top-32 -translate-x-1/2 w-[440px] max-w-[85vw] h-[260px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.09),transparent_70%)] blur-2xl" />
-            <h1 className="relative text-[clamp(40px,4.6vw,58px)] font-bold tracking-tight text-[#f7f8f8]" style={HEADING_FONT}>
+            <Typography type="h1" className="relative text-[clamp(40px,4.6vw,58px)] text-foreground">
               Pricing
-            </h1>
-            <p className="relative mt-3 text-[15px] text-[#898e97]">
+            </Typography>
+            <Typography type="body" color="muted" className="relative mt-3">
               Choose the plan that fits how you share.
-            </p>
+            </Typography>
           </div>
 
           <PricingCards />
 
           <PricingComparison />
 
-          <p className="mt-16 text-center text-[14px] text-[#898e97]">
+          <Typography type="body-sm" color="muted" className="mt-16 text-center">
             Need more capabilities?{" "}
-            <a href="https://t.me/hypastack" target="_blank" rel="noopener noreferrer" className="text-[#f7f8f8] hover:underline">
+            <Link href="https://t.me/hypastack" target="_blank" rel="noopener noreferrer" className="text-foreground">
               Contact us
-            </a>
-          </p>
+            </Link>
+          </Typography>
         </div>
       </section>
 
