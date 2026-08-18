@@ -45,7 +45,7 @@ export default function CreateAccountPage() {
   const nicknameError =
     nickname.length === 0 ? "" :
     /\s/.test(nickname) ? "No spaces allowed." :
-    !/^[A-Za-z0-9]*$/.test(nickname) ? "Letters and numbers only — no symbols." :
+    !/^[A-Za-z0-9]*$/.test(nickname) ? "Letters and numbers only, no symbols." :
     nickname.length < 3 ? "Must be at least 3 characters." :
     nickname.length > 12 ? "Must be 12 characters or fewer." : ""
   const isLengthError = nickname.length > 0 && (nickname.length < 3 || nickname.length > 12) && /^[A-Za-z0-9]*$/.test(nickname)

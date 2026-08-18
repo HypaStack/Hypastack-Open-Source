@@ -74,7 +74,7 @@ export const FILE_ENDPOINTS: Endpoint[] = [
     path: "/files/{id}",
     scope: "files.read",
     title: "Retrieve a file",
-    description: "One file by id. Returns 404 if it does not exist or is not yours — the two are deliberately indistinguishable.",
+    description: "One file by id. Returns 404 if it does not exist or is not yours, the two are deliberately indistinguishable.",
     response: FILE_OBJECT,
   },
   {
@@ -99,7 +99,7 @@ export const FILE_ENDPOINTS: Endpoint[] = [
     path: "/files/{id}/complete",
     scope: "files.write",
     title: "Finish an upload",
-    description: "Commits the upload once the bytes are in storage. Safe to call twice — a repeat returns the same file rather than an error, so retries are free.",
+    description: "Commits the upload once the bytes are in storage. Safe to call twice, a repeat returns the same file rather than an error, so retries are free.",
     response: FILE_OBJECT,
   },
   {
@@ -157,7 +157,7 @@ export const CDN_ENDPOINTS: Endpoint[] = [
     path: "/cdn/assets",
     scope: "cdn.write",
     title: "Start a CDN upload",
-    description: "Same three-step flow as files. CDN assets are public and permanent — they never expire and are not encrypted, because a browser has to be able to render them.",
+    description: "Same three-step flow as files. CDN assets are public and permanent, they never expire and are not encrypted, because a browser has to be able to render them.",
     params: [
       { name: "name", type: "string", required: true, description: "Filename. Becomes part of the public URL." },
       { name: "size", type: "integer", required: true, description: "Size in bytes, within your plan's per-asset cap." },

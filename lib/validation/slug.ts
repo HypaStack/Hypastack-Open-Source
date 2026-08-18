@@ -28,7 +28,7 @@ export function validateSlug(input: string): SlugValidation {
     return {
       ok: false,
       slug,
-      error: "Use lowercase letters, numbers, and hyphens only — no spaces, leading/trailing, or double hyphens.",
+      error: "Use lowercase letters, numbers, and hyphens only, no spaces, leading/trailing, or double hyphens.",
     }
   }
 

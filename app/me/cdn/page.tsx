@@ -271,7 +271,7 @@ export default function CdnPage() {
     // Confirm via hypaConfirm notif (bottom-right)
     const confirmed = await hypaConfirm({
       title: "Hot swap",
-      description: `Replace the file behind this CDN link. Your file will be automatically renamed to "${target.name}" — the URL stays the same.`,
+      description: `Replace the file behind this CDN link. Your file will be automatically renamed to "${target.name}", the URL stays the same.`,
       confirmText: "Just swap it",
       cancelText: "Cancel",
     })
@@ -349,7 +349,7 @@ export default function CdnPage() {
       // Success notification, deferred so it fires after React's current render batch
       setTimeout(() => {
         toast.success("File hot swapped", {
-          description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL — e.g. ${target.cdnUrl}?v=1`,
+          description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL, e.g. ${target.cdnUrl}?v=1`,
         })
       }, 0)
     } catch (err) {

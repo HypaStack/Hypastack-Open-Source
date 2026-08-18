@@ -37,7 +37,7 @@ export default function Goal() {
                 For too long, transferring files securely meant relying on a middleman who promised not to peek. We want to normalize the idea that file sharing should be secure by default, invisible to the host, and mathematically unbreakable by anyone who doesn't have the explicit URL.
               </p>
               <p>
-                By enforcing strictly client-side AES-GCM encryption, we ensure that you—and you alone—hold the keys to your data. The server is reduced to a "dumb pipe" that merely holds and transfers encrypted blobs of bytes, completely blind to the actual content.
+                By enforcing strictly client-side AES-GCM encryption, we ensure that you, and only you, hold the keys to your data. The server is reduced to a "dumb pipe" that merely holds and transfers encrypted blobs of bytes, completely blind to the actual content.
               </p>
             </section>
 

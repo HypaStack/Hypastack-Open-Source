@@ -30,7 +30,7 @@ const RELEASES: Release[] = [
     date: "August 2026",
     title: "A from-the-ground-up redesign",
     items: [
-      { type: "new", text: "Every screen rebuilt on real HeroUI components — no more mixed styling." },
+      { type: "new", text: "Every screen rebuilt on real HeroUI components, no more mixed styling." },
       { type: "new", text: "Redesigned upload tray with a live file table and toggle-hidden options." },
       { type: "new", text: "New pricing page with a real plan comparison table." },
       { type: "improved", text: "Storage usage now shown right in the sidebar." },
@@ -43,8 +43,8 @@ const RELEASES: Release[] = [
     date: "May 2026",
     title: "Funnels and Peerline",
     items: [
-      { type: "new", text: "Funnels — collect one-time file drops without an account." },
-      { type: "new", text: "Peerline — send files device to device, nothing stored." },
+      { type: "new", text: "Funnels: collect one-time file drops without an account." },
+      { type: "new", text: "Peerline: send files device to device, nothing stored." },
       { type: "improved", text: "Faster uploads for large files on paid plans." },
     ],
   },
@@ -53,7 +53,7 @@ const RELEASES: Release[] = [
     date: "January 2026",
     title: "CDN and custom links",
     items: [
-      { type: "new", text: "Edge — host assets on permanent, public URLs." },
+      { type: "new", text: "Edge: host assets on permanent, public URLs." },
       { type: "new", text: "Custom share links on paid plans." },
       { type: "fixed", text: "Expiration timers no longer drift under heavy load." },
     ],

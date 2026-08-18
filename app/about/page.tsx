@@ -28,7 +28,7 @@ export default function About() {
                 Hypastack is a secure, high-performance file sharing and CDN platform built from the ground up to ensure absolute privacy for the files you share through this website. I achieve this by utilizing a strictly zero-knowledge architecture for that pipeline. Two other pipelines are deliberately not encrypted, and I would rather say so plainly than let you assume otherwise: CDN assets are public by design and have only their metadata stripped, and uploads made through the developer API are stored as received and are readable by me.
               </p>
               <p className="mb-4">
-                Unlike traditional cloud storage providers that encrypt your files on their servers—meaning they hold the keys and can read your data at any time—Hypastack shifts the encryption process entirely to your device.
+                Unlike traditional cloud storage providers, which encrypt your files on their servers (meaning they hold the keys and can read your data at any time), Hypastack shifts the encryption process entirely to your device.
               </p>
               <p>
                 When you upload a file, it is encrypted directly inside your browser using AES-GCM (256-bit) encryption before a single byte ever leaves your device. The encryption key required to unlock the file is securely embedded into the URL fragment (the <code className="text-primary font-medium">#key=...</code> portion). Because URL fragments are processed strictly by the browser and are never transmitted across the network, my servers literally never see, receive, or store your decryption key.

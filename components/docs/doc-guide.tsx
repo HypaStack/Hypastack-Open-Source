@@ -72,7 +72,7 @@ curl "https://api.hypastack.com/v3/files" \\
       <p className={P}>
         If you are building something where users upload their own content, tell them this plainly in your own privacy
         policy. You are the one holding their data. If you need the files to be unreadable by us, encrypt them yourself
-        before the PUT and keep the key — we will store whatever bytes you send.
+        before the PUT and keep the key. We will store whatever bytes you send.
       </p>
       <p className={P}>
         For CDN assets none of this applies: they are public by design, served from a URL anyone can fetch, and were
@@ -81,13 +81,13 @@ curl "https://api.hypastack.com/v3/files" \\
 
       <H2 id="authentication">Authentication</H2>
       <p className={P}>
-        Every request carries your key as a bearer token. There are no cookies, no sessions, and no CSRF tokens — a
+        Every request carries your key as a bearer token. There are no cookies, no sessions, and no CSRF tokens. A
         browser session can never authenticate against this API, which is deliberate.
       </p>
       <CodeBlock code={`Authorization: Bearer hsk_EXAMPLE0000000000000000000000000000000000`} />
       <p className={`${P} mt-4`}>
         Keys start with <code className="text-[#f7f8f8]">hsk_</code>. Treat one like a password: it acts on your account
-        with whatever permissions you gave it. We only ever store a hash, so if you lose it we cannot recover it — make a
+        with whatever permissions you gave it. We only ever store a hash, so if you lose it we cannot recover it. Make a
         new one and revoke the old. Revoking takes effect immediately.
       </p>
       <p className={P}>
@@ -96,7 +96,7 @@ curl "https://api.hypastack.com/v3/files" \\
 
       <H2 id="scopes">Scopes</H2>
       <p className={P}>
-        Each key carries its own permissions, chosen when you create it. Nothing is implied — a key with{" "}
+        Each key carries its own permissions, chosen when you create it. Nothing is implied, a key with{" "}
         <code className="text-[#f7f8f8]">files.read</code> cannot upload, and one with{" "}
         <code className="text-[#f7f8f8]">files.write</code> cannot delete. Give each key the least it needs, so a leak
         costs you as little as possible.
@@ -142,8 +142,8 @@ curl -X POST "https://api.hypastack.com/v3/files/$ID/complete" \\
   -H "Authorization: Bearer $HYPASTACK_API_KEY"`}
       />
       <p className={`${P} mt-4`}>
-        Step 3 is safe to repeat. If your connection drops and you are not sure the call landed, just call it again —
-        you get the same file back rather than an error.
+        Step 3 is safe to repeat. If your connection drops and you are not sure the call landed, just call it again.
+        You get the same file back rather than an error.
       </p>
       <p className={P}>
         This is why bytes are fast: your upload goes directly to storage rather than being relayed through us, so a large
@@ -177,7 +177,7 @@ do {
 
       <H2 id="errors">Errors</H2>
       <p className={P}>
-        Every failure looks the same. Switch on <code className="text-[#f7f8f8]">error.code</code> — it is stable.
+        Every failure looks the same. Switch on <code className="text-[#f7f8f8]">error.code</code>, it is stable.
         Never parse <code className="text-[#f7f8f8]">error.message</code>; it is written for humans and we reword it
         freely.
       </p>
@@ -193,7 +193,7 @@ do {
 }`}
       />
       <p className={`${P} mt-4`}>
-        Every response — success or failure — also carries an <code className="text-[#f7f8f8]">X-Request-Id</code>{" "}
+        Every response, success or failure, also carries an <code className="text-[#f7f8f8]">X-Request-Id</code>{" "}
         header. Quote it if you report a problem and we can find the exact line in our logs.
       </p>
       <p className={P}>
@@ -213,7 +213,7 @@ do {
       </div>
       <p className={P}>
         One thing worth knowing: <code className="text-[#f7f8f8]">404 not_found</code> is returned both when something
-        never existed and when it belongs to someone else. That is on purpose — otherwise anyone with a key could probe
+        never existed and when it belongs to someone else. That is on purpose, otherwise anyone with a key could probe
         ids to discover what other accounts hold.
       </p>
 

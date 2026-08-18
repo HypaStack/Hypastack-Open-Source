@@ -582,7 +582,7 @@ function ManageLayoutInner({
                     setFeedbackOpen(false)
                     setFeedbackText("")
                     setFeedbackLinkAccount(true)
-                    toast.success("Feedback sent", { description: "Thanks — we read every one of these." })
+                    toast.success("Feedback sent", { description: "Thanks, we read every one of these." })
                   }}
                 >
                   Submit

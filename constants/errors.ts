@@ -11,7 +11,7 @@ export const API_ERRORS = {
   GONE: "That's no longer available.",
   PAYLOAD_TOO_LARGE: "That's too large to upload.",
   UNSUPPORTED_MEDIA_TYPE: "That file type isn't supported.",
-  TOO_MANY_REQUESTS: "You're doing that too quickly — please wait a moment and try again.",
+  TOO_MANY_REQUESTS: "You're doing that too quickly. Please wait a moment and try again.",
   INTERNAL_SERVER_ERROR: "Something went wrong on our end. Please try again in a moment.",
   NOT_IMPLEMENTED: "That's not available yet.",
   BAD_GATEWAY: "We're having trouble reaching our servers. Please try again shortly.",

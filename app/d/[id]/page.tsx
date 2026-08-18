@@ -284,7 +284,7 @@ export default function DownloadPage() {
           <div className="max-w-[440px] w-full">
             {/* Deliberately ambiguous, confirming which case it is would leak that the id is real. */}
             <AlertMessage tone="error" style={{ marginBottom: 0 }}>
-              This link is missing its key. A Hypastack link carries it after the <code>#</code> — if yours got cut
+              This link is missing its key. A Hypastack link carries it after the <code>#</code>, if yours got cut
               short, ask whoever sent it for the whole thing. (Or the file is gone.)
             </AlertMessage>
           </div>

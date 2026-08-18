@@ -44,7 +44,7 @@ export async function handleHotSwapInit(request: NextRequest) {
 
     if (fileSize <= 0 || fileSize > tier.maxCdnFileSize) {
       const limitMB = Math.round(tier.maxCdnFileSize / (1024 * 1024))
-      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File is too large — the max is ${limitMB}MB per file on your plan.`)
+      return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, `File is too large, the max is ${limitMB}MB per file on your plan.`)
     }
 
     // Storage quota: account for the size difference (new - old)

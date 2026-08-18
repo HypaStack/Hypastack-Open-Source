@@ -78,7 +78,7 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
     setFileError("")
     if (!f) return
     if (meta && f.size > meta.maxUploadSize) {
-      setFileError(`That file is ${fmt(f.size)} — this funnel accepts up to ${fmt(meta.maxUploadSize)}.`)
+      setFileError(`That file is ${fmt(f.size)}, this funnel accepts up to ${fmt(meta.maxUploadSize)}.`)
       return
     }
     setFile(f)

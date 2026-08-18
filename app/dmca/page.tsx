@@ -47,7 +47,7 @@ export default function DmcaPolicy() {
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>What I Do</h2>
               <p className="mb-4">
                 When I receive a valid DMCA notice, I remove the content. I cannot reliably notify
-                the uploader — I do not have their email address or any contact information, whether
+                the uploader, I do not have their email address or any contact information, whether
                 the file was encrypted or not.
               </p>
               <p className="mb-4">

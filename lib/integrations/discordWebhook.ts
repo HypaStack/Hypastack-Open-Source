@@ -91,7 +91,7 @@ async function post(url: string, content: string, retries = 3): Promise<void> {
 
 // One-off connectivity check for the settings UI. Not logged.
 export async function sendTest(url: string): Promise<void> {
-  await post(url, "✅ Hypastack webhook connected — you'll get a ping here on each upload.")
+  await post(url, "Hypastack webhook connected. You'll get a ping here on each upload.")
 }
 
 // ── Persistent send queue ──────────────────────────────────────────────────
@@ -160,7 +160,7 @@ export async function dispatchUploadLinks(links: string[]): Promise<void> {
 
   const entries: QueueEntry[] = []
   if (safe.length === 1) {
-    entries.push({ content: `📤 New Hypastack upload — ${safe[0]}`, label: safe[0] })
+    entries.push({ content: `New Hypastack upload: ${safe[0]}`, label: safe[0] })
   } else {
     const batches: string[][] = []
     let current: string[] = []
@@ -178,7 +178,7 @@ export async function dispatchUploadLinks(links: string[]): Promise<void> {
     if (current.length > 0) batches.push(current)
     for (const batch of batches) {
       entries.push({
-        content: `📤 ${batch.length} new Hypastack uploads\n${batch.join("\n")}`,
+        content: `${batch.length} new Hypastack uploads\n${batch.join("\n")}`,
         label: batch.length === 1 ? batch[0] : `${batch[0]} +${batch.length - 1} more`,
       })
     }

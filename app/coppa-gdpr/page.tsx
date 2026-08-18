@@ -69,7 +69,7 @@ export default function CoppaGdpr() {
               <ul className="list-disc list-inside space-y-3 ml-2 mb-4">
                 <li><strong className="text-[#f7f8f8]">Files uploaded through this website:</strong> I can provide only the encrypted ciphertext blocks stored on my servers. I cannot provide a decrypted version, nor recover your lost keys, because I do not possess them. This is a genuine technical limitation, not a refusal.</li>
                 <li><strong className="text-[#f7f8f8]">CDN assets:</strong> These are not encrypted. I can provide the files themselves, along with their stored metadata.</li>
-                <li><strong className="text-[#f7f8f8]">Files uploaded through the developer API:</strong> These are not encrypted either. I can provide the actual contents. Where the upload was made through a third party&apos;s application, the file resides in that developer&apos;s account and that developer is the controller of it — I can confirm what I hold, but requests concerning that content should also be directed to them.</li>
+                <li><strong className="text-[#f7f8f8]">Files uploaded through the developer API:</strong> These are not encrypted either. I can provide the actual contents. Where the upload was made through a third party&apos;s application, the file resides in that developer&apos;s account and that developer is the controller of it. I can confirm what I hold, but requests concerning that content should also be directed to them.</li>
               </ul>
               <p>
                 In every case I can provide the account metadata I hold, which is deliberately minimal: no email address, no password, no IP addresses, and a nickname that is itself encrypted in your browser before it reaches me.

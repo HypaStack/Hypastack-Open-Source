@@ -159,7 +159,7 @@ export function useUpload({
         setErrorMessage(
           effectiveMaxFiles < MAX_FILES
             // Trimmed to the account's remaining free space (avoids a server 403).
-            ? `You have room for ${remainingSlots} more ${noun}${remainingSlots !== 1 ? "s" : ""} — trimmed your selection to fit.`
+            ? `You have room for ${remainingSlots} more ${noun}${remainingSlots !== 1 ? "s" : ""}, trimmed your selection to fit.`
             : `Maximum ${MAX_FILES} files allowed. Only the first ${MAX_FILES} files were selected.`
         )
       }

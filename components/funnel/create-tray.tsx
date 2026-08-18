@@ -69,7 +69,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
 
   const footerTitle = link ? "Funnel ready" : "New funnel"
   const footerSub = link
-    ? "Share the link — it works once, then closes."
+    ? "Share the link, it works once, then closes."
     : creating
     ? "Generating your keypair…"
     : "Press Create to generate the link"

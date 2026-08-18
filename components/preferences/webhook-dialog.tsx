@@ -32,7 +32,7 @@ export function WebhookDialog({
     const sent = sendTest(trimmed)
     toast.promise(sent, {
       loading: "Sending test message…",
-      success: "Test message sent — check your Discord channel.",
+      success: "Test message sent, check your Discord channel.",
       error: "Couldn't reach that webhook. Double-check the URL.",
     })
     sent.catch(() => {}).finally(() => setTesting(false))

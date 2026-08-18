@@ -74,7 +74,7 @@ export default function ChildSafety() {
                 <li>Inactive accounts are purged after 7 days</li>
               </ul>
               <p className="mt-4">
-                For encrypted file shares, I cannot proactively scan contents — I rely on reports and the technical barriers above. CDN asset uploads are not encrypted and will be subject to client-side content scanning in a future update.
+                For encrypted file shares, I cannot proactively scan contents. I rely on reports and the technical barriers above. CDN asset uploads are not encrypted and will be subject to client-side content scanning in a future update.
               </p>
             </section>
 
