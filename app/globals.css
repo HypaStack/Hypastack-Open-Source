@@ -413,7 +413,7 @@ html[data-theme="dark"] {
 
   /* Hypastack's brand primary, reclaimed from the colliding legacy tokens above. */
   --accent: #80DBA2;
-  --accent-foreground: #003E35;
+  --accent-foreground: #000000;
   --muted: #9f9fa9;
 
   --border: rgba(255,255,255,0.08);
