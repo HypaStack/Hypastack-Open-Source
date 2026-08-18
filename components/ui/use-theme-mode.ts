@@ -13,16 +13,8 @@ function readDocumentTheme(): ResolvedTheme {
   return document.documentElement.classList.contains(DARK_CLASS) ? "dark" : "light"
 }
 
-/**
- * Resolves a `theme` prop to a concrete "light" | "dark".
- *
- * "auto" follows the `.dark` class on <html> (the Tailwind / next-themes
- * convention) and re-renders when it flips. Falls back to prefers-color-scheme
- * when no `.dark` class is used anywhere.
- *
- * Renders "dark" on the server to match this app's default <html class="dark">,
- * then corrects on mount, so `suppressHydrationWarning` isn't needed.
- */
+// "auto" follows .dark on <html>, falls back to prefers-color-scheme if unused.
+// Renders "dark" on the server to match the app default, corrects on mount.
 export function useThemeMode(theme: ThemeMode = "auto"): ResolvedTheme {
   const [resolved, setResolved] = useState<ResolvedTheme>("dark")
 

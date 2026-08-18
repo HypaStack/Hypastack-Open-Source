@@ -116,13 +116,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Per-request CSP nonce set by the proxy. We load Cloudflare Turnstile's
-  // api.js here (root layout, beforeInteractive) carrying this nonce so it
-  // runs before the page bundle, sets window.turnstile, and becomes a
-  // nonce-trusted root. react-turnstile then skips its own (un-nonced)
-  // injection, and the inline scripts api.js creates inherit trust via
-  // 'strict-dynamic'. Loading it per-page from a client component did not get
-  // nonced by Next and was blocked by CSP.
+  // Turnstile's api.js loads here with the CSP nonce, per-page client loading wasn't nonced.
   const nonce = (await headers()).get("x-nonce") ?? undefined
   return (
     <html lang="en" dir="ltr" className="dark" suppressHydrationWarning style={{ backgroundColor: '#000000' }}>
