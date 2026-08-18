@@ -220,7 +220,7 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
+              className="flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
               style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
