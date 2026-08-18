@@ -78,7 +78,7 @@ export function ListView({
   }
 
   return (
-    <Table className="-mx-1 -mb-1">
+    <Table className="-mr-1 -mb-1">
       <Table.ScrollContainer>
         <Table.Content
           aria-label="Files and folders"
