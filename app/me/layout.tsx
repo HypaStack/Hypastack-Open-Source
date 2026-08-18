@@ -9,6 +9,7 @@ import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toast, typographyVariants } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { useTheme } from "@/hooks/useTheme"
@@ -48,7 +49,7 @@ function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/me/funnel")) return "Funnel"
   if (pathname.startsWith("/me/peerline")) return "Peerline"
   if (pathname.startsWith("/me/cdn")) return "Edge"
-  if (pathname.startsWith("/me/dumpster")) return "Scratch"
+  if (pathname.startsWith("/me/bin")) return "Bin"
   return "Drive"
 }
 
@@ -292,6 +293,14 @@ function ManageLayoutInner({
             ))}
           </div>
         </nav>
+
+        <div className="px-0 pt-3 shrink-0">
+          <div className="mb-1.5 flex items-center justify-between text-[12px]">
+            <Label className="font-medium text-foreground">Storage</Label>
+            <span className="text-muted">{(stats?.storagePercent ?? 0).toFixed(1)}%</span>
+          </div>
+          <ProgressBar value={stats?.storagePercent ?? 0} aria-label="Storage used" />
+        </div>
 
         <div className="relative z-20 shrink-0 px-0 pt-3 pb-2">
           <Dropdown>
