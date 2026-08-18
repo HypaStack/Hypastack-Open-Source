@@ -403,9 +403,8 @@ html[data-theme="dark"] {
 
   /* Bumped off the background (#08090a) so a plain bg-surface is visible on
      its own, without every caller having to remember to reach for the
-     -secondary/-tertiary step just to be seen against the page. Mixed with
-     25% accent so cards read as a tint of the brand color, not flat gray. */
-  --surface: color-mix(in oklch, #161616, var(--accent) 25%);
+     -secondary/-tertiary step just to be seen against the page. */
+  --surface: #161616;
   --surface-foreground: var(--foreground);
   --surface-secondary: #1c1c1c;
   --surface-tertiary: #222222;
