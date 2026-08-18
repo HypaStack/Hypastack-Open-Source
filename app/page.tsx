@@ -8,21 +8,21 @@ import { Footer } from "@/components/footer";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION, PREVIEW_URL } from "@/constants";
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME} - ${SITE_TAGLINE}`,
+  title: `${SITE_NAME} (${SITE_TAGLINE})`,
   description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} - ${SITE_TAGLINE}`,
+    title: `${SITE_NAME} (${SITE_TAGLINE})`,
     description: SITE_DESCRIPTION,
     images: [
       {
         url: PREVIEW_URL,
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - ${SITE_TAGLINE}`,
+        alt: `${SITE_NAME} (${SITE_TAGLINE})`,
       },
     ],
   },

@@ -11,7 +11,7 @@ import { HEADING_FONT, PANEL } from "@/components/docs/doc-style"
 import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
 
 export const metadata: Metadata = {
-  title: "Developer API — Hypastack",
+  title: "Developer API",
   description:
     "The Hypastack REST API. Upload, list and delete files and CDN assets from your own code. Plain JSON, one error shape, no SDK required.",
   alternates: { canonical: "https://hypastack.com/docs/developer-api" },
@@ -86,7 +86,7 @@ export default function DeveloperApiDocs() {
 
               <SectionHeading id="files" title="Files">
                 Expiring file storage. Every file has a lifetime after which it deletes itself. Filenames are encrypted
-                at rest; contents uploaded through the API are not — see Encryption above before you build on this.
+                at rest, contents uploaded through the API are not. See Encryption above before you build on this.
               </SectionHeading>
               {FILE_ENDPOINTS.map((endpoint) => (
                 <EndpointCard key={endpoint.id} endpoint={endpoint} />
@@ -101,7 +101,7 @@ export default function DeveloperApiDocs() {
               ))}
 
               <SectionHeading id="reference-script" title="Full example">
-                Everything above, in one runnable file with no dependencies. Save it, set your key, run it — it uploads
+                Everything above, in one runnable file with no dependencies. Save it, set your key, and run it. It uploads
                 a file and a CDN asset, reads them back, swaps the asset in place, then deletes both.
               </SectionHeading>
               <CodeBlock label="v3-reference.mjs" code={REFERENCE_SCRIPT} />

@@ -6,7 +6,7 @@ import { Typography, Link } from "@heroui/react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Pricing — Hypastack",
+  title: "Pricing",
   description:
     "Choose the Hypastack plan that fits how you share. Free forever, or upgrade for more storage, larger uploads, custom links and funnels.",
   alternates: {

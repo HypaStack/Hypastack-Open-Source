@@ -4,7 +4,7 @@ import { Navbar } from "@/components/navbar"
 import { ChangelogList } from "@/components/changelog-list"
 
 export const metadata: Metadata = {
-  title: "Changelog — Hypastack",
+  title: "Changelog",
   description: "Everything new, improved, and fixed at Hypastack.",
   alternates: {
     canonical: "https://hypastack.com/changelog",

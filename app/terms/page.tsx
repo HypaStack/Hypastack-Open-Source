@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Hypastack — a free, source-available file sharing and CDN hosting platform based in the EU.",
+  description: "Terms of Service for Hypastack, a free, source-available file sharing and CDN hosting platform based in the EU.",
 }
 
 export default function TermsOfService() {
@@ -40,7 +40,7 @@ export default function TermsOfService() {
                 Hypastack provides a globally distributed Content Delivery Network (CDN) and file-sharing utility. For files uploaded through this website, the service operates as a zero-knowledge transport and storage layer. It also offers unencrypted permanent hosting for public assets via my CDN pipeline, and an unencrypted developer API.
               </p>
               <p className="mb-4">
-                <strong className="text-[#f7f8f8]">The zero-knowledge guarantee applies only to files uploaded through this website.</strong> CDN assets are not encrypted — they are public by design and I strip only their embedded metadata. Files uploaded through the developer API are likewise not encrypted, and are readable by me. Where a third party operates an application built on the developer API, uploads made through that application reside in that developer&apos;s account and are accessible to both that developer and to me; that developer, not Hypastack, is responsible for disclosing this to their users.
+                <strong className="text-[#f7f8f8]">The zero-knowledge guarantee applies only to files uploaded through this website.</strong> CDN assets are not encrypted, they are public by design and I strip only their embedded metadata. Files uploaded through the developer API are likewise not encrypted, and are readable by me. Where a third party operates an application built on the developer API, uploads made through that application reside in that developer&apos;s account and are accessible to both that developer and to me; that developer, not Hypastack, is responsible for disclosing this to their users.
               </p>
               <p>
                 <strong>Cryptographic Sovereignty:</strong> For secure sharing, I provide the infrastructure to transmit your encrypted data. You provide the cryptographic keys locally on your device. I do not generate, transmit, receive, or store the decryption keys necessary to convert your uploaded ciphertext back into readable plaintext. Consequently, Hypastack functions purely as a "dumb pipe" routing encrypted blobs of data across edge nodes.

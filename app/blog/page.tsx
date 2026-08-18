@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     canonical: "https://hypastack.com/blog",
   },
   openGraph: {
-    title: "Blog - Hypastack",
+    title: "Blog (Hypastack)",
     description:
       "Notes from Kiko, the developer behind Hypastack. On privacy, building in public and making software that respects people.",
     type: "website",
