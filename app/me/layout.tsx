@@ -219,15 +219,6 @@ function ManageLayoutInner({
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-background text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
-      {/* Docked: the sidebar is gone entirely and claims no width — the button
-          floats over the page's left gutter, at the same x/y it occupied inside
-          the sidebar (ml-2 + 8px row padding, my-2 + pt-2). */}
-      {sidebarCollapsed && (
-        <div className="hidden lg:block fixed left-2 top-4 z-30">
-          <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
-        </div>
-      )}
-
       <aside
         className={`${sidebarCollapsed ? "hidden" : "hidden lg:flex"} shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1`}
         style={{ width: SIDEBAR_WIDTH }}
@@ -483,6 +474,15 @@ function ManageLayoutInner({
       </AnimatePresence>
 
       <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-transparent shadow-none overflow-hidden relative">
+        {/* Docked: the sidebar claims no width at all and the button sits on the
+            page's first line, left of the headline — left-6/top-4 are the main's
+            own lg padding, so it lines up with the text it sits beside. */}
+        {sidebarCollapsed && (
+          <div className="hidden lg:block absolute left-6 top-4 z-20">
+            <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
+          </div>
+        )}
+
         <header
           className="flex shrink-0 items-center gap-2 px-3 pt-1.5 pb-1.5 bg-white dark:bg-background lg:hidden safe-area-top relative z-10"
           style={{ borderBottom: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f0f0f0' }}
@@ -509,7 +509,7 @@ function ManageLayoutInner({
               initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="h-full flex flex-col px-3 sm:px-5 lg:px-6 pt-4 pb-6"
+              className={`h-full flex flex-col px-3 sm:px-5 lg:pr-6 pt-4 pb-6 ${sidebarCollapsed ? "lg:pl-[74px]" : "lg:pl-6"}`}
             >
               {children}
             </motion.main>
