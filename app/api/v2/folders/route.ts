@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { withAuth } from "@/lib/http/route"
-import { createFolder, deleteFolderRecursively, getFoldersByUserId } from "@/lib/models/folderModel"
+import { createFolder, deleteFolderRecursively, getFoldersByUserId, moveFolder } from "@/lib/models/folderModel"
 import { API_ERRORS } from "@/constants"
 export const dynamic = "force-dynamic"
 
@@ -27,6 +27,21 @@ export const POST = withAuth(async ({ request, user }) => {
 
     return NextResponse.json({ success: true, folder })
 }, { label: "Folders POST" })
+
+export const PATCH = withAuth(async ({ request, user }) => {
+    const { folderId, parentId } = await request.json()
+
+    if (!folderId || typeof folderId !== "string") {
+        return apiError(400, API_ERRORS.BAD_REQUEST, "Folder ID is required")
+    }
+
+    const result = await moveFolder(user.userId, folderId, parentId || null)
+    if (!result.ok) {
+        return apiError(400, API_ERRORS.BAD_REQUEST, result.reason)
+    }
+
+    return NextResponse.json({ success: true })
+}, { label: "Folders PATCH" })
 
 export const DELETE = withAuth(async ({ request, user }) => {
     const { folderId } = await request.json()

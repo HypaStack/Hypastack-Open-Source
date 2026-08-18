@@ -5,7 +5,7 @@ import { Table, Checkbox, Button } from "@heroui/react"
 import { type Selection, useDragAndDrop } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem, type FolderItem } from "@/hooks/useManage"
-import { FILE_DRAG_TYPE, readDroppedIds } from "./_drag-payload"
+import { DRAG_TYPE, encodeDragItem, readDroppedItems } from "./_drag-payload"
 import { getFileIconForType } from "./_helpers"
 import { formatBytes } from "@/lib/format"
 
@@ -34,7 +34,7 @@ export function ListView({
   onSelectionChange,
   onOpenFolder,
   onDeleteFolder,
-  onMoveFiles,
+  onMoveItems,
   onContextMenu,
 }: {
   folders: FolderItem[]
@@ -45,7 +45,7 @@ export function ListView({
   onSelectionChange: (ids: Set<string>) => void
   onOpenFolder: (id: string) => void
   onDeleteFolder: (id: string) => void
-  onMoveFiles: (fileIds: string[], folderId: string | null) => void
+  onMoveItems: (fileIds: string[], folderIds: string[], targetFolderId: string | null) => void
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
@@ -80,28 +80,37 @@ export function ListView({
     onSelectionChange(keys === "all" ? new Set(allRowIds) : new Set(Array.from(keys, String)))
   }
 
-  // Drag files onto a folder row to move them — no dialog. Folder rows are the
-  // only valid drop targets, and only file rows produce drag items.
+  // Drag files or folders onto a folder row to move them — no dialog. Folder
+  // rows are the only valid drop targets.
   const fileIds = new Set(rows.filter((r) => r.kind === "file").map((r) => r.file.id))
   const folderIds = new Set(rows.filter((r) => r.kind === "folder").map((r) => r.folder.id))
 
+  const splitDropped = (items: Awaited<ReturnType<typeof readDroppedItems>>) => {
+    const droppedFileIds = items.filter((i) => i.kind === "file").map((i) => i.id)
+    const droppedFolderIds = items.filter((i) => i.kind === "folder").map((i) => i.id)
+    return { droppedFileIds, droppedFolderIds }
+  }
+
   const { dragAndDropHooks } = useDragAndDrop({
     // Dragging an unselected row drags just that row; dragging a selected one
-    // brings the whole selection along, minus any folders (no move endpoint).
+    // brings the whole selection along.
     getItems: (keys) => {
-      const dragged = [...keys].map(String).filter((id) => fileIds.has(id))
-      return dragged.map((id) => ({ [FILE_DRAG_TYPE]: id }))
+      const dragged = [...keys].map(String)
+      return dragged.map((id) => ({ [DRAG_TYPE]: encodeDragItem(id, fileIds.has(id) ? "file" : "folder") }))
     },
     acceptedDragTypes: "all",
+    // A folder can't be dropped onto itself.
     shouldAcceptItemDrop: (target) => folderIds.has(String(target.key)),
     onItemDrop: async (e) => {
-      const moved = await readDroppedIds(e.items)
-      if (moved.length > 0) onMoveFiles(moved, String(e.target.key))
+      const { droppedFileIds, droppedFolderIds } = splitDropped(await readDroppedItems(e.items))
+      const targetId = String(e.target.key)
+      const folderIdsToMove = droppedFolderIds.filter((id) => id !== targetId)
+      if (droppedFileIds.length > 0 || folderIdsToMove.length > 0) onMoveItems(droppedFileIds, folderIdsToMove, targetId)
     },
     // Dropping on the table itself rather than on a folder row — back to root.
     onRootDrop: async (e) => {
-      const moved = await readDroppedIds(e.items)
-      if (moved.length > 0) onMoveFiles(moved, null)
+      const { droppedFileIds, droppedFolderIds } = splitDropped(await readDroppedItems(e.items))
+      if (droppedFileIds.length > 0 || droppedFolderIds.length > 0) onMoveItems(droppedFileIds, droppedFolderIds, null)
     },
   })
 

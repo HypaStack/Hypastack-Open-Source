@@ -122,6 +122,52 @@ export async function resolveUploadFolder(
   return { ok: true, folderId: finalFolderId }
 }
 
+/**
+ * Reparents a folder. Rejects moving a folder into itself or into one of its
+ * own descendants, which would otherwise detach that whole subtree from the
+ * user's tree (the folder becomes its own ancestor and nothing can reach it).
+ */
+export async function moveFolder(userId: string, folderId: string, parentId: string | null): Promise<{ ok: true } | { ok: false; reason: string }> {
+  await ensureDatabase()
+  const pool = getPool()
+
+  const allFolders = await getFoldersByUserId(userId)
+  if (!allFolders.some(f => f.id === folderId)) {
+    return { ok: false, reason: "Folder not found" }
+  }
+
+  if (parentId) {
+    if (parentId === folderId) {
+      return { ok: false, reason: "A folder can't be moved into itself" }
+    }
+    if (!allFolders.some(f => f.id === parentId)) {
+      return { ok: false, reason: "Destination folder not found" }
+    }
+    const descendants = new Set<string>([folderId])
+    let added = true
+    while (added) {
+      added = false
+      for (const f of allFolders) {
+        if (f.parentId && descendants.has(f.parentId) && !descendants.has(f.id)) {
+          descendants.add(f.id)
+          added = true
+        }
+      }
+    }
+    if (descendants.has(parentId)) {
+      return { ok: false, reason: "A folder can't be moved into one of its own subfolders" }
+    }
+  }
+
+  await pool.query(
+    `UPDATE basedrop_folders SET parent_id = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3`,
+    [parentId, folderId, userId]
+  )
+
+  await bustCache(`user:${userId}:folders`)
+  return { ok: true }
+}
+
 export async function deleteFolderRecursively(userId: string, folderId: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()

@@ -17,6 +17,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
+import { DRAG_TYPE, decodeDroppedIds } from "./_drag-payload"
 import { toTree } from "../_move-dialog"
 
 
@@ -268,48 +269,84 @@ function FilesPageInner() {
   const handleRootDrop = (e: React.DragEvent<HTMLDivElement>) => {
     if (e.defaultPrevented) return
     e.preventDefault()
-    const dropped = e.dataTransfer
-      .getData("text/plain")
-      .split("\n")
-      .map((id) => id.trim())
-      .filter((id) => files.some((f) => f.id === id))
-    if (dropped.length > 0) moveFiles(dropped, null)
+    const items = decodeDroppedIds(e.dataTransfer.getData(DRAG_TYPE))
+    const fileIds = items.filter((i) => i.kind === "file").map((i) => i.id)
+    const folderIds = items.filter((i) => i.kind === "folder").map((i) => i.id)
+    if (fileIds.length > 0 || folderIds.length > 0) moveItems(fileIds, folderIds, null)
   }
 
-  const moveFiles = async (ids: string[], folderId: string | null) => {
-    if (ids.length === 0) return
-
-    // Dropping a file back where it already lives isn't worth a request.
-    const toMove = ids.filter((id) => files.find((f) => f.id === id)?.folderId !== folderId)
-    if (toMove.length === 0) {
+  // Moves files (PATCH /api/v2/files) and/or folders (PATCH /api/v2/folders,
+  // one request per folder — no bulk endpoint) to a common target folder, then
+  // reports the combined count under one "item(s)" toast.
+  const moveItems = async (fileIds: string[], folderIds: string[], targetFolderId: string | null) => {
+    const filesToMove = fileIds.filter((id) => files.find((f) => f.id === id)?.folderId !== targetFolderId)
+    const foldersToMove = folderIds.filter((id) => folders.find((f) => f.id === id)?.parentId !== targetFolderId)
+    if (filesToMove.length === 0 && foldersToMove.length === 0) {
       toast.warning(
-        ids.length === 1
-          ? "That file is already in this folder"
-          : "Those files are already in this folder"
+        fileIds.length + folderIds.length === 1
+          ? "That item is already in this folder"
+          : "Those items are already in this folder"
       )
       return
     }
 
-    try {
-      const res = await apiFetch("/api/v2/files", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileIds: toMove, folderId }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        hypaError(data.message || "Failed to move files")
-        return
+    let movedCount = 0
+
+    if (filesToMove.length > 0) {
+      try {
+        const res = await apiFetch("/api/v2/files", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileIds: filesToMove, folderId: targetFolderId }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          hypaError(data.message || "Failed to move files")
+        } else {
+          const movedIds = new Set(filesToMove)
+          setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId: targetFolderId } : f)))
+          movedCount += filesToMove.length
+        }
+      } catch (err) {
+        console.error("Move error:", err)
+        hypaError("Failed to move files")
       }
-      const movedIds = new Set(toMove)
-      setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
+    }
+
+    if (foldersToMove.length > 0) {
+      const movedFolderIds = new Set<string>()
+      for (const folderId of foldersToMove) {
+        try {
+          const res = await apiFetch("/api/v2/folders", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ folderId, parentId: targetFolderId }),
+          })
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}))
+            hypaError(data.message || "Failed to move folder")
+            continue
+          }
+          movedFolderIds.add(folderId)
+        } catch (err) {
+          console.error("Move error:", err)
+          hypaError("Failed to move folder")
+        }
+      }
+      if (movedFolderIds.size > 0) {
+        setFolders((prev) => prev.map((f) => (movedFolderIds.has(f.id) ? { ...f, parentId: targetFolderId } : f)))
+        movedCount += movedFolderIds.size
+      }
+    }
+
+    if (movedCount > 0) {
       setSelectedIds(new Set())
-      toast.success(`Moved ${toMove.length} file${toMove.length === 1 ? "" : "s"}`)
-    } catch (err) {
-      console.error("Move error:", err)
-      hypaError("Failed to move files")
+      toast.success(`Moved ${movedCount} item${movedCount === 1 ? "" : "s"}`)
     }
   }
+
+  // File-only move, used by the per-file context menu (never involves folders).
+  const moveFiles = (ids: string[], folderId: string | null) => moveItems(ids, [], folderId)
 
   const handleCreateFolder = async () => {
     const name = await hypaPrompt({
@@ -471,7 +508,7 @@ function FilesPageInner() {
               onSelectionChange={setSelectedIds}
               onOpenFolder={setCurrentFolderId}
               onDeleteFolder={handleDeleteFolder}
-              onMoveFiles={(ids, folderId) => moveFiles(ids, folderId)}
+              onMoveItems={(fileIds, folderIds, targetFolderId) => moveItems(fileIds, folderIds, targetFolderId)}
               onContextMenu={(e, id) => {
                 e.preventDefault();
                 setOpenMenuId(id);
