@@ -69,22 +69,17 @@ function NavRow({
     <Link
       href={item.href}
       onClick={onNavigate}
-      className={`group relative flex items-center gap-3 rounded-3xl text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
+      className={`group relative flex items-center rounded-3xl text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
           ? "bg-surface text-foreground"
           : "text-muted hover:bg-default hover:text-foreground"
       }`}
       style={{
-        height: 40,
+        height: 32,
         paddingLeft: 12,
         paddingRight: 12,
       }}
     >
-      <MIcon
-        name={item.icon}
-        size={20}
-        className={`shrink-0 transition-colors ${active ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
-      />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
         <span className="truncate">{item.label}</span>
         {badge && <div className="ml-2 shrink-0">{badge}</div>}
