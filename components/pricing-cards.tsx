@@ -122,10 +122,26 @@ export function PricingCards() {
             >
               <Card
                 variant="transparent"
-                className={`h-full !p-0 !gap-0 flex flex-col bg-overlay border !border-solid rounded-[16px] ${
-                  green ? "border-accent/40" : "border-white/10"
+                className={`relative h-full !p-0 !gap-0 flex flex-col bg-overlay border !border-solid rounded-[16px] ${
+                  green ? "border-transparent" : "border-white/10"
                 }`}
               >
+                {green && (
+                  // Border fades from full accent at the top edge to fully
+                  // transparent by the vertical midpoint — a plain border-color
+                  // can't do this, so it's a masked gradient overlay instead.
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-[16px]"
+                    style={{
+                      padding: 1,
+                      background: "linear-gradient(to bottom, var(--accent) 0%, transparent 50%)",
+                      WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                      WebkitMaskComposite: "xor",
+                      maskComposite: "exclude",
+                    }}
+                  />
+                )}
                 <Card.Header className="p-7 pb-0">
                   <Card.Title className="text-4xl">{label}</Card.Title>
                   <Card.Description className="mt-2 text-[15px]">{TAGLINE[tier]}</Card.Description>
