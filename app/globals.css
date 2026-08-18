@@ -482,3 +482,10 @@ html[data-theme="dark"] {
 .toast {
   background-color: var(--overlay);
 }
+
+/* HeroUI tints the indicator to match the title for success/warning/danger but
+   ships no such rule for accent (toast.info), so its icon stays the default
+   white while the title is branded. Complete the set. */
+.toast--accent .toast__indicator {
+  color: var(--accent-soft-foreground);
+}
