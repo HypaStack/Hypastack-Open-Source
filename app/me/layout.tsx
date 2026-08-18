@@ -7,9 +7,8 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Dropdown, Meter, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
+import { Button, Chip, Dropdown, Meter, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
-import { ShineBadge } from "@/components/ui/shine-badge"
 import { formatStoragePct } from "@/lib/format"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -245,29 +244,27 @@ function ManageLayoutInner({
             </Dropdown.Trigger>
 
             <Dropdown.Popover placement="top" className="w-(--trigger-width) min-w-[280px] p-0 bg-black border border-white/10 rounded-2xl overflow-hidden">
-              <div className="flex items-start justify-between gap-3 px-4 pt-4 pb-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
-                    <ShineBadge>{tierLimits.label}</ShineBadge>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
-                    className="mt-1 flex items-center gap-1 truncate text-[12px] text-muted hover:text-foreground transition-colors"
-                  >
-                    <span className="truncate">{user.id}</span>
-                    <MIcon name={copiedId ? "check" : "content_copy"} size={12} className="shrink-0" />
-                  </button>
+              <div className="px-4 pt-4 pb-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <img
+                    decoding="async"
+                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
+                    alt={user.nickname}
+                    className="h-5 w-5 shrink-0 rounded-full object-cover select-none pointer-events-none"
+                    draggable={false}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
+                  />
+                  <p className="min-w-0 truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
+                  <Chip size="sm" variant="soft" className="shrink-0">{tierLimits.label}</Chip>
                 </div>
-                <img
-                  decoding="async"
-                  src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
-                  alt={user.nickname}
-                  className="h-9 w-9 shrink-0 rounded-full object-cover select-none pointer-events-none"
-                  draggable={false}
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
-                />
+                <button
+                  type="button"
+                  onClick={() => { navigator.clipboard?.writeText(user.id); setCopiedId(true); setTimeout(() => setCopiedId(false), 1500) }}
+                  className="mt-1.5 flex items-center gap-1 max-w-full text-[12px] text-muted hover:text-foreground transition-colors"
+                >
+                  <span className="truncate">{user.id}</span>
+                  <MIcon name={copiedId ? "check" : "content_copy"} size={12} className="shrink-0" />
+                </button>
               </div>
 
               <div className="h-px bg-white/10" />
@@ -339,10 +336,10 @@ function ManageLayoutInner({
 
               <div className="p-1.5">
                 <Button
-                  variant="ghost"
+                  variant="danger-soft"
                   fullWidth
                   onPress={logout}
-                  className="flex items-center justify-between text-danger hover:text-danger"
+                  className="flex items-center justify-between"
                   style={{ paddingLeft: 12, paddingRight: 12 }}
                 >
                   <span>Sign out</span>
@@ -507,7 +504,7 @@ function ManageLayoutInner({
       <HypaNotifProvider />
 
       <Modal isOpen={feedbackOpen} onOpenChange={setFeedbackOpen}>
-        <Modal.Backdrop isDismissable className="bg-black/60">
+        <Modal.Backdrop isDismissable variant="blur">
           <Modal.Container placement="center" size="sm">
             <Modal.Dialog className="bg-black border border-white/10 rounded-2xl">
               <Modal.Header className="flex items-center justify-between">
