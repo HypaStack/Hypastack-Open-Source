@@ -10,7 +10,7 @@ import { formatBytes } from "@/lib/format"
 
 function SelectionCheckbox() {
   return (
-    <Checkbox slot="selection" className="h-7 justify-center">
+    <Checkbox slot="selection" className="h-6 justify-center">
       <Checkbox.Content>
         <Checkbox.Control className="border-white/30">
           <Checkbox.Indicator />
@@ -89,27 +89,27 @@ export function ListView({
           onSelectionChange={handleSelectionChange}
         >
           <Table.Header>
-            <Table.Column className="w-10 pr-2" />
-            <Table.Column isRowHeader>Name</Table.Column>
-            <Table.Column className="w-28 text-right">Size</Table.Column>
+            <Table.Column className="w-10 pr-2 py-1.5" />
+            <Table.Column isRowHeader className="py-1.5">Name</Table.Column>
+            <Table.Column className="w-28 text-right py-1.5">Size</Table.Column>
           </Table.Header>
           <Table.Body>
             {rows.map((row) =>
               row.kind === "folder" ? (
                 <Table.Row key={`folder-${row.folder.id}`} id={row.folder.id} className="group">
-                  <Table.Cell className="w-10 pr-2">
+                  <Table.Cell className="w-10 pr-2 py-1.5">
                     {row.hasChildren && (
                       <button
                         type="button"
                         onClick={() => toggleExpanded(row.folder.id)}
                         aria-label={expandedFolders.has(row.folder.id) ? `Collapse ${row.folder.name}` : `Expand ${row.folder.name}`}
-                        className="flex items-center justify-center h-7 w-7 text-muted hover:text-foreground transition-colors"
+                        className="flex items-center justify-center h-6 w-6 text-muted hover:text-foreground transition-colors"
                       >
                         <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={18} />
                       </button>
                     )}
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className="py-1.5">
                     <div
                       className="flex items-center gap-2 min-w-0 cursor-pointer"
                       style={{ paddingLeft: row.depth * 20 }}
@@ -119,13 +119,13 @@ export function ListView({
                       <span className="truncate font-medium" title={row.folder.name}>{row.folder.name}</span>
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="w-28 text-right">
+                  <Table.Cell className="w-28 text-right py-1.5">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         isIconOnly
                         size="sm"
-                        style={{ height: 28, width: 28 }}
+                        style={{ height: 24, width: 24 }}
                         onPress={() => onDeleteFolder(row.folder.id, row.folder.name)}
                         aria-label={`Delete folder ${row.folder.name}`}
                       >
@@ -140,10 +140,10 @@ export function ListView({
                   id={row.file.id}
                   onContextMenu={(e) => onContextMenu(e, row.file.id)}
                 >
-                  <Table.Cell className="w-10 pr-2">
+                  <Table.Cell className="w-10 pr-2 py-1.5">
                     <SelectionCheckbox />
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className="py-1.5">
                     <div
                       className="flex items-center gap-2 min-w-0 cursor-pointer"
                       style={{ paddingLeft: row.depth * 20 }}
@@ -158,7 +158,7 @@ export function ListView({
                       )}
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="w-28 text-right text-muted">{formatBytes(row.file.size)}</Table.Cell>
+                  <Table.Cell className="w-28 text-right text-muted py-1.5">{formatBytes(row.file.size)}</Table.Cell>
                 </Table.Row>
               )
             )}
