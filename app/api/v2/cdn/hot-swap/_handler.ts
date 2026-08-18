@@ -8,13 +8,8 @@ import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 
-/**
- * POST: Initialize a hot swap, returns a presigned PUT URL for the existing R2 key.
- *
- * The client uploads the new file directly to R2, overwriting the old object in-place.
- * The filename in the R2 key stays the same as the original asset, the handler
- * ignores whatever local filename the user picked and uses the original name from the DB.
- */
+// Presigns a PUT for the existing R2 key, overwriting in-place. Filename in the
+// key stays the DB's original, ignoring whatever local filename the user picked.
 export async function handleHotSwapInit(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser(request)

@@ -38,13 +38,6 @@ async function rollback(created: Created[]) {
   }
 }
 
-/**
- * Batched Drive upload init: verifies CSRF + Turnstile + rate limit ONCE for
- * the whole upload (one solved Turnstile token backs the entire batch), then
- * stages every file and returns a per-file presigned target. Small files get a
- * single PUT URL; files over the multipart threshold get multipart init data.
- * This is the multi-file counterpart to the single-file handler in _handler.ts.
- */
 interface UploadBatchBody {
   files?: BatchFileInput[]
   burnOnRead?: boolean
@@ -56,6 +49,8 @@ interface UploadBatchBody {
   folderId?: string
 }
 
+// One CSRF/Turnstile/rate-limit check backs the whole batch, then stages each
+// file, small ones get a PUT URL, over-threshold ones get multipart init data.
 export async function handleUploadBatch(body: UploadBatchBody, userId: string) {
   const files: BatchFileInput[] = Array.isArray(body.files) ? body.files : []
   const { burnOnRead, turnstileToken, csrfToken, customFilename, expiresInMinutes, note, folderId } = body

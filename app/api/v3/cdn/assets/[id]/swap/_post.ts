@@ -13,15 +13,8 @@ const Body = z.object({
   content_type: z.string().min(1).max(255),
 })
 
-/**
- * Replace an asset's bytes in place, same id, same public URL. The presign
- * targets the asset's existing r2_key, so a deploy can repoint a live URL
- * without every consumer having to learn a new one.
- *
- * The path segment is read back out of the stored key rather than rebuilt from
- * the id: an asset created with a custom slug lives at `cdn/<slug>/<name>`, and
- * rebuilding from the id would silently write to a different object.
- */
+// Replaces bytes in place at the same id/URL, presigning against the existing
+// r2_key rather than rebuilding it, a custom-slug asset would resolve to a different path.
 export const POST = withApiKey<{ id: string }>(async ({ request, requestId, userId, tier, params, rate }) => {
   const asset = await loadOwnedCdnAsset(params.id, userId)
   if (!asset) return v3Error(V3_CODES.NOT_FOUND, requestId, { rate })

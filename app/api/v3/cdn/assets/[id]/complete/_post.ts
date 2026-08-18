@@ -14,14 +14,8 @@ import {
 } from "@/lib/models/cdnModel"
 import { getTierLimits } from "@/constants/tier-limits"
 
-/**
- * Finalises whatever upload is outstanding for this id, a first upload or a
- * swap. One endpoint for both so the flow a developer learns (init → PUT →
- * complete) is identical either way.
- *
- * Sizes come from R2's HEAD rather than the caller's claim, so the quota is
- * enforced against the bytes that actually landed.
- */
+// Finalizes a first upload or a swap, one endpoint so the init->PUT->complete flow
+// is identical either way. Sizes come from R2's HEAD, not the caller's claim.
 export const POST = withApiKey<{ id: string }>(async ({ requestId, userId, tier, params, rate }) => {
   const limits = getTierLimits(tier)
 
