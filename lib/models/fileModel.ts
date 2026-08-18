@@ -3,6 +3,7 @@ import { cached, bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
 import { scheduleFileExpiry } from '@/lib/expiryScheduler'
 import { errorMessage, errorCode } from "@/lib/errors"
+import { CLEANUP_BATCH_SIZE, CLEANUP_MAX_BATCHES } from "@/constants"
 
 export interface FileRecord {
   id: string
@@ -209,12 +210,11 @@ export async function cleanupExpiredStaging(): Promise<{ cleaned: number; errors
   let cleaned = 0
 
   try {
-    const MAX_BATCHES = 3 // max 1500 staging records per run
     let batches = 0
 
-    while (batches < MAX_BATCHES) {
+    while (batches < CLEANUP_MAX_BATCHES) {
       const result = await pool.query(
-        `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours' LIMIT 500`
+        `SELECT id, r2_key FROM upload_staging WHERE created_at < NOW() - INTERVAL '2 hours' LIMIT ${CLEANUP_BATCH_SIZE}`
       )
 
       if (result.rows.length === 0) break
@@ -403,7 +403,7 @@ export async function markUploadComplete(id: string, fileHash?: string): Promise
   }
 }
 
-export async function getExpiredFiles(limit = 500): Promise<FileRecord[]> {
+export async function getExpiredFiles(limit = CLEANUP_BATCH_SIZE): Promise<FileRecord[]> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(

@@ -4,6 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { NodeHttpHandler } from "@smithy/node-http-handler"
 import https from 'https'
 import crypto from "crypto"
+import { UPLOAD_PRESIGNED_TTL_SECONDS, PRESIGNED_TTL_SECONDS } from "@/constants"
 
 
 function getEnvVar(name: string): string {
@@ -146,7 +147,7 @@ export async function getPresignedCdnUploadUrlForKey(
     CacheControl: "public, max-age=3600, s-maxage=3600",
   })
 
-  const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
+  const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: UPLOAD_PRESIGNED_TTL_SECONDS })
   return { uploadUrl, r2Key }
 }
 
@@ -205,7 +206,7 @@ export async function getPresignedDownloadUrl(opts: {
     ResponseContentType: opts.contentType,
   })
 
-  return getSignedUrl(getR2Client(), command, { expiresIn: opts.expiresIn ?? 300 })
+  return getSignedUrl(getR2Client(), command, { expiresIn: opts.expiresIn ?? PRESIGNED_TTL_SECONDS })
 }
 
 
@@ -373,7 +374,7 @@ export async function getPresignedUploadUrlByKey(r2Key: string, contentType?: st
     Key: r2Key,
     ...(contentType ? { ContentType: contentType } : {}),
   })
-  return getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
+  return getSignedUrl(getR2Client(), command, { expiresIn: UPLOAD_PRESIGNED_TTL_SECONDS })
 }
 
 export async function getPresignedForumUploadUrl(
@@ -391,7 +392,7 @@ export async function getPresignedForumUploadUrl(
     CacheControl: "public, max-age=3600, s-maxage=3600",
   })
 
-  const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: 3600 })
+  const uploadUrl = await getSignedUrl(getR2Client(), command, { expiresIn: UPLOAD_PRESIGNED_TTL_SECONDS })
   return { uploadUrl, r2Key }
 }
 

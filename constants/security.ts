@@ -13,6 +13,9 @@ export const MAX_FILE_SIZE = 500 * 1024 * 1024
 /** Maximum characters allowed for an upload note */
 export const MAX_NOTE_LENGTH = 100
 
+/** Auth cookie lifetime in seconds (7 days) */
+export const AUTH_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
+
 /**
  * Fixed PRF salt label for the biometric unlock passkey. Changing it changes
  * every credential's PRF output and orphans all enrolled vaults, never bump

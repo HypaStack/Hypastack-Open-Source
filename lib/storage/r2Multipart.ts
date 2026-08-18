@@ -8,6 +8,7 @@ import {
 } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { getR2Client, getBucketName } from "@/lib/storage/r2"
+import { UPLOAD_PRESIGNED_TTL_SECONDS } from "@/constants"
 
 export async function initiateMultipartUpload(opts: {
   r2Key: string
@@ -36,7 +37,7 @@ export async function initiateMultipartUpload(opts: {
         UploadId: uploadId,
         PartNumber: idx + 1,
       })
-      return getSignedUrl(client, partCmd, { expiresIn: 3600 })
+      return getSignedUrl(client, partCmd, { expiresIn: UPLOAD_PRESIGNED_TTL_SECONDS })
     }),
   )
 
@@ -59,7 +60,7 @@ export async function getPresignedUrlsForParts(opts: {
         UploadId: opts.uploadId,
         PartNumber: partNum,
       })
-      return getSignedUrl(client, partCmd, { expiresIn: 3600 })
+      return getSignedUrl(client, partCmd, { expiresIn: UPLOAD_PRESIGNED_TTL_SECONDS })
     }),
   )
 }

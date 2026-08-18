@@ -3,6 +3,7 @@ import { deleteByKey } from '@/lib/storage/r2'
 import { getClient } from '@/lib/data/db'
 import { scheduleUpcomingExpiries } from '@/lib/expiryScheduler'
 import { errorMessage } from "@/lib/errors"
+import { CLEANUP_BATCH_SIZE, CLEANUP_MAX_BATCHES } from "@/constants"
 
 export async function cleanupExpiredFiles(): Promise<{
   cleaned: number
@@ -12,12 +13,10 @@ export async function cleanupExpiredFiles(): Promise<{
   let cleaned = 0
 
   try {
-    const MAX_BATCHES = 3 // max 1500 files per run
     let batches = 0
 
-    // Process in batches of 500 until no expired files remain (or limit hit)
-    while (batches < MAX_BATCHES) {
-      const expiredFiles = await getExpiredFiles(500)
+    while (batches < CLEANUP_MAX_BATCHES) {
+      const expiredFiles = await getExpiredFiles(CLEANUP_BATCH_SIZE)
 
       if (expiredFiles.length === 0) break
       batches++
@@ -125,7 +124,7 @@ async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string
       SELECT id, r2_key FROM funnel_staging s
       WHERE s.created_at < NOW() - INTERVAL '2 hours'
         AND NOT EXISTS (SELECT 1 FROM funnel_files f WHERE f.id = s.id)
-      LIMIT 500
+      LIMIT ${CLEANUP_BATCH_SIZE}
     `)
 
     for (const row of rows) {
@@ -177,7 +176,7 @@ async function cleanupCdnStaging(): Promise<{ cleaned: number; errors: string[] 
       SELECT id, r2_key FROM cdn_staging s
       WHERE s.created_at < NOW() - INTERVAL '2 hours'
         AND NOT EXISTS (SELECT 1 FROM cdn_assets a WHERE a.r2_key = s.r2_key)
-      LIMIT 500
+      LIMIT ${CLEANUP_BATCH_SIZE}
     `)
 
     for (const row of rows) {

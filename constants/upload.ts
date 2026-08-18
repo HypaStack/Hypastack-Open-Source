@@ -34,6 +34,9 @@ export const PRESIGNED_TTL_SECONDS = 300
 /** TTL in seconds for a burn-on-read presigned URL (1 min) */
 export const BURN_PRESIGNED_TTL_SECONDS = 60
 
+/** TTL in seconds for an upload presigned URL, single-part or multipart (1 hr) */
+export const UPLOAD_PRESIGNED_TTL_SECONDS = 3600
+
 /** Delay in ms before a burn-on-read file is deleted after first access (90 s) */
 export const BURN_DELETE_DELAY_MS = 90_000
 

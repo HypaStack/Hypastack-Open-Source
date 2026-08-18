@@ -4,6 +4,7 @@ import { NextRequest } from "next/server"
 import { getPool, ensureDatabase } from "@/lib/data/db"
 import { cached } from "@/lib/data/cache"
 import { deriveViaService } from "@/lib/security/hashService"
+import { AUTH_COOKIE_MAX_AGE_SECONDS } from "@/constants"
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required but not set")
@@ -165,7 +166,7 @@ export async function setRefreshCookie(refreshToken: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: AUTH_COOKIE_MAX_AGE_SECONDS,
     path: "/",
     ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
   })
@@ -182,7 +183,7 @@ export async function setAuthCookie(token: string, maxAge?: number) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: maxAge || 7 * 24 * 60 * 60,
+    maxAge: maxAge || AUTH_COOKIE_MAX_AGE_SECONDS,
     path: "/",
     ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
   })
