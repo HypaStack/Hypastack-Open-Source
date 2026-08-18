@@ -243,7 +243,7 @@ function ManageLayoutInner({
               <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="top" className="w-(--trigger-width) min-w-[280px] p-0 bg-black border border-white/10 rounded-2xl overflow-hidden">
+            <Dropdown.Popover placement="top" className="w-(--trigger-width) p-0 bg-black border border-white/10 rounded-2xl overflow-hidden">
               <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <img
@@ -274,14 +274,6 @@ function ManageLayoutInner({
                   <span>Account settings</span>
                   <MIcon name="person" size={18} className="text-muted" />
                 </Dropdown.Item>
-                <Dropdown.Item id="general" onAction={() => openPreferences("general")} textValue="Workspace settings" className="flex items-center justify-between gap-2">
-                  <span>Workspace settings</span>
-                  <MIcon name="settings" size={18} className="text-muted" />
-                </Dropdown.Item>
-                <Dropdown.Item id="refer" textValue="Refer and earn" className="flex items-center justify-between gap-2">
-                  <span>Refer and earn</span>
-                  <MIcon name="card_giftcard" size={18} className="text-muted" />
-                </Dropdown.Item>
                 <Dropdown.Item id="feedback" onAction={() => setFeedbackOpen(true)} textValue="Feedback" className="flex items-center justify-between gap-2">
                   <span>Feedback</span>
                   <MIcon name="sentiment_satisfied" size={18} className="text-muted" />
@@ -290,13 +282,13 @@ function ManageLayoutInner({
 
               <div className="h-px bg-white/10" />
 
-              <div className="px-4 py-3 space-y-3">
+              <div className="px-4 py-2.5 space-y-1.5">
                 <div>
-                  <div className="flex items-center justify-between text-[12px] mb-1.5">
+                  <div className="flex items-center justify-between text-[11px] mb-0.5">
                     <span className="text-muted">Storage</span>
                     <span className="text-muted">{formatStoragePct(usedPct)}%</span>
                   </div>
-                  <Meter value={usedPct} minValue={0} maxValue={100} color={meterColor(usedPct)} aria-label="Storage used">
+                  <Meter value={usedPct} minValue={0} maxValue={100} color={meterColor(usedPct)} size="sm" aria-label="Storage used">
                     <Meter.Track>
                       <Meter.Fill />
                     </Meter.Track>
@@ -305,11 +297,11 @@ function ManageLayoutInner({
 
                 {!isUnlimited(tierLimits.maxFileLinks) && (
                   <div>
-                    <div className="flex items-center justify-between text-[12px] mb-1.5">
+                    <div className="flex items-center justify-between text-[11px] mb-0.5">
                       <span className="text-muted">Shared Links</span>
                       <span className="text-muted">{sharedUsed}/{tierLimits.maxFileLinks}</span>
                     </div>
-                    <Meter value={sharedPct} minValue={0} maxValue={100} color={meterColor(sharedPct)} aria-label="Shared links used">
+                    <Meter value={sharedPct} minValue={0} maxValue={100} color={meterColor(sharedPct)} size="sm" aria-label="Shared links used">
                       <Meter.Track>
                         <Meter.Fill />
                       </Meter.Track>
@@ -319,11 +311,11 @@ function ManageLayoutInner({
 
                 {!isUnlimited(tierLimits.maxCdnLinks) && (
                   <div>
-                    <div className="flex items-center justify-between text-[12px] mb-1.5">
+                    <div className="flex items-center justify-between text-[11px] mb-0.5">
                       <span className="text-muted">Edge Assets</span>
                       <span className="text-muted">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
                     </div>
-                    <Meter value={cdnPct} minValue={0} maxValue={100} color={meterColor(cdnPct)} aria-label="CDN assets used">
+                    <Meter value={cdnPct} minValue={0} maxValue={100} color={meterColor(cdnPct)} size="sm" aria-label="CDN assets used">
                       <Meter.Track>
                         <Meter.Fill />
                       </Meter.Track>

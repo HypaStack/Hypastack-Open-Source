@@ -405,6 +405,12 @@ html[data-theme="dark"] {
   --default: #1a1b1c;
   --default-foreground: var(--foreground);
 
+  /* HeroUI derives this as a color-mix of --default at 50% transparent, which
+     on a black page is nearly indistinguishable from the background. Bumped
+     to a flat visible gray so soft Chips etc. actually read as pills. */
+  --default-soft: #262626;
+  --default-soft-foreground: var(--foreground);
+
   /* HeroUI's real dark-mode defaults, reclaimed from the colliding legacy tokens above. */
   --accent: #0485f7;
   --accent-foreground: #ffffff;
