@@ -411,8 +411,8 @@ html[data-theme="dark"] {
   --default-soft: #262626;
   --default-soft-foreground: var(--foreground);
 
-  /* HeroUI's real dark-mode defaults, reclaimed from the colliding legacy tokens above. */
-  --accent: #0485f7;
+  /* Hypastack's brand primary, reclaimed from the colliding legacy tokens above. */
+  --accent: #003E35;
   --accent-foreground: #ffffff;
   --muted: #9f9fa9;
 
