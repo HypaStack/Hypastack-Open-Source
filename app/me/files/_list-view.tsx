@@ -119,9 +119,12 @@ export function ListView({
             <Table.Column className="w-10 pr-2 py-2">
               <SelectionCheckbox />
             </Table.Column>
-            {/* pl-6 = the rows' chevron column (w-7 with -mx-1 = 20px) plus the
-                gap-1 after it, so "Name" starts exactly where the names do. */}
-            <Table.Column isRowHeader className="py-2 pl-6">Name</Table.Column>
+            {/* HeroUI's own .table__column already sets a 16px left padding as
+                unlayered CSS, which silently beats a plain `pl-*` utility — so
+                this needs `!` to actually win. 40px = that 16px base + the
+                rows' chevron column (w-7 with -mx-1 = 20px) + the gap-1 after
+                it, so "Name" lines up exactly where the names start. */}
+            <Table.Column isRowHeader className="py-2 !pl-10">Name</Table.Column>
             <Table.Column className="w-28 text-right py-2">Size</Table.Column>
           </Table.Header>
           <Table.Body>
