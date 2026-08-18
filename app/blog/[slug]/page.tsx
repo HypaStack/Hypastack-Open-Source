@@ -68,21 +68,33 @@ export default async function BlogPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: safeJsonLd({
             "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
-            description: post.summary,
-            datePublished: post.date,
-            url: `https://hypastack.com/blog/${slug}`,
-            mainEntityOfPage: `https://hypastack.com/blog/${slug}`,
-            author: {
-              "@type": "Person",
-              name: "Kiko",
-              url: "https://usekiko.com",
-            },
-            publisher: {
-              "@id": "https://hypastack.com/#organization",
-            },
-            inLanguage: "en-US",
+            "@graph": [
+              {
+                "@type": "BlogPosting",
+                headline: post.title,
+                description: post.summary,
+                datePublished: post.date,
+                url: `https://hypastack.com/blog/${slug}`,
+                mainEntityOfPage: `https://hypastack.com/blog/${slug}`,
+                author: {
+                  "@type": "Person",
+                  name: "Kiko",
+                  url: "https://usekiko.com",
+                },
+                publisher: {
+                  "@id": "https://hypastack.com/#organization",
+                },
+                inLanguage: "en-US",
+              },
+              {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Home", item: "https://hypastack.com" },
+                  { "@type": "ListItem", position: 2, name: "Blog", item: "https://hypastack.com/blog" },
+                  { "@type": "ListItem", position: 3, name: post.title, item: `https://hypastack.com/blog/${slug}` },
+                ],
+              },
+            ],
           }),
         }}
       />

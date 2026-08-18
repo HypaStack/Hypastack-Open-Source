@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { DocNav } from "@/components/docs/doc-nav"
@@ -54,6 +55,19 @@ function SectionHeading({ id, title, children }: { id: string; title: string; ch
 export default function DeveloperApiDocs() {
   return (
     <main className="flex min-h-screen flex-col bg-[#08090a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://hypastack.com" },
+              { "@type": "ListItem", position: 2, name: "Developer API", item: "https://hypastack.com/docs/developer-api" },
+            ],
+          }),
+        }}
+      />
       <Navbar />
 
       <section className="flex-1 pt-32 pb-40">

@@ -150,7 +150,7 @@ export function PricingCards() {
                 <Card.Content className="flex-1 p-7">
                   {/* price */}
                   <div className="flex items-baseline gap-2">
-                    <Typography type="h1" className="text-5xl text-foreground">{priceAmount(tier, annual)}</Typography>
+                    <Typography type="body" weight="bold" className="text-5xl tracking-tight text-foreground">{priceAmount(tier, annual)}</Typography>
                     <Typography type="body-sm" color="muted">/ {annual ? "year" : "month"}</Typography>
                   </div>
 
