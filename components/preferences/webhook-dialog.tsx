@@ -1,11 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { Button } from "@heroui/react"
-import { TextInput } from "@/components/ui/text-input"
-import { Loader } from "@/components/ui/loader"
-import { AlertMessage } from "@/components/ui/alert-message"
+import { Button, FieldError, Input, Label, Modal, TextField, toast } from "@heroui/react"
 import { sendTest, isValidDiscordWebhook } from "@/lib/integrations/discordWebhook"
 
 export function WebhookDialog({
@@ -21,38 +17,25 @@ export function WebhookDialog({
 }) {
   const [url, setUrl] = useState(initialUrl)
   const [testing, setTesting] = useState(false)
-  const [testResult, setTestResult] = useState<{ ok: boolean; msg: string } | null>(null)
 
   useEffect(() => {
-    if (open) {
-      setUrl(initialUrl)
-      setTestResult(null)
-    }
+    if (open) setUrl(initialUrl)
   }, [open, initialUrl])
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
-  }, [open, onClose])
 
   const trimmed = url.trim()
   const urlValid = trimmed === "" || isValidDiscordWebhook(trimmed)
   const testable = isValidDiscordWebhook(trimmed)
 
-  const handleTest = async () => {
-    if (!testable) return
+  const handleTest = () => {
+    if (!testable || testing) return
     setTesting(true)
-    setTestResult(null)
-    try {
-      await sendTest(trimmed)
-      setTestResult({ ok: true, msg: "Test message sent — check your Discord channel." })
-    } catch {
-      setTestResult({ ok: false, msg: "Couldn't reach that webhook. Double-check the URL." })
-    } finally {
-      setTesting(false)
-    }
+    const sent = sendTest(trimmed)
+    toast.promise(sent, {
+      loading: "Sending test message…",
+      success: "Test message sent — check your Discord channel.",
+      error: "Couldn't reach that webhook. Double-check the URL.",
+    })
+    sent.catch(() => {}).finally(() => setTesting(false))
   }
 
   const handleSave = () => {
@@ -61,77 +44,43 @@ export function WebhookDialog({
   }
 
   return (
-    <AnimatePresence>
-      {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-black/40 backdrop-blur-md"
-            onClick={onClose}
-          />
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-[420px] flex flex-col bg-white dark:bg-[#121212] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-[16px]"
-            style={{
-              boxShadow: '0 16px 48px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)',
-              padding: 6,
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && testable && !testing) handleSave()
-            }}
-          >
-            <div style={{ padding: '10px 4px 6px' }}>
-              <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>Discord webhook</p>
-              <TextInput
-                type="text"
-                size="md"
-                fullWidth
+    <Modal isOpen={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+      <Modal.Backdrop isDismissable variant="blur">
+        <Modal.Container placement="center" size="md">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading>Discord webhook</Modal.Heading>
+              <Modal.CloseTrigger />
+            </Modal.Header>
+            <Modal.Body>
+              <TextField
                 value={url}
-                onChange={(e) => { setUrl(e.target.value); setTestResult(null) }}
-                placeholder="https://discord.com/api/webhooks/..."
+                onChange={setUrl}
+                isInvalid={!urlValid}
+                className="w-full"
                 autoFocus
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                style={{ height: 46, fontWeight: 500, fontSize: 14 }}
-              />
-              {!urlValid && (
-                <p className="text-[11px] text-red-500 mt-2">That doesn&apos;t look like a Discord webhook URL.</p>
-              )}
-            </div>
-
-            {testResult && (
-              <div style={{ padding: '0 6px 6px' }}>
-                <AlertMessage tone={testResult.ok ? "success" : "error"} style={{ marginBottom: 0 }}>{testResult.msg}</AlertMessage>
-              </div>
-            )}
-
-            <div style={{ padding: '0 4px 4px' }}>
-              <Button variant="tertiary" size="md" fullWidth onPress={handleTest} isDisabled={!testable || testing}>
-                {testing ? (
-                  <span className="flex items-center justify-center gap-2"><Loader size={16} /> Testing…</span>
-                ) : "Test webhook"}
+                onKeyDown={(e) => { if (e.key === "Enter" && testable && !testing) handleSave() }}
+              >
+                <Label>Webhook URL</Label>
+                <Input
+                  placeholder="https://discord.com/api/webhooks/..."
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                />
+                <FieldError>That doesn&apos;t look like a Discord webhook URL.</FieldError>
+              </TextField>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="tertiary" isDisabled={!testable || testing} onPress={handleTest}>
+                {testing ? "Testing…" : "Test webhook"}
               </Button>
-            </div>
-
-            <div className="flex gap-2" style={{ padding: 4 }}>
-              <div className="flex-1">
-                <Button variant="tertiary" size="md" fullWidth onPress={onClose}>Cancel</Button>
-              </div>
-              <div className="flex-1">
-                <Button variant="primary" size="md" fullWidth onPress={handleSave} isDisabled={!testable}>Save</Button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+              <Button variant="tertiary" onPress={onClose}>Cancel</Button>
+              <Button variant="primary" isDisabled={!testable} onPress={handleSave}>Save</Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   )
 }
