@@ -152,7 +152,7 @@ export default function FunnelInboxPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-2 shrink-0">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 whitespace-nowrap">
           <span className="text-[#333] dark:text-[#ccc]">Funnel</span>
         </h1>

@@ -7,7 +7,7 @@ import Turnstile from "react-turnstile"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { SideAd } from "@/components/ui/side-ad"
-import { Button, Card, Chip, Typography } from "@heroui/react"
+import { Button, Card, Chip } from "@heroui/react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { apiFetch } from "@/lib/http/fetch"
@@ -58,27 +58,14 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
       .catch(() => {})
   }, [slug])
 
-  const selectFile = (f: File | null) => {
-    setSendError("")
-    setFileError("")
-    if (!f) return setFile(null)
-    if (meta && f.size > meta.maxUploadSize) {
-      setFile(null)
-      setFileError(`That file is ${fmt(f.size)} — this funnel accepts up to ${fmt(meta.maxUploadSize)}.`)
-      return
-    }
-    setFile(f)
-  }
-
   const busy = dropState === "encrypting" || dropState === "uploading"
   const done = dropState === "done"
-  const canSend = !!file && !!meta && (isDev || !!turnstileToken) && dropState === null
 
-  const handleSend = async () => {
-    if (!file || !meta) return
+  const handleSend = async (f: File) => {
+    if (!meta) return
     setSendError("")
     try {
-      await dropFile({ slug, file, publicKeySpki: meta.publicKey, csrfToken, turnstileToken, onState: setDropState })
+      await dropFile({ slug, file: f, publicKeySpki: meta.publicKey, csrfToken, turnstileToken, onState: setDropState })
     } catch (err) {
       setDropState(null)
       setTurnstileToken("")
@@ -86,8 +73,28 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
     }
   }
 
+  const selectFile = (f: File | null) => {
+    setSendError("")
+    setFileError("")
+    if (!f) return
+    if (meta && f.size > meta.maxUploadSize) {
+      setFileError(`That file is ${fmt(f.size)} — this funnel accepts up to ${fmt(meta.maxUploadSize)}.`)
+      return
+    }
+    setFile(f)
+    // Auto-start: if Turnstile hasn't verified yet, wait for it — see the effect below.
+    if (isDev || turnstileToken) handleSend(f)
+  }
+
+  // Picking a file before Turnstile verifies (widget is always mounted, so this
+  // is rare but possible on a slow load) — send as soon as the token arrives.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (file && turnstileToken && dropState === null && !isDev) handleSend(file)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnstileToken])
+
   const ownerName = meta?.owner.displayName ? `@${meta.owner.displayName}` : "someone"
-  const ext = file?.name.includes(".") ? file.name.split(".").pop()!.slice(0, 5) : ""
 
   return (
     <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-background">
@@ -125,97 +132,10 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
         {!loading && meta && !closed && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
-              <Card.Header className="flex-row items-start gap-3">
-                <img
-                  src={meta.owner.avatarUrl || "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp"}
-                  alt=""
-                  className="h-[52px] w-[52px] rounded-md object-cover border-2 border-overlay bg-muted select-none pointer-events-none shrink-0"
-                  draggable={false}
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp" }}
-                />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <Card.Title className="text-lg truncate">Send a file to {ownerName}</Card.Title>
-                    {meta.owner.verified && (
-                      <span title="Verified account" className="shrink-0 inline-flex items-center text-[#3ba7ff]">
-                        <MIcon name="verified" size={17} />
-                      </span>
-                    )}
-                  </div>
-                  <Card.Description>Encrypted in your browser before it leaves your device.</Card.Description>
-                </div>
+              <Card.Header className="flex-row items-center justify-between gap-3">
+                <Card.Title className="text-lg truncate">Send a file to {ownerName}</Card.Title>
+                <Chip size="sm" variant="soft" className="shrink-0">Up to {fmt(meta.maxUploadSize)}</Chip>
               </Card.Header>
-
-              <Card.Content className="flex flex-wrap gap-2">
-                <Chip size="sm" variant="soft" className="gap-1">
-                  <MIcon name="shield" size={14} />
-                  End-to-end encrypted
-                </Chip>
-                <Chip size="sm" variant="soft" className="gap-1">
-                  <MIcon name="data_usage" size={14} />
-                  Up to {fmt(meta.maxUploadSize)}
-                </Chip>
-                <Chip size="sm" variant="soft" className="gap-1">
-                  <MIcon name="counter_1" size={14} />
-                  One file, once
-                </Chip>
-              </Card.Content>
-
-              {!done && (
-                <Card.Content>
-                  <Card variant="transparent" className="!p-0 bg-surface rounded-[10px] overflow-hidden">
-                    {!file ? (
-                      <button
-                        type="button"
-                        onClick={() => inputRef.current?.click()}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => { e.preventDefault(); selectFile(e.dataTransfer.files?.[0] || null) }}
-                        className="w-full flex items-center justify-between px-4 h-[52px] text-left hover:bg-white/5 transition-colors cursor-pointer"
-                      >
-                        <span className="flex items-center gap-2.5 text-muted">
-                          <MIcon name="attach_file" size={15} />
-                          <Typography type="body-sm" color="muted">Choose a file or drop it here</Typography>
-                        </span>
-                        <Typography type="body-sm" weight="semibold" className="text-foreground">Browse</Typography>
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-3 px-4 h-[52px]">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex min-w-0 items-center gap-1.5">
-                            <Typography type="body-sm" weight="medium" className="truncate text-foreground">{file.name}</Typography>
-                            {ext && <Chip size="sm" variant="soft" className="uppercase tracking-wider text-[10px] font-semibold shrink-0">{ext}</Chip>}
-                          </div>
-                          <Typography type="body-xs" color="muted" className="mt-0.5">{fmt(file.size)}</Typography>
-                        </div>
-                        {!busy && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onPress={() => selectFile(null)}
-                            aria-label="Remove file"
-                          >
-                            Remove
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                  </Card>
-                </Card.Content>
-              )}
-
-              <input ref={inputRef} type="file" className="hidden" onChange={(e) => selectFile(e.target.files?.[0] || null)} />
-
-              {(busy || done) && (
-                <Card.Content>
-                  <AlertMessage tone={done ? "success" : "info"} style={{ marginBottom: 0 }}>
-                    {done
-                      ? `Your file is on its way to ${ownerName}. This link is now closed.`
-                      : dropState === "encrypting"
-                      ? "Encrypting your file in this browser. Larger files take a little longer, don't close this tab."
-                      : "Your file is uploading securely in the background. This may take a moment depending on your connection speed."}
-                  </AlertMessage>
-                </Card.Content>
-              )}
 
               {(fileError || sendError) && (
                 <Card.Content>
@@ -225,7 +145,7 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                 </Card.Content>
               )}
 
-              {file && !done && !isDev && (
+              {!done && !isDev && (
                 <Card.Content className="flex justify-center">
                   <Turnstile
                     sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
@@ -236,31 +156,26 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
                 </Card.Content>
               )}
 
-              {!done && (
-                <Card.Footer>
-                  <Button
-                    variant="primary"
-                    onPress={handleSend}
-                    isDisabled={!canSend}
-                    fullWidth
-                    style={{ gap: 8 }}
-                  >
-                    {busy ? (
-                      <><LoadingSvg size={16} />{dropState === "encrypting" ? "Encrypting…" : "Sending…"}</>
-                    ) : (
-                      <><MIcon name="send" size={16} />Send file</>
-                    )}
-                  </Button>
-                </Card.Footer>
-              )}
-            </Card>
+              <input ref={inputRef} type="file" className="hidden" onChange={(e) => selectFile(e.target.files?.[0] || null)} />
 
-            <Typography type="body-xs" color="muted" className="mt-3 px-2 leading-relaxed text-center">
-              Your file is encrypted on this device before it&apos;s uploaded, so only {ownerName} can open it. Anyone can set a
-              name and avatar. Hypastack doesn&apos;t vet profiles, so only accounts showing a{" "}
-              <span className="inline-flex items-center gap-0.5 align-middle text-muted"><MIcon name="verified" size={12} />Verified</span>{" "}
-              badge are confirmed.
-            </Typography>
+              <Card.Footer>
+                <Button
+                  variant="primary"
+                  onPress={() => inputRef.current?.click()}
+                  isDisabled={busy || done}
+                  fullWidth
+                  style={{ gap: 8 }}
+                >
+                  {busy ? (
+                    <><LoadingSvg size={16} />{dropState === "encrypting" ? "Encrypting…" : "Sending…"}</>
+                  ) : done ? (
+                    <><MIcon name="check" size={16} />Sent</>
+                  ) : (
+                    <><MIcon name="send" size={16} />Send file</>
+                  )}
+                </Button>
+              </Card.Footer>
+            </Card>
           </motion.div>
         )}
       </div>
