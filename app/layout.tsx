@@ -9,6 +9,7 @@ import { ContextMenuUploader } from "@/components/context-menu-uploader"
 import { TauriTitleBar } from "@/components/tauri-titlebar"
 
 import { AuthProvider } from "@/hooks/useAuth"
+import { HypaNotifProvider } from "@/components/ui/hypa-notif"
 import {
   SITE_URL,
   SITE_NAME,
@@ -293,6 +294,7 @@ export default async function RootLayout({
             <ConsoleGreeting />
             <DesktopGuard />
             <ContextMenuUploader />
+            <HypaNotifProvider />
           </AuthProvider>
         </div>
       </body>

@@ -1,29 +1,20 @@
 "use client"
-import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { MIcon } from "./material-icon"
-import { TextInput } from "./text-input"
-import { Button } from "@heroui/react"
+import { useEffect, useState, type ReactNode } from "react"
+import { Button, Input, Label, Modal, TextField, Toast, toast } from "@heroui/react"
 import { ProgressBar } from "./progress-bar"
 import { AlertMessage } from "./alert-message"
-import { Loader } from "./loader"
 
 export interface HypaNotifOptions {
   title: string
   description?: string
   items?: string[]
   confirmText?: string
-  confirmIcon?: string
   cancelText?: string
   destructive?: boolean
-  isProgress?: boolean
   progressText?: string
-  progressPercent?: number
   isInput?: boolean
   inputPlaceholder?: string
   inputDefaultValue?: string
-  /** When true, only the confirm button is shown (no cancel). Use for info/success notifications. */
-  confirmOnly?: boolean
   /** Warning shown above the actions. Defaults to a permanent-delete note when destructive. */
   alertText?: string
   /** Async action run inside the dialog on confirm: the button shows a spinner,
@@ -33,132 +24,76 @@ export interface HypaNotifOptions {
   loadingText?: string
 }
 
-type PromiseResolvers = {
-  resolve: (value: boolean | string | null) => void
+type NotifState = HypaNotifOptions & { id: string; resolve: (value: boolean | string | null) => void }
+
+const rid = () => Math.random().toString(36).slice(2, 9)
+
+const dispatch = (detail: NotifState) => {
+  window.dispatchEvent(new CustomEvent("hypa-confirm", { detail }))
 }
 
-type NotifState = HypaNotifOptions & PromiseResolvers & { id: string }
-
-declare global {
-  interface Window {
-    __hypaNotifListener: ((notif: NotifState) => void) | null
-  }
-}
-
-export const hypaConfirm = (options: HypaNotifOptions): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined") {
-      const event = new CustomEvent("hypa-confirm", {
-        detail: { ...options, id: Math.random().toString(36).slice(2, 9), resolve }
-      })
-      window.dispatchEvent(event)
-    } else {
-      resolve(false)
-    }
+export const hypaConfirm = (options: HypaNotifOptions): Promise<boolean> =>
+  new Promise((resolve) => {
+    if (typeof window === "undefined") { resolve(false); return }
+    dispatch({ ...options, id: rid(), resolve: (v) => resolve(v === true) })
   })
-}
 
-export const hypaPrompt = (options: HypaNotifOptions): Promise<string | null> => {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined") {
-      const event = new CustomEvent("hypa-confirm", {
-        detail: { ...options, isInput: true, id: Math.random().toString(36).slice(2, 9), resolve }
-      })
-      window.dispatchEvent(event)
-    } else {
-      resolve(null)
-    }
+export const hypaPrompt = (options: HypaNotifOptions): Promise<string | null> =>
+  new Promise((resolve) => {
+    if (typeof window === "undefined") { resolve(null); return }
+    dispatch({ ...options, isInput: true, id: rid(), resolve: (v) => resolve(typeof v === "string" ? v : null) })
   })
-}
 
-const hypaUpdate = (id: string, options: Partial<HypaNotifOptions> & { _close?: boolean }) => {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("hypa-update", { detail: { id, ...options } }))
-  }
-}
-
-// Live progress notification. Returns handles to push updates and close it, so a
-// long streaming job (bulk delete, folder wipe) can report where it's actually at.
-export const hypaProgress = (options: HypaNotifOptions) => {
-  const id = Math.random().toString(36).slice(2, 9)
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("hypa-confirm", {
-      detail: { ...options, isProgress: true, progressPercent: 0, id, resolve: () => {} }
-    }))
-  }
-  return {
-    id,
-    update: (progressPercent: number, progressText?: string) =>
-      hypaUpdate(id, { progressPercent, ...(progressText ? { progressText } : {}) }),
-    close: () => hypaUpdate(id, { _close: true }),
-  }
-}
-
-// Fire-and-forget toast: a single-button notification that also auto-dismisses.
-// Use for non-blocking status/error feedback instead of the native alert().
+// Fire-and-forget toast. Non-blocking status feedback.
 export const hypaToast = (options: HypaNotifOptions & { durationMs?: number }) => {
-  const id = Math.random().toString(36).slice(2, 9)
-  if (typeof window !== "undefined") {
-    const { durationMs, ...rest } = options
-    window.dispatchEvent(new CustomEvent("hypa-confirm", {
-      detail: { confirmOnly: true, confirmText: "Dismiss", confirmIcon: "close", ...rest, id, resolve: () => {} }
-    }))
-    const d = durationMs ?? 5000
-    if (d > 0) window.setTimeout(() => hypaUpdate(id, { _close: true }), d)
-  }
-  return { id, close: () => hypaUpdate(id, { _close: true }) }
+  const key = toast(options.title, { description: options.description, timeout: options.durationMs })
+  return { id: key, close: () => toast.close(key) }
 }
 
 /** Convenience error toast — the title carries the message, description is optional detail. */
-export const hypaError = (message: string, description?: string) =>
-  hypaToast({ title: message, description })
+export const hypaError = (message: string, description?: string) => {
+  const key = toast.danger(message, { description })
+  return { id: key, close: () => toast.close(key) }
+}
 
-function InputNotif({ notif, onResolve }: { notif: NotifState; onResolve: (id: string, value: string | null) => void }) {
-  const [value, setValue] = React.useState(notif.inputDefaultValue ?? "")
-  const inputRef = React.useRef<HTMLInputElement>(null)
-
-  React.useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 50)
-    return () => clearTimeout(t)
-  }, [])
-
-  const handleConfirm = () => {
-    if (!value.trim()) return
-    onResolve(notif.id, value.trim())
+/** Live progress toast, so a long streaming job (bulk delete, folder wipe) can
+ *  report where it's actually at. Stays up until close() is called. */
+export const hypaProgress = (options: HypaNotifOptions) => {
+  const id = rid()
+  const key = toast(options.title, {
+    description: <ProgressToastBody id={id} text={options.progressText} />,
+    isLoading: true,
+    timeout: 0,
+  })
+  return {
+    id: key,
+    update: (progressPercent: number, progressText?: string) =>
+      window.dispatchEvent(new CustomEvent("hypa-progress", { detail: { id, progressPercent, progressText } })),
+    close: () => toast.close(key),
   }
+}
 
-  const handleCancel = () => onResolve(notif.id, null)
+function ProgressToastBody({ id, text }: { id: string; text?: string }) {
+  const [state, setState] = useState({ percent: 0, text: text ?? "Working…" })
+
+  useEffect(() => {
+    const onUpdate = (e: Event) => {
+      const d = (e as CustomEvent<{ id: string; progressPercent: number; progressText?: string }>).detail
+      if (d.id !== id) return
+      setState((prev) => ({ percent: d.progressPercent, text: d.progressText ?? prev.text }))
+    }
+    window.addEventListener("hypa-progress", onUpdate)
+    return () => window.removeEventListener("hypa-progress", onUpdate)
+  }, [id])
 
   return (
-    <>
-      <div style={{ padding: '8px 4px 2px' }}>
-        <p className="text-[#111] dark:text-[#f7f8f8]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', paddingLeft: 2, paddingBottom: 8 }}>
-          {notif.title}
-        </p>
-        <TextInput
-          ref={inputRef}
-          type="text"
-          size="md"
-          fullWidth
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") handleConfirm(); if (e.key === "Escape") handleCancel() }}
-          placeholder={notif.inputPlaceholder ?? ""}
-        />
-      </div>
-      <div className="flex gap-2" style={{ padding: 4 }}>
-        <div className="flex-1">
-          <Button variant="tertiary" size="md" fullWidth onPress={handleCancel}>
-            {notif.cancelText ?? "Cancel"}
-          </Button>
-        </div>
-        <div className="flex-1">
-          <Button variant="primary" size="md" fullWidth onPress={handleConfirm} isDisabled={!value.trim()}>
-            {notif.confirmText ?? "Create"}
-          </Button>
-        </div>
-      </div>
-    </>
+    <span className="flex flex-col gap-1.5">
+      <span className="flex items-center justify-between gap-2">
+        <span className="truncate">{state.text}</span>
+        <span className="tabular-nums">{Math.round(state.percent)}%</span>
+      </span>
+      <ProgressBar value={state.percent} height={5} aria-label={state.text} />
+    </span>
   )
 }
 
@@ -170,182 +105,106 @@ function isDestructiveNotif(n: NotifState): boolean {
   return /\b(wipe|delete|remove|erase|destroy)\b/.test(t) || t.includes("forever")
 }
 
-function ConfirmNotif({ notif, destructive, onResolve }: { notif: NotifState; destructive: boolean; onResolve: (id: string, value: boolean) => void }) {
+function NotifDialog({ notif, onResolve }: { notif: NotifState; onResolve: (id: string, value: boolean | string | null) => void }) {
+  const [value, setValue] = useState(notif.inputDefaultValue ?? "")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const destructive = isDestructiveNotif(notif)
+
+  const cancel = () => onResolve(notif.id, notif.isInput ? null : false)
 
   const confirm = async () => {
+    if (notif.isInput) {
+      if (!value.trim()) return
+      onResolve(notif.id, value.trim())
+      return
+    }
     if (!notif.onConfirm) { onResolve(notif.id, true); return }
     setLoading(true)
     setError(null)
     try {
       await notif.onConfirm()
-      onResolve(notif.id, true) // just close, no success popup
+      onResolve(notif.id, true)
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong")
       setLoading(false)
     }
   }
 
-  const warning = error ?? notif.alertText ?? (destructive ? "This permanently deletes it and can't be recovered." : null)
+  const warning = error ?? notif.alertText ?? (destructive && !notif.isInput ? "This permanently deletes it and can't be recovered." : null)
 
   return (
-    <>
-      {warning && (
-        <div style={{ padding: '0 6px 6px' }}>
-          <AlertMessage tone="error" style={{ marginBottom: 0 }}>{warning}</AlertMessage>
-        </div>
-      )}
-      <div className="flex gap-2" style={{ padding: 4 }}>
-        <div className="flex-1">
-          <Button variant="tertiary" size="md" fullWidth isDisabled={loading} onPress={() => onResolve(notif.id, false)}>
-            {notif.cancelText || "Cancel"}
-          </Button>
-        </div>
-        <div className="flex-1">
-          <Button
-            variant={destructive ? "danger" : "primary"}
-            size="md"
-            fullWidth
-            isDisabled={loading}
-            onPress={confirm}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader size={16} color="#ffffff" />
-                {notif.loadingText ?? notif.confirmText ?? "Confirm"}
-              </span>
-            ) : (notif.confirmText || "Confirm")}
-          </Button>
-        </div>
-      </div>
-    </>
+    <Modal isOpen onOpenChange={(open) => { if (!open) cancel() }}>
+      <Modal.Backdrop isDismissable variant="blur">
+        <Modal.Container placement="center" size="md">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading>{notif.title}</Modal.Heading>
+              <Modal.CloseTrigger />
+            </Modal.Header>
+            <Modal.Body className="space-y-3">
+              {notif.description && <p>{notif.description}</p>}
+              {notif.items && notif.items.length > 0 && (
+                <ul className="max-h-[140px] overflow-y-auto">
+                  {notif.items.map((item) => <li key={item} className="truncate">{item}</li>)}
+                </ul>
+              )}
+              {notif.isInput && (
+                <TextField
+                  value={value}
+                  onChange={setValue}
+                  className="w-full"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === "Enter") confirm() }}
+                >
+                  <Label>{notif.inputPlaceholder ?? "Name"}</Label>
+                  <Input placeholder={notif.inputPlaceholder ?? ""} />
+                </TextField>
+              )}
+              {warning && <AlertMessage tone="error" style={{ marginBottom: 0 }}>{warning}</AlertMessage>}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="tertiary" isDisabled={loading} onPress={cancel}>
+                {notif.cancelText ?? "Cancel"}
+              </Button>
+              <Button
+                variant={destructive ? "danger" : "primary"}
+                isPending={loading}
+                isDisabled={loading || (notif.isInput && !value.trim())}
+                onPress={confirm}
+              >
+                {loading ? (notif.loadingText ?? notif.confirmText ?? "Confirm") : (notif.confirmText ?? (notif.isInput ? "Create" : "Confirm"))}
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   )
 }
 
-export function HypaNotifProvider() {
+/** Mounts the toast region plus the confirm/prompt dialog queue. */
+export function HypaNotifProvider({ children }: { children?: ReactNode }) {
   const [notifs, setNotifs] = useState<NotifState[]>([])
 
   useEffect(() => {
-    const handleConfirm = (e: Event) => {
-      const event = e as CustomEvent<NotifState>
-      setNotifs((prev) => [...prev, event.detail])
-    }
-    const handleUpdate = (e: Event) => {
-      const event = e as CustomEvent<any>
-      if (event.detail._close) {
-        setNotifs((prev) => prev.filter(n => n.id !== event.detail.id))
-      } else {
-        setNotifs((prev) => prev.map(n => n.id === event.detail.id ? { ...n, ...event.detail } : n))
-      }
-    }
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("hypa-confirm", handleConfirm)
-      window.addEventListener("hypa-update", handleUpdate)
-      return () => {
-        window.removeEventListener("hypa-confirm", handleConfirm)
-        window.removeEventListener("hypa-update", handleUpdate)
-      }
-    }
+    const onConfirm = (e: Event) => setNotifs((prev) => [...prev, (e as CustomEvent<NotifState>).detail])
+    window.addEventListener("hypa-confirm", onConfirm)
+    return () => window.removeEventListener("hypa-confirm", onConfirm)
   }, [])
 
   const handleResolve = (id: string, value: boolean | string | null) => {
     setNotifs((prev) => {
-      const notif = prev.find((n) => n.id === id)
-      if (notif) notif.resolve(value)
+      prev.find((n) => n.id === id)?.resolve(value)
       return prev.filter((n) => n.id !== id)
     })
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none max-sm:bottom-4 max-sm:left-4 max-sm:right-4">
-      <AnimatePresence>
-        {notifs.map((notif) => {
-          const destructive = isDestructiveNotif(notif)
-          return (
-          <motion.div
-            key={notif.id}
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
-            transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-          className="w-full sm:w-[360px] pointer-events-auto overflow-hidden backdrop-blur-xl border rounded-[16px]"
-            style={{
-              backgroundColor: "var(--overlay)",
-              borderColor: "var(--border)",
-              boxShadow: '0 12px 40px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)',
-              padding: 6,
-            }}
-          >
-            {/* Title + description */}
-            {!notif.isInput && (
-              <div className="flex items-center gap-2.5" style={{ padding: '10px 14px 6px 14px' }}>
-                {notif.isProgress && (
-                  <span className="shrink-0 text-[#898e97] dark:text-[#898e97]">
-                    <Loader size={18} />
-                  </span>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="text-[#111] dark:text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: notif.description || notif.isProgress ? 3 : 0 }}>
-                    {notif.title}
-                  </p>
-                  {notif.isProgress ? (
-                    <p className="text-[#898e97] dark:text-[#898e97] truncate" style={{ fontSize: 12.5, lineHeight: 1.3 }}>
-                      {notif.progressText || "Working…"}
-                    </p>
-                  ) : notif.description ? (
-                    <p className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
-                      {notif.description}
-                    </p>
-                  ) : null}
-                </div>
-                {notif.isProgress && (
-                  <span
-                    className="shrink-0 tabular-nums text-[#111] dark:text-[#ededed]"
-                    style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}
-                  >
-                    {Math.round(notif.progressPercent || 0)}%
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* File list */}
-            {notif.items && notif.items.length > 0 && (
-              <div
-                className="bg-black/[0.04] dark:bg-white/[0.04] rounded-[10px]"
-                style={{ margin: '0 6px 6px', padding: 4, maxHeight: 140, overflowY: 'auto' }}
-              >
-                {notif.items.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 6 }}>
-                    <MIcon name="description" size={14} className="text-[#999] dark:text-[#a1a1aa]" style={{ flexShrink: 0 }} />
-                    <span className="text-[#333] dark:text-[#ccc]" style={{ fontSize: 13, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Actions or Progress */}
-            {notif.isProgress ? (
-              <div style={{ padding: '2px 14px 12px' }}>
-                <ProgressBar value={notif.progressPercent || 0} height={5} aria-label={notif.progressText || "Progress"} />
-              </div>
-            ) : notif.isInput ? (
-              <InputNotif notif={notif} onResolve={handleResolve} />
-            ) : notif.confirmOnly ? (
-              <div style={{ padding: 4 }}>
-                <Button variant="tertiary" size="md" fullWidth onPress={() => handleResolve(notif.id, true)}>
-                  {notif.confirmText || "Dismiss"}
-                </Button>
-              </div>
-            ) : (
-              <ConfirmNotif notif={notif} destructive={destructive} onResolve={handleResolve} />
-            )}
-          </motion.div>
-          )
-        })}
-      </AnimatePresence>
-    </div>
+    <>
+      {children}
+      {notifs[0] && <NotifDialog key={notifs[0].id} notif={notifs[0]} onResolve={handleResolve} />}
+      <Toast.Provider placement="bottom" />
+    </>
   )
 }

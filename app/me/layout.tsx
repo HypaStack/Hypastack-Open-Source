@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, Toast, toast } from "@heroui/react"
+import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toast } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -235,7 +235,7 @@ function ManageLayoutInner({
               <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="top" className="p-0 bg-black border border-white/10 rounded-2xl overflow-hidden" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
+            <Dropdown.Popover placement="top" className="p-0 overflow-hidden" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
               <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <img
@@ -449,9 +449,9 @@ function ManageLayoutInner({
       <Modal isOpen={feedbackOpen} onOpenChange={setFeedbackOpen}>
         <Modal.Backdrop isDismissable variant="blur">
           <Modal.Container placement="center" size="md">
-            <Modal.Dialog className="bg-black border border-white/10 rounded-2xl">
-              <Modal.Header className="flex items-center justify-between">
-                <Modal.Heading className="text-[16px] font-semibold text-foreground">Send feedback</Modal.Heading>
+            <Modal.Dialog>
+              <Modal.Header>
+                <Modal.Heading>Send feedback</Modal.Heading>
                 <Modal.CloseTrigger />
               </Modal.Header>
               <Modal.Body className="space-y-4">
@@ -539,8 +539,6 @@ function ManageLayoutInner({
       on-demand upload modal could never do, since it isn't mounted on load.
     */}
     <UploadZone />
-
-    <Toast.Provider placement="bottom" />
     </>
   )
 }

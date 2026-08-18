@@ -3,7 +3,7 @@
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
-import { Button } from "@heroui/react"
+import { Button, toast } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
@@ -360,11 +360,8 @@ export default function CdnPage() {
 
       // Success notification — deferred so it fires after React's current render batch
       setTimeout(() => {
-        hypaConfirm({
-          title: "File hot swapped ✓",
+        toast.success("File hot swapped", {
           description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL — e.g. ${target.cdnUrl}?v=1`,
-          confirmText: "Close",
-          confirmOnly: true,
         })
       }, 0)
     } catch (err) {
