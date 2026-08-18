@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, ListBox, Modal, typographyVariants } from "@heroui/react"
+import { Button, Chip, Modal, ToggleButton, ToggleButtonGroup, typographyVariants } from "@heroui/react"
 import type { Selection } from "react-aria-components"
 
 /** Stands in for the Drive root, which has no folder id. */
@@ -88,7 +88,7 @@ export function MoveDialog({
   const rows = toPaths(folders)
   const isCurrent = target === currentFolderId
 
-  // ListBox keys are strings, so the Drive root travels as ROOT_KEY.
+  // Selection keys are strings, so the Drive root travels as ROOT_KEY.
   const handleSelection = (keys: Selection) => {
     if (keys === "all") return
     const key = [...keys][0]
@@ -118,24 +118,32 @@ export function MoveDialog({
 
             <Modal.Body className="max-h-[280px]">
               <p className="mb-2">Pick where they should end up.</p>
-              <ListBox
+              <ToggleButtonGroup
                 aria-label="Destination folder"
+                orientation="vertical"
+                isDetached
+                fullWidth
                 selectionMode="single"
                 disallowEmptySelection
                 selectedKeys={[target ?? ROOT_KEY]}
                 onSelectionChange={handleSelection}
+                className="gap-1"
               >
                 {[{ id: null as string | null, path: rootLabel }, ...rows].map((row) => (
-                  <ListBox.Item key={row.id ?? ROOT_KEY} id={row.id ?? ROOT_KEY} textValue={row.path}>
+                  <ToggleButton
+                    key={row.id ?? ROOT_KEY}
+                    id={row.id ?? ROOT_KEY}
+                    variant="ghost"
+                    className="w-full justify-start gap-2.5"
+                  >
                     <MIcon name={row.id === null ? "home_storage" : "folder"} size={16} className="shrink-0 text-muted" />
-                    <span className="min-w-0 flex-1 truncate">{row.path}</span>
+                    <span className="min-w-0 flex-1 truncate text-left">{row.path}</span>
                     {row.id === currentFolderId && (
                       <Chip size="sm" variant="soft" className="shrink-0">Current</Chip>
                     )}
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
+                  </ToggleButton>
                 ))}
-              </ListBox>
+              </ToggleButtonGroup>
             </Modal.Body>
 
             <Modal.Footer>
