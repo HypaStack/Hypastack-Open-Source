@@ -29,7 +29,7 @@ export function ListView({
   files,
   allFolders,
   allFiles,
-  selectedFiles,
+  selectedIds,
   onSelectionChange,
   onOpenFolder,
   onDeleteFolder,
@@ -39,7 +39,7 @@ export function ListView({
   files: FileItem[]
   allFolders: FolderItem[]
   allFiles: FileItem[]
-  selectedFiles: Set<string>
+  selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
   onOpenFolder: (id: string) => void
   onDeleteFolder: (id: string, name: string) => void
@@ -71,10 +71,10 @@ export function ListView({
   folders.forEach((f) => addFolder(f, 0))
   files.forEach((f) => rows.push({ kind: "file", file: f, depth: 0 }))
 
-  const folderRowIds = new Set(rows.filter((r) => r.kind === "folder").map((r) => r.folder.id))
+  const allRowIds = rows.map((r) => (r.kind === "folder" ? r.folder.id : r.file.id))
 
   const handleSelectionChange = (keys: Selection) => {
-    onSelectionChange(keys === "all" ? new Set(files.map((f) => f.id)) : new Set(Array.from(keys, String)))
+    onSelectionChange(keys === "all" ? new Set(allRowIds) : new Set(Array.from(keys, String)))
   }
 
   return (
@@ -83,13 +83,13 @@ export function ListView({
         <Table.Content
           aria-label="Files and folders"
           selectionMode="multiple"
-          disabledKeys={folderRowIds}
-          disabledBehavior="selection"
-          selectedKeys={selectedFiles}
+          selectedKeys={selectedIds}
           onSelectionChange={handleSelectionChange}
         >
           <Table.Header>
-            <Table.Column className="w-10 pr-2 py-2" />
+            <Table.Column className="w-10 pr-2 py-2">
+              <SelectionCheckbox />
+            </Table.Column>
             <Table.Column isRowHeader className="py-2">Name</Table.Column>
             <Table.Column className="w-28 text-right py-2">Size</Table.Column>
           </Table.Header>
@@ -98,25 +98,27 @@ export function ListView({
               row.kind === "folder" ? (
                 <Table.Row key={`folder-${row.folder.id}`} id={row.folder.id} className="group">
                   <Table.Cell className="w-10 pr-2 py-2">
-                    {row.hasChildren && (
-                      <button
-                        type="button"
-                        onClick={() => toggleExpanded(row.folder.id)}
-                        aria-label={expandedFolders.has(row.folder.id) ? `Collapse ${row.folder.name}` : `Expand ${row.folder.name}`}
-                        className="flex items-center justify-center h-[26px] w-[26px] text-muted hover:text-foreground transition-colors"
-                      >
-                        <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={18} />
-                      </button>
-                    )}
+                    <SelectionCheckbox />
                   </Table.Cell>
                   <Table.Cell className="py-2">
-                    <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer"
-                      style={{ paddingLeft: row.depth * 20 }}
-                      onClick={() => onOpenFolder(row.folder.id)}
-                    >
-                      <MIcon name="folder" size={14} className="shrink-0 text-muted" />
-                      <span className="truncate font-medium" title={row.folder.name}>{row.folder.name}</span>
+                    <div className="flex items-center gap-1 min-w-0" style={{ paddingLeft: row.depth * 20 }}>
+                      {row.hasChildren ? (
+                        <button
+                          type="button"
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => { e.stopPropagation(); toggleExpanded(row.folder.id) }}
+                          aria-label={expandedFolders.has(row.folder.id) ? `Collapse ${row.folder.name}` : `Expand ${row.folder.name}`}
+                          className="flex items-center justify-center h-7 w-7 -mx-1 shrink-0 text-muted hover:text-foreground transition-colors"
+                        >
+                          <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={16} />
+                        </button>
+                      ) : (
+                        <span className="h-5 w-5 shrink-0" />
+                      )}
+                      <div className="flex items-center gap-2 min-w-0 cursor-pointer" onDoubleClick={() => onOpenFolder(row.folder.id)}>
+                        <MIcon name="folder" size={14} className="shrink-0 text-muted" />
+                        <span className="truncate font-medium" title={row.folder.name}>{row.folder.name}</span>
+                      </div>
                     </div>
                   </Table.Cell>
                   <Table.Cell className="w-28 text-right py-2">

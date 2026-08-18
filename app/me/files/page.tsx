@@ -30,7 +30,7 @@ function FilesPageInner() {
   const [sortField, setSortField] = useState<SortField>("name")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [moveOpen, setMoveOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
@@ -187,7 +187,7 @@ function FilesPageInner() {
         }
         setFiles((prev) => prev.filter((f) => f.id !== fileId))
         setWtStep(s => s === 5 ? 6 : s)
-        setSelectedFiles((prev) => {
+        setSelectedIds((prev) => {
           const next = new Set(prev)
           next.delete(fileId)
           return next
@@ -198,61 +198,89 @@ function FilesPageInner() {
   }
 
   const handleBulkDelete = async () => {
-    if (selectedFiles.size === 0) return
+    if (selectedIds.size === 0) return
 
-    const ids = Array.from(selectedFiles)
-    const fileNames = ids.map(id => files.find(f => f.id === id)?.name || "Unknown file")
+    const fileIds = Array.from(selectedIds).filter((id) => files.some((f) => f.id === id))
+    const folderIds = Array.from(selectedIds).filter((id) => folders.some((f) => f.id === id))
+    const names = [
+      ...fileIds.map((id) => files.find((f) => f.id === id)?.name || "Unknown file"),
+      ...folderIds.map((id) => folders.find((f) => f.id === id)?.name || "Unknown folder"),
+    ]
     const confirmed = await hypaConfirm({
-      title: `Are you sure you want to delete ${ids.length} file(s) forever?`,
-      items: fileNames,
+      title: `Are you sure you want to delete ${names.length} item(s) forever?`,
+      description: folderIds.length > 0 ? "Deleting a folder also deletes everything inside it. This cannot be undone." : undefined,
+      items: names,
       confirmText: "Delete",
       cancelText: "Cancel",
     })
     if (!confirmed) return
 
     setDeleteLoading("bulk")
-    // The endpoint streams one NDJSON line per deleted file, so report the real count.
-    const progress = hypaProgress({ title: "Deleting files", progressText: `0 of ${ids.length}` })
     try {
-      const res = await apiFetch("/api/v2/files", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileIds: ids }),
-      })
-      if (!res.ok || !res.body) throw new Error("Failed to delete files")
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ""
-      const deletedIds = new Set<string>()
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split("\n")
-        buffer = lines.pop() || ""
-        for (const line of lines) {
-          if (!line.trim()) continue
-          try {
-            const data = JSON.parse(line)
-            if (data.success && data.id) deletedIds.add(data.id)
-            if (data.index && data.total) {
-              progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+      if (fileIds.length > 0) {
+        // The endpoint streams one NDJSON line per deleted file, so report the real count.
+        const progress = hypaProgress({ title: "Deleting files", progressText: `0 of ${fileIds.length}` })
+        try {
+          const res = await apiFetch("/api/v2/files", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileIds }),
+          })
+          if (!res.ok || !res.body) throw new Error("Failed to delete files")
+          const reader = res.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ""
+          const deletedIds = new Set<string>()
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split("\n")
+            buffer = lines.pop() || ""
+            for (const line of lines) {
+              if (!line.trim()) continue
+              try {
+                const data = JSON.parse(line)
+                if (data.success && data.id) deletedIds.add(data.id)
+                if (data.index && data.total) {
+                  progress.update(Math.round((data.index / data.total) * 100), `${data.index} of ${data.total}`)
+                }
+              } catch {}
             }
-          } catch {}
+          }
+          setFiles((prev) => prev.filter((f) => !deletedIds.has(f.id)))
+        } finally {
+          progress.close()
         }
       }
-      setFiles((prev) => prev.filter((f) => !deletedIds.has(f.id)))
-      setSelectedFiles(new Set())
+
+      if (folderIds.length > 0) {
+        for (const folderId of folderIds) {
+          const res = await apiFetch("/api/v2/folders", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ folderId }),
+          })
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}))
+            hypaError(data.message || "Failed to delete folder")
+          }
+        }
+        await refreshUser()
+      }
+
+      setSelectedIds(new Set())
     } catch (err) {
-      hypaError("Failed to delete files", errorMessage(err))
+      hypaError("Failed to delete", errorMessage(err))
     } finally {
-      progress.close()
       setDeleteLoading(null)
     }
   }
 
   const handleBulkMove = async (folderId: string | null) => {
-    await moveFiles(Array.from(selectedFiles), folderId)
+    // Moving only applies to files — folders don't have a move endpoint yet.
+    const fileIds = Array.from(selectedIds).filter((id) => files.some((f) => f.id === id))
+    await moveFiles(fileIds, folderId)
   }
 
   const moveFiles = async (ids: string[], folderId: string | null) => {
@@ -270,7 +298,7 @@ function FilesPageInner() {
       }
       const movedIds = new Set(ids)
       setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
-      setSelectedFiles(new Set())
+      setSelectedIds(new Set())
       setMoveOpen(false)
     } catch (err) {
       console.error("Move error:", err)
@@ -347,24 +375,7 @@ function FilesPageInner() {
     return crumbs
   }
 
-  const toggleSelectAll = () => {
-    if (filteredFiles.length === 0) return
-    const allFilteredSelected = filteredFiles.every((f) => selectedFiles.has(f.id))
-
-    setSelectedFiles((prev) => {
-      const next = new Set(prev)
-      if (allFilteredSelected) {
-        filteredFiles.forEach((f) => next.delete(f.id))
-      } else {
-        filteredFiles.forEach((f) => next.add(f.id))
-      }
-      return next
-    })
-  }
-
   if (!user) return null
-
-  const allSelected = filteredFiles.length > 0 && filteredFiles.every((f) => selectedFiles.has(f.id))
 
   return (
     <Tabs defaultSelectedKey="drive" className="flex-1 flex flex-col">
@@ -395,7 +406,7 @@ function FilesPageInner() {
         </SharedElementTransition>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0">
-          {selectedFiles.size > 0 ? (
+          {selectedIds.size > 0 ? (
             <>
               <Button
                 variant="tertiary"
@@ -421,7 +432,7 @@ function FilesPageInner() {
                 ) : (
                   <>
                     <MIcon name="delete" size={16} className="shrink-0" />
-                    Delete {selectedFiles.size}
+                    Delete {selectedIds.size}
                   </>
                 )}
               </Button>
@@ -469,8 +480,8 @@ function FilesPageInner() {
               files={paginatedFiles}
               allFolders={folders}
               allFiles={files}
-              selectedFiles={selectedFiles}
-              onSelectionChange={setSelectedFiles}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
               onOpenFolder={setCurrentFolderId}
               onDeleteFolder={handleDeleteFolder}
               onContextMenu={(e, id) => {
@@ -569,7 +580,7 @@ function FilesPageInner() {
 
       {moveOpen && (
         <MoveDialog
-          count={selectedFiles.size}
+          count={selectedIds.size}
           folders={folders}
           currentFolderId={currentFolderId}
           rootLabel="Drive"
