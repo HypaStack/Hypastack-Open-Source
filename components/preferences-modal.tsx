@@ -12,7 +12,7 @@ import { SecurityTab } from "./preferences/security-tab"
 import { DeveloperTab } from "./preferences/developer-tab"
 import { useDeveloperMode } from "@/hooks/useDeveloperMode"
 
-// Modal shell — each tab lives in components/preferences/.
+// Modal shell, each tab lives in components/preferences/.
 export type { PreferencesTab, PreferencesUser, PreferencesStorage } from "./preferences/shared"
 
 interface Props {

@@ -17,7 +17,7 @@ export default function ChangelogPage() {
       <Navbar />
       <section className="flex-1 pt-32 pb-40 px-6">
         {/* Padding lives on the section (screen-edge gutter on small viewports)
-            so this stays a true 880px, same as the navbar's own outer width —
+            so this stays a true 880px, same as the navbar's own outer width,
             not 880px minus padding. */}
         <div className="mx-auto max-w-[880px]">
           <ChangelogList />

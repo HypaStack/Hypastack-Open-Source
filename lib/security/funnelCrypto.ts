@@ -2,7 +2,7 @@
 //
 // The owner holds an RSA-OAEP keypair. The public key encrypts (wraps) the random
 // AES-GCM key a sender uses for their file; the private key decrypts it. The
-// private key never leaves the owner's device unwrapped — it's AES-GCM-wrapped
+// private key never leaves the owner's device unwrapped, it's AES-GCM-wrapped
 // with the account master key (see lib/security/cryptoClient.ts) before it's sent
 // to the server, mirroring how the nickname is protected.
 //

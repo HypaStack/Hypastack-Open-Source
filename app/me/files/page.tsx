@@ -276,7 +276,7 @@ function FilesPageInner() {
   }
 
   // Moves files (PATCH /api/v2/files) and/or folders (PATCH /api/v2/folders,
-  // one request per folder — no bulk endpoint) to a common target folder, then
+  // one request per folder, no bulk endpoint) to a common target folder, then
   // reports the combined count under one "item(s)" toast.
   const moveItems = async (fileIds: string[], folderIds: string[], targetFolderId: string | null) => {
     const filesToMove = fileIds.filter((id) => files.find((f) => f.id === id)?.folderId !== targetFolderId)
@@ -386,8 +386,8 @@ function FilesPageInner() {
     if (!confirmed) return
 
     // Mirrors the server's own recursive walk (deleteFolderRecursively) so the
-    // whole subtree — nested folders and their files — can be removed from
-    // the UI immediately, before the request finishes.
+    // whole subtree (nested folders and their files) can be removed from the
+    // UI immediately, before the request finishes.
     const foldersToDelete = new Set<string>([folderId])
     let added = true
     while (added) {

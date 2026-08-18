@@ -5,7 +5,7 @@ import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-// DELETE /api/v2/forum/[id]/comments/[commentId] — soft-delete own comment
+// DELETE /api/v2/forum/[id]/comments/[commentId], soft-delete own comment
 export const DELETE = withAuth<{ id: string; commentId: string }>(async ({ user, params }) => {
     const { commentId } = params
     const commentIdNum = parseInt(commentId, 10)

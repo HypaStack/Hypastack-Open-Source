@@ -11,7 +11,7 @@ type Cell = { on: boolean; main: string; suffix?: string; infinity?: boolean }
 type Row = [Cell, Cell, Cell]
 type Section = { icon: string; title: string; rows: Row[] }
 
-// A per-tier value row — always included, value differs by tier.
+// A per-tier value row, always included, value differs by tier.
 function derive(pick: (l: TierLimits) => string, suffix?: string): Row {
   return LIMITS.map((l) => ({ on: true, main: pick(l), suffix })) as Row
 }
@@ -21,7 +21,7 @@ function all(main: string, opts?: { infinity?: boolean; suffix?: string }): Row 
   return TIERS.map(() => ({ on: true, main, ...opts })) as Row
 }
 
-// Progressive unlock — included only where the flag is true.
+// Progressive unlock, included only where the flag is true.
 function unlock(main: string, ons: [boolean, boolean, boolean]): Row {
   return ons.map((on) => ({ on, main })) as Row
 }

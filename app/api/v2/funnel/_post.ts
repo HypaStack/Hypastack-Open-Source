@@ -64,7 +64,7 @@ export async function handleFunnelCreate({
   }
 
   try {
-    // Atomic cap enforcement — no TOCTOU across concurrent creates.
+    // Atomic cap enforcement, no TOCTOU across concurrent creates.
     const result = await createFunnelWithCap(
       { id, slug, user_id: user.userId, public_key: publicKey, private_key_wrapped: wrappedPrivateKey },
       tier.maxFunnelLinks,

@@ -8,7 +8,7 @@ import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 
-// PATCH /api/v2/forum/[id]/files — upload-complete (confirm file in R2)
+// PATCH /api/v2/forum/[id]/files, upload-complete (confirm file in R2)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

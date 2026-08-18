@@ -1,5 +1,5 @@
 /**
- * Display formatters shared across the app. One copy each — don't fork these
+ * Display formatters shared across the app. One copy each, don't fork these
  * into page-local helpers.
  */
 

@@ -49,7 +49,7 @@ export const hypaToast = (options: HypaNotifOptions & { durationMs?: number }) =
   return { id: key, close: () => toast.close(key) }
 }
 
-/** Convenience error toast — the title carries the message, description is optional detail. */
+/** Convenience error toast, the title carries the message, description is optional detail. */
 export const hypaError = (message: string, description?: string) => {
   const key = toast.danger(message, { description })
   return { id: key, close: () => toast.close(key) }

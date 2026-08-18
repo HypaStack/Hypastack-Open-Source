@@ -15,7 +15,7 @@ interface QrCodePopoverProps {
 /**
  * Icon-trigger popover with a QR code for a share link. Generated entirely in
  * the browser (the `qrcode` package, no network round trip) so the link never
- * leaves the device just to render a code for it — consistent with everything
+ * leaves the device just to render a code for it, consistent with everything
  * else about how Hypastack handles share links.
  */
 export function QrCodePopover({ url, size = 30, className }: QrCodePopoverProps) {

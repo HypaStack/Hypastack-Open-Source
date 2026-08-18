@@ -6,7 +6,7 @@ export interface MaterialIconProps {
   className?: string
   style?: React.CSSProperties
   size?: number | string
-  strokeWidth?: number // ignored — kept for Lucide compat
+  strokeWidth?: number // ignored, kept for Lucide compat
 }
 
 /**

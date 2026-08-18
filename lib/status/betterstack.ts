@@ -1,5 +1,5 @@
 // Reads the public status-page JSON feed (any status page URL + /index.json).
-// No token needed — the feed is public. Set STATUS_PAGE_URL to the page's base URL.
+// No token needed, the feed is public. Set STATUS_PAGE_URL to the page's base URL.
 export type SiteState = "operational" | "degraded" | "downtime" | "maintenance"
 
 export type SiteStatus = {

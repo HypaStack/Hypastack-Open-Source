@@ -4,7 +4,7 @@ import type { CdnAsset } from "@/lib/models/cdnModel"
 
 /**
  * The public shape of a v3 file. Everything is snake_case and every timestamp is
- * ISO 8601 UTC — one convention across the whole API so a developer never has to
+ * ISO 8601 UTC, one convention across the whole API so a developer never has to
  * check which field style a given endpoint uses.
  *
  * Internal columns (r2_key, file_hash, encryption_*, folder_id, user_id) are
@@ -42,7 +42,7 @@ function iso(value: Date | string): string {
  * A /d/{id} link is only usable with the AES key in its `#fragment`, and the
  * browser uploader is what generates that key. Files created through the API
  * have no such key, so a /d/ link for one renders "you're missing the #
- * fragment" — returning it would hand out links that cannot work.
+ * fragment", returning it would hand out links that cannot work.
  *
  * Use GET /files/{id}/download for a signed, time-limited URL instead.
  */
@@ -67,7 +67,7 @@ export function toV3CdnAsset(asset: CdnAsset): V3CdnAsset {
     id: asset.id,
     // Not decrypted: CDN names are stored as sanitized plaintext, unlike Drive
     // filenames. decryptFilename would pass them through untouched, but only by
-    // way of its can't-decrypt fallback — relying on that would be an accident.
+    // way of its can't-decrypt fallback, relying on that would be an accident.
     name: asset.original_name,
     size: asset.file_size,
     content_type: asset.content_type,

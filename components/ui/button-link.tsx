@@ -5,7 +5,7 @@ import { buttonVariants, type ButtonVariants } from "@heroui/react"
 
 interface ButtonLinkProps extends ButtonVariants {
   href: string
-  /** Link component to render — e.g. next/link. Defaults to a plain <a>. */
+  /** Link component to render, e.g. next/link. Defaults to a plain <a>. */
   as?: ElementType
   children: ReactNode
   className?: string
@@ -20,7 +20,7 @@ interface ButtonLinkProps extends ButtonVariants {
 /**
  * HeroUI's Button (react-aria-components) can't render as an anchor, so
  * navigational buttons need their own element. This applies HeroUI's real
- * `buttonVariants()` classes — the same ones `<Button>` uses internally — to a
+ * `buttonVariants()` classes, the same ones `<Button>` uses internally, to a
  * Link element. No styling of its own; purely a DOM-element bridge.
  */
 export function ButtonLink({

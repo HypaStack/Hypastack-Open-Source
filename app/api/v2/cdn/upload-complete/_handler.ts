@@ -52,7 +52,7 @@ export async function handleCdnUploadCompletePost(request: NextRequest) {
     }
 
     // Support both single-file (legacy) and batch mode. Only the id and the
-    // destination folder are read — name, content type and slug come from the
+    // destination folder are read, name, content type and slug come from the
     // staging row written at init.
     // Batch: { files: [{cdnId, folderId}] }
     // Legacy: { cdnId, folderId }

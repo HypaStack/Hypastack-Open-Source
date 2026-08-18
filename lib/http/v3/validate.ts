@@ -19,7 +19,7 @@ export function firstFailure(error: z.ZodError): ValidationFailure {
 
 /**
  * Parse a request body against a schema. Returns either the typed value or the
- * failure material — never throws, so handlers stay branch-only.
+ * failure material, never throws, so handlers stay branch-only.
  */
 export function parseBody<T extends z.ZodTypeAny>(
   schema: T,

@@ -39,7 +39,7 @@ export function DesktopGuard() {
     setRateLimited(true)
   }, [])
 
-  // Master keyboard handler — capture phase, highest priority
+  // Master keyboard handler, capture phase, highest priority
   useEffect(() => {
     if (!isDesktop) return
 
@@ -92,7 +92,7 @@ export function DesktopGuard() {
         e.stopImmediatePropagation()
         return
       }
-      // Ctrl+F5 (hard refresh) — blocked entirely
+      // Ctrl+F5 (hard refresh), blocked entirely
       if (ctrl && e.key === "F5") {
         e.preventDefault()
         e.stopImmediatePropagation()

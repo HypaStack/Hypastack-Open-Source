@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const session = await atomicRotateRefreshToken(refreshTokenHash, newRefreshTokenHash)
 
     if (!session) {
-      // Token not found, already used, or revoked — nuke the cookies
+      // Token not found, already used, or revoked, nuke the cookies
       console.error(`[Auth] Refresh token not found or already rotated — possible replay attempt`)
       const res = NextResponse.json({ error: API_ERRORS.UNAUTHORIZED }, { status: 401 })
       res.cookies.delete("auth_token")

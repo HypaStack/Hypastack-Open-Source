@@ -59,8 +59,8 @@ export function ListView({
     })
   }
 
-  // Folders expand in place to preview their contents without navigating away —
-  // children come from the full (unfiltered) collections already in memory.
+  // Folders expand in place to preview their contents without navigating away.
+  // Children come from the full (unfiltered) collections already in memory.
   const rows: Row[] = []
   const addFolder = (folder: FolderItem, depth: number) => {
     const childFolders = allFolders.filter((f) => f.parentId === folder.id)
@@ -80,7 +80,7 @@ export function ListView({
     onSelectionChange(keys === "all" ? new Set(allRowIds) : new Set(Array.from(keys, String)))
   }
 
-  // Drag files or folders onto a folder row to move them — no dialog. Folder
+  // Drag files or folders onto a folder row to move them, no dialog. Folder
   // rows are the only valid drop targets.
   const fileIds = new Set(rows.filter((r) => r.kind === "file").map((r) => r.file.id))
   const folderIds = new Set(rows.filter((r) => r.kind === "folder").map((r) => r.folder.id))
@@ -107,12 +107,12 @@ export function ListView({
       const folderIdsToMove = droppedFolderIds.filter((id) => id !== targetId)
       if (droppedFileIds.length > 0 || folderIdsToMove.length > 0) onMoveItems(droppedFileIds, folderIdsToMove, targetId)
     },
-    // Dropping on the table itself rather than on a folder row — back to root.
+    // Dropping on the table itself rather than on a folder row, back to root.
     onRootDrop: async (e) => {
       const { droppedFileIds, droppedFolderIds } = splitDropped(await readDroppedItems(e.items))
       if (droppedFileIds.length > 0 || droppedFolderIds.length > 0) onMoveItems(droppedFileIds, droppedFolderIds, null)
     },
-    // Default preview only shows the single row under the cursor — make a
+    // Default preview only shows the single row under the cursor, make a
     // multi-item drag visibly read as "N items" instead of looking dropped.
     renderDragPreview: (items) => (
       <div className="flex items-center gap-1.5 rounded-[8px] bg-overlay border border-white/10 px-2.5 py-1.5 text-[13px] font-medium text-foreground shadow-lg">
@@ -138,7 +138,7 @@ export function ListView({
             </Table.Column>
             {/* HeroUI's own .table__column/.table__cell ship a 16px left
                 padding as unlayered CSS, which silently beats a plain `pl-*`
-                utility — both this and the row cells below need `!` to
+                utility, both this and the row cells below need `!` to
                 actually win. 32px = the rows' own 8px cell padding + the
                 chevron column (w-7 with -mx-1 = 20px) + the gap-1 after it,
                 so "Name" lines up exactly where the names start. */}

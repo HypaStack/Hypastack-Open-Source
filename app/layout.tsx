@@ -157,7 +157,7 @@ export default async function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         
         {/* Structured Data - JSON-LD. Facts here must stay consistent with the
-            visible site (FAQ, tier limits) — search and answer engines cross-check. */}
+            visible site (FAQ, tier limits), search and answer engines cross-check. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

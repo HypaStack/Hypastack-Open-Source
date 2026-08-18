@@ -30,7 +30,7 @@ export const DELETE = withAuth(async ({ request, user }) => {
 
     const { deletedAssets, folderIds } = await deleteCdnFolderRecursively(user.userId, folderId)
 
-    // Stream NDJSON progress — one line per deleted asset, then a final summary line
+    // Stream NDJSON progress, one line per deleted asset, then a final summary line
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       start(controller) {

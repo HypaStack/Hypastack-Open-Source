@@ -85,10 +85,10 @@ export function useUpload({
 
   // Account-wide link cap (the thing the server 403s on). Trim the selection to
   // the free slots the user actually has so we never let them pick more than
-  // they can upload — MAX_FILES is only the per-upload ceiling.
+  // they can upload, MAX_FILES is only the per-upload ceiling.
   // Count from the server-authoritative `stats` (the exact numbers the 403 gate
   // checks: activeFiles / cdn totalAssets), falling back to the loaded arrays
-  // only before stats arrive — the arrays can lag/empty and would skip the trim.
+  // only before stats arrive, the arrays can lag/empty and would skip the trim.
   const accountLinkCap = uploadType === "cdn" ? tierLimits.maxCdnLinks : tierLimits.maxFileLinks
   const accountLinksUsed = uploadType === "cdn"
     ? (stats?.cdnAssets ?? cdnAssets.length)
@@ -146,7 +146,7 @@ export function useUpload({
 
       const noun = uploadType === "cdn" ? "CDN link" : "file"
 
-      // No free slots left — surface it instead of letting the upload 403.
+      // No free slots left, surface it instead of letting the upload 403.
       if (effectiveMaxFiles === 0) {
         setErrorMessage(`You've reached your plan limit of ${accountLinkCap} ${noun}s. Delete some to free up space.`)
         setState("error")
@@ -274,7 +274,7 @@ export function useUpload({
     // multi-file uploads it doesn't apply, so we ignore any stale slug value.
     const slugApplies = uploadType === "cdn" ? files.length === 1 : (files.length === 1 || shouldZip)
 
-    // Validate the custom link before doing any work — keeps the user in the
+    // Validate the custom link before doing any work, keeps the user in the
     // editable state (and avoids burning a single-use Turnstile token) on a
     // simple length/charset mistake, instead of bouncing to the error screen.
     if (finalSlug && slugApplies) {
@@ -385,7 +385,7 @@ export function useUpload({
       }
       const slugConflict = (error as { slugConflict?: { suggestions?: string[] } }).slugConflict
       if (slugConflict) {
-        // The link was taken — drop back to the editable state so the user can
+        // The link was taken, drop back to the editable state so the user can
         // pick another. Turnstile tokens are single-use, so force a re-verify.
         setSlugError({ message: "That custom link is already taken. Try one of these:", suggestions: slugConflict.suggestions || [] })
         setState("selected")
@@ -401,7 +401,7 @@ export function useUpload({
       setIsUploading(false)
       abortControllerRef.current = null
       // Aborted, slug conflict, or a partial batch failure the tray reports
-      // itself — drop the loading toast instead of leaving it spinning.
+      // itself, drop the loading toast instead of leaving it spinning.
       if (!outcomeSettled) toast.close(uploadToastId)
     }
   }

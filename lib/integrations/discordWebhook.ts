@@ -1,5 +1,5 @@
 // Discord webhook integration. Fires from the browser after an upload and sends
-// a notification with the link *minus its key fragment* — the decryption key
+// a notification with the link *minus its key fragment*, the decryption key
 // (after `#`) is never included, so the webhook only tells you an upload
 // happened, it doesn't hand out access. Config + a small activity log live in
 // localStorage (per device). The actual POST to Discord is relayed through our
@@ -101,7 +101,7 @@ export async function sendTest(url: string): Promise<void> {
 
 // ── Persistent send queue ────────────────────────────────────────────────────
 // Messages wait in localStorage until actually delivered, so closing the tab
-// mid-drain loses nothing — the queue resumes on the next visit
+// mid-drain loses nothing, the queue resumes on the next visit
 // (resumeWebhookQueue). Messages are spaced WEBHOOK_BATCH_DELAY_MS apart to
 // stay clear of Discord's rate limit.
 
@@ -159,7 +159,7 @@ export function resumeWebhookQueue(): void {
   if (getQueue().length > 0) void drainQueue(cfg.url)
 }
 
-// Fire-and-forget for a completed upload. Never throws — a webhook problem must
+// Fire-and-forget for a completed upload. Never throws, a webhook problem must
 // not affect the upload UX; failures are recorded in the activity log instead.
 // Multi-file uploads are packed into a single message, split only when
 // Discord's 2000-char content cap forces it.

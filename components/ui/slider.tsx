@@ -15,7 +15,7 @@ interface SliderProps {
   "aria-label"?: string
 }
 
-/** Range slider — HeroUI's real Slider, single-thumb, native keyboard/drag a11y. */
+/** Range slider, HeroUI's real Slider, single-thumb, native keyboard/drag a11y. */
 export function Slider({
   value,
   min = 0,

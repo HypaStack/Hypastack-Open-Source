@@ -13,7 +13,7 @@ import { API_ERRORS } from "@/constants"
 
 const MAX_FILES_PER_POST = 5
 
-// POST /api/v2/forum/[id]/files — upload-init (get presigned URL)
+// POST /api/v2/forum/[id]/files, upload-init (get presigned URL)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

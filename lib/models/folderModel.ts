@@ -96,7 +96,7 @@ async function ensureFolderPath(userId: string, path: string, baseFolderId: stri
  * portion exists, creating folders as needed. Returns the resolved folder id.
  *
  * Shared by the upload init handlers (single + multipart) which had this block
- * copy-pasted. Kept free of HTTP concerns — callers map `{ ok: false }` to 403.
+ * copy-pasted. Kept free of HTTP concerns, callers map `{ ok: false }` to 403.
  */
 export async function resolveUploadFolder(
   userId: string,

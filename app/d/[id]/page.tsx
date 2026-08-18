@@ -99,7 +99,7 @@ export default function DownloadPage() {
     const dn = fileInfo.customFilename || fileInfo.name || "download";
 
     // Ask for the save location up front, while the click's user activation is
-    // still fresh and — crucially — before the server consumes a burn-on-read
+    // still fresh and, crucially, before the server consumes a burn-on-read
     // file. Cancelling the picker used to burn the file anyway.
     let fs: FileSystemWritableFileStream | null = null;
     if (encryptionKeyBase64 && 'showSaveFilePicker' in window && fileInfo.size > MULTIPART_THRESHOLD) {

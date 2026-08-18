@@ -23,7 +23,7 @@ function subscribe(onStoreChange: () => void) {
  * localStorage and broadcasts so the toggle (Account tab) and the tab list
  * (modal shell) stay in sync without threading state through props.
  *
- * This is a UI reveal only — it does not grant API access. Tier gating is
+ * This is a UI reveal only, it does not grant API access. Tier gating is
  * enforced separately by the caller (and, once the API lands, server-side).
  */
 export function useDeveloperMode() {

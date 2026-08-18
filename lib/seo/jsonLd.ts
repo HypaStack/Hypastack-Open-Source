@@ -1,11 +1,6 @@
-/**
- * Serialize an object for embedding inside a <script type="application/ld+json">.
- *
- * Plain JSON.stringify does NOT escape "<", so a value containing "</script>"
- * (or the U+2028/U+2029 line separators) could break out of the script tag —
- * a stored-XSS vector the moment any user-controlled field lands in JSON-LD.
- * This escapes those characters so the block is safe regardless of its inputs.
- */
+// Escapes "<" and the U+2028/U+2029 line separators before embedding in a
+// <script type="application/ld+json">, plain JSON.stringify doesn't and a
+// "</script>" in user-controlled data would break out of the tag (stored XSS).
 const JSONLD_UNSAFE = new RegExp("[<>&\\u2028\\u2029]", "g")
 
 export function safeJsonLd(data: unknown): string {

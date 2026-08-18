@@ -35,7 +35,7 @@ describe("error catalogue", () => {
 
   it("never names the owner in the not_found message", () => {
     // The ambiguity between "never existed" and "not yours" is the security
-    // property — wording that hints at ownership would undo it.
+    // property, wording that hints at ownership would undo it.
     const msg = V3_MESSAGE.not_found.toLowerCase()
     expect(msg).not.toContain("owner")
     expect(msg).not.toContain("permission")
@@ -169,7 +169,7 @@ describe("global ceiling", () => {
 describe("global ceiling when the limiter is unreachable", () => {
   it("fails CLOSED in production", () => {
     // The whole point of the ceiling. If this ever flips, a Redis outage stops
-    // shedding v3 and the origin is unprotected — so it is pinned here.
+    // shedding v3 and the origin is unprotected, so it is pinned here.
     const result = unreachable(42, true)
     expect(result.allowed).toBe(false)
     expect(result.unavailable).toBe(true)

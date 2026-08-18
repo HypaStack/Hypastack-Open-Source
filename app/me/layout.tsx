@@ -32,7 +32,7 @@ const TIER_CHIP_COLOR: Record<Tier, "default" | "accent" | "warning" | "danger">
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 // The account menu trigger/popover and the Upgrade button all live inside a
-// no horizontal inset on the sidebar wrapper — this is that shared content
+// no horizontal inset on the sidebar wrapper, this is that shared content
 // width, so the trigger and its popover always render pixel-identical no
 // matter what state either is in.
 const SIDEBAR_CONTENT_WIDTH = SIDEBAR_WIDTH
@@ -100,7 +100,7 @@ function NavRow({
         paddingRight: 12,
       }}
     >
-      {/* size as a string so MIcon's +2px nudge doesn't apply — a hair over the
+      {/* size as a string so MIcon's +2px nudge doesn't apply, a hair over the
           15px label. Filled, lighter grade, larger optical size. */}
       <MIcon
         name={item.icon}
@@ -328,7 +328,7 @@ function ManageLayoutInner({
               <MIcon name="expand_all" size={10} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
-            {/* containerPadding matches the sidebar's own 8px margin — react-aria's
+            {/* containerPadding matches the sidebar's own 8px margin, react-aria's
                 12px default pushes the popover right to clear the viewport edge,
                 knocking it off the trigger. offset is the gap above the trigger. */}
             <Dropdown.Popover
@@ -353,7 +353,7 @@ function ManageLayoutInner({
                     <MIcon name="check_circle" size={12} />
                     {tierLimits.label}
                   </Chip>
-                  {/* h-5/px-2/text-xs/rounded-2xl matches Chip sm — no Button size is that small,
+                  {/* h-5/px-2/text-xs/rounded-2xl matches Chip sm, no Button size is that small,
                       and the Button's own rounded-3xl (12px) turns into a pill at 20px tall. */}
                   <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0 h-5 px-2 text-xs md:h-5 rounded-2xl">
                     Sign out
@@ -392,7 +392,7 @@ function ManageLayoutInner({
             className="relative border-transparent"
           >
             {/* Single ring border, fading from full accent at the bottom edge to
-                the normal border color by the vertical midpoint — a plain
+                the normal border color by the vertical midpoint. A plain
                 border-color can't do this, so it's a masked gradient overlay
                 instead. Button's own border is transparent so this is the only
                 ring drawn, keeping it pixel-aligned with the rounded corners. */}
@@ -451,7 +451,7 @@ function ManageLayoutInner({
               willChange: 'transform',
             }}
           >
-              {/* Grab handle — the sheet drags from here (or any empty space) to dismiss. */}
+              {/* Grab handle, the sheet drags from here (or any empty space) to dismiss. */}
               <div className="flex justify-center pt-3 pb-2.5 cursor-grab active:cursor-grabbing">
                 <div style={{ width: 40, height: 5, borderRadius: 999, backgroundColor: resolvedTheme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }} />
               </div>
@@ -611,13 +611,8 @@ function ManageLayoutInner({
 
     </div>
 
-    {/*
-      Persistent, always-mounted upload zone. It stays idle/hidden during normal
-      use, but on a fresh page load (after the browser was quit or the tab closed
-      mid-upload) its useUpload hook reads the interrupted session from
-      localStorage and surfaces the "Continue upload?" resume prompt — which the
-      on-demand upload modal could never do, since it isn't mounted on load.
-    */}
+    {/* Always mounted so a fresh page load can still detect an interrupted
+        upload and show "Continue upload?", the on-demand modal isn't mounted yet. */}
     <UploadZone />
     </>
   )

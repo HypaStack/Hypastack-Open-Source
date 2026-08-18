@@ -20,7 +20,7 @@ function PopIn({ children, delay, fromY, className }: { children: ReactNode; del
   }, [p, delay]);
   const opacity = useTransform(p, [0, 0.5], [0, 1]);
   const y = useTransform(p, [0, 1], [fromY, 0]);
-  // Drop the filter to "none" once settled — leaving blur(0px) keeps a GPU
+  // Drop the filter to "none" once settled, leaving blur(0px) keeps a GPU
   // filter layer that flashes white when the browser re-rasterizes on scroll.
   const filter = useTransform(p, (v) => (v >= 0.999 ? "none" : `blur(${(1 - v) * 16}px)`));
   return (

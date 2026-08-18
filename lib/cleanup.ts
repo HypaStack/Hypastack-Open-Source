@@ -82,7 +82,7 @@ export async function cleanupStaging(): Promise<{
 }
 
 // Delete unused funnel links older than 7 days (never dropped into). There's no
-// R2 object for an unused link — just the row and its keypair. Consumed funnels
+// R2 object for an unused link, just the row and its keypair. Consumed funnels
 // are kept so their received file stays decryptable.
 async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
@@ -156,7 +156,7 @@ async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string
 // and the row.
 //
 // The "is it live" test is on r2_key, not id. Two inits can reserve the same
-// custom slug before either completes — isCdnSlugTaken only sees cdn_assets —
+// custom slug before either completes, isCdnSlugTaken only sees cdn_assets,
 // so both staging rows carry the same key while only the winner's id becomes an
 // asset. Matching on id would let the loser's sweep delete the winner's live
 // object. Keys still referenced by an asset keep their object; the stale marker

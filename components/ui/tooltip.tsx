@@ -15,12 +15,12 @@ interface TooltipProps {
   /** Gap between the trigger and the tooltip, in px. */
   offset?: number
   disabled?: boolean
-  /** Wrapper display — inline-flex suits buttons, block suits full-width rows. */
+  /** Wrapper display, inline-flex suits buttons, block suits full-width rows. */
   display?: CSSProperties["display"]
   children: ReactNode
 }
 
-/** Hover tooltip with an arrow — HeroUI's real Tooltip (portaled, collision-aware placement). */
+/** Hover tooltip with an arrow, HeroUI's real Tooltip (portaled, collision-aware placement). */
 export function Tooltip({
   content,
   placement = "right",

@@ -36,7 +36,7 @@ async function getProxyToken(): Promise<string> {
 
   _tokenPromise = (async () => {
     try {
-      // Always use raw fetch here — never apiFetch (would cause infinite recursion)
+      // Always use raw fetch here, never apiFetch (would cause infinite recursion)
       const res = await fetch(`${API_BASE}/proxy-token`, withTimeout({ credentials: "include" }))
       if (!res.ok) throw new Error("[apiFetch] Failed to obtain proxy token")
       const { token } = await res.json()
@@ -44,7 +44,7 @@ async function getProxyToken(): Promise<string> {
       _cachedAt = Date.now()
       return token
     } finally {
-      // Clear on failure too — a cached rejected promise would poison every
+      // Clear on failure too, a cached rejected promise would poison every
       // later apiFetch call in the session.
       _tokenPromise = null
     }
@@ -126,7 +126,7 @@ export async function apiFetch(
       const newToken = await getProxyToken()
       return fetch(target, withTimeout({ ...init, headers: { ...(init.headers ?? {}), [PROXY_HEADER]: newToken }, credentials: "include" }))
     }
-    // Refresh failed — the response is returned as-is; caller handles redirect to login
+    // Refresh failed, the response is returned as-is; caller handles redirect to login
   }
 
   return res

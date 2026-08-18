@@ -11,7 +11,7 @@ export interface V3RateHeaders {
 }
 
 export interface V3ErrorOptions {
-  /** Overrides the code's default message. Ignored for `not_found` — see below. */
+  /** Overrides the code's default message. Ignored for `not_found`, see below. */
   message?: string
   /** Names the offending field on `invalid_request`. */
   param?: string
@@ -37,7 +37,7 @@ function withCommonHeaders(res: NextResponse, requestId: string, rate?: V3RateHe
   return res
 }
 
-/** Success. `body` is the resource itself — v3 does not wrap successes. */
+/** Success. `body` is the resource itself, v3 does not wrap successes. */
 export function v3Ok(
   body: unknown,
   requestId: string,

@@ -1,5 +1,5 @@
 // Biometric unlock: a WebAuthn passkey acts as a local, biometric-gated vault
-// for the access key. We never register the credential server-side — the
+// for the access key. We never register the credential server-side, the
 // passkey is only used to derive a stable secret via the PRF extension, which
 // wraps the access key on this device. Unlock = biometric -> PRF -> unwrap the
 // access key -> the caller replays the normal login. Nothing new reaches the
@@ -26,7 +26,7 @@ function b64ToBuf(b64: string): ArrayBuffer {
 }
 
 // A platform authenticator with user verification (Face ID / Touch ID /
-// Windows Hello) — necessary but not sufficient; PRF is confirmed at enroll.
+// Windows Hello), necessary but not sufficient; PRF is confirmed at enroll.
 export async function isBiometricSupported(): Promise<boolean> {
   if (typeof window === "undefined" || !window.PublicKeyCredential || !navigator.credentials) return false
   try {
@@ -104,7 +104,7 @@ export async function enrollBiometric(accessKey: string): Promise<boolean> {
 
     const credId = cred.rawId
     const prf = await getPrfOutput(credId)
-    if (!prf) return false // PRF unsupported here — abandon, store nothing
+    if (!prf) return false // PRF unsupported here, abandon, store nothing
 
     const key = await importWrapKey(prf)
     const iv = crypto.getRandomValues(new Uint8Array(12))

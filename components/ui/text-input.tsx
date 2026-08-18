@@ -47,7 +47,7 @@ interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "si
   /** Node rendered inside the field, after the text (reveal toggle, unit). */
   trailing?: ReactNode
   fullWidth?: boolean
-  /** Additive — safe for layout tweaks. Never needed for core visuals. */
+  /** Additive, safe for layout tweaks. Never needed for core visuals. */
   className?: string
   /** Merged last, so it can override any inline style. */
   style?: CSSProperties

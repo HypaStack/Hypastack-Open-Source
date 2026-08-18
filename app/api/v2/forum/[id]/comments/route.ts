@@ -7,7 +7,7 @@ import { errorMessage } from "@/lib/errors"
 
 export const dynamic = "force-dynamic"
 
-// GET /api/v2/forum/[id]/comments — public, get threaded comments
+// GET /api/v2/forum/[id]/comments, public, get threaded comments
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -28,7 +28,7 @@ export async function GET(
   }
 }
 
-// POST /api/v2/forum/[id]/comments — add a comment (auth required)
+// POST /api/v2/forum/[id]/comments, add a comment (auth required)
 export const POST = withAuth<{ id: string }>(async ({ request, user: currentUser, params }) => {
   try {
     const { id: postId } = params

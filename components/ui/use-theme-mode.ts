@@ -21,7 +21,7 @@ function readDocumentTheme(): ResolvedTheme {
  * when no `.dark` class is used anywhere.
  *
  * Renders "dark" on the server to match this app's default <html class="dark">,
- * then corrects on mount — so `suppressHydrationWarning` isn't needed.
+ * then corrects on mount, so `suppressHydrationWarning` isn't needed.
  */
 export function useThemeMode(theme: ThemeMode = "auto"): ResolvedTheme {
   const [resolved, setResolved] = useState<ResolvedTheme>("dark")

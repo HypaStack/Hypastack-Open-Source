@@ -7,7 +7,7 @@ import { ListSkeleton } from "./files/_list-skeleton"
 import { GridSkeleton } from "./cdn/_grid-skeleton"
 
 // Mirrors ManageLayout's shell: icon rail, sidebar card, main card. The layout
-// returns null until the user loads, so the skeleton has to live here — a page
+// returns null until the user loads, so the skeleton has to live here, a page
 // level one never mounts.
 export function ManageSkeleton({ pathname }: { pathname: string }) {
   const isCdn = pathname.startsWith("/me/cdn")

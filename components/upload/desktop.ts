@@ -1,6 +1,6 @@
 import { isTauri } from "@/lib/tauri"
 
-// Copies text to the clipboard — Tauri plugin on desktop, Clipboard API on web.
+// Copies text to the clipboard, Tauri plugin on desktop, Clipboard API on web.
 export async function copyToClipboard(text: string): Promise<void> {
   if (isTauri()) {
     const { writeText } = await import("@tauri-apps/plugin-clipboard-manager")

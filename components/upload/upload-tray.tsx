@@ -23,7 +23,7 @@ const TurnstileWithRef = Turnstile as React.ComponentType<
   React.ComponentProps<typeof Turnstile> & { ref?: React.RefObject<{ reset(): void }> }
 >
 
-// One horizontal gutter for every row. No nested cards and no inner rules —
+// One horizontal gutter for every row. No nested cards and no inner rules,
 // the shell is the only surface, matching the sidebar usage card.
 const PAD = "px-3"
 const LABEL = "text-[13px] font-medium text-foreground"
@@ -83,7 +83,7 @@ export function UploadTray({
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
   const trayVisible = state !== "idle"
-  // Rename/custom-link/note/expiry all sit behind their own toggle now —
+  // Rename/custom-link/note/expiry all sit behind their own toggle now,
   // collapsed by default so Options reads as a flat list of switches, and
   // only the ones actually turned on show their input underneath.
   const [renameOpen, setRenameOpen] = useState(false)
@@ -238,9 +238,8 @@ export function UploadTray({
                             ) : (
                               files.map((f, index) => {
                                 // index < uploadingIndex always means that file finished before
-                                // whatever's happening now (still uploading, or the later error/done
-                                // state) — regardless of the overall state, so an interrupted upload
-                                // still shows earlier files as Uploaded instead of Skipped.
+                                // whatever's happening now, regardless of overall state, so an
+                                // interrupted upload still shows earlier files as Uploaded, not Skipped.
                                 const uploaded = state === "done" || index < uploadingIndex
                                 const current = state === "uploading" && index === uploadingIndex
                                 const failed = state === "error" && index === uploadingIndex
@@ -557,8 +556,8 @@ export function UploadTray({
 
 // ── Presentational helpers ──
 
-// XHR reports progress in coarse jumps — eases between reported values so the
-// ring and number travel instead of teleporting. Target stays the real percentage.
+// XHR reports progress in coarse jumps, so this eases between reported values,
+// making the ring and number travel instead of teleporting. Target stays real.
 function useSmoothPercent(target: number) {
   const spring = useSpring(target, { stiffness: 90, damping: 20, mass: 0.5 })
   const [shown, setShown] = useState(target)
@@ -591,7 +590,7 @@ function TrayFileRow({
   showCopy?: boolean
   copied?: boolean
   onCopy?: () => void
-  /** The uploaded file's share link — enables the QR code trigger next to Copy. */
+  /** The uploaded file's share link, enables the QR code trigger next to Copy. */
   url?: string
   error?: boolean
 }) {
@@ -736,7 +735,7 @@ function ToggleField({
 
 
 // Shared custom-link (slug) field. Used for single files, zipped archives, and
-// single CDN assets — anywhere the upload yields exactly one share link. Free
+// single CDN assets, anywhere the upload yields exactly one share link. Free
 // users see it locked; the server is the real gate.
 function CustomLinkField({
   slugLocked,

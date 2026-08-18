@@ -16,7 +16,7 @@ interface CheckmarkProps {
   "aria-label"?: string
 }
 
-/** Checkbox — HeroUI's real Checkbox, sized to an exact px box. */
+/** Checkbox, HeroUI's real Checkbox, sized to an exact px box. */
 export function Checkmark({
   checked,
   onChange,

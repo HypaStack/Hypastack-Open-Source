@@ -2,7 +2,7 @@
  * Security-related constants shared between API validation and client-side logic.
  */
 /**
- * Defensive ceiling for buffered magic-byte validation (500 MB) — NOT a tier
+ * Defensive ceiling for buffered magic-byte validation (500 MB), NOT a tier
  * upload cap. Per-file upload limits live in constants/tier-limits.ts and are
  * enforced in the API handlers. This guards the paths that read a file (or its
  * head) into memory to sniff its type, so intentionally does not track tier
@@ -15,7 +15,7 @@ export const MAX_NOTE_LENGTH = 100
 
 /**
  * Fixed PRF salt label for the biometric unlock passkey. Changing it changes
- * every credential's PRF output and orphans all enrolled vaults — never bump
+ * every credential's PRF output and orphans all enrolled vaults, never bump
  * without a migration.
  */
 export const BIOMETRIC_PRF_SALT_LABEL = "hypastack-prf-v1"
@@ -50,7 +50,7 @@ export const BLOCKED_EXTENSIONS = new Set([
 
 
 /**
- * CDN allowlist — embeddable/usable web content.
+ * CDN allowlist, embeddable/usable web content.
  * Extension allowlist is the ONLY gate for CDN uploads;
  * magic bytes only block dangerous types.
  */

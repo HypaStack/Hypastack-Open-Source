@@ -13,7 +13,7 @@ export function isOwnProfileKey(
   return key.startsWith(`profiles/${userId}/`) // legacy fallback
 }
 
-// True only for the opaque token namespace — used where a legacy (id-bearing)
+// True only for the opaque token namespace, used where a legacy (id-bearing)
 // key must NOT be exposed publicly, e.g. the anonymous download page.
 export function isTokenProfileKey(key: string | null | undefined, storageToken: string | null): boolean {
   if (!key || !storageToken) return false

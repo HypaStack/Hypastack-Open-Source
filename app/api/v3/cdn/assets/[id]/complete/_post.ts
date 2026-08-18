@@ -15,7 +15,7 @@ import {
 import { getTierLimits } from "@/constants/tier-limits"
 
 /**
- * Finalises whatever upload is outstanding for this id — a first upload or a
+ * Finalises whatever upload is outstanding for this id, a first upload or a
  * swap. One endpoint for both so the flow a developer learns (init → PUT →
  * complete) is identical either way.
  *

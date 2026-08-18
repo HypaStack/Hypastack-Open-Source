@@ -69,7 +69,7 @@ export interface StagingInput {
  * When `maxFileLinks` is provided the INSERT is wrapped in a CTE that
  * atomically counts both committed files AND in-flight staging rows for
  * this user. If the combined count already equals or exceeds the limit the
- * INSERT is skipped and the function returns `false` — eliminating the
+ * INSERT is skipped and the function returns `false`, eliminating the
  * TOCTOU race that allowed concurrent upload inits to exceed quota.
  */
 export async function createStagingRecord(
@@ -351,7 +351,7 @@ export async function getFileBySlugOrId(value: string, retries = 2): Promise<Fil
 }
 
 /**
- * True if a slug is unavailable — claimed by a committed file or an in-flight
+ * True if a slug is unavailable, claimed by a committed file or an in-flight
  * staging row (last 2h, matching the staging quota window). The `id = $1` clause
  * is defense-in-depth: the 9-char slug minimum already makes a slug equal to an
  * 8-char file id impossible, but the check costs nothing and survives any future
@@ -492,7 +492,7 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
 
 /**
  * Cursor page of a user's files, newest first. Separate from getFilesByUserId
- * because that one loads and caches the whole drive — fine for the dashboard,
+ * because that one loads and caches the whole drive, fine for the dashboard,
  * wrong for a public API that must stay flat as an account grows.
  *
  * Sorted by (upload_date, id) so the tiebreaker is total and a page boundary

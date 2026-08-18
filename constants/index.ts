@@ -1,4 +1,4 @@
-// Central barrel export for all app constants — import from "@/constants".
+// Central barrel export for all app constants. Import from "@/constants".
 
 export * from "./navigation"
 export * from "./tiers"

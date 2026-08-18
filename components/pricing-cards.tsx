@@ -128,7 +128,7 @@ export function PricingCards() {
               >
                 {green && (
                   // Border fades from full accent at the top edge to fully
-                  // transparent by the vertical midpoint — a plain border-color
+                  // transparent by the vertical midpoint, a plain border-color
                   // can't do this, so it's a masked gradient overlay instead.
                   <div
                     aria-hidden="true"

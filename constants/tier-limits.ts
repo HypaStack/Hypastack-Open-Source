@@ -22,7 +22,7 @@ const GB = 1024 * MB
 
 // Sentinel for an uncapped countable limit (file links / CDN assets). Large
 // enough that every quota check and the atomic insert guard pass as-is, so the
-// uncap needs no changes to enforcement — only the UI formats it as "Unlimited".
+// uncap needs no changes to enforcement, only the UI formats it as "Unlimited".
 const UNLIMITED = Number.MAX_SAFE_INTEGER
 export const isUnlimited = (n: number): boolean => n >= UNLIMITED
 
@@ -125,7 +125,7 @@ export function getTierDelayMs(tier: Tier): number {
 
 /**
  * How many CDN objects may be PUT to R2 at once. This is the throughput knob
- * for bulk uploads — the transfers go straight to storage, so the ceiling is
+ * for bulk uploads, the transfers go straight to storage, so the ceiling is
  * the browser's connection rather than anything of ours.
  */
 export function getTierUploadConcurrency(tier: Tier): number {
@@ -141,7 +141,7 @@ export function getTierUploadConcurrency(tier: Tier): number {
 /**
  * Render a tier byte limit as its marketing-facing label (e.g. "2.5 GB",
  * "300 GB", "1 TB"). This is the single formatter behind every size shown in
- * the plans UI, the FAQ and the account modal — so those never drift from the
+ * the plans UI, the FAQ and the account modal, so those never drift from the
  * numbers above.
  *
  * Per-file caps are authored in MiB and read decimally (1000 MiB → "1 GB",

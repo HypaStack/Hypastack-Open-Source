@@ -7,11 +7,11 @@ export interface ApiKeySummary {
   scopes: V3Scope[]
   createdAt: string
   lastUsedAt: string | null
-  /** Ranks past the plan's allowance after a downgrade — shown, but inert. */
+  /** Ranks past the plan's allowance after a downgrade, shown, but inert. */
   overLimit: boolean
 }
 
-/** Only ever present in the create response — the key is never returned again. */
+/** Only ever present in the create response, the key is never returned again. */
 export interface CreatedApiKey extends Omit<ApiKeySummary, "lastUsedAt" | "overLimit"> {
   key: string
 }

@@ -136,7 +136,7 @@ export default function CdnPage() {
     if (!confirmed) return
 
     // Wiping a folder can take out a lot of assets, and the endpoint streams one
-    // line per asset — so show how far along it actually is.
+    // line per asset, so show how far along it actually is.
     const progress = hypaProgress({ title: "Wiping folder", progressText: "Starting…" })
     try {
       const res = await apiFetch("/api/v2/cdn/folders", {
@@ -289,7 +289,7 @@ export default function CdnPage() {
       const csrfToken = csrfData.token
       if (!csrfToken) throw new Error("Failed to get CSRF token")
 
-      // 2. Init hot swap — server returns presigned PUT for the existing R2 key
+      // 2. Init hot swap, server returns presigned PUT for the existing R2 key
       const initRes = await apiFetch("/api/v2/cdn/hot-swap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -321,7 +321,7 @@ export default function CdnPage() {
         return
       }
 
-      // 4. Complete hot swap — server verifies and updates DB
+      // 4. Complete hot swap, server verifies and updates DB
       const completeRes = await apiFetch("/api/v2/cdn/hot-swap", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -346,7 +346,7 @@ export default function CdnPage() {
       )
       refreshUser()
 
-      // Success notification — deferred so it fires after React's current render batch
+      // Success notification, deferred so it fires after React's current render batch
       setTimeout(() => {
         toast.success("File hot swapped", {
           description: `If you still see the old image in preview, clear your browser cache. If the link is still showing the old file outside Hypastack, append ?v=1 to the end of the URL — e.g. ${target.cdnUrl}?v=1`,
@@ -550,7 +550,7 @@ export default function CdnPage() {
                     <span className="hidden sm:inline">{allInFolderSelected ? "Deselect all" : "Select all"}</span>
                   </Button>
                 </motion.div>
-                {/* Copy — all selected */}
+                {/* Copy, all selected */}
                 <motion.div layout>
                   <Button
                     variant="tertiary"
@@ -563,7 +563,7 @@ export default function CdnPage() {
                   </Button>
                 </motion.div>
                 <AnimatePresence mode="popLayout">
-                  {/* View — single selection only */}
+                  {/* View, single selection only */}
                   {selectedAssets.size === 1 && (
                     <motion.div key="view" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
                       <Button variant="tertiary" size="md" onPress={handleViewSelected} style={{ gap: 8 }}>
@@ -572,7 +572,7 @@ export default function CdnPage() {
                       </Button>
                     </motion.div>
                   )}
-                  {/* Hot Swap — single selection only */}
+                  {/* Hot Swap, single selection only */}
                   {selectedAssets.size === 1 && (
                     <motion.div key="swap" layout initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.18 }}>
                       <Button

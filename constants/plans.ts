@@ -11,7 +11,7 @@ export type PlanInfo = {
 }
 
 // Pricing + non-numeric feature copy per tier. Every size/link/expiry NUMBER is
-// derived from tier-limits.ts in buildDetails() below — that file is the single
+// derived from tier-limits.ts in buildDetails() below, that file is the single
 // source of truth, so these cards can never drift from the enforced limits.
 const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annual: string; features: string[] }> = {
   free: {

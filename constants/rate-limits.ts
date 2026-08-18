@@ -27,7 +27,7 @@ export const MAX_ATTEMPTS = {
 /**
  * v3 public API budget, per key per minute. Per-key rather than per-account so a
  * runaway script can't starve the account's other keys. Free never reaches this
- * — it has no keys at all.
+ *, it has no keys at all.
  */
 export const V3_REQUESTS_PER_MINUTE = {
   free: 0,

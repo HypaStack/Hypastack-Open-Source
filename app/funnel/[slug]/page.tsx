@@ -82,12 +82,12 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
       return
     }
     setFile(f)
-    // Auto-start: if Turnstile hasn't verified yet, wait for it — see the effect below.
+    // Auto-start: if Turnstile hasn't verified yet, wait for it, see the effect below.
     if (isDev || turnstileToken) handleSend(f)
   }
 
   // Picking a file before Turnstile verifies (widget is always mounted, so this
-  // is rare but possible on a slow load) — send as soon as the token arrives.
+  // is rare but possible on a slow load), send as soon as the token arrives.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (file && turnstileToken && dropState === null && !isDev) handleSend(file)

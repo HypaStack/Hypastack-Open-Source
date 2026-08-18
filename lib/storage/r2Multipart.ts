@@ -26,7 +26,7 @@ export async function initiateMultipartUpload(opts: {
   const uploadId = createRes.UploadId!
 
   // Presigning is local HMAC work (no network), but each call still awaits
-  // through the SDK's async middleware stack — sign all parts concurrently
+  // through the SDK's async middleware stack, sign all parts concurrently
   // instead of one at a time (a 5GB file is ~500 parts).
   const presignedUrls = await Promise.all(
     Array.from({ length: opts.totalParts }, (_, idx) => {

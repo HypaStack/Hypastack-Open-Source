@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 }
 
 // Read at build time so the documented example and the script people actually
-// run are the same bytes — they cannot drift apart.
+// run are the same bytes, they cannot drift apart.
 const REFERENCE_SCRIPT = readFileSync(join(process.cwd(), "scripts/v3-reference.mjs"), "utf8")
 
 function SectionHeading({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {

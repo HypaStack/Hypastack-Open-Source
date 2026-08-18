@@ -340,7 +340,7 @@ export async function headAndSniffCdnObject(
       }
     }
     const head = Buffer.concat(chunks)
-    // "bytes 0-99/100" — the part after the slash is the object's full length.
+    // "bytes 0-99/100", the part after the slash is the object's full length.
     const total = Number(response.ContentRange?.split("/")[1])
     return {
       size: Number.isFinite(total) ? total : head.length,

@@ -5,7 +5,7 @@ import { checkProxyTokenRateLimit } from "@/lib/data/rateLimit"
 
 export const dynamic = "force-dynamic"
 
-// Module-level key cache — importKey runs once per cold start, not per request
+// Module-level key cache, importKey runs once per cold start, not per request
 let _cachedKey: CryptoKey | null = null
 let _cachedSecret: string | null = null
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ token }, {
       headers: {
-        // Don't cache this — every call should get a fresh token
+        // Don't cache this, every call should get a fresh token
         "Cache-Control": "no-store",
       },
     })

@@ -14,7 +14,7 @@ export interface FileSelection {
 }
 
 // Validates a newly-picked FileList against the current selection and tier
-// limits. Pure — returns what to accept and which limits tripped; the hook maps
+// limits. Pure, returns what to accept and which limits tripped; the hook maps
 // that to error message + state.
 export function selectFiles(
   fileList: FileList,

@@ -8,7 +8,7 @@ import type { V3Scope } from "@/lib/http/v3/scopes"
 export const KEY_PREFIX = "hsk_"
 const HINT_LENGTH = 8
 const LOOKUP_CACHE_TTL_S = 60
-/** last_used_at is a UI nicety — never let it cost a write per request. */
+/** last_used_at is a UI nicety, never let it cost a write per request. */
 const LAST_USED_THROTTLE_MS = 60_000
 
 export interface ApiKeyRow {
@@ -114,7 +114,7 @@ export async function countActiveApiKeys(userId: string): Promise<number> {
  * keys. Rank is computed in SQL rather than in the caller so the downgrade rule
  * can't disagree with itself between the API and the UI.
  *
- * Returns null when the key is unknown. A revoked key still resolves — the
+ * Returns null when the key is unknown. A revoked key still resolves, the
  * caller turns that into the same 401 as unknown, but resolving it lets the
  * cache hold a negative-ish result instead of re-querying on every retry.
  */

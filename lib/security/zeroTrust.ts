@@ -6,7 +6,7 @@ import { sanitizeViaService, sniffViaService } from "@/lib/security/sanitizeServ
 
 // Magic-byte detection normally happens in the hypasan sidecar; file-type is
 // only the fallback, loaded lazily like jsdom below. Only the head of the
-// buffer is sent over the socket — signatures live in the first bytes.
+// buffer is sent over the socket, signatures live in the first bytes.
 const SNIFF_HEAD_BYTES = 65536
 
 export async function detectFileType(buffer: Buffer): Promise<{ mime: string; ext: string } | null> {
@@ -21,7 +21,7 @@ export async function detectFileType(buffer: Buffer): Promise<{ mime: string; ex
 }
 
 // DOMPurify (and the heavyweight jsdom it needs for a DOM) is only the
-// fallback path now — the hypasan Go sidecar normally does note sanitization.
+// fallback path now, the hypasan Go sidecar normally does note sanitization.
 // Loaded lazily so jsdom stays out of memory while the sidecar is up.
 type Purifier = { sanitize: (dirty: string, cfg?: Record<string, unknown>) => string }
 let _purify: Purifier | null = null
@@ -97,7 +97,7 @@ export function sanitizeFilename(filename: string): {
   // Replace all backslashes with forward slashes
   sanitized = sanitized.replace(/\\/g, "/")
 
-  // Strip ALL path components — only keep the final segment
+  // Strip ALL path components, only keep the final segment
   sanitized = path.basename(sanitized)
 
   // Remove control characters (U+0000–U+001F, U+007F, U+0080–U+009F)
@@ -156,7 +156,7 @@ export async function verifyFileType(
     const fileType = await detectFileType(buffer)
 
     if (!fileType) {
-      // Can't determine type from magic bytes — check if it looks like text or unknown binary
+      // Can't determine type from magic bytes, check if it looks like text or unknown binary
       const isText = isLikelyTextFile(buffer)
       return {
         valid: true,
@@ -261,7 +261,7 @@ export async function verifyCdnFileType(
     const fileType = await detectFileType(buffer)
 
     if (!fileType) {
-      // Magic bytes unknown — fine, extension already passed the CDN allowlist
+      // Magic bytes unknown, fine, extension already passed the CDN allowlist
       return { valid: true, mimeType: null, extension: null }
     }
 

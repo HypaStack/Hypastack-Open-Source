@@ -30,7 +30,7 @@ interface DropdownProps<T extends string | number = string> {
   "aria-label"?: string
 }
 
-/** Select-style dropdown — HeroUI's real Select (portaled popover, native keyboard nav). */
+/** Select-style dropdown, HeroUI's real Select (portaled popover, native keyboard nav). */
 export function Dropdown<T extends string | number = string>({
   value,
   onChange,

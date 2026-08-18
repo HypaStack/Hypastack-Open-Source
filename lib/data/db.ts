@@ -231,7 +231,7 @@ export async function initDatabase(): Promise<void> {
         revoked BOOLEAN DEFAULT FALSE
       )
     `)
-    // Migrate existing tables first — columns must exist before indexes are created
+    // Migrate existing tables first, columns must exist before indexes are created
     await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS refresh_token_hash TEXT UNIQUE`)
     await client.query(`ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id)`)
@@ -239,7 +239,7 @@ export async function initDatabase(): Promise<void> {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_active ON user_sessions(id) WHERE revoked = FALSE`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh ON user_sessions(refresh_token_hash) WHERE revoked = FALSE`)
 
-    // v3 public API keys. Only the SHA-256 lookup is stored — the key itself is
+    // v3 public API keys. Only the SHA-256 lookup is stored, the key itself is
     // shown once at creation and never again.
     await client.query(`
       CREATE TABLE IF NOT EXISTS api_keys (
@@ -422,7 +422,7 @@ export async function initDatabase(): Promise<void> {
     // ── Schema migration tracking ───────────────────────────────────────────
     // Everything above is the idempotent baseline schema. Going forward, add
     // discrete ordered migrations to INCREMENTAL_MIGRATIONS below instead of
-    // appending more ad-hoc ALTERs above — each runs exactly once, in order, and
+    // appending more ad-hoc ALTERs above, each runs exactly once, in order, and
     // is recorded so it won't re-run on the next cold start.
     await client.query(`
       CREATE TABLE IF NOT EXISTS schema_migrations (

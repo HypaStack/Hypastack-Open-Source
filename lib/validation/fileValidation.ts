@@ -5,7 +5,7 @@ export function getFileExtension(filename: string): string {
   return lastDot > 0 ? filename.slice(lastDot).toLowerCase() : '';
 }
 
-// CDN-only blocklist — Drive allows all types since files are client-encrypted
+// CDN-only blocklist, Drive allows all types since files are client-encrypted
 const CDN_BLOCKED_EXTENSIONS = new Set([
   'exe', 'msi', 'com', 'scr', 'pif', 'gadget',
   'bat', 'cmd', 'ps1', 'psm1', 'vbs', 'vbe',

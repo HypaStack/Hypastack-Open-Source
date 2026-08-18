@@ -1,5 +1,5 @@
 /**
- * The v3 error catalogue. Closed set — every failure the public API can return
+ * The v3 error catalogue. Closed set, every failure the public API can return
  * is one of these codes, and the code is what clients switch on.
  *
  * `message` is for humans and may be reworded at any time; it is never parsed.
@@ -46,7 +46,7 @@ export const V3_STATUS: Record<V3Code, number> = {
 
 /**
  * Default human message per code. Handlers may pass a more specific one, except
- * for `not_found`, which is always this exact string — the ambiguity between
+ * for `not_found`, which is always this exact string, the ambiguity between
  * "never existed" and "not yours" is the security property.
  */
 export const V3_MESSAGE: Record<V3Code, string> = {

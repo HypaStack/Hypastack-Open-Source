@@ -27,7 +27,7 @@ interface WithApiKeyOptions {
   label?: string
 }
 
-/** `Authorization: Bearer hsk_…` — the only accepted transport. Cookies are ignored. */
+/** `Authorization: Bearer hsk_…`, the only accepted transport. Cookies are ignored. */
 function readBearer(request: NextRequest): string | null {
   const header = request.headers.get("authorization")
   if (!header) return null
@@ -79,7 +79,7 @@ export function withApiKey<P = Record<string, never>>(
       }
 
       const key = await resolveApiKey(presented)
-      // Unknown and revoked collapse to the same answer — telling them apart
+      // Unknown and revoked collapse to the same answer, telling them apart
       // would confirm that a revoked key was once real.
       if (!key || key.revoked) {
         return v3Error(V3_CODES.INVALID_KEY, requestId)
@@ -95,7 +95,7 @@ export function withApiKey<P = Record<string, never>>(
       }
 
       // After a downgrade, only the oldest N keys keep working. No cron, no
-      // deletion — the rule is evaluated on use.
+      // deletion, the rule is evaluated on use.
       if (key.rank >= allowance) {
         return v3Error(V3_CODES.KEY_LIMIT_EXCEEDED, requestId, {
           message: `Your plan allows ${allowance} key${allowance === 1 ? "" : "s"}. Revoke an older key or upgrade to use this one.`,

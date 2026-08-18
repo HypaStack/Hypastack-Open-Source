@@ -6,14 +6,14 @@ import { NextResponse } from "next/server"
  * Replaces the repeated `console.error("[API Error] …")` + `NextResponse.json`
  * pair so the logged line and the returned body can't drift apart.
  *
- * The body carries two fields: `error` (friendly, code-free copy — see
+ * The body carries two fields: `error` (friendly, code-free copy, see
  * constants/errors.ts) and `message` (the route's specific human detail, if
  * any). Clients should show `message` and fall back to `error`; neither ever
  * exposes a raw status code or internal server detail to the user.
  *
  * @param status  HTTP status code (also used in the log line).
  * @param error   The friendly error value returned to the client (an API_ERRORS constant).
- * @param logMessage  Optional specific detail — logged in full, and surfaced to the user for 4xx.
+ * @param logMessage  Optional specific detail, logged in full, and surfaced to the user for 4xx.
  * @param extra  Optional extra fields merged into the JSON body (e.g. `retryAfter`, `suggestions`).
  */
 export function apiError(

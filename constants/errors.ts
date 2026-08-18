@@ -1,7 +1,6 @@
-// User-facing error copy returned in the JSON `error` field. These are shown
-// directly to users, so they're friendly sentences rather than raw HTTP codes —
-// the real status code still travels as the HTTP status. Routes can pass a more
-// specific message to apiError(); see lib/http/apiError.ts.
+// User-facing error copy for the JSON `error` field, friendly sentences rather
+// than raw HTTP codes (the real status code still travels separately). Routes
+// can pass a more specific message to apiError(); see lib/http/apiError.ts.
 export const API_ERRORS = {
   BAD_REQUEST: "Something about that request wasn't right. Please try again.",
   UNAUTHORIZED: "Please sign in and try again.",

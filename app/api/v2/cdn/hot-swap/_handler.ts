@@ -9,10 +9,10 @@ import { getTierLimits } from "@/constants/tier-limits"
 import { API_ERRORS } from "@/constants"
 
 /**
- * POST: Initialize a hot swap — returns a presigned PUT URL for the existing R2 key.
+ * POST: Initialize a hot swap, returns a presigned PUT URL for the existing R2 key.
  *
  * The client uploads the new file directly to R2, overwriting the old object in-place.
- * The filename in the R2 key stays the same as the original asset — the handler
+ * The filename in the R2 key stays the same as the original asset, the handler
  * ignores whatever local filename the user picked and uses the original name from the DB.
  */
 export async function handleHotSwapInit(request: NextRequest) {
@@ -61,7 +61,7 @@ export async function handleHotSwapInit(request: NextRequest) {
     }
 
     // Presign the EXISTING R2 key so the new bytes overwrite in place. Derive
-    // it from the stored key, not from asset.id — once an asset has a slug the
+    // it from the stored key, not from asset.id, once an asset has a slug the
     // id is no longer the path segment, and presigning cdn/<id>/<name> would
     // write an orphan while the live object stayed untouched.
     const { uploadUrl } = await getPresignedCdnUploadUrlForKey(asset.r2_key, contentType)
@@ -80,7 +80,7 @@ export async function handleHotSwapInit(request: NextRequest) {
 }
 
 /**
- * PUT: Complete a hot swap — verify the new file is in R2, update the DB record.
+ * PUT: Complete a hot swap, verify the new file is in R2, update the DB record.
  */
 export async function handleHotSwapComplete(request: NextRequest) {
   try {
@@ -113,7 +113,7 @@ export async function handleHotSwapComplete(request: NextRequest) {
       return apiError(404, API_ERRORS.NOT_FOUND, "Upload not found in storage. Did the upload finish?")
     }
 
-    // Authoritative quota check using the ACTUAL uploaded size from R2 — the
+    // Authoritative quota check using the ACTUAL uploaded size from R2, the
     // init-time check used client-reported fileSize which can be falsified.
     const [userTier, currentStorage] = await Promise.all([
       getUserTier(currentUser.userId),

@@ -2,7 +2,7 @@
 
 // Last-resort boundary: catches crashes in the root layout itself, where
 // globals.css and the UI kit are unavailable. Must render its own <html>/<body>
-// and style inline — keep it dependency-free.
+// and style inline, keep it dependency-free.
 export default function GlobalError({
   error,
   reset,
@@ -75,7 +75,7 @@ export default function GlobalError({
             >
               Try again
             </button>
-            {/* A full reload is the point here — the router is gone with the
+            {/* A full reload is the point here, the router is gone with the
                 root layout, so next/link can't be used. */}
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a

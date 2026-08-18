@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-// Mirrors ListView's box exactly — same wrapper, same grid columns, same px/py —
+// Mirrors ListView's box exactly, same wrapper, same grid columns, same px/py,
 // so the real rows drop straight into these slots with no layout shift.
 const COLS = "grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3"
 

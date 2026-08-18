@@ -4,7 +4,7 @@ import { V3_REQUESTS_PER_MINUTE, V3_GLOBAL_REQUESTS_PER_MINUTE } from "@/constan
 import type { Tier } from "@/constants/tier-limits"
 import type { V3RateHeaders } from "./respond"
 
-// The only v3 limiter entry point — swapping in the hypalimit sidecar later is a one-file change.
+// The only v3 limiter entry point, so swapping in the hypalimit sidecar later is a one-file change.
 
 export interface V3LimitResult {
   allowed: boolean
@@ -31,7 +31,7 @@ function globalWindowKey(now: number): { key: string; secondsLeft: number } {
   return { key: `hs:v3:global:${minute}`, secondsLeft: 60 - Math.floor((now % 60_000) / 1000) }
 }
 
-// Hard ceiling across all v3 traffic, checked before any DB work. Redis-only —
+// Hard ceiling across all v3 traffic, checked before any DB work. Redis-only:
 // unlike the per-account limiter, this is one counter for every request, so a
 // Postgres fallback would just move the outage instead of preventing it.
 export async function checkV3GlobalLimit(): Promise<V3GlobalResult> {

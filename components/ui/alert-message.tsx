@@ -44,7 +44,7 @@ function CircleAlertIcon() {
   )
 }
 
-/** Inline alert / validation message — HeroUI's Alert, tinted to the tone's soft fill. */
+/** Inline alert / validation message, HeroUI's Alert, tinted to the tone's soft fill. */
 export function AlertMessage({
   children,
   tone = "error",

@@ -31,7 +31,7 @@ export function decodeDroppedIds(raw: string): DraggedItem[] {
 
 /**
  * Pulls dragged item ids back out of a drop payload. Reads whatever text type
- * the payload actually carries rather than assuming text/plain — a drag started
+ * the payload actually carries rather than assuming text/plain, a drag started
  * from a collection doesn't always advertise it.
  */
 export async function readDroppedItems(items: readonly DropItem[]): Promise<DraggedItem[]> {

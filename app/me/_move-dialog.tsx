@@ -17,7 +17,7 @@ export interface TreeNode {
   id: string
   name: string
   depth: number
-  /** Last child of its parent — draws an elbow instead of a tee. */
+  /** Last child of its parent, draws an elbow instead of a tee. */
   isLast: boolean
   /** For each ancestor level, whether that ancestor was its parent's last child.
    *  Levels that weren't need a vertical line running past this row. */

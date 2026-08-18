@@ -3,7 +3,7 @@ import { bustCache } from '@/lib/data/cache'
 import { bustRouteCache } from '@/lib/http/routeCache'
 import { errorMessage } from "@/lib/errors"
 
-// Exact in-process timers for files expiring within the hour — the hourly
+// Exact in-process timers for files expiring within the hour, since the hourly
 // sweep alone is too coarse for a 1-minute custom expiration. In-process only;
 // scheduleUpcomingExpiries re-arms them after a restart.
 

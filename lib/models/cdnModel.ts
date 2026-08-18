@@ -160,7 +160,7 @@ export async function getCdnStaging(id: string): Promise<CdnStagingRecord | null
   return result.rows[0] ?? null
 }
 
-/** Batched staging lookup — one round trip for a whole multi-file completion. */
+/** Batched staging lookup, one round trip for a whole multi-file completion. */
 export async function getCdnStagingMany(ids: string[]): Promise<CdnStagingRecord[]> {
   if (ids.length === 0) return []
   await ensureDatabase()
@@ -184,7 +184,7 @@ export async function deleteCdnStagingMany(ids: string[]): Promise<void> {
 }
 
 /**
- * Cursor page of a user's CDN assets, newest first. Mirrors getFilesPage — the
+ * Cursor page of a user's CDN assets, newest first. Mirrors getFilesPage, the
  * cached whole-account read above is right for the dashboard and wrong for a
  * public API. Sorted by (created_at, id) for a total ordering across pages.
  */

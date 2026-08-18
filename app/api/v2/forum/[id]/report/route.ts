@@ -6,7 +6,7 @@ import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-// POST /api/v2/forum/[id]/report — report a post (public, rate limited by IP)
+// POST /api/v2/forum/[id]/report, report a post (public, rate limited by IP)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -22,7 +22,7 @@ export async function POST(
     }
 
     // Hashed IP (trusted-proxy aware, so it can't be spoofed via X-Forwarded-For)
-    // — also keeps us to our "no raw IP storage" promise since reportPost persists it.
+    //, also keeps us to our "no raw IP storage" promise since reportPost persists it.
     const ip = getHashedIp(request)
 
     const rateLimit = await checkForumReportRateLimit(ip)

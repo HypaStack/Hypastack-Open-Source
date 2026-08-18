@@ -10,7 +10,7 @@ interface LoaderProps {
 }
 
 /**
- * The single app-wide loading spinner — HeroUI's real Spinner component, sized
+ * The single app-wide loading spinner, HeroUI's real Spinner component, sized
  * to an exact px diameter (HeroUI's own size scale is sm/md/lg/xl only) so it
  * drops into any spot the old fixed-size spinner used to.
  */

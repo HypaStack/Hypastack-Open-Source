@@ -195,12 +195,12 @@ export async function checkApiRateLimit(accountId: string): Promise<RateLimitRes
   return checkRateLimit(accountId, 'api', WINDOW_MINUTES.api, MAX_ATTEMPTS.api.free)
 }
 
-/** v3 public API, keyed by API key id rather than account — see lib/http/v3/limit.ts */
+/** v3 public API, keyed by API key id rather than account, see lib/http/v3/limit.ts */
 export async function checkV3KeyRateLimit(keyId: string, maxRequests: number): Promise<RateLimitResult> {
   return checkRateLimit(keyId, 'v3', 1, maxRequests)
 }
 
-/** 5 reports per IP per 10 minutes — prevents forum_reports table flooding */
+/** 5 reports per IP per 10 minutes, prevents forum_reports table flooding */
 export async function checkForumReportRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'forum_report', 10, 5)
 }
@@ -211,7 +211,7 @@ export async function checkProxyTokenRateLimit(ip: string): Promise<RateLimitRes
   return checkRateLimit(ip, 'proxytoken', WINDOW_MINUTES.proxyToken, MAX_ATTEMPTS.proxyToken.free)
 }
 
-/** Throttle anonymous funnel drops per IP — the link is one-time, so this mainly
+/** Throttle anonymous funnel drops per IP, the link is one-time, so this mainly
  *  caps repeated init attempts and abuse. */
 export async function checkFunnelUploadRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'funnel_upload', WINDOW_MINUTES.funnelUpload, MAX_ATTEMPTS.funnelUpload.free)

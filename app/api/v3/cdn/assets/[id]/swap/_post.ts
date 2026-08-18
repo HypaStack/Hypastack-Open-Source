@@ -14,7 +14,7 @@ const Body = z.object({
 })
 
 /**
- * Replace an asset's bytes in place — same id, same public URL. The presign
+ * Replace an asset's bytes in place, same id, same public URL. The presign
  * targets the asset's existing r2_key, so a deploy can repoint a live URL
  * without every consumer having to learn a new one.
  *
@@ -51,7 +51,7 @@ export const POST = withApiKey<{ id: string }>(async ({ request, requestId, user
     })
   }
 
-  // Only the growth counts against the quota — the old bytes are being replaced.
+  // Only the growth counts against the quota, the old bytes are being replaced.
   const delta = size - asset.file_size
   if (delta > 0) {
     const used = await getTotalStorageUsed(userId)

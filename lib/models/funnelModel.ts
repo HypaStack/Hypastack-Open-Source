@@ -61,7 +61,7 @@ function generateId12(): string {
 export const generateFunnelId = generateId12
 export const generateFunnelFileId = generateId12
 
-// R2 object key for a funnel drop's ciphertext. The name is opaque — the real
+// R2 object key for a funnel drop's ciphertext. The name is opaque, the real
 // filename is E2E-encrypted and stored separately. Init and complete both derive
 // the key from these ids so a sender can't redirect the write elsewhere.
 export function funnelObjectKey(funnelId: string, fileId: string): string {

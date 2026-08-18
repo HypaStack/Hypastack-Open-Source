@@ -6,7 +6,7 @@ import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-// GET /api/v2/forum/[id] — public, get single post by ID or slug
+// GET /api/v2/forum/[id], public, get single post by ID or slug
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -40,7 +40,7 @@ export async function GET(
   }
 }
 
-// DELETE /api/v2/forum/[id] — owner-only delete
+// DELETE /api/v2/forum/[id], owner-only delete
 export const DELETE = withAuth<{ id: string }>(async ({ user, params }) => {
     const { id } = params
 

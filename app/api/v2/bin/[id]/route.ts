@@ -16,7 +16,7 @@ export async function GET(
       return apiError(400, API_ERRORS.BAD_REQUEST, "Invalid ID")
   }
 
-  // Public, unauthenticated endpoint that reads up to 5MB from R2 — rate-limit
+  // Public, unauthenticated endpoint that reads up to 5MB from R2, rate-limit
   // by hashed IP so it can't be hammered for scraping / cost amplification.
   const rl = await checkApiRateLimit(getHashedIp(req))
   if (!rl.allowed) {

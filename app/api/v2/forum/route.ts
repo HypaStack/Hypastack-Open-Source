@@ -8,7 +8,7 @@ import { API_ERRORS } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-// GET /api/v2/forum — public listing/search
+// GET /api/v2/forum, public listing/search
 export async function GET(request: NextRequest) {
   try {
     const rl = await checkApiRateLimit(getHashedIp(request))
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/v2/forum — create a new post (auth required)
+// POST /api/v2/forum, create a new post (auth required)
 export const POST = withAuth(async ({ request, user: currentUser }) => {
     const body = await request.json()
     const { csrfToken, title, description, tags } = body
