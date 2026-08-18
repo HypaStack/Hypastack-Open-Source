@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState, type ReactNode } from "react"
-import { Button, Input, Label, Modal, TextField, Toast, toast } from "@heroui/react"
+import { Button, Input, Label, Modal, TextField, Toast, toast, typographyVariants } from "@heroui/react"
 import { ProgressBar } from "./progress-bar"
 import { AlertMessage } from "./alert-message"
 
@@ -138,7 +138,7 @@ function NotifDialog({ notif, onResolve }: { notif: NotifState; onResolve: (id: 
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>{notif.title}</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>{notif.title}</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
             <Modal.Body className="space-y-3">

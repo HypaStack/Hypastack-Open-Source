@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Alert, Button, Description, Input, Label, Modal, Switch, TextField, toast } from "@heroui/react"
+import { Alert, Button, Description, Input, Label, Modal, Switch, TextField, toast, typographyVariants } from "@heroui/react"
 import { apiFetch } from "@/lib/http/fetch"
 import { V3_SCOPES, V3_SCOPE_LABELS, type V3Scope } from "@/lib/http/v3/scopes"
 import { type CreatedApiKey } from "./api-key-types"
@@ -68,7 +68,7 @@ export function CreateKeyDialog({
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>{created ? "Copy your key now" : "New API key"}</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>{created ? "Copy your key now" : "New API key"}</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
 

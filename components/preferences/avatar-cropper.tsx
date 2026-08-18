@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Cropper, { type Area } from "react-easy-crop"
-import { Button, Modal, toast } from "@heroui/react"
+import { Button, Modal, toast, typographyVariants } from "@heroui/react"
 import { AVATAR_MAX_DIMENSION } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 import { errorMessage } from "@/lib/errors"
@@ -101,7 +101,7 @@ export function AvatarCropperModal({
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>Crop your picture</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>Crop your picture</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
             <Modal.Body>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Button, Description, Input, InputGroup, Label, Modal, TextField, toast } from "@heroui/react"
+import { Button, Description, Input, InputGroup, Label, Modal, TextField, toast, typographyVariants } from "@heroui/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { useManage } from "@/hooks/useManage"
 import { MAX_BANNER_SIZE } from "@/constants"
@@ -93,7 +93,7 @@ export function BrandingDialog({
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>Download page branding</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>Download page branding</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
             <Modal.Body className="space-y-4">

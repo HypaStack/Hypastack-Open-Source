@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, FieldError, Input, Label, Modal, TextField, toast } from "@heroui/react"
+import { Button, FieldError, Input, Label, Modal, TextField, toast, typographyVariants } from "@heroui/react"
 import { sendTest, isValidDiscordWebhook } from "@/lib/integrations/discordWebhook"
 
 export function WebhookDialog({
@@ -49,7 +49,7 @@ export function WebhookDialog({
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>Discord webhook</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>Discord webhook</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
             <Modal.Body>

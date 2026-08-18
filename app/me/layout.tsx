@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toast } from "@heroui/react"
+import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toast, typographyVariants } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -449,7 +449,7 @@ function ManageLayoutInner({
           <Modal.Container placement="center" size="md">
             <Modal.Dialog>
               <Modal.Header>
-                <Modal.Heading>Send feedback</Modal.Heading>
+                <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>Send feedback</Modal.Heading>
                 <Modal.CloseTrigger />
               </Modal.Header>
               <Modal.Body className="space-y-4">

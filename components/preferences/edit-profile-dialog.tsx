@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, Description, FieldError, Input, Label, Modal, TextField, toast } from "@heroui/react"
+import { Button, Description, FieldError, Input, Label, Modal, TextField, toast, typographyVariants } from "@heroui/react"
 import { useManage } from "@/hooks/useManage"
 import { getSessionKey, encryptE2E } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
@@ -76,7 +76,7 @@ export function EditProfileDialog({
         <Modal.Container placement="center" size="md">
           <Modal.Dialog>
             <Modal.Header>
-              <Modal.Heading>Edit profile</Modal.Heading>
+              <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>Edit profile</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
             <Modal.Body>
