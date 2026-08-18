@@ -135,7 +135,7 @@ function NotifDialog({ notif, onResolve }: { notif: NotifState; onResolve: (id: 
   return (
     <Modal isOpen onOpenChange={(open) => { if (!open) cancel() }}>
       <Modal.Backdrop isDismissable variant="blur">
-        <Modal.Container placement="center" size="md">
+        <Modal.Container placement="center" size="lg">
           <Modal.Dialog>
             <Modal.Header>
               <Modal.Heading className={typographyVariants({ type: "h5" }).base()}>{notif.title}</Modal.Heading>
