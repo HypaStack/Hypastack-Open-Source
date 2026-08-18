@@ -71,8 +71,8 @@ function NavRow({
       onClick={onNavigate}
       className={`group relative flex items-center gap-2 rounded-3xl text-[15px] font-medium transition-colors duration-150 cursor-pointer ${
         active
-          ? "bg-surface text-foreground"
-          : "text-muted hover:bg-default hover:text-foreground"
+          ? "bg-[#1f1f1f] text-[#ededed]"
+          : "text-[#a0a0a0] hover:bg-[#1f1f1f] hover:text-[#ededed]"
       }`}
       style={{
         height: 35,
@@ -86,7 +86,7 @@ function NavRow({
         name={item.icon}
         size="16px"
         style={{ fontVariationSettings: "'FILL' 0, 'wght' 500, 'GRAD' -25, 'opsz' 40" }}
-        className={`shrink-0 transition-colors ${active ? "text-foreground" : "text-muted group-hover:text-foreground"}`}
+        className="shrink-0"
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">
         <span className="truncate">{item.label}</span>
