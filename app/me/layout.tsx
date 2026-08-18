@@ -384,7 +384,7 @@ function ManageLayoutInner({
             fullWidth
             className="relative border-white/10"
           >
-            {/* Border fades from full accent at the top edge to fully
+            {/* Border fades from full accent at the bottom edge to fully
                 transparent by the vertical midpoint — a plain border-color
                 can't do this, so it's a masked gradient overlay instead. */}
             <div
@@ -392,7 +392,7 @@ function ManageLayoutInner({
               className="pointer-events-none absolute inset-0 rounded-[inherit]"
               style={{
                 padding: 1,
-                background: "linear-gradient(to bottom, var(--accent) 0%, transparent 50%)",
+                background: "linear-gradient(to top, var(--accent) 0%, transparent 50%)",
                 WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                 WebkitMaskComposite: "xor",
                 maskComposite: "exclude",
