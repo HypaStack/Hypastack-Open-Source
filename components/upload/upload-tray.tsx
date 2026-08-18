@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, useSpring } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, TextField, Input, TextArea, InputGroup, Switch } from "@heroui/react"
+import { Button, Card, TextField, Input, TextArea, InputGroup, Switch, ProgressCircle, Table, Separator } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
 import { Slider } from "@/components/ui/slider"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
 import { QrCodePopover } from "@/components/ui/qr-code-popover"
+import { Tooltip } from "@/components/ui/tooltip"
 import Turnstile from "react-turnstile"
 import { normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { EXPIRATION_STEPS } from "@/constants/upload"
@@ -24,12 +26,10 @@ const TurnstileWithRef = Turnstile as React.ComponentType<
 // One horizontal gutter for every row. No nested cards and no inner rules —
 // the shell is the only surface, matching the sidebar usage card.
 const PAD = "px-3"
-const RULE = "border-t border-white/10"
 const LABEL = "text-[13px] font-medium text-foreground"
 const MUTED = "text-[12px] text-muted"
-const SECTION = "text-[11px] font-semibold uppercase tracking-wide text-muted"
+const SECTION = "text-[15px] font-semibold text-foreground"
 const ICON = "text-muted"
-const TITLE_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
 type UploadTrayProps = UseUploadReturn
 
@@ -84,6 +84,24 @@ export function UploadTray({
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
   const trayVisible = state !== "idle"
+  // Rename/custom-link/note/expiry all sit behind their own toggle now —
+  // collapsed by default so Options reads as a flat list of switches, and
+  // only the ones actually turned on show their input underneath.
+  const [renameOpen, setRenameOpen] = useState(false)
+  const [linkOpen, setLinkOpen] = useState(false)
+  const [noteOpen, setNoteOpen] = useState(false)
+  const [expiresOpen, setExpiresOpen] = useState(false)
+  useEffect(() => {
+    if (state === "selected") {
+      setRenameOpen(false)
+      setLinkOpen(false)
+      setNoteOpen(false)
+      setExpiresOpen(false)
+    }
+  }, [state])
+  // Only one file uploads at a time, so a single smoothed value covers
+  // whichever row in the table is current — no need for a hook per row.
+  const smoothProgress = useSmoothPercent(progress)
   // Free users still SEE the custom-link / expiration controls (so they know
   // the features exist) but the inputs are locked. The server is the real gate.
   const slugLocked = !isPaidTier(normalizeTier(user?.tier))
@@ -130,18 +148,19 @@ export function UploadTray({
             opacity: { duration: 0.25, ease: "easeOut" },
             filter: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
           }}
-          className={`fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[80dvh] w-full flex-col overflow-hidden font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[88dvh] sm:w-[470px] sm:max-w-[calc(100vw_-_2rem)] rounded-t-[16px] sm:rounded-[16px] bg-overlay border border-white/10`}
-          style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
+          className="fixed bottom-0 left-0 right-0 z-40 mb-8 flex max-h-[88dvh] w-full flex-col font-sans sm:bottom-4 sm:right-4 sm:left-auto sm:mb-0 sm:max-h-[94dvh] sm:w-[520px] sm:max-w-[calc(100vw_-_2rem)]"
         >
+          <Card
+            variant="transparent"
+            className="!p-0 !gap-0 flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[16px] border !border-solid border-white/10 bg-overlay sm:rounded-[16px]"
+            style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.16), 0 3px 10px rgba(0,0,0,0.08)" }}
+          >
           {/* ── Header ── */}
-          <div className="flex shrink-0 items-center justify-between gap-3 px-3 pt-3 pb-2">
+          <Card.Header className="flex-row shrink-0 items-center justify-between gap-3 px-3 pt-3 pb-2">
             <div className="flex min-w-0 flex-col">
-              <h3 className="text-[15px] font-semibold tracking-tight text-foreground" style={TITLE_FONT}>
-                Uploads
-              </h3>
-              <p className="text-[12px] text-muted">
-                {files.length} item{files.length !== 1 ? "s" : ""} · {uploadType === "cdn" ? "CDN" : "Files"}
-              </p>
+              <Card.Title className="text-lg">
+                Selected {files.length} File{files.length !== 1 ? "s" : ""}
+              </Card.Title>
             </div>
             <Button
               variant="ghost"
@@ -152,7 +171,7 @@ export function UploadTray({
             >
               <MIcon name={trayCollapsed ? "expand_less" : "expand_more"} size={18} />
             </Button>
-          </div>
+          </Card.Header>
 
           {!trayCollapsed && (
             <>
@@ -177,65 +196,129 @@ export function UploadTray({
                 )}
 
                 {showList && (
-                  <div className="flex flex-col gap-1.5 px-3 pb-2">
-                    {zippedFile ? (
-                      <TrayFileRow
-                        size={zippedFile.size}
-                        name={zippedFile.name}
-                        status={
-                          state === "done"
-                            ? `Uploaded · ${files.length} file${files.length !== 1 ? "s" : ""} archived`
-                            : state === "error"
-                            ? "Failed"
-                            : state === "uploading"
-                            ? "Uploading…"
-                            : "Pending"
-                        }
-                        uploading={state === "uploading"}
-                        progressPct={progress}
-                        showCopy={state === "done"}
-                        copied={copied}
-                        onCopy={handleCopy}
-                        url={state === "done" ? shareUrl : undefined}
-                        error={state === "error"}
-                      />
-                    ) : (
-                      files.map((f, index) => {
-                        const done = state === "uploading" ? index < uploadingIndex : false
-                        const current = state === "uploading" && index === uploadingIndex
-                        return (
-                          <TrayFileRow
-                            key={f.id}
-                            size={f.file.size}
-                            name={f.path || f.file.name}
-                            status={
-                              state === "done"
-                                ? "Uploaded"
-                                : state === "error"
-                                ? index < uploadingIndex
-                                  ? "Uploaded"
-                                  : index === uploadingIndex
+                  <div className="px-3 pb-2">
+                    <Table>
+                      <Table.ScrollContainer>
+                        <Table.Content aria-label="Files to upload">
+                          <Table.Header>
+                            <Table.Column isRowHeader className="py-1.5">Name</Table.Column>
+                            <Table.Column className="py-1.5 text-right">Status</Table.Column>
+                          </Table.Header>
+                          <Table.Body>
+                            {zippedFile ? (
+                              <Table.Row id="zipped">
+                                <Table.Cell className="py-1.5">
+                                  <div className="flex min-w-0 items-center gap-2">
+                                    <MIcon name="folder_zip" size={15} className="shrink-0 text-muted" />
+                                    <span className="min-w-0 truncate text-[13px] font-medium text-foreground">
+                                      {zippedFile.name}
+                                    </span>
+                                  </div>
+                                </Table.Cell>
+                                <Table.Cell className="py-1.5">
+                                  <div className="flex items-center justify-end gap-2 text-[12px] tabular-nums text-muted">
+                                    {state === "error" ? (
+                                      <span className="text-danger">Failed</span>
+                                    ) : state === "uploading" ? (
+                                      <>
+                                        <span>{Math.round(smoothProgress)}%</span>
+                                        <ProgressCircle value={smoothProgress} size="sm" aria-label="Upload progress">
+                                          <ProgressCircle.Track>
+                                            <ProgressCircle.TrackCircle />
+                                            <ProgressCircle.FillCircle />
+                                          </ProgressCircle.Track>
+                                        </ProgressCircle>
+                                      </>
+                                    ) : state === "done" ? (
+                                      <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                        {shareUrl && <QrCodePopover url={shareUrl} size={24} />}
+                                        <Button
+                                          variant="tertiary"
+                                          size="sm"
+                                          onPress={toPressHandler((e) => { e.stopPropagation(); handleCopy() })}
+                                          style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+                                        >
+                                          {copied ? "Copied" : "Copy link"}
+                                        </Button>
+                                      </span>
+                                    ) : (
+                                      <span>Pending</span>
+                                    )}
+                                    <span>{formatBytes(zippedFile.size)}</span>
+                                  </div>
+                                </Table.Cell>
+                              </Table.Row>
+                            ) : (
+                              files.map((f, index) => {
+                                const done = state === "uploading" ? index < uploadingIndex : false
+                                const current = state === "uploading" && index === uploadingIndex
+                                const error = state === "error" && index === uploadingIndex
+                                const uploaded =
+                                  state === "done" ||
+                                  (state === "uploading" && done) ||
+                                  (state === "error" && index < uploadingIndex)
+                                const status = error
                                   ? "Failed"
-                                  : "Skipped"
-                                : state === "uploading"
-                                ? done
+                                  : state === "error"
+                                  ? "Skipped"
+                                  : uploaded
                                   ? "Uploaded"
                                   : current
                                   ? "Uploading…"
                                   : "Pending"
-                                : "Pending"
-                            }
-                            uploading={current}
-                            progressPct={current ? progress : null}
-                            showCopy={state === "done"}
-                            copied={copiedIndex === index}
-                            onCopy={() => handleCopyOne(index)}
-                            url={state === "done" ? shareUrls[index] : undefined}
-                            error={state === "error" && index === uploadingIndex}
-                          />
-                        )
-                      })
-                    )}
+                                return (
+                                  <Table.Row key={f.id} id={f.id}>
+                                    <Table.Cell className="py-1.5">
+                                      <div className="flex min-w-0 items-center gap-2">
+                                        <MIcon name="attach_file" size={15} className="shrink-0 text-muted" />
+                                        <span className="min-w-0 truncate text-[13px] font-medium text-foreground">
+                                          {f.path || f.file.name}
+                                        </span>
+                                      </div>
+                                    </Table.Cell>
+                                    <Table.Cell className="py-1.5">
+                                      <div className="flex items-center justify-end gap-2 text-[12px] tabular-nums text-muted">
+                                        {error ? (
+                                          <span className="text-danger">{status}</span>
+                                        ) : current ? (
+                                          <>
+                                            <span>{Math.round(smoothProgress)}%</span>
+                                            <ProgressCircle value={smoothProgress} size="sm" aria-label="Upload progress">
+                                              <ProgressCircle.Track>
+                                                <ProgressCircle.TrackCircle />
+                                                <ProgressCircle.FillCircle />
+                                              </ProgressCircle.Track>
+                                            </ProgressCircle>
+                                          </>
+                                        ) : state === "done" ? (
+                                          <span
+                                            className="flex items-center gap-1.5"
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            {shareUrls[index] && <QrCodePopover url={shareUrls[index]} size={24} />}
+                                            <Button
+                                              variant="tertiary"
+                                              size="sm"
+                                              onPress={toPressHandler((e) => { e.stopPropagation(); handleCopyOne(index) })}
+                                              style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+                                            >
+                                              {copiedIndex === index ? "Copied" : "Copy link"}
+                                            </Button>
+                                          </span>
+                                        ) : (
+                                          <span>{status}</span>
+                                        )}
+                                        <span>{formatBytes(f.file.size)}</span>
+                                      </div>
+                                    </Table.Cell>
+                                  </Table.Row>
+                                )
+                              })
+                            )}
+                          </Table.Body>
+                        </Table.Content>
+                      </Table.ScrollContainer>
+                    </Table>
                   </div>
                 )}
 
@@ -246,84 +329,70 @@ export function UploadTray({
                       <span className={SECTION}>Options</span>
                     </div>
 
-                    <ToggleRow
-                      icon="local_fire_department"
-                      label="Burn after download"
-                      on={burnOnRead}
-                      onToggle={() => setBurnOnRead(!burnOnRead)}
-                    />
-
-                    {/* Custom expiration (Essential plan and above) */}
-                    <div className={`${PAD} py-3`}>
-                      <div className="mb-2.5 flex items-center justify-between gap-3">
-                        <span className={`flex items-center gap-2.5 ${LABEL}`}>
-                          <MIcon name="schedule" size={17} className={ICON} />
-                          Expires after
-                        </span>
-                        {slugLocked ? <LockBadge /> : (
-                          <span className="text-[12px] font-semibold text-foreground">{currentExpLabel}</span>
-                        )}
-                      </div>
-                      <Slider
-                        min={0}
-                        max={EXPIRATION_STEPS.length - 1}
-                        step={1}
-                        value={slugLocked ? EXPIRATION_STEPS.length - 1 : expIndex}
-                        onChange={(v) => { if (!slugLocked) setExpirationMinutes(EXPIRATION_STEPS[v].minutes) }}
-                        disabled={slugLocked}
-                        aria-label="Expires after"
-                      />
-                      {slugLocked ? (
-                        <UpgradeLink text="Upgrade to choose a custom expiry" />
-                      ) : (
-                        <div className="mt-1.5 flex justify-between text-[11px] text-muted">
-                          <span>1 min</span>
-                          <span>30 days</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {isMultiFile ? (
+                    {isMultiFile && (
                       <>
                         <ToggleRow
-                          icon="folder_zip"
                           label="Zip the files"
                           on={zipMultipleFiles}
                           onToggle={() => setZipMultipleFiles(!zipMultipleFiles)}
                           sub="Uploading multiple files in a ZIP counts as 1 file."
                         />
-                        {zipMultipleFiles ? (
-                          <>
-                            <FieldBlock icon="folder_zip" label="Archive name">
-                              <TextField aria-label="Archive name" value={customFilename} onChange={setCustomFilename} className="w-full">
-                                <Input placeholder="hypastack-archive" />
-                              </TextField>
-                            </FieldBlock>
-                            {/* Zipped = one share link, so a custom link applies */}
-                            <CustomLinkField
-                              slugLocked={slugLocked}
-                              customSlug={customSlug}
-                              setCustomSlug={setCustomSlug}
-                              slugError={slugError}
-                              setSlugError={setSlugError}
-                              prefix="/d/"
-                              placeholder="my-archive"
-                              previewBase="hypastack.com/d/"
-                            />
-                          </>
-                        ) : (
-                          <NoCustomLinkNote text="Custom links aren't available when uploading files separately. Zip them into one archive to use one." />
-                        )}
+                        <Separator />
                       </>
+                    )}
+
+                    {isMultiFile ? (
+                      zipMultipleFiles ? (
+                        <>
+                          <ToggleField
+                            label="Archive name"
+                            sub="Name the zip file that gets created."
+                            expanded={renameOpen}
+                            onToggle={() => setRenameOpen(!renameOpen)}
+                          >
+                            <TextField aria-label="Archive name" value={customFilename} onChange={setCustomFilename} className="w-full">
+                              <Input placeholder="hypastack-archive" />
+                            </TextField>
+                          </ToggleField>
+                          <Separator />
+                          {/* Zipped = one share link, so a custom link applies */}
+                          <CustomLinkField
+                            slugLocked={slugLocked}
+                            expanded={linkOpen}
+                            onToggle={() => setLinkOpen(!linkOpen)}
+                            customSlug={customSlug}
+                            setCustomSlug={setCustomSlug}
+                            slugError={slugError}
+                            setSlugError={setSlugError}
+                            prefix="/d/"
+                            placeholder="my-archive"
+                            previewBase="hypastack.com/d/"
+                          />
+                          <Separator />
+                        </>
+                      ) : (
+                        <>
+                          <NoCustomLinkNote text="Custom links aren't available when uploading files separately. Zip them into one archive to use one." />
+                          <Separator />
+                        </>
+                      )
                     ) : (
                       <>
-                        <FieldBlock icon="edit" label="Rename file">
+                        <ToggleField
+                          label="Rename file"
+                          sub="Give the uploaded file a different name."
+                          expanded={renameOpen}
+                          onToggle={() => setRenameOpen(!renameOpen)}
+                        >
                           <TextField aria-label="Rename file" value={customFilename} onChange={setCustomFilename} className="w-full">
                             <Input placeholder={files[0]?.file.name || "example.pdf"} />
                           </TextField>
-                        </FieldBlock>
+                        </ToggleField>
+                        <Separator />
                         <CustomLinkField
                           slugLocked={slugLocked}
+                          expanded={linkOpen}
+                          onToggle={() => setLinkOpen(!linkOpen)}
                           customSlug={customSlug}
                           setCustomSlug={setCustomSlug}
                           slugError={slugError}
@@ -332,14 +401,52 @@ export function UploadTray({
                           placeholder="my-custom-file"
                           previewBase="hypastack.com/d/"
                         />
+                        <Separator />
                       </>
                     )}
 
-                    <FieldBlock icon="article" label="Note">
+                    <ToggleField
+                      label="Note"
+                      sub="Shown to whoever opens the link."
+                      expanded={noteOpen}
+                      onToggle={() => setNoteOpen(!noteOpen)}
+                    >
                       <TextField aria-label="Note" value={note} onChange={setNote} className="w-full" maxLength={100}>
-                        <TextArea rows={2} placeholder="Optional message…" />
+                        <TextArea rows={2} className="resize-none" placeholder="Optional message…" />
                       </TextField>
-                    </FieldBlock>
+                    </ToggleField>
+                    <Separator />
+
+                    <ToggleRow
+                      label="Burn after download"
+                      sub="Delete the file the moment it's downloaded."
+                      on={burnOnRead}
+                      onToggle={() => setBurnOnRead(!burnOnRead)}
+                    />
+                    <Separator />
+
+                    {/* Custom expiration (Essential plan and above) */}
+                    <ToggleField
+                      label="Expires after"
+                      sub="How long the link stays active before it's gone."
+                      expanded={expiresOpen}
+                      onToggle={() => setExpiresOpen(!expiresOpen)}
+                      locked={slugLocked}
+                      valuePreview={!slugLocked ? currentExpLabel : undefined}
+                    >
+                      <Slider
+                        min={0}
+                        max={EXPIRATION_STEPS.length - 1}
+                        step={1}
+                        value={expIndex}
+                        onChange={(v) => setExpirationMinutes(EXPIRATION_STEPS[v].minutes)}
+                        aria-label="Expires after"
+                      />
+                      <div className="mt-1.5 flex justify-between text-[11px] text-muted">
+                        <span>1 min</span>
+                        <span>30 days</span>
+                      </div>
+                    </ToggleField>
                   </div>
                 )}
 
@@ -352,6 +459,8 @@ export function UploadTray({
                     {files.length === 1 ? (
                       <CustomLinkField
                         slugLocked={slugLocked}
+                        expanded={linkOpen}
+                        onToggle={() => setLinkOpen(!linkOpen)}
                         customSlug={customSlug}
                         setCustomSlug={setCustomSlug}
                         slugError={slugError}
@@ -392,7 +501,7 @@ export function UploadTray({
               </div>
 
               {/* ── Footer ── */}
-              <div className={`shrink-0 ${RULE} px-3 py-2.5`}>
+              <Card.Footer className="flex-col items-stretch gap-0 border-t border-white/10 px-3 py-2.5">
                 <div className="mb-2.5 flex items-center gap-2 px-0.5">
                   {(state === "uploading" || state === "zipping") && (
                     <span className="shrink-0 text-muted">
@@ -400,8 +509,8 @@ export function UploadTray({
                     </span>
                   )}
                   <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-[13px] font-semibold leading-none text-foreground">{footerTitle}</span>
-                    <span className="line-clamp-1 text-[12px] leading-none text-muted">{footerSub}</span>
+                    <span className="text-[16px] font-semibold leading-tight text-foreground">{footerTitle}</span>
+                    <span className="line-clamp-1 text-[13px] leading-tight text-muted">{footerSub}</span>
                   </div>
                 </div>
 
@@ -456,9 +565,10 @@ export function UploadTray({
                     </Button>
                   </div>
                 )}
-              </div>
+              </Card.Footer>
             </>
           )}
+          </Card>
         </motion.div>
       )}
     </AnimatePresence>,
@@ -481,29 +591,6 @@ function useSmoothPercent(target: number) {
   useEffect(() => spring.on("change", (v) => setShown(v)), [spring])
 
   return shown
-}
-
-// Ring that fills as the upload runs, shown beside the percentage.
-function CircleProgress({ value, size = 16 }: { value: number; size?: number }) {
-  const stroke = 2
-  const r = (size - stroke) / 2
-  const circumference = 2 * Math.PI * r
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 -rotate-90" aria-hidden="true">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth={stroke} opacity={0.22} />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={stroke}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference * (1 - Math.min(100, Math.max(0, value)) / 100)}
-      />
-    </svg>
-  )
 }
 
 function TrayFileRow({
@@ -551,7 +638,12 @@ function TrayFileRow({
             {uploading && (
               <>
                 <span>{Math.round(smooth)}%</span>
-                <CircleProgress value={smooth} size={14} />
+                <ProgressCircle value={smooth} size="sm" aria-label="Upload progress">
+                  <ProgressCircle.Track>
+                    <ProgressCircle.TrackCircle />
+                    <ProgressCircle.FillCircle />
+                  </ProgressCircle.Track>
+                </ProgressCircle>
               </>
             )}
             {size !== undefined && <span>{formatBytes(size)}</span>}
@@ -577,13 +669,11 @@ function TrayFileRow({
 
 // Toggle row with icon + label (+ optional helper text).
 function ToggleRow({
-  icon,
   label,
   on,
   onToggle,
   sub,
 }: {
-  icon: string
   label: string
   on: boolean
   onToggle: () => void
@@ -592,10 +682,7 @@ function ToggleRow({
   return (
     <div className={`${PAD} py-3`}>
       <div className="flex cursor-pointer items-center justify-between gap-3" onClick={onToggle}>
-        <span className={`flex items-center gap-2.5 ${LABEL}`}>
-          <MIcon name={icon} size={17} className={ICON} />
-          {label}
-        </span>
+        <span className={LABEL}>{label}</span>
         <span onClick={(e) => e.stopPropagation()} style={{ display: "inline-flex" }}>
           <Switch isSelected={on} onChange={onToggle} aria-label={label}>
             <Switch.Content>
@@ -611,40 +698,73 @@ function ToggleRow({
   )
 }
 
-// Labelled field block (icon + label above a control).
-function FieldBlock({ icon, label, children }: { icon: string; label: string; children: React.ReactNode }) {
-  return (
-    <div className={`${PAD} py-3`}>
-      <div className={`mb-2.5 flex items-center gap-2.5 ${LABEL}`}>
-        <MIcon name={icon} size={17} className={ICON} />
-        {label}
+// Toggle row that reveals a control (text field, slider…) underneath itself
+// once switched on, instead of showing the input up front. `locked` swaps the
+// switch for the same upgrade chip ToggleRow's siblings use.
+function ToggleField({
+  label,
+  sub,
+  expanded,
+  onToggle,
+  locked = false,
+  valuePreview,
+  children,
+}: {
+  label: string
+  /** One-line gray description under the label, explaining what the feature does. */
+  sub?: string
+  expanded: boolean
+  onToggle: () => void
+  locked?: boolean
+  /** Small value shown next to the switch when collapsed, e.g. the current expiry. */
+  valuePreview?: string
+  children: React.ReactNode
+}) {
+  const router = useRouter()
+
+  const field = (
+    <div
+      className={`${PAD} py-3 ${locked ? "cursor-pointer" : ""}`}
+      onClick={locked ? () => router.push("/pricing") : undefined}
+    >
+      <div
+        className={`flex items-center justify-between gap-3 ${locked ? "" : "cursor-pointer"}`}
+        onClick={locked ? undefined : onToggle}
+      >
+        <span className={LABEL}>{label}</span>
+        <span onClick={locked ? undefined : (e) => e.stopPropagation()} className="flex shrink-0 items-center gap-2">
+          {!expanded && valuePreview && <span className="text-[12px] font-semibold text-foreground">{valuePreview}</span>}
+          <Switch isSelected={locked ? false : expanded} isDisabled={locked} onChange={onToggle} aria-label={label}>
+            <Switch.Content>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Content>
+          </Switch>
+        </span>
       </div>
-      {children}
+      {sub && <p className={`mt-1.5 leading-snug ${MUTED}`}>{sub}</p>}
+      {!locked && expanded && <div className="mt-2.5">{children}</div>}
     </div>
   )
-}
 
-function LockBadge() {
+  if (!locked) return field
+
   return (
-    <Chip size="sm" variant="soft" className="shrink-0 gap-1 uppercase">
-      <MIcon name="lock" size={12} /> Essential+
-    </Chip>
+    <Tooltip content={<span className="flex items-center gap-1.5"><MIcon name="lock" size={12} />Paid</span>}>
+      {field}
+    </Tooltip>
   )
 }
 
-function UpgradeLink({ text }: { text: string }) {
-  return (
-    <a href="/pricing" className="mt-2 inline-block text-[11px] text-muted underline hover:text-foreground transition-colors">
-      {text}
-    </a>
-  )
-}
 
 // Shared custom-link (slug) field. Used for single files, zipped archives, and
 // single CDN assets — anywhere the upload yields exactly one share link. Free
 // users see it locked; the server is the real gate.
 function CustomLinkField({
   slugLocked,
+  expanded,
+  onToggle,
   customSlug,
   setCustomSlug,
   slugError,
@@ -654,6 +774,8 @@ function CustomLinkField({
   previewBase,
 }: {
   slugLocked: boolean
+  expanded: boolean
+  onToggle: () => void
   customSlug: string
   setCustomSlug: (v: string) => void
   slugError: { message: string; suggestions: string[] } | null
@@ -663,20 +785,17 @@ function CustomLinkField({
   previewBase: string
 }) {
   return (
-    <div className={`${PAD} py-3`}>
-      <div className="mb-2.5 flex items-center justify-between gap-3">
-        <span className={`flex items-center gap-2.5 ${LABEL}`}>
-          <MIcon name="link" size={17} className={ICON} />
-          Custom link
-        </span>
-        {slugLocked && <LockBadge />}
-      </div>
+    <ToggleField
+      label="Custom link"
+      sub="Pick your own link instead of a random one."
+      expanded={expanded}
+      onToggle={onToggle}
+      locked={slugLocked}
+    >
       <TextField
         aria-label="Custom link"
-        isDisabled={slugLocked}
-        value={slugLocked ? "" : customSlug}
+        value={customSlug}
         onChange={(v) => {
-          if (slugLocked) return
           setCustomSlug(v.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))
           if (slugError) setSlugError(null)
         }}
@@ -685,12 +804,10 @@ function CustomLinkField({
       >
         <InputGroup>
           <InputGroup.Prefix>{prefix}</InputGroup.Prefix>
-          <InputGroup.Input placeholder={slugLocked ? "available on paid plans" : placeholder} />
+          <InputGroup.Input placeholder={placeholder} />
         </InputGroup>
       </TextField>
-      {slugLocked ? (
-        <UpgradeLink text="Upgrade to Essential to use custom links" />
-      ) : slugError ? (
+      {slugError ? (
         <div className="mt-2">
           <p className="text-[11px] text-danger">{slugError.message}</p>
           {slugError.suggestions.length > 0 && (
@@ -715,7 +832,7 @@ function CustomLinkField({
           </p>
         )
       )}
-    </div>
+    </ToggleField>
   )
 }
 

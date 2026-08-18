@@ -47,19 +47,18 @@ export function QrCodePopover({ url, size = 30, className }: QrCodePopoverProps)
         </Button>
       </Popover.Trigger>
       <Popover.Content offset={10}>
-        <Popover.Dialog className="w-[240px] rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[#0d0e0f] p-4 shadow-[0_14px_28px_rgba(0,0,0,0.35)]">
-          <p className="mb-3 text-[12px] font-medium text-[#f7f8f8]">Scan to open this link</p>
+        <Popover.Dialog className="w-[240px]">
+          <Popover.Heading className="mb-3 text-[16px]">Scan to open this link</Popover.Heading>
           <div className="flex items-center justify-center rounded-xl bg-white p-3">
             {dataUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={dataUrl} alt="QR code for the share link" width={200} height={200} className="h-[200px] w-[200px]" />
             ) : error ? (
-              <p className="p-6 text-center text-[12px] text-[#dc2626]">Couldn&apos;t generate a QR code.</p>
+              <p className="p-6 text-center text-[12px] text-danger">Couldn&apos;t generate a QR code.</p>
             ) : (
               <div className="h-[200px] w-[200px] animate-pulse rounded-lg bg-black/10" />
             )}
           </div>
-          <p className="mt-3 line-clamp-2 break-all text-[11px] text-[#898e97]">{url}</p>
         </Popover.Dialog>
       </Popover.Content>
     </Popover>
