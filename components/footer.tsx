@@ -6,7 +6,16 @@ const columns = FOOTER_COLUMNS.filter((c) => c.title !== "Company");
 
 export function Footer() {
   return (
-    <footer className="w-full max-w-[1200px] p-2 mx-auto flex items-center justify-center gap-2 sm:gap-3">
+    <footer className="w-full max-w-[1200px] p-2 mx-auto flex items-center justify-between gap-2 sm:gap-3">
+      <a
+        href="https://usekiko.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+      >
+        I&rsquo;m Kiko!
+      </a>
+      <div className="flex items-center gap-2 sm:gap-3">
       {columns.map((col) => (
         <Dropdown key={col.title}>
           <Dropdown.Trigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "inline-flex items-center gap-1.5")}>
@@ -43,6 +52,7 @@ export function Footer() {
           </Dropdown.Popover>
         </Dropdown>
       ))}
+      </div>
     </footer>
   );
 }

@@ -67,7 +67,9 @@ export function Hero() {
               className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              Built private cloud storage because i was tired of{" "}
+              Built private cloud storage
+              <br />
+              because i was tired of{" "}
               <span className="inline-flex items-center align-middle isolate">
                 <img
                   src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
