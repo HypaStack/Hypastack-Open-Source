@@ -135,7 +135,7 @@ export function PricingCards() {
                     className="pointer-events-none absolute inset-0 rounded-[16px]"
                     style={{
                       padding: 1,
-                      background: "linear-gradient(to bottom, var(--accent) 0%, transparent 50%)",
+                      background: "linear-gradient(to bottom, oklch(0.6204 0.195 253.83) 0%, transparent 50%)",
                       WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                       WebkitMaskComposite: "xor",
                       maskComposite: "exclude",
