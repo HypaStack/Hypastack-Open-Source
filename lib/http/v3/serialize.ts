@@ -2,15 +2,8 @@ import { decryptFilename } from "@/lib/security/filenameCrypto"
 import type { FileRecord } from "@/lib/models/fileModel"
 import type { CdnAsset } from "@/lib/models/cdnModel"
 
-/**
- * The public shape of a v3 file. Everything is snake_case and every timestamp is
- * ISO 8601 UTC, one convention across the whole API so a developer never has to
- * check which field style a given endpoint uses.
- *
- * Internal columns (r2_key, file_hash, encryption_*, folder_id, user_id) are
- * deliberately absent. The storage key in particular must never leave the
- * server: it is the thing presigned URLs are minted from.
- */
+// snake_case, ISO 8601 UTC timestamps, one convention across the whole API.
+// Internal columns (r2_key etc) are deliberately absent, r2_key mints presigned URLs.
 export interface V3File {
   object: "file"
   id: string
@@ -36,16 +29,8 @@ function iso(value: Date | string): string {
   return new Date(value).toISOString()
 }
 
-/**
- * No `url` field, deliberately.
- *
- * A /d/{id} link is only usable with the AES key in its `#fragment`, and the
- * browser uploader is what generates that key. Files created through the API
- * have no such key, so a /d/ link for one renders "you're missing the #
- * fragment", returning it would hand out links that cannot work.
- *
- * Use GET /files/{id}/download for a signed, time-limited URL instead.
- */
+// No url field: API-created files have no #fragment key, so a /d/ link would never work.
+// Use GET /files/{id}/download for a signed URL instead.
 export function toV3File(record: FileRecord): V3File {
   return {
     object: "file",

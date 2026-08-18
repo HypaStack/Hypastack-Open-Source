@@ -47,18 +47,8 @@ export function v3Ok(
   return withCommonHeaders(NextResponse.json(body, { status }), requestId, rate)
 }
 
-/**
- * The only way a v3 route produces an error, so the shape cannot drift.
- *
- * Two rules enforced here rather than trusted to callers:
- *
- *  - `not_found` always carries the catalogue message verbatim. A caller cannot
- *    accidentally leak "you don't own this" by passing a specific message; the
- *    ambiguity between "gone" and "not yours" is what stops key holders
- *    enumerating other accounts' resources.
- *  - 5xx never carries caller-facing detail. The `log` string is written to the
- *    server log against the request id and nothing else escapes.
- */
+// The only way a v3 route produces an error. not_found always carries the catalogue
+// message verbatim (stops enumeration); 5xx never leaks caller-facing detail.
 export function v3Error(
   code: V3Code,
   requestId: string,

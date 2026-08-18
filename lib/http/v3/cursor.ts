@@ -1,13 +1,6 @@
-/**
- * Opaque list cursors. Encodes the last row's sort position so the next page
- * resumes exactly where the previous one ended, even if rows are inserted in
- * between, which is why v3 never paginates by offset.
- *
- * The payload is base64url'd rather than signed: it holds a timestamp and an id
- * the caller already saw in the response, so there is nothing to protect. A
- * tampered cursor can only move the caller around their *own* result set, since
- * every list query is scoped by user id regardless of what the cursor says.
- */
+// Encodes the last row's sort position so the next page resumes exactly there,
+// even with inserts in between. Just base64url'd, not signed, every list query
+// stays scoped by user id regardless of what the cursor says.
 export interface Cursor {
   /** Sort key of the last row on the previous page (epoch ms). */
   ts: number

@@ -1,14 +1,5 @@
-/**
- * The v3 error catalogue. Closed set, every failure the public API can return
- * is one of these codes, and the code is what clients switch on.
- *
- * `message` is for humans and may be reworded at any time; it is never parsed.
- * New codes are additive-only within v3, and the docs tell clients to fall back
- * to the HTTP status on an unrecognised code, so adding one is never breaking.
- *
- * Deliberately separate from constants/errors.ts (v2), where `error` is friendly
- * copy for a UI toast. These two fields do different jobs and must not be shared.
- */
+// Closed set, clients switch on the code, message is for humans and may reword.
+// Separate from constants/errors.ts (v2), which is friendly copy for a UI toast.
 export const V3_CODES = {
   INVALID_REQUEST: "invalid_request",
   MISSING_KEY: "missing_key",
@@ -44,11 +35,8 @@ export const V3_STATUS: Record<V3Code, number> = {
   service_unavailable: 503,
 }
 
-/**
- * Default human message per code. Handlers may pass a more specific one, except
- * for `not_found`, which is always this exact string, the ambiguity between
- * "never existed" and "not yours" is the security property.
- */
+// Default per-code message. not_found is always this exact string, the ambiguity
+// between "never existed" and "not yours" is the security property.
 export const V3_MESSAGE: Record<V3Code, string> = {
   invalid_request: "The request was not valid.",
   missing_key: "No API key was provided. Send it as: Authorization: Bearer hsk_…",

@@ -37,19 +37,11 @@ function readBearer(request: NextRequest): string | null {
   return token
 }
 
-/**
- * The v3 request pipeline. Every route is wrapped in this, so auth, scope,
- * rate limiting, error shape and request ids are impossible to get individually
- * wrong.
- *
- *   missing header        → 401 missing_key
- *   unknown/revoked key   → 401 invalid_key
- *   tier has no API       → 403 plan_required
- *   key beyond allowance  → 403 key_limit_exceeded
- *   scope not granted     → 403 insufficient_scope
- *   budget spent          → 429 rate_limit_exceeded
- *   handler throws        → 500 internal_error (logged, never echoed)
- */
+// Every v3 route wraps in this for auth/scope/rate-limit/error-shape consistency:
+//   missing header → 401 missing_key   unknown/revoked key → 401 invalid_key
+//   no API on tier → 403 plan_required   over key limit → 403 key_limit_exceeded
+//   no scope → 403 insufficient_scope   over budget → 429 rate_limit_exceeded
+//   handler throws → 500 internal_error (logged, never echoed)
 export function withApiKey<P = Record<string, never>>(
   handler: V3Handler<P>,
   options: WithApiKeyOptions,
