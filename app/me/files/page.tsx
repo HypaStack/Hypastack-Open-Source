@@ -455,10 +455,10 @@ function FilesPageInner() {
       {/* h-10 keeps the headline centred on the same line as the sidebar's top row. */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 sm:h-10 mb-2">
         <h1 className="shrink-0 text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
-          <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
+          <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map((f, i, arr) => (
-            <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]">
-              <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+            <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#898e97]">
+              <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#a1a1aa]" />
               <span className={`cursor-pointer hover:underline transition-colors ${i === arr.length - 1 ? "text-[#171717] dark:text-[#e3e3e3]" : "text-[#999] dark:text-[#898e97] hover:text-[#111] dark:hover:text-[#f0f0f0]"}`} onClick={() => setCurrentFolderId(f.id)}>{f.name}</span>
             </span>
           ))}
@@ -547,7 +547,7 @@ function FilesPageInner() {
 
         {filteredFiles.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between mt-7 px-2">
-            <p className="text-[15px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] font-medium">
+            <p className="text-[15px] text-[#666] dark:text-[#898e97] font-medium">
               Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
             </p>
             <div className="flex items-center gap-1.5">

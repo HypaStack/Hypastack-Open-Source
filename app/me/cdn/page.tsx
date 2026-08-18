@@ -532,10 +532,10 @@ export default function CdnPage() {
       <div className="shrink-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-2">
           <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-            <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
+            <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>CDN Assets</span>
             {breadcrumbs.map((crumb, i, arr) => (
-              <span key={crumb.id} className="flex items-center gap-2 text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]">
-                <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+              <span key={crumb.id} className="flex items-center gap-2 text-[#666] dark:text-[#898e97]">
+                <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#a1a1aa]" />
                 <span className={`cursor-pointer hover:underline transition-colors ${i === arr.length - 1 ? "text-[#171717] dark:text-[#e3e3e3]" : "text-[#999] dark:text-[#898e97] hover:text-[#111] dark:hover:text-[#f0f0f0]"}`} onClick={() => setCurrentFolderId(crumb.id)}>{crumb.name}</span>
               </span>
             ))}
@@ -807,7 +807,7 @@ export default function CdnPage() {
 
       {totalPages > 1 && (
         <div className="shrink-0 flex items-center justify-between bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '8px 12px', marginTop: 8 }}>
-          <p className="text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
+          <p className="text-[#888] dark:text-[#a1a1aa]" style={{ fontSize: 13 }}>
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}&ndash;{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssets.length)} of {filteredAssets.length}
           </p>
           <div className="flex items-center gap-1.5">

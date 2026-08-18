@@ -44,7 +44,7 @@ export function EmptyState({ query, username }: { query: string; username: strin
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
           <div className="inline-flex items-center justify-center mb-5 bg-[#f0f0f0] dark:bg-[#222] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)]" style={{ width: 64, height: 64, borderRadius: 6 }}>
-            <MIcon name="search" size={28} className="text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]" />
+            <MIcon name="search" size={28} className="text-[#999] dark:text-[#a1a1aa]" />
           </div>
         ) : null}
         {query ? (
@@ -52,7 +52,7 @@ export function EmptyState({ query, username }: { query: string; username: strin
             <h3 className="text-[22px] font-semibold text-[#171717] dark:text-[#e3e3e3] mb-2 tracking-tight">
               No assets match your search
             </h3>
-            <p className="text-[15px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] font-normal leading-relaxed">
+            <p className="text-[15px] text-[#666] dark:text-[#898e97] font-normal leading-relaxed">
               Try a different search term.
             </p>
           </>

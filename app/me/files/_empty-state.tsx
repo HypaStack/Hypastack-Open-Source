@@ -44,15 +44,15 @@ export function EmptyState({ query, username }: { query: string; username: strin
       <div className="w-full max-w-md flex flex-col items-center">
         {query ? (
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-md bg-[#f0f0f0] dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] mb-5">
-            <MIcon name="search" size={28} className="text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97]" />
+            <MIcon name="search" size={28} className="text-[#666] dark:text-[#898e97]" />
           </div>
         ) : null}
         {query ? (
           <>
-            <h3 className="text-[22px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] mb-2 tracking-tight">
+            <h3 className="text-[22px] font-semibold text-[#111] dark:text-[#f0f0f0] mb-2 tracking-tight">
               No files match your search
             </h3>
-            <p className="text-[15px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] font-normal leading-relaxed">
+            <p className="text-[15px] text-[#666] dark:text-[#898e97] font-normal leading-relaxed">
               Try a different search term.
             </p>
           </>

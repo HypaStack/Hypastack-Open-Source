@@ -159,7 +159,7 @@ export function CdnAssetTile({
 
       <div className="mt-2 px-1.5 pb-1 min-w-0">
         <p
-          className="truncate text-[#111] dark:text-white dark:text-[#e3e3e3]"
+          className="truncate text-[#111] dark:text-[#e3e3e3]"
           style={{ fontSize: 12, fontWeight: 500 }}
           title={revealed ? asset.name : undefined}
         >
