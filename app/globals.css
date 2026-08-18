@@ -447,3 +447,32 @@ html[data-theme="dark"] {
 
   --backdrop: rgba(0,0,0,0.6);
 }
+
+/* HeroUI animates toasts exclusively through the View Transitions API — every
+   enter/exit keyframe lives in ::view-transition-old/new, and the stack reflow
+   (each toast sliding back and scaling down as a new one lands in front) is the
+   default view-transition group animation. In a browser without that API there
+   is no fallback, so toasts pop in and out instantly and the stack looks like a
+   replace instead of an overlap. Same motion, driven directly, only where view
+   transitions are unavailable. */
+@supports not (view-transition-name: none) {
+  .toast {
+    transition:
+      translate 350ms var(--ease-out-quart),
+      scale 350ms var(--ease-out-quart),
+      opacity 200ms var(--ease-smooth);
+    @apply motion-reduce:transition-none;
+  }
+
+  .toast--bottom,
+  .toast--bottom-start,
+  .toast--bottom-end {
+    animation: toast-slide-bottom-in 350ms var(--ease-out-quart);
+  }
+
+  .toast--top,
+  .toast--top-start,
+  .toast--top-end {
+    animation: toast-slide-top-in 350ms var(--ease-out-quart);
+  }
+}
