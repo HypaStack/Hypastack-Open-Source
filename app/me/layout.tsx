@@ -238,7 +238,7 @@ function ManageLayoutInner({
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
               />
               <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
-              <MIcon name="expand_content" size={14} className="shrink-0 text-muted" />
+              <MIcon name="expand_all" size={14} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
             <Dropdown.Popover
@@ -321,7 +321,7 @@ function ManageLayoutInner({
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
               />
               <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
-              <MIcon name="expand_content" size={14} className="shrink-0 text-muted" />
+              <MIcon name="expand_all" size={14} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
             {/* containerPadding matches the sidebar's own 8px margin — react-aria's
