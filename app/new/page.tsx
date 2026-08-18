@@ -156,7 +156,7 @@ export default function CreateAccountPage() {
     <>
       <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
-            <div className="mb-9 flex flex-col items-center text-center">
+            <div className="mb-9">
               <img
                 src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
                 alt="Hypastack"
@@ -168,7 +168,7 @@ export default function CreateAccountPage() {
               >
                 Create account
               </h1>
-              <p className="mt-1.5 text-[14px] text-[#898e97]">
+              <p className="mt-0.5 text-[14px] text-[#898e97]">
                 create your fantastic hypastack account
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function CreateAccountPage() {
               </AlertMessage>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <TextField isRequired value={nickname} onChange={setNickname} className="w-full">
                   <Label>Username</Label>
@@ -227,9 +227,7 @@ export default function CreateAccountPage() {
                   </Checkbox.Control>
                   <span>
                     I accept all the{" "}
-                    <Link href="/terms" className="font-semibold hover:underline">Terms</Link>
-                    {" "}&amp;{" "}
-                    <Link href="/privacy" className="font-semibold hover:underline">Privacy Policy</Link>
+                    <Link href="/terms" className="font-semibold hover:underline">Policies</Link>
                     , and I confirm my age is above 18.
                   </span>
                 </Checkbox.Content>
