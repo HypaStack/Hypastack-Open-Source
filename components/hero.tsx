@@ -6,6 +6,7 @@ import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { ButtonLink } from "@/components/ui/button-link";
+import { MIcon } from "@/components/ui/material-icon";
 import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -56,7 +57,10 @@ export function Hero() {
       <div className="w-full relative overflow-visible flex flex-col items-center justify-center bg-black">
         <div className="flex flex-col items-center px-6 sm:px-6 w-full max-w-[1200px] relative z-10 pt-6 sm:pt-10">
           <PopIn delay={80} fromY={16} className="mb-4">
-            <ButtonLink href="/changelog" as={Link} variant="secondary" size="sm">See what&rsquo;s new in V3</ButtonLink>
+            <ButtonLink href="/changelog" as={Link} variant="secondary" size="sm" style={{ gap: 8 }}>
+              <MIcon name="rocket_launch" size={14} />
+              See what&rsquo;s new in V3
+            </ButtonLink>
           </PopIn>
           <PopIn delay={150} fromY={28} className="w-full">
             <h1
