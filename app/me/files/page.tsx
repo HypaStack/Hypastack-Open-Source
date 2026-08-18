@@ -382,10 +382,15 @@ function FilesPageInner() {
 
         <SharedElementTransition>
           <Tabs.ListContainer>
-            <Tabs.List>
-              <Tabs.Tab id="drive">Drive</Tabs.Tab>
-              <Tabs.Tab id="folders">Folders</Tabs.Tab>
-              <Tabs.Indicator />
+            <Tabs.List aria-label="View">
+              <Tabs.Tab id="drive">
+                Drive
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="folders">
+                Folders
+                <Tabs.Indicator />
+              </Tabs.Tab>
             </Tabs.List>
           </Tabs.ListContainer>
         </SharedElementTransition>
