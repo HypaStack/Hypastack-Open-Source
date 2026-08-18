@@ -470,7 +470,7 @@ function FilesPageInner() {
         </div>
       </div>
 
-      <Tabs.Panel id="drive" className="flex-1 flex flex-col">
+      <Tabs.Panel id="drive" className="flex-1 flex flex-col px-0">
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
