@@ -448,7 +448,7 @@ function ManageLayoutInner({
 
       <Modal isOpen={feedbackOpen} onOpenChange={setFeedbackOpen}>
         <Modal.Backdrop isDismissable variant="blur">
-          <Modal.Container placement="center" size="sm">
+          <Modal.Container placement="center" size="md">
             <Modal.Dialog className="bg-black border border-white/10 rounded-2xl">
               <Modal.Header className="flex items-center justify-between">
                 <Modal.Heading className="text-[16px] font-semibold text-foreground">Send feedback</Modal.Heading>
@@ -457,7 +457,7 @@ function ManageLayoutInner({
               <Modal.Body className="space-y-4">
                 <TextField value={feedbackText} onChange={setFeedbackText} className="w-full">
                   <Label>What's on your mind?</Label>
-                  <TextArea rows={4} placeholder="Tell us what's working, what's not..." />
+                  <TextArea rows={4} className="resize-none" placeholder="Tell us what's working, what's not..." />
                 </TextField>
                 <Switch isSelected={feedbackLinkAccount} onChange={setFeedbackLinkAccount}>
                   <Switch.Content>
