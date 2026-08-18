@@ -382,7 +382,7 @@ function ManageLayoutInner({
             onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
-            className="relative border-transparent"
+            className="relative border-white/10"
           >
             {/* Border fades from full accent at the top edge to fully
                 transparent by the vertical midpoint — a plain border-color
