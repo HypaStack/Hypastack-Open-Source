@@ -220,7 +220,7 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
+              className="flex items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"
               style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
@@ -234,7 +234,16 @@ function ManageLayoutInner({
               <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
             </Dropdown.Trigger>
 
-            <Dropdown.Popover placement="top" className="p-0 overflow-hidden" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
+            {/* containerPadding matches the sidebar's own 8px margin — react-aria's
+                12px default pushes the popover right to clear the viewport edge,
+                knocking it off the trigger. offset is the gap above the trigger. */}
+            <Dropdown.Popover
+              placement="top"
+              containerPadding={8}
+              offset={8}
+              className="p-0 overflow-hidden"
+              style={{ width: SIDEBAR_CONTENT_WIDTH }}
+            >
               <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <img
