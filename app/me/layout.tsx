@@ -295,7 +295,7 @@ function ManageLayoutInner({
         </nav>
 
         <div className="px-0 pt-3 shrink-0">
-          <div className="mb-1 flex items-center justify-between text-[12px]">
+          <div className="mb-0.5 flex items-center justify-between text-[12px]">
             <Label className="font-medium text-foreground">Storage</Label>
             <span className="text-[14px] font-medium text-foreground">{(stats?.storagePercent ?? 0).toFixed(1)}%</span>
           </div>
