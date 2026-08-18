@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Tabs } from "@heroui/react"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -364,12 +364,11 @@ function FilesPageInner() {
 
   if (!user) return null
 
-  const isEmpty = filteredFiles.length === 0 && filteredFolders.length === 0
   const allSelected = filteredFiles.length > 0 && filteredFiles.every((f) => selectedFiles.has(f.id))
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
+    <Tabs defaultSelectedKey="drive" className="flex-1 flex flex-col">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 mb-6">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
           <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
           {getBreadcrumbs().map((f, i, arr) => (
@@ -379,6 +378,12 @@ function FilesPageInner() {
             </span>
           ))}
         </h1>
+
+        <Tabs.List>
+          <Tabs.Tab id="drive">Drive</Tabs.Tab>
+          <Tabs.Tab id="folders">Folders</Tabs.Tab>
+          <Tabs.Indicator />
+        </Tabs.List>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedFiles.size > 0 ? (
@@ -445,68 +450,67 @@ function FilesPageInner() {
         </div>
       </div>
 
-      {isEmpty ? (
-        <EmptyState query={searchQuery} username={user.nickname} />
-      ) : (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-300">
-          {filteredFolders.length > 0 && (
-            <div>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
-                {filteredFolders.map(folder => (
-                  <FolderTile
-                    key={folder.id}
-                    name={folder.name}
-                    onOpen={() => setCurrentFolderId(folder.id)}
-                    onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {filteredFiles.length > 0 && (
-            <div>
-              {filteredFolders.length > 0 && <div className="border-t border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] mb-4" />}
-              <ListView
-                files={paginatedFiles}
-                selectedFiles={selectedFiles}
-                onSelectionChange={setSelectedFiles}
-                onContextMenu={(e, id) => {
-                  e.preventDefault();
-                  setOpenMenuId(id);
-                  setContextMenuPos({ x: e.clientX, y: e.clientY });
-                }}
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      {!isEmpty && totalPages > 1 && (
-        <div className="flex items-center justify-between mt-7 px-2">
-          <p className="text-[15px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] font-medium">
-            Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
-          </p>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="tertiary"
-              size="md"
-              onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              isDisabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="tertiary"
-              size="md"
-              onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              isDisabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
+      <Tabs.Panel id="drive" className="flex-1 flex flex-col">
+        {filteredFiles.length === 0 ? (
+          <EmptyState query={searchQuery} username={user.nickname} />
+        ) : (
+          <div className="animate-in fade-in duration-300">
+            <ListView
+              files={paginatedFiles}
+              selectedFiles={selectedFiles}
+              onSelectionChange={setSelectedFiles}
+              onContextMenu={(e, id) => {
+                e.preventDefault();
+                setOpenMenuId(id);
+                setContextMenuPos({ x: e.clientX, y: e.clientY });
+              }}
+            />
           </div>
-        </div>
-      )}
+        )}
+
+        {filteredFiles.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-7 px-2">
+            <p className="text-[15px] text-[#666] dark:text-[#a1a1aa] dark:text-[#888] dark:text-[#898e97] font-medium">
+              Page {currentPage} of {totalPages} · {filteredFiles.length} {filteredFiles.length === 1 ? "file" : "files"}
+            </p>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="tertiary"
+                size="md"
+                onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                isDisabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="tertiary"
+                size="md"
+                onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                isDisabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+      </Tabs.Panel>
+
+      <Tabs.Panel id="folders" className="flex-1">
+        {filteredFolders.length === 0 ? (
+          <p className="text-[15px] text-[#666] dark:text-[#898e97]">No folders here.</p>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 animate-in fade-in duration-300">
+            {filteredFolders.map(folder => (
+              <FolderTile
+                key={folder.id}
+                name={folder.name}
+                onOpen={() => setCurrentFolderId(folder.id)}
+                onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
+              />
+            ))}
+          </div>
+        )}
+      </Tabs.Panel>
 
       {/* 
         When files were pre-selected via the OS picker, render the UploadZone
@@ -633,7 +637,7 @@ function FilesPageInner() {
           { text: "You're all set! Your files are encrypted and under your control.", icon: "celebration" },
         ]}
       />
-    </div>
+    </Tabs>
   )
 }
 
