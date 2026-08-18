@@ -3,7 +3,7 @@
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
-import { Button, toast } from "@heroui/react"
+import { Button, Kbd, Typography, toast } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
 import { UploadZone } from "@/components/upload"
 import { useManage, type CdnAssetItem } from "@/hooks/useManage"
@@ -686,11 +686,11 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
-          <div className="flex items-center gap-2 bg-[#f0f0f0] dark:bg-[#121212] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] relative group pr-8" style={{ borderRadius: 9999, padding: '6px 16px' }}>
-            <div className="flex items-center justify-center bg-white dark:bg-[rgba(255,255,255,0.06)] rounded-full px-2 py-0.5 text-[#555] dark:text-[#f7f8f8] text-[11px] font-bold border border-[rgba(0,0,0,0.08)] dark:border-transparent">CTRL</div>
-            <span className="text-[#666] dark:text-[#898e97]" style={{ fontSize: 13, fontWeight: 400 }}>
+          <div className="flex items-center gap-2 bg-surface border border-white/10 relative group pr-8 rounded-full px-4 py-1.5">
+            <Kbd>CTRL</Kbd>
+            <Typography type="body-sm" color="muted">
               Hold CTRL and click or drag over files to quickly select many files
-            </span>
+            </Typography>
             <Button
               variant="ghost"
               isIconOnly
