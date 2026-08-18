@@ -125,6 +125,7 @@ export default function CdnPage() {
       if (res.ok) {
         const data = await res.json()
         setFolders(prev => [...prev, data.folder])
+        toast.success("Folder created")
       } else {
         const data = await res.json().catch(() => ({}))
         hypaError(data.message || "Failed to create folder")
@@ -188,6 +189,7 @@ export default function CdnPage() {
       if (currentFolderId && folderIdSet.has(currentFolderId)) {
         setCurrentFolderId(folder?.parentId || null)
       }
+      toast.success("Folder deleted")
     } catch (err) {
       hypaError("Failed to delete folder", errorMessage(err))
     } finally {
@@ -414,6 +416,7 @@ export default function CdnPage() {
       setAssets((prev) => prev.map((a) => (movedIds.has(a.id) ? { ...a, folderId } : a)))
       setSelectedAssets(new Set())
       setMoveOpen(false)
+      toast.success(`Moved ${ids.length} asset${ids.length === 1 ? "" : "s"}`)
     } catch (err) {
       console.error("Move error:", err)
       hypaError("Failed to move assets")
@@ -467,6 +470,7 @@ export default function CdnPage() {
       }
       setAssets((prev) => prev.filter((a) => !deletedIds.has(a.id)))
       setSelectedAssets(new Set())
+      toast.success(`Deleted ${deletedIds.size} asset${deletedIds.size === 1 ? "" : "s"}`)
     } catch (err) {
       hypaError("Failed to delete assets", errorMessage(err))
     } finally {

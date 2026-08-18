@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Tabs } from "@heroui/react"
+import { Button, Tabs, toast } from "@heroui/react"
 import { SharedElementTransition } from "react-aria-components"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
@@ -192,6 +192,7 @@ function FilesPageInner() {
           next.delete(fileId)
           return next
         })
+        toast.success("File deleted")
       },
     })
     setOpenMenuId(null)
@@ -270,6 +271,7 @@ function FilesPageInner() {
       }
 
       setSelectedIds(new Set())
+      toast.success(`Deleted ${names.length} item${names.length === 1 ? "" : "s"}`)
     } catch (err) {
       hypaError("Failed to delete", errorMessage(err))
     } finally {
@@ -300,6 +302,7 @@ function FilesPageInner() {
       setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
       setSelectedIds(new Set())
       setMoveOpen(false)
+      toast.success(`Moved ${ids.length} file${ids.length === 1 ? "" : "s"}`)
     } catch (err) {
       console.error("Move error:", err)
       hypaError("Failed to move files")
@@ -323,6 +326,7 @@ function FilesPageInner() {
       if (res.ok) {
         const data = await res.json()
         setFolders([...folders, data.folder])
+        toast.success("Folder created")
       } else {
         const data = await res.json()
         hypaError(data.message ||"Failed to create folder")
@@ -350,6 +354,7 @@ function FilesPageInner() {
       })
       if (res.ok) {
         await refreshUser()
+        toast.success("Folder deleted")
       } else {
         const data = await res.json()
         hypaError(data.message ||"Failed to delete folder")

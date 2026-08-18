@@ -40,8 +40,8 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
   return (
     <Modal isOpen={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
       <Modal.Backdrop isDismissable variant="blur">
-        <Modal.Container placement="center" className="sm:w-full sm:max-w-[1060px]">
-          <Modal.Dialog className="h-full w-full p-1 sm:h-[720px] sm:max-h-[92vh]">
+        <Modal.Container placement="center" size="cover" className="sm:w-full sm:max-w-[1060px]">
+          <Modal.Dialog className="h-full w-full p-1 sm:h-[720px] sm:max-h-[92vh] sm:min-h-0">
               <div className="flex flex-col sm:flex-row w-full h-full gap-[3px] overflow-hidden">
                   <div className="sm:hidden shrink-0 bg-surface border border-separator pt-3 pb-1 rounded-md flex flex-col">
                     <div className="flex items-center justify-between px-4 pb-3 pt-1">
