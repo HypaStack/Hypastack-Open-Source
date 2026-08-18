@@ -1,12 +1,19 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Image from "next/image"
-import { motion } from "motion/react"
 import Cropper, { type Area } from "react-easy-crop"
-import { Button } from "@heroui/react"
+import { Button, Modal, toast } from "@heroui/react"
 import { AVATAR_MAX_DIMENSION } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
+import { errorMessage } from "@/lib/errors"
+
+/** POSTs an avatar file as-is. Shared with the GIF path, which skips cropping. */
+export async function uploadAvatar(file: File) {
+  const fd = new FormData()
+  fd.append("avatar", file)
+  const res = await apiFetch("/api/v2/auth/upload-avatar", { method: "POST", body: fd })
+  if (!res.ok) throw new Error("Upload failed")
+}
 
 export function AvatarCropperModal({
   imageSrc,
@@ -73,68 +80,53 @@ export function AvatarCropperModal({
       const ext = file.type === "image/png" ? "png" : "webp"
       const uuid = (typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c: string) => (Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16))
       const cleanFile = new File([blob], `${uuid}.${ext}`, { type: blob.type })
-      const fd = new FormData()
-      fd.append("avatar", cleanFile)
 
       onClose()
 
-      apiFetch("/api/v2/auth/upload-avatar", {
-        method: "POST",
-        body: fd,
-      }).then(res => {
-        if (res.ok) onUploadSuccess()
-      }).catch(console.error)
-
+      const uploaded = uploadAvatar(cleanFile).then(onUploadSuccess)
+      toast.promise(uploaded, {
+        loading: "Updating profile picture…",
+        success: "Profile picture updated",
+        error: (err) => errorMessage(err, "Couldn't change your profile picture."),
+      })
+      uploaded.catch(() => {})
     } catch (e) {
-      console.error(e)
+      toast.danger("Couldn't change your profile picture.", { description: errorMessage(e) })
     }
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <motion.div 
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-        className="absolute inset-0 bg-black/40 backdrop-blur-md" 
-        onClick={onClose} 
-      />
-
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 8 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[420px] flex flex-col bg-[#f0f0f0] dark:bg-[#121212] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] sm:rounded-[20px]"
-        style={{
-          boxShadow: '0 24px 64px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)',
-          padding: 4,
-        }}
-      >
-        <div className="relative w-full flex flex-col bg-white dark:bg-[#0d0d0d] rounded-[16px] overflow-hidden">
-        <div className="relative w-full overflow-hidden" style={{ height: 400 }}>
-          <Cropper
-            image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            cropShape="round"
-            showGrid={false}
-            zoomSpeed={0.25}
-            onCropChange={setCrop}
-            onCropComplete={onCropComplete}
-            onZoomChange={setZoom}
-          />
-        </div>
-
-        <div className="flex gap-3 px-4 py-4">
-          <Button variant="tertiary" size="md" onPress={onClose} className="flex-1">
-            Cancel
-          </Button>
-          <Button variant="primary" size="md" onPress={handleUpload} className="flex-1">
-            Save
-          </Button>
-        </div>
-        </div>
-      </motion.div>
-    </div>
+    <Modal isOpen onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
+      <Modal.Backdrop isDismissable variant="blur">
+        <Modal.Container placement="center" size="md">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading>Crop your picture</Modal.Heading>
+              <Modal.CloseTrigger />
+            </Modal.Header>
+            <Modal.Body>
+              <div className="relative w-full overflow-hidden rounded-2xl" style={{ height: 360 }}>
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="round"
+                  showGrid={false}
+                  zoomSpeed={0.25}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="tertiary" onPress={onClose}>Cancel</Button>
+              <Button variant="primary" onPress={handleUpload}>Save</Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   )
 }

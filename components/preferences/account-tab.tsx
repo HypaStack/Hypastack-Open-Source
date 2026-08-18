@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { Button } from "@heroui/react"
+import { Button, toast } from "@heroui/react"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { useManage } from "@/hooks/useManage"
@@ -11,10 +11,11 @@ import { useDeveloperMode } from "@/hooks/useDeveloperMode"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { API_BASE, MAX_AVATAR_SIZE, isPaidTier } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
+import { errorMessage } from "@/lib/errors"
 import { type PreferencesTab, type PreferencesUser, type PreferencesStorage, resolveTier } from "./shared"
 import { formatBytes, formatStoragePct } from "@/lib/format"
 import { PaidOnlyNotice } from "./paid-only-notice"
-import { AvatarCropperModal } from "./avatar-cropper"
+import { AvatarCropperModal, uploadAvatar } from "./avatar-cropper"
 import { BrandingSection } from "./branding-section"
 import { EditProfileDialog } from "./edit-profile-dialog"
 
@@ -91,18 +92,15 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
 
   // GIF avatars can't be cropped on a canvas without flattening to one frame,
   // so they skip the cropper and upload as-is to keep the animation.
-  const uploadRawAvatar = async (file: File) => {
+  const uploadRawAvatar = (file: File) => {
     setUploading(true)
-    try {
-      const fd = new FormData()
-      fd.append("avatar", file)
-      const res = await apiFetch("/api/v2/auth/upload-avatar", { method: "POST", body: fd })
-      if (res.ok) await handleUploadSuccess()
-    } catch (e) {
-      console.error("[Avatar] GIF upload failed:", e)
-    } finally {
-      setUploading(false)
-    }
+    const uploaded = uploadAvatar(file).then(handleUploadSuccess)
+    toast.promise(uploaded, {
+      loading: "Updating profile picture…",
+      success: "Profile picture updated",
+      error: (err) => errorMessage(err, "Couldn't change your profile picture."),
+    })
+    uploaded.catch(() => {}).finally(() => setUploading(false))
   }
 
   return (
