@@ -1,9 +1,6 @@
 /** User's preferred UI theme ("light" | "dark" | "system") */
 export const STORAGE_KEY_THEME = "hypa-theme"
 
-/** User's preferred UI language code (e.g. "en", "fr") */
-export const STORAGE_KEY_LANGUAGE = "hypa-language"
-
 /** Interrupted upload state for resumable uploads */
 export const STORAGE_KEY_INTERRUPTED_UPLOAD = "hypa_interrupted_upload"
 

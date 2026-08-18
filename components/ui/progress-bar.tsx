@@ -16,10 +16,7 @@ interface ProgressBarProps {
   "aria-label"?: string
 }
 
-/**
- * Progress bar with the same "shine" gloss as the primary button / ToggleSwitch, built on
- * HeroUI's ProgressBar (real `role="progressbar"` semantics, value clamping).
- */
+// Gloss-styled progress bar, built on HeroUI's real ProgressBar semantics.
 export function ProgressBar({
   value,
   height = 6,

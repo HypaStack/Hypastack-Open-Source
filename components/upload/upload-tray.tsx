@@ -557,11 +557,8 @@ export function UploadTray({
 
 // ── Presentational helpers ──
 
-// Single file/archive line: name, badge, status-or-progress, optional copy chip.
-// XHR reports real upload progress, but it fires in coarse jumps — a quick file
-// can go straight from 0 to 100. Ease between the values it does report so the
-// ring and the number travel instead of teleporting. The target is always the
-// real percentage; only the path to it is interpolated.
+// XHR reports progress in coarse jumps — eases between reported values so the
+// ring and number travel instead of teleporting. Target stays the real percentage.
 function useSmoothPercent(target: number) {
   const spring = useSpring(target, { stiffness: 90, damping: 20, mass: 0.5 })
   const [shown, setShown] = useState(target)
@@ -572,6 +569,7 @@ function useSmoothPercent(target: number) {
   return shown
 }
 
+// name, status/progress, size, optional copy chip.
 function TrayFileRow({
   name,
   status,

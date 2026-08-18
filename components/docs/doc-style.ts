@@ -2,7 +2,7 @@
 
 export const HEADING_FONT = { fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }
 
-/** The frosted panel every docs surface sits on, same material as ShineCard. */
+/** The frosted glass panel every docs surface sits on. */
 export const PANEL = {
   background: "rgba(38,38,38,0.3)",
   border: "1px solid rgba(255,255,255,0.08)",

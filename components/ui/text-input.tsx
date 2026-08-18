@@ -31,7 +31,7 @@ const PALETTE = {
 
 type InputSize = "sm" | "md" | "lg"
 
-// Heights match BUTTON_SIZES so an input and a button at the same size line up.
+// Heights match HeroUI's Button sizes so an input and a button line up.
 const SIZES: Record<InputSize, { height: number; padding: number; fontSize: number; radius: number }> = {
   sm: { height: 32, padding: 10, fontSize: 12, radius: 8 },
   md: { height: 40, padding: 12, fontSize: 13, radius: 8 },
