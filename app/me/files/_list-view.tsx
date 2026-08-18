@@ -12,7 +12,7 @@ function SelectionCheckbox() {
   return (
     <Checkbox slot="selection" className="h-[26px] justify-center">
       <Checkbox.Content>
-        <Checkbox.Control className="border-white/30">
+        <Checkbox.Control className="border-white/50 bg-white/10">
           <Checkbox.Indicator />
         </Checkbox.Control>
       </Checkbox.Content>
@@ -113,7 +113,7 @@ export function ListView({
                           <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={16} />
                         </button>
                       ) : (
-                        <span className="h-5 w-5 shrink-0" />
+                        <span className="h-5 w-7 -mx-1 shrink-0" />
                       )}
                       <div className="flex items-center gap-2 min-w-0 cursor-pointer" onDoubleClick={() => onOpenFolder(row.folder.id)}>
                         <MIcon name="folder" size={14} className="shrink-0 text-muted" />
@@ -146,18 +146,22 @@ export function ListView({
                     <SelectionCheckbox />
                   </Table.Cell>
                   <Table.Cell className="py-2">
-                    <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer"
-                      style={{ paddingLeft: row.depth * 20 }}
-                      onDoubleClick={() => window.open(`/d/${row.file.id}`, "_blank")}
-                    >
-                      <MIcon name={getFileIconForType(row.file.contentType, row.file.name)} size={14} className="shrink-0 text-muted" />
-                      <span className="truncate" title={row.file.name}>{row.file.name}</span>
-                      {!!row.file.burnOnRead && (
-                        <span title="Burn on read" className="shrink-0 text-orange-400">
-                          <MIcon name="local_fire_department" size={14} />
-                        </span>
-                      )}
+                    {/* The empty span stands in for the folder rows' expand
+                        chevron, so file and folder names share one column. */}
+                    <div className="flex items-center gap-1 min-w-0" style={{ paddingLeft: row.depth * 20 }}>
+                      <span className="h-5 w-7 -mx-1 shrink-0" />
+                      <div
+                        className="flex items-center gap-2 min-w-0 cursor-pointer"
+                        onDoubleClick={() => window.open(`/d/${row.file.id}`, "_blank")}
+                      >
+                        <MIcon name={getFileIconForType(row.file.contentType, row.file.name)} size={14} className="shrink-0 text-muted" />
+                        <span className="truncate" title={row.file.name}>{row.file.name}</span>
+                        {!!row.file.burnOnRead && (
+                          <span title="Burn on read" className="shrink-0 text-orange-400">
+                            <MIcon name="local_fire_department" size={14} />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </Table.Cell>
                   <Table.Cell className="w-28 text-right text-muted py-2">{formatBytes(row.file.size)}</Table.Cell>
