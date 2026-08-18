@@ -36,7 +36,6 @@ type UploadTrayProps = UseUploadReturn
 export function UploadTray({
   state,
   files,
-  progress,
   copied,
   copiedIndex,
   shareUrl,
@@ -99,9 +98,6 @@ export function UploadTray({
       setExpiresOpen(false)
     }
   }, [state])
-  // Only one file uploads at a time, so a single smoothed value covers
-  // whichever row in the table is current — no need for a hook per row.
-  const smoothProgress = useSmoothPercent(progress)
   // Free users still SEE the custom-link / expiration controls (so they know
   // the features exist) but the inputs are locked. The server is the real gate.
   const slugLocked = !isPaidTier(normalizeTier(user?.tier))
@@ -220,15 +216,7 @@ export function UploadTray({
                                     {state === "error" ? (
                                       <span className="text-danger">Failed</span>
                                     ) : state === "uploading" ? (
-                                      <>
-                                        <span>{Math.round(smoothProgress)}%</span>
-                                        <ProgressCircle value={smoothProgress} size="sm" aria-label="Upload progress">
-                                          <ProgressCircle.Track>
-                                            <ProgressCircle.TrackCircle />
-                                            <ProgressCircle.FillCircle />
-                                          </ProgressCircle.Track>
-                                        </ProgressCircle>
-                                      </>
+                                      <span>Uploading…</span>
                                     ) : state === "done" ? (
                                       <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                                         {shareUrl && <QrCodePopover url={shareUrl} size={24} />}
@@ -236,7 +224,7 @@ export function UploadTray({
                                           variant="tertiary"
                                           size="sm"
                                           onPress={toPressHandler((e) => { e.stopPropagation(); handleCopy() })}
-                                          style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+                                          style={{ height: 24, width: 76, fontSize: 11, justifyContent: "center" }}
                                         >
                                           {copied ? "Copied" : "Copy link"}
                                         </Button>
@@ -244,27 +232,27 @@ export function UploadTray({
                                     ) : (
                                       <span>Pending</span>
                                     )}
-                                    <span>{formatBytes(zippedFile.size)}</span>
                                   </div>
                                 </Table.Cell>
                               </Table.Row>
                             ) : (
                               files.map((f, index) => {
-                                const done = state === "uploading" ? index < uploadingIndex : false
+                                // index < uploadingIndex always means that file finished before
+                                // whatever's happening now (still uploading, or the later error/done
+                                // state) — regardless of the overall state, so an interrupted upload
+                                // still shows earlier files as Uploaded instead of Skipped.
+                                const uploaded = state === "done" || index < uploadingIndex
                                 const current = state === "uploading" && index === uploadingIndex
-                                const error = state === "error" && index === uploadingIndex
-                                const uploaded =
-                                  state === "done" ||
-                                  (state === "uploading" && done) ||
-                                  (state === "error" && index < uploadingIndex)
-                                const status = error
+                                const failed = state === "error" && index === uploadingIndex
+                                const skipped = state === "error" && index > uploadingIndex
+                                const status = failed
                                   ? "Failed"
-                                  : state === "error"
-                                  ? "Skipped"
                                   : uploaded
                                   ? "Uploaded"
                                   : current
                                   ? "Uploading…"
+                                  : skipped
+                                  ? "Skipped"
                                   : "Pending"
                                 return (
                                   <Table.Row key={f.id} id={f.id}>
@@ -278,19 +266,11 @@ export function UploadTray({
                                     </Table.Cell>
                                     <Table.Cell className="py-1.5">
                                       <div className="flex items-center justify-end gap-2 text-[12px] tabular-nums text-muted">
-                                        {error ? (
+                                        {failed ? (
                                           <span className="text-danger">{status}</span>
                                         ) : current ? (
-                                          <>
-                                            <span>{Math.round(smoothProgress)}%</span>
-                                            <ProgressCircle value={smoothProgress} size="sm" aria-label="Upload progress">
-                                              <ProgressCircle.Track>
-                                                <ProgressCircle.TrackCircle />
-                                                <ProgressCircle.FillCircle />
-                                              </ProgressCircle.Track>
-                                            </ProgressCircle>
-                                          </>
-                                        ) : state === "done" ? (
+                                          <span>Uploading…</span>
+                                        ) : uploaded ? (
                                           <span
                                             className="flex items-center gap-1.5"
                                             onClick={(e) => e.stopPropagation()}
@@ -300,7 +280,7 @@ export function UploadTray({
                                               variant="tertiary"
                                               size="sm"
                                               onPress={toPressHandler((e) => { e.stopPropagation(); handleCopyOne(index) })}
-                                              style={{ height: 24, fontSize: 11, paddingLeft: 8, paddingRight: 8 }}
+                                              style={{ height: 24, width: 76, fontSize: 11, justifyContent: "center" }}
                                             >
                                               {copiedIndex === index ? "Copied" : "Copy link"}
                                             </Button>
@@ -308,7 +288,6 @@ export function UploadTray({
                                         ) : (
                                           <span>{status}</span>
                                         )}
-                                        <span>{formatBytes(f.file.size)}</span>
                                       </div>
                                     </Table.Cell>
                                   </Table.Row>
