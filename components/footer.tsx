@@ -11,8 +11,15 @@ export function Footer() {
         href="https://usekiko.com"
         target="_blank"
         rel="noopener noreferrer"
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "inline-flex items-center gap-1.5")}
       >
+        <img
+          src="https://r2.hypastack.com/cdn/jxvmdjwe4dnu/hellbound.png"
+          alt=""
+          className="inline-block rounded-full object-cover select-none pointer-events-none"
+          style={{ width: "1em", height: "1em" }}
+          draggable={false}
+        />
         I&rsquo;m Kiko!
       </a>
       <div className="flex items-center gap-2 sm:gap-3">
