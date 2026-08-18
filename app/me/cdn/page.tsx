@@ -686,7 +686,7 @@ export default function CdnPage() {
         </div>
 
         {(assets.length > 0 || folders.length > 0) && !hideCtrlHint && (
-          <div className="flex items-center gap-2 bg-surface border border-white/10 relative group pr-8 rounded-full px-4 py-1.5">
+          <div className="flex items-center gap-2 bg-surface border border-white/10 relative group pr-8 rounded-[12px] px-4 py-2 w-fit">
             <Kbd>CTRL</Kbd>
             <Typography type="body-sm" color="muted">
               Hold CTRL and click or drag over files to quickly select many files
