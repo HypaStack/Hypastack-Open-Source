@@ -20,7 +20,6 @@ import { type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
 import { MoveDialog, toTree } from "../_move-dialog"
-import { FolderTile } from "../_folder-tile"
 
 
 function FilesPageInner() {
@@ -387,7 +386,7 @@ function FilesPageInner() {
                 Drive
                 <Tabs.Indicator />
               </Tabs.Tab>
-              <Tabs.Tab id="deleted" isDisabled>
+              <Tabs.Tab id="deleted" isDisabled className="whitespace-nowrap">
                 Recently deleted
                 <Tabs.Indicator />
               </Tabs.Tab>
@@ -464,35 +463,22 @@ function FilesPageInner() {
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
-          <div className="flex flex-col gap-6 animate-in fade-in duration-300">
-            {filteredFolders.length > 0 && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
-                {filteredFolders.map(folder => (
-                  <FolderTile
-                    key={folder.id}
-                    name={folder.name}
-                    onOpen={() => setCurrentFolderId(folder.id)}
-                    onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {filteredFiles.length > 0 && (
-              <div>
-                {filteredFolders.length > 0 && <div className="border-t border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] mb-4" />}
-                <ListView
-                  files={paginatedFiles}
-                  selectedFiles={selectedFiles}
-                  onSelectionChange={setSelectedFiles}
-                  onContextMenu={(e, id) => {
-                    e.preventDefault();
-                    setOpenMenuId(id);
-                    setContextMenuPos({ x: e.clientX, y: e.clientY });
-                  }}
-                />
-              </div>
-            )}
+          <div className="animate-in fade-in duration-300">
+            <ListView
+              folders={filteredFolders}
+              files={paginatedFiles}
+              allFolders={folders}
+              allFiles={files}
+              selectedFiles={selectedFiles}
+              onSelectionChange={setSelectedFiles}
+              onOpenFolder={setCurrentFolderId}
+              onDeleteFolder={handleDeleteFolder}
+              onContextMenu={(e, id) => {
+                e.preventDefault();
+                setOpenMenuId(id);
+                setContextMenuPos({ x: e.clientX, y: e.clientY });
+              }}
+            />
           </div>
         )}
 
