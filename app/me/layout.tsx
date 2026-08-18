@@ -245,7 +245,7 @@ function ManageLayoutInner({
               placement="bottom"
               containerPadding={8}
               offset={8}
-              className="p-0 overflow-hidden"
+              className="p-0 overflow-hidden bg-background border border-white/10"
               style={{ width: SIDEBAR_CONTENT_WIDTH }}
             >
               <Dropdown.Menu aria-label="Accounts" className="p-1.5">
@@ -334,7 +334,7 @@ function ManageLayoutInner({
               placement="top"
               containerPadding={8}
               offset={8}
-              className="p-0 overflow-hidden"
+              className="p-0 overflow-hidden bg-background border border-white/10"
               style={{ width: SIDEBAR_CONTENT_WIDTH }}
             >
               <div className="px-4 pt-4 pb-3">
