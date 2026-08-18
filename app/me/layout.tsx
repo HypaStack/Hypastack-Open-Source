@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
+import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, Toast, toast } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
@@ -477,6 +477,7 @@ function ManageLayoutInner({
                     setFeedbackOpen(false)
                     setFeedbackText("")
                     setFeedbackLinkAccount(true)
+                    toast.success("Feedback sent", { description: "Thanks — we read every one of these." })
                   }}
                 >
                   Submit
@@ -538,6 +539,8 @@ function ManageLayoutInner({
       on-demand upload modal could never do, since it isn't mounted on load.
     */}
     <UploadZone />
+
+    <Toast.Provider placement="bottom" />
     </>
   )
 }
