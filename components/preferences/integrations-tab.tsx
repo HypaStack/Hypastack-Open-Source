@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
-import { ToggleSwitch } from "@/components/ui/toggle-switch"
+import { Button, Switch, Typography } from "@heroui/react"
 import { getWebhookConfig, setWebhookConfig } from "@/lib/integrations/discordWebhook"
 import { WebhookDialog } from "./webhook-dialog"
+import { SettingsCard } from "./settings-card"
 
 export function IntegrationsTab() {
   const [url, setUrl] = useState("")
@@ -36,36 +36,40 @@ export function IntegrationsTab() {
     setModalOpen(false)
   }
 
-  const card = "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
-
   return (
     <div className="space-y-4">
-      <div className={card} style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div className="flex items-center gap-2 mb-1">
-          <MIcon name="webhook" size={16} className="text-[#666] dark:text-[#898e97]" />
-          <p className="text-[13px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Discord webhook</p>
+          <MIcon name="webhook" size={16} className="text-muted" />
+          <Typography type="body" weight="semibold" className="text-foreground">Discord webhook</Typography>
         </div>
-        <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
+        <Typography type="body-sm" color="muted" className="leading-relaxed">
           Get a ping in a Discord channel every time you upload. The link is sent without its decryption key, so it&apos;s just a heads-up, not access. Runs from this browser only.
-        </p>
-      </div>
+        </Typography>
+      </SettingsCard>
 
-      <div className={card} style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Enable webhook</p>
-            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5">
+            <Typography type="body" weight="semibold" className="text-foreground">Enable webhook</Typography>
+            <Typography type="body-sm" color="muted" className="mt-0.5">
               {enabled ? "Sending upload notifications to your channel." : "Send an upload notification to your channel."}
-            </p>
+            </Typography>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {enabled && (
               <Button variant="tertiary" size="sm" onPress={() => setModalOpen(true)}>Edit</Button>
             )}
-            <ToggleSwitch checked={enabled} onChange={handleToggle} aria-label="Enable Discord webhook" />
+            <Switch isSelected={enabled} onChange={handleToggle} aria-label="Enable Discord webhook">
+              <Switch.Content>
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch.Content>
+            </Switch>
           </div>
         </div>
-      </div>
+      </SettingsCard>
 
       <WebhookDialog
         open={modalOpen}

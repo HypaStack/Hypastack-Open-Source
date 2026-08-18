@@ -3,9 +3,7 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { Button, toast } from "@heroui/react"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { ToggleSwitch } from "@/components/ui/toggle-switch"
+import { Button, ProgressBar, Switch, Typography, toast } from "@heroui/react"
 import { useManage } from "@/hooks/useManage"
 import { useDeveloperMode } from "@/hooks/useDeveloperMode"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
@@ -13,11 +11,12 @@ import { API_BASE, MAX_AVATAR_SIZE, isPaidTier } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
 import { errorMessage } from "@/lib/errors"
 import { type PreferencesTab, type PreferencesUser, type PreferencesStorage, resolveTier } from "./shared"
-import { formatBytes, formatStoragePct } from "@/lib/format"
+import { formatBytes } from "@/lib/format"
 import { PaidOnlyNotice } from "./paid-only-notice"
 import { AvatarCropperModal, uploadAvatar } from "./avatar-cropper"
 import { BrandingSection } from "./branding-section"
 import { EditProfileDialog } from "./edit-profile-dialog"
+import { SettingsCard } from "./settings-card"
 
 export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUser; storage: PreferencesStorage | null; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const { refreshUser, files, setFiles, logout } = useManage()
@@ -27,8 +26,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [avatarKey, setAvatarKey] = useState(0)
-  const avatarSrc = user.avatarUrl ? `${API_BASE}/avatar?t=${avatarKey}` : 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp'
-  const initials = (user.nickname || "?").charAt(0).toUpperCase()
+  const avatarSrc = user.avatarUrl ? `${API_BASE}/avatar?t=${avatarKey}` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'
   const usedPct = storage?.storagePercent ?? 0
 
   const [cropFile, setCropFile] = useState<{ url: string; file: File } | null>(null)
@@ -111,157 +109,150 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
         onUploadSuccess={handleUploadSuccess}
       />
     )}
-    <div>
+    <div className="space-y-4">
 
-      <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5 mb-4 bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <div className="relative h-[84px] w-[84px] shrink-0">
-          <div className="absolute inset-0 rounded-full overflow-hidden">
-            <img decoding="async"
-              src={avatarSrc}
-              alt={user.nickname}
-              className="absolute inset-0 w-full h-full object-cover rounded-full select-none pointer-events-none"
-              draggable={false}
-              onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/564y1z5zojge/no-pfp.webp' }}
-            />
-            {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
-                <LoadingSvg variant="white" size={22} />
-              </div>
-            )}
-          </div>
-          <label
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white dark:bg-[#2c2c30] flex items-center justify-center text-[#555] dark:text-[#e3e3e3] hover:text-[#111] dark:hover:text-white hover:bg-[#f0f0f0] dark:hover:bg-[#3a3a3b] hover:scale-105 active:scale-95 transition-all duration-200 z-10 cursor-pointer shadow-sm"
-            aria-label="Change avatar"
-          >
-            <MIcon name="photo_camera" size={16} />
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (f && ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(f.type) && f.size <= MAX_AVATAR_SIZE) {
-                  if (f.type === "image/gif") {
-                    uploadRawAvatar(f)
-                  } else {
-                    setCropFile({ url: URL.createObjectURL(f), file: f })
+      <SettingsCard>
+        <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4 sm:gap-5">
+          <div className="relative h-[84px] w-[84px] shrink-0">
+            <div className="absolute inset-0 rounded-full overflow-hidden">
+              <img decoding="async"
+                src={avatarSrc}
+                alt={user.nickname}
+                className="absolute inset-0 w-full h-full object-cover rounded-full select-none pointer-events-none"
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
+              />
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
+                  <LoadingSvg variant="white" size={22} />
+                </div>
+              )}
+            </div>
+            <label className="absolute -bottom-1 -right-1 z-10 cursor-pointer" aria-label="Change avatar">
+              <Button variant="tertiary" isIconOnly size="sm" className="pointer-events-none rounded-full shadow-sm" style={{ width: 32, height: 32 }}>
+                <MIcon name="photo_camera" size={16} />
+              </Button>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f && ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(f.type) && f.size <= MAX_AVATAR_SIZE) {
+                    if (f.type === "image/gif") {
+                      uploadRawAvatar(f)
+                    } else {
+                      setCropFile({ url: URL.createObjectURL(f), file: f })
+                    }
                   }
-                }
-                e.target.value = ""
-              }}
-              disabled={uploading}
-              className="hidden"
-            />
-          </label>
-        </div>
-        <div className="flex-1 min-w-0 flex flex-col">
-          <div className="flex items-center gap-1.5">
-            <p className="text-[22px] font-semibold text-[#111] dark:text-white dark:text-[#f0f0f0] truncate max-w-[calc(100%-20px)]">{user.nickname}</p>
+                  e.target.value = ""
+                }}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
           </div>
-          <div className="mt-auto pt-2 flex gap-2">
-            <Button
-              variant="tertiary"
-              size="sm"
-              onPress={() => {
-                navigator.clipboard.writeText(user.id)
-                setCopiedId(true)
-                setTimeout(() => setCopiedId(false), 2000)
-              }}
-              style={{ height: 26, gap: 6 }}
-            >
-              <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
-              {copiedId ? "Copied" : "Copy user ID"}
-            </Button>
-            <Button
-              variant="tertiary"
-              size="sm"
-              onPress={() => setEditing(true)}
-              style={{ height: 26, gap: 6 }}
-            >
-              <MIcon name="edit" size={13} />
-              Edit
-            </Button>
+          <div className="flex-1 min-w-0 flex flex-col">
+            <Typography type="body" weight="semibold" className="text-3xl text-foreground truncate max-w-[calc(100%-20px)]">{user.nickname}</Typography>
+            <div className="mt-auto pt-2 flex gap-2">
+              <Button
+                variant="tertiary"
+                size="sm"
+                onPress={() => {
+                  navigator.clipboard.writeText(user.id)
+                  setCopiedId(true)
+                  setTimeout(() => setCopiedId(false), 2000)
+                }}
+                style={{ height: 26, gap: 6 }}
+              >
+                <MIcon name={copiedId ? "check" : "content_copy"} size={13} />
+                {copiedId ? "Copied" : "Copy user ID"}
+              </Button>
+              <Button
+                variant="tertiary"
+                size="sm"
+                onPress={() => setEditing(true)}
+                style={{ height: 26, gap: 6 }}
+              >
+                <MIcon name="edit" size={13} />
+                Edit
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </SettingsCard>
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div>
-            <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.totalStorage) : "Loading"}
-            </p>
-            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Space used ({formatStoragePct(usedPct)}%)</p>
-          </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-6">
-            <p className="text-[28px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight" style={{ fontVariantNumeric: "tabular-nums" }}>
-              {storage ? formatBytes(storage.maxStorage) : "Loading"}
-            </p>
-            <p className="text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">Total space</p>
-          </div>
+      <SettingsCard>
+        <div className="flex items-center justify-between mb-2">
+          <Typography type="body" weight="semibold" className="text-foreground">Storage used</Typography>
+          <Typography type="body-sm" color="muted" style={{ fontVariantNumeric: "tabular-nums" }}>
+            {storage ? `${formatBytes(storage.totalStorage)} of ${formatBytes(storage.maxStorage)}` : "Loading"}
+          </Typography>
         </div>
-        <ProgressBar value={usedPct} className="mt-4" aria-label="Storage used" />
-        <div className="mt-2.5 flex items-center gap-4 text-[12px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] font-normal">
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#2680bf]" /> Drive
-          </span>
-        </div>
-      </div>
+        <ProgressBar value={usedPct} aria-label="Storage used">
+          <ProgressBar.Track>
+            <ProgressBar.Fill />
+          </ProgressBar.Track>
+        </ProgressBar>
+      </SettingsCard>
 
       {!user.premium && (
-        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
-          <div>
-            <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Upgrade</p>
-            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Level up your storage space and get many other benefits</p>
-            <Button variant="primary" size="md" onPress={() => onSwitchTab?.("plans")} style={{ height: 36 }}>
-              Upgrade
-            </Button>
+        <SettingsCard>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Typography type="body" weight="semibold" className="text-foreground mb-1.5">Upgrade</Typography>
+              <Typography type="body-sm" color="muted" className="mb-3 leading-snug">Level up your storage space and get many other benefits</Typography>
+              <Button variant="primary" size="md" onPress={() => onSwitchTab?.("plans")} style={{ height: 36 }}>
+                Upgrade
+              </Button>
+            </div>
+            <div className="border-t sm:border-t-0 sm:border-l border-separator pt-4 sm:pt-0 sm:pl-4">
+              <Typography type="body" weight="semibold" className="text-foreground mb-1.5">Empty trash</Typography>
+              <Typography type="body-sm" color="muted" className="mb-3 leading-snug">Items in trash will be deleted permanently</Typography>
+              <Button
+                variant="tertiary"
+                size="md"
+                onPress={handleEmptyTrash}
+                isDisabled={trashLoading || files.length === 0}
+                style={{ height: 36 }}
+              >
+                {trashLoading ? "Deleting..." : "Empty trash"}
+              </Button>
+            </div>
           </div>
-          <div className="border-t sm:border-t-0 sm:border-l border-[#e5e5e5] dark:border-[rgba(255,255,255,0.08)] pt-4 sm:pt-0 sm:pl-4">
-            <p className="text-[15px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1.5">Empty trash</p>
-            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-3 font-normal leading-snug">Items in trash will be deleted permanently</p>
-            <Button
-              variant="tertiary"
-              size="md"
-              onPress={handleEmptyTrash}
-              isDisabled={trashLoading || files.length === 0}
-              style={{ height: 36 }}
-            >
-              {trashLoading ? "Deleting..." : "Empty trash"}
-            </Button>
-          </div>
-        </div>
+        </SettingsCard>
       )}
 
       {user.premium && <BrandingSection user={user} />}
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
+      <SettingsCard>
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Developer mode</p>
-            <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-0.5 leading-snug">
+            <Typography type="body" weight="semibold" className="text-foreground">Developer mode</Typography>
+            <Typography type="body-sm" color="muted" className="mt-0.5 leading-snug">
               Adds a Developer tab where you can create API keys and pick what they&apos;re allowed to do.
-            </p>
+            </Typography>
           </div>
-          <ToggleSwitch
-            checked={devUnlocked && developerMode}
-            onChange={setDeveloperMode}
-            disabled={!devUnlocked}
-            aria-label="Developer mode"
-          />
+          <Switch isSelected={devUnlocked && developerMode} onChange={setDeveloperMode} isDisabled={!devUnlocked} aria-label="Developer mode">
+            <Switch.Content>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Content>
+          </Switch>
         </div>
         {!devUnlocked && (
           <div className="mt-3">
             <PaidOnlyNotice onSwitchTab={onSwitchTab} />
           </div>
         )}
-      </div>
+      </SettingsCard>
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div>
-          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-1">Delete account</p>
-          <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa]">
+          <Typography type="body" weight="semibold" className="text-foreground mb-1">Delete account</Typography>
+          <Typography type="body-sm" color="muted">
             All data will be permanently erased. This cannot be undone.
-          </p>
+          </Typography>
         </div>
         <div className="pt-4 flex justify-end">
           <Button
@@ -273,7 +264,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
             {deleteAccountLoading ? "Deleting..." : "Delete account"}
           </Button>
         </div>
-      </div>
+      </SettingsCard>
     </div>
     <EditProfileDialog open={editing} user={user} onClose={() => setEditing(false)} />
     </>

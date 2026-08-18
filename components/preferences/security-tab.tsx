@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Typography } from "@heroui/react"
 import { Dropdown } from "@/components/ui/dropdown"
 import { isBiometricSupported, isBiometricEnrolled, clearBiometric } from "@/lib/security/biometric"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { apiFetch } from "@/lib/http/fetch"
 import { errorMessage } from "@/lib/errors"
 import { type PreferencesUser, resolveTier } from "./shared"
+import { SettingsCard } from "./settings-card"
 
 export function SecurityTab({ user }: { user: PreferencesUser }) {
   const tier = resolveTier(user)
@@ -35,7 +36,7 @@ export function SecurityTab({ user }: { user: PreferencesUser }) {
   const handleRemoveBio = async () => {
     const confirmed = await hypaConfirm({
       title: "Remove biometric unlock?",
-      description: "You'll need your identifier to sign in on this device again. Your account isn't affected.",
+      description: "You'll need your passkey to sign in on this device again. Your account isn't affected.",
       confirmText: "Remove",
       cancelText: "Cancel",
     })
@@ -106,68 +107,74 @@ export function SecurityTab({ user }: { user: PreferencesUser }) {
   return (
     <div className="space-y-4">
       {bioSupported && (
-        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4" style={{ borderRadius: 12, padding: '12px 16px' }}>
+        <SettingsCard>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <MIcon name="fingerprint" size={20} className="mt-0.5 text-muted" />
+              <div>
+                <Typography type="body" weight="semibold" className="text-foreground">Biometric unlock</Typography>
+                <Typography type="body-sm" color="muted" className="mt-0.5 leading-relaxed">
+                  {bioEnrolled
+                    ? "Enabled on this device."
+                    : "Enable it the next time you sign in on this device."}
+                </Typography>
+              </div>
+            </div>
+            {bioEnrolled && (
+              <Button variant="danger" size="sm" onPress={handleRemoveBio} style={{ flexShrink: 0 }}>
+                Remove
+              </Button>
+            )}
+          </div>
+        </SettingsCard>
+      )}
+
+      <SettingsCard>
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <MIcon name="fingerprint" size={20} className="mt-0.5 text-[#666] dark:text-[#898e97]" />
+            <MIcon name="devices" size={20} className="mt-0.5 text-muted" />
             <div>
-              <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Biometric unlock</p>
-              <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-relaxed">
-                {bioEnrolled
-                  ? "Enabled on this device."
-                  : "Enable it the next time you sign in on this device."}
-              </p>
+              <Typography type="body" weight="semibold" className="text-foreground">Previous sessions</Typography>
+              <Typography type="body-sm" color="muted" className="mt-0.5 leading-relaxed">
+                {sessionsMsg ?? "Sign out of every other device. This one stays signed in."}
+              </Typography>
             </div>
           </div>
-          {bioEnrolled && (
-            <Button variant="danger" size="sm" onPress={handleRemoveBio} style={{ flexShrink: 0 }}>
-              Remove
-            </Button>
-          )}
+          <Button variant="danger" size="sm" onPress={handleClearSessions} isDisabled={clearingSessions} style={{ flexShrink: 0 }}>
+            {clearingSessions ? "..." : "Clear"}
+          </Button>
         </div>
-      )}
+      </SettingsCard>
 
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4" style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <div className="flex items-start gap-3">
-          <MIcon name="devices" size={20} className="mt-0.5 text-[#666] dark:text-[#898e97]" />
-          <div>
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Previous sessions</p>
-            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-relaxed">
-              {sessionsMsg ?? "Sign out of every other device. This one stays signed in."}
-            </p>
+      <SettingsCard>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <MIcon name="auto_delete" size={20} className="mt-0.5 text-muted" />
+            <div>
+              <Typography type="body" weight="semibold" className="text-foreground">Inactivity purge</Typography>
+              <Typography type="body-sm" color="muted" className="mt-0.5 leading-relaxed">
+                {isPaid ? "Delete files after this many idle days." : "Fixed at 7 days on free. Upgrade to customize."}
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {purgeSaved && <MIcon name="check_circle" size={18} className="text-success" />}
+            <Dropdown
+              size="sm"
+              direction="up"
+              value={purgeDays}
+              onChange={handlePurgeSelect}
+              options={purgeOptions}
+              disabled={!isPaid || purgeSaving}
+              aria-label="Inactivity purge period"
+              style={{ width: 124 }}
+            />
           </div>
         </div>
-        <Button variant="danger" size="sm" onPress={handleClearSessions} isDisabled={clearingSessions} style={{ flexShrink: 0 }}>
-          {clearingSessions ? "..." : "Clear"}
-        </Button>
-      </div>
-
-      <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex items-center justify-between gap-4" style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <div className="flex items-start gap-3">
-          <MIcon name="auto_delete" size={20} className="mt-0.5 text-[#666] dark:text-[#898e97]" />
-          <div>
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Inactivity purge</p>
-            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-relaxed">
-              {isPaid ? "Delete files after this many idle days." : "Fixed at 7 days on free. Upgrade to customize."}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {purgeSaved && <MIcon name="check_circle" size={18} className="text-[#16a34a]" />}
-          <Dropdown
-            size="sm"
-            direction="up"
-            value={purgeDays}
-            onChange={handlePurgeSelect}
-            options={purgeOptions}
-            disabled={!isPaid || purgeSaving}
-            aria-label="Inactivity purge period"
-            style={{ width: 124 }}
-          />
-        </div>
-      </div>
-      {purgeError && (
-        <p className="text-[11px] text-red-500 px-1">{purgeError}</p>
-      )}
+        {purgeError && (
+          <Typography type="body-xs" className="text-danger mt-2">{purgeError}</Typography>
+        )}
+      </SettingsCard>
     </div>
   )
 }

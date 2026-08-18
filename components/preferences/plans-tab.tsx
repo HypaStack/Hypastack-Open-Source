@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
-import { ShineBadge } from "@/components/ui/shine-badge"
+import { Button, ButtonGroup, Chip, Typography } from "@heroui/react"
 import { type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 import { type PreferencesTab, type PreferencesUser, resolveTier } from "./shared"
+import { SettingsCard } from "./settings-card"
 
 export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
@@ -23,24 +23,10 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
   return (
     <div>
       <div className="flex items-center justify-center mb-5">
-        <div className="inline-flex p-1 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]" style={{ borderRadius: 12 }}>
-          <Button
-            variant={billing === "monthly" ? "tertiary" : "ghost"}
-            size="sm"
-            onPress={() => setBilling("monthly")}
-            style={{ borderRadius: 8, fontSize: 14 }}
-          >
-            Monthly
-          </Button>
-          <Button
-            variant={billing === "annual" ? "tertiary" : "ghost"}
-            size="sm"
-            onPress={() => setBilling("annual")}
-            style={{ borderRadius: 8, fontSize: 14 }}
-          >
-            Annual
-          </Button>
-        </div>
+        <ButtonGroup size="sm">
+          <Button variant={billing === "monthly" ? "secondary" : "tertiary"} onPress={() => setBilling("monthly")}>Monthly</Button>
+          <Button variant={billing === "annual" ? "secondary" : "tertiary"} onPress={() => setBilling("annual")}>Annual</Button>
+        </ButtonGroup>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -58,24 +44,24 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
           ))}
         </div>
 
-        <div className="bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)] flex flex-col" style={{ borderRadius: 12, padding: '12px 16px' }}>
+        <SettingsCard className="flex flex-col">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{selectedPlan.label}</p>
-            {isSelectedCurrent && <ShineBadge primary>Current</ShineBadge>}
+            <Typography type="body" weight="semibold" className="text-2xl text-foreground tracking-tight">{selectedPlan.label}</Typography>
+            {isSelectedCurrent && <Chip size="sm" variant="soft" color="accent">Current</Chip>}
           </div>
-          <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mb-4 font-normal">
+          <Typography type="body-sm" color="muted" className="mb-4">
             {selectedPlan.key === "free"
               ? "Free forever"
               : isSelectedCurrent
                 ? "Thanks for supporting Hypastack."
                 : `Billed ${billing === "annual" ? "annually" : "once"}.`}
-          </p>
-          <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] mb-2">Plan details</p>
-          <ul className="space-y-1.5 text-[14px] text-[#444] dark:text-[#a1a1aa] font-normal mb-5">
+          </Typography>
+          <Typography type="body" weight="semibold" className="text-foreground mb-2">Plan details</Typography>
+          <ul className="space-y-1.5 mb-5">
             {selectedPlan.details.map((d) => (
               <li key={d} className="flex items-start gap-2">
-                <MIcon name="check" size={16} className="text-[#555] shrink-0 mt-0.5" />
-                <span>{d}</span>
+                <MIcon name="check" size={16} className="text-muted shrink-0 mt-0.5" />
+                <Typography type="body-sm" className="text-foreground">{d}</Typography>
               </li>
             ))}
           </ul>
@@ -92,7 +78,7 @@ export function PlansTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitc
               </Button>
             )}
           </div>
-        </div>
+        </SettingsCard>
       </div>
     </div>
   )
@@ -117,22 +103,18 @@ function PlanCard({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full text-left p-4 transition-all relative border overflow-hidden ${
+      className={`w-full text-left p-4 transition-all border rounded-[12px] ${
         selected
-          ? "bg-white dark:bg-[rgba(255,255,255,0.04)] border-[#111] dark:border-[rgba(255,255,255,0.25)]"
-          : "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] hover:bg-[#f0f0f0] dark:hover:bg-[rgba(255,255,255,0.06)] border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
+          ? "bg-accent/10 border-accent/40"
+          : "bg-surface hover:bg-white/5 border-separator"
       }`}
-      style={{ borderRadius: 12 }}
     >
-      {selected && (
-        <div className="absolute inset-0 pointer-events-none rounded-[12px] ring-1 ring-inset ring-[rgba(255,255,255,0.1)] dark:ring-[rgba(255,255,255,0.1)]" />
-      )}
       <div className="flex items-center justify-between mb-2">
-        <ShineBadge>{tier}</ShineBadge>
-        {current && <ShineBadge primary>Current</ShineBadge>}
+        <Chip size="sm" variant="soft">{tier}</Chip>
+        {current && <Chip size="sm" variant="soft" color="accent">Current</Chip>}
       </div>
-      <p className="text-[22px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0] tracking-tight">{size}</p>
-      <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] mt-0.5 font-normal">{price}</p>
+      <Typography type="body" weight="semibold" className="text-lg text-foreground tracking-tight">{size}</Typography>
+      <Typography type="body-sm" color="muted" className="mt-0.5">{price}</Typography>
     </button>
   )
 }

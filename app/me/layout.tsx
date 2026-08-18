@@ -46,7 +46,6 @@ function formatStorageSize(bytes: number): string {
 function sectionTitle(pathname: string): string {
   if (pathname.startsWith("/me/files")) return "Drive"
   if (pathname.startsWith("/me/funnel")) return "Funnel"
-  if (pathname.startsWith("/me/peerline")) return "Peerline"
   if (pathname.startsWith("/me/cdn")) return "Edge"
   if (pathname.startsWith("/me/bin")) return "Bin"
   return "Drive"
@@ -139,7 +138,7 @@ function ManageLayoutInner({
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [preferencesOpen, setPreferencesOpen] = useState(false)
-  const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("general")
+  const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("account")
   const [copiedId, setCopiedId] = useState(false)
   const [showDonationNotice, setShowDonationNotice] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -467,7 +466,7 @@ function ManageLayoutInner({
                 <Button
                   variant="ghost"
                   isIconOnly
-                  onPress={() => { setDrawerOpen(false); openPreferences("general") }}
+                  onPress={() => { setDrawerOpen(false); openPreferences("account") }}
                   aria-label="Settings"
                   style={{ width: 40, height: 40 }}
                 >

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Separator, Typography } from "@heroui/react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { Loader } from "@/components/ui/loader"
 import { apiFetch } from "@/lib/http/fetch"
@@ -12,8 +12,7 @@ import { PaidOnlyNotice } from "./paid-only-notice"
 import { ApiKeyList } from "./api-key-list"
 import { CreateKeyDialog } from "./create-key-dialog"
 import { type ApiKeySummary } from "./api-key-types"
-
-const CARD = "bg-[#f5f5f5] dark:bg-[rgba(255,255,255,0.02)] border border-[#ebebeb] dark:border-[rgba(255,255,255,0.06)]"
+import { SettingsCard } from "./settings-card"
 
 export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onSwitchTab?: (tab: PreferencesTab) => void }) {
   const tier = resolveTier(user)
@@ -48,38 +47,38 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
     <div className="space-y-4">
       {!unlocked && <PaidOnlyNotice onSwitchTab={onSwitchTab} />}
 
-      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div className="flex items-center gap-2 mb-1">
-          <MIcon name="terminal" size={16} className="text-[#666] dark:text-[#898e97]" />
-          <p className="text-[13px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Hypastack API</p>
+          <MIcon name="terminal" size={16} className="text-muted" />
+          <Typography type="body" weight="semibold" className="text-foreground">Hypastack API</Typography>
         </div>
-        <p className="text-[13px] text-[#888] dark:text-[#898e97] dark:text-[#a1a1aa] leading-relaxed">
+        <Typography type="body-sm" color="muted" className="leading-relaxed">
           A plain REST API over your files and Edge assets. Every response is JSON, every failure carries a code you can switch on. Keys are shown once when you make them, so put yours somewhere safe.
-        </p>
-      </div>
+        </Typography>
+      </SettingsCard>
 
-      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Documentation</p>
-            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 leading-snug">
+            <Typography type="body" weight="semibold" className="text-foreground">Documentation</Typography>
+            <Typography type="body-sm" color="muted" className="mt-0.5 leading-snug">
               Every endpoint, every error code, with copyable examples.
-            </p>
+            </Typography>
           </div>
           <ButtonLink href="/docs/developer-api" variant="tertiary" size="sm" style={{ height: 32, gap: 6 }}>
             Read the docs
             <MIcon name="open_in_new" size={14} />
           </ButtonLink>
         </div>
-      </div>
+      </SettingsCard>
 
-      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
+      <SettingsCard>
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">API keys</p>
-            <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5">
+            <Typography type="body" weight="semibold" className="text-foreground">API keys</Typography>
+            <Typography type="body-sm" color="muted" className="mt-0.5">
               {unlocked ? `${keys.length} of ${maxKeys} used on ${getTierLimits(tier).label}` : "No keys on Free"}
-            </p>
+            </Typography>
           </div>
           <Button
             variant="primary"
@@ -94,9 +93,9 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         </div>
 
         {loading && (
-          <div className="flex items-center gap-2 pt-3 text-[12px] text-[#888] dark:text-[#898e97]">
+          <Typography type="body-sm" color="muted" className="flex items-center gap-2 pt-3">
             <Loader size={14} /> Loading keys…
-          </div>
+          </Typography>
         )}
 
         {!loading && keys.length > 0 && (
@@ -106,22 +105,22 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
         )}
 
         {!loading && unlocked && atLimit && (
-          <p className="text-[11px] text-[#888] dark:text-[#6b7076] mt-2.5">
+          <Typography type="body-sm" color="muted" className="mt-2.5">
             Revoke one to make room, or move up a plan for more.
-          </p>
+          </Typography>
         )}
-      </div>
+      </SettingsCard>
 
-      <div className={CARD} style={{ borderRadius: 12, padding: '12px 16px' }}>
-        <p className="text-[14px] font-medium text-[#111] dark:text-white dark:text-[#f0f0f0]">Limits</p>
-        <p className="text-[12px] text-[#666] dark:text-[#898e97] mt-0.5 mb-3">
+      <SettingsCard>
+        <Typography type="body" weight="semibold" className="text-foreground">Limits</Typography>
+        <Typography type="body-sm" color="muted" className="mt-0.5 mb-3">
           Every response carries your remaining budget in the headers, so you never have to guess.
-        </p>
-        <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
-          <LimitRow label="Keys on this plan" value={unlocked ? String(maxKeys) : "None"} />
-          <LimitRow label="Requests per key" value={unlocked ? `${perMinute} / minute` : "None"} />
-        </div>
-      </div>
+        </Typography>
+        <Separator />
+        <LimitRow label="Keys on this plan" value={unlocked ? String(maxKeys) : "None"} />
+        <Separator />
+        <LimitRow label="Requests per key" value={unlocked ? `${perMinute} / minute` : "None"} />
+      </SettingsCard>
 
       <CreateKeyDialog
         open={dialogOpen}
@@ -135,8 +134,8 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
 function LimitRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-2.5">
-      <span className="text-[12px] text-[#888] dark:text-[#898e97]">{label}</span>
-      <span className="text-[12px] font-medium text-[#111] dark:text-[#f0f0f0]">{value}</span>
+      <Typography type="body-sm" color="muted">{label}</Typography>
+      <Typography type="body-sm" weight="medium" className="text-foreground">{value}</Typography>
     </div>
   )
 }

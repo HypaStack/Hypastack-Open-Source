@@ -1,7 +1,7 @@
 "use client"
 
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
+import { Button, Chip, Separator, Typography } from "@heroui/react"
 import { hypaConfirm } from "@/components/ui/hypa-notif"
 import { apiFetch } from "@/lib/http/fetch"
 import { type ApiKeySummary, formatUsed } from "./api-key-types"
@@ -20,32 +20,33 @@ export function ApiKeyList({ keys, onChanged }: { keys: ApiKeySummary[]; onChang
   }
 
   return (
-    <div className="divide-y divide-[#e8e8e8] dark:divide-[rgba(255,255,255,0.06)] border-t border-[#e8e8e8] dark:border-[rgba(255,255,255,0.06)]">
-      {keys.map((key) => (
-        <div key={key.id} className="flex items-center justify-between gap-3 py-2.5">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`text-[13px] font-medium ${key.overLimit ? "text-[#aaa] dark:text-[#6b7076]" : "text-[#111] dark:text-[#f0f0f0]"}`}>
-                {key.name}
-              </span>
-              <code className="text-[11px] text-[#888] dark:text-[#6b7076]">{key.hint}••••</code>
-              {key.overLimit && (
-                <span className="text-[10px] font-medium text-[#b45309] dark:text-[#fbbf24] bg-[rgba(234,179,8,0.12)] px-1.5 py-0.5 rounded">
-                  Over plan limit
-                </span>
-              )}
+    <div>
+      {keys.map((key, i) => (
+        <div key={key.id}>
+          {i > 0 && <Separator />}
+          <div className="flex items-center justify-between gap-3 py-2.5">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Typography type="body" weight="semibold" className={key.overLimit ? "text-muted" : "text-foreground"}>
+                  {key.name}
+                </Typography>
+                <code className="text-[11px] text-muted">{key.hint}••••</code>
+                {key.overLimit && (
+                  <Chip size="sm" variant="soft" color="warning">Over plan limit</Chip>
+                )}
+              </div>
+              <Typography type="body-sm" color="muted" className="mt-1 truncate">
+                {key.scopes.join(", ")}
+              </Typography>
+              <Typography type="body-sm" color="muted" className="mt-0.5">
+                {key.overLimit ? "Inactive until you upgrade or revoke an older key" : formatUsed(key.lastUsedAt)}
+              </Typography>
             </div>
-            <p className="text-[11px] text-[#888] dark:text-[#6b7076] mt-1 truncate">
-              {key.scopes.join(", ")}
-            </p>
-            <p className="text-[11px] text-[#aaa] dark:text-[#5a5f66] mt-0.5">
-              {key.overLimit ? "Inactive until you upgrade or revoke an older key" : formatUsed(key.lastUsedAt)}
-            </p>
+            <Button variant="danger-soft" size="sm" onPress={() => revoke(key)} style={{ height: 26, gap: 5 }}>
+              <MIcon name="delete" size={13} />
+              Revoke
+            </Button>
           </div>
-          <Button variant="danger-soft" size="sm" onPress={() => revoke(key)} style={{ height: 26, gap: 5 }}>
-            <MIcon name="delete" size={13} />
-            Revoke
-          </Button>
         </div>
       ))}
     </div>

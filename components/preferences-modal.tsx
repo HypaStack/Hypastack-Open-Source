@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Modal } from "@heroui/react"
 import { type PreferencesTab, type PreferencesUser, type PreferencesStorage } from "./preferences/shared"
-import { GeneralTab } from "./preferences/general-tab"
 import { AccountTab } from "./preferences/account-tab"
 import { PlansTab } from "./preferences/plans-tab"
+import { BillingTab } from "./preferences/billing-tab"
 import { IntegrationsTab } from "./preferences/integrations-tab"
 import { SecurityTab } from "./preferences/security-tab"
 import { DeveloperTab } from "./preferences/developer-tab"
@@ -23,7 +23,7 @@ interface Props {
   storage: PreferencesStorage | null
 }
 
-export function PreferencesModal({ open, initialTab = "general", onClose, user, storage }: Props) {
+export function PreferencesModal({ open, initialTab = "account", onClose, user, storage }: Props) {
   const [active, setActive] = useState<PreferencesTab>(initialTab)
   const { developerMode } = useDeveloperMode()
 
@@ -34,7 +34,7 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
   // Turning developer mode off while sitting on its tab would leave the modal
   // on a tab with no way back to it.
   useEffect(() => {
-    if (!developerMode && active === "developer") setActive("general")
+    if (!developerMode && active === "developer") setActive("account")
   }, [developerMode, active])
 
   return (
@@ -58,7 +58,6 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
                       </Button>
                     </div>
                     <div className="flex gap-1 px-3 pb-2 overflow-x-auto no-scrollbar">
-                      <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" />
                       <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" />
                       <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" />
                       <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" />
@@ -70,7 +69,6 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
 
                   <div className="hidden sm:flex w-[210px] shrink-0 border-r border-separator px-3 pt-6 pb-4 flex-col">
                     <div className="space-y-0.5">
-                      <TabButton active={active === "general"} onClick={() => setActive("general")} label="General" fullWidth />
                       <TabButton active={active === "account"} onClick={() => setActive("account")} label="Account" fullWidth />
                       <TabButton active={active === "plans"} onClick={() => setActive("plans")} label="Plans" fullWidth />
                       <TabButton active={active === "billing"} onClick={() => setActive("billing")} label="Billing" fullWidth />
@@ -82,7 +80,6 @@ export function PreferencesModal({ open, initialTab = "general", onClose, user, 
 
                   <div className="flex-1 min-w-0 min-h-0 flex flex-col rounded-[16px] overflow-hidden">
                     <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-4 sm:py-6">
-                      {active === "general" && <GeneralTab />}
                       {active === "account" && <AccountTab user={user} storage={storage} onSwitchTab={setActive} />}
                       {active === "plans" && <PlansTab user={user} onSwitchTab={setActive} />}
                       {active === "billing" && <BillingTab user={user} />}
@@ -110,20 +107,5 @@ function TabButton({ active, onClick, label, fullWidth = false }: { active: bool
     >
       {label}
     </Button>
-  )
-}
-
-function BillingTab({ } : { user: PreferencesUser }) {
-  return (
-    <div className="space-y-4">
-      <div className="bg-surface border border-separator" style={{ borderRadius: 12, padding: '16px 16px' }}>
-        <p className="text-[15px] font-normal text-foreground mb-1.5">We're working on it.</p>
-        <p className="text-[13px] font-normal text-muted leading-relaxed max-w-md">
-          Billing not expected until next month, If you want to upgrade your plan, contact Kiko on Telegram: t_usekiko
-          <br /><br />
-          All donations appreciated, this project is self funded.
-        </p>
-      </div>
-    </div>
   )
 }
