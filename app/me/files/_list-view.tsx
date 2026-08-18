@@ -11,7 +11,7 @@ function SelectionCheckbox() {
   return (
     <Checkbox slot="selection">
       <Checkbox.Content>
-        <Checkbox.Control>
+        <Checkbox.Control className="border-white/30">
           <Checkbox.Indicator />
         </Checkbox.Control>
       </Checkbox.Content>
@@ -44,16 +44,16 @@ export function ListView({
           onSelectionChange={handleSelectionChange}
         >
           <Table.Header>
-            <Table.Column>
+            <Table.Column className="w-10 pr-2">
               <SelectionCheckbox />
             </Table.Column>
             <Table.Column isRowHeader>Name</Table.Column>
-            <Table.Column className="text-right">Size</Table.Column>
+            <Table.Column className="w-28 text-right">Size</Table.Column>
           </Table.Header>
           <Table.Body>
             {files.map((file) => (
               <Table.Row key={file.id} id={file.id} onContextMenu={(e) => onContextMenu(e, file.id)}>
-                <Table.Cell>
+                <Table.Cell className="w-10 pr-2">
                   <SelectionCheckbox />
                 </Table.Cell>
                 <Table.Cell>
@@ -70,7 +70,7 @@ export function ListView({
                     )}
                   </div>
                 </Table.Cell>
-                <Table.Cell className="text-right text-muted">{formatBytes(file.size)}</Table.Cell>
+                <Table.Cell className="w-28 text-right text-muted">{formatBytes(file.size)}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
