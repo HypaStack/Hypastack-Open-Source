@@ -41,14 +41,6 @@ function FilesPageInner() {
   const [wtStep, setWtStep] = useState(0)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<"drive" | "folders">("drive")
-
-  // Opening a folder should surface its files (Drive tab), not leave you
-  // stranded looking at its subfolders on the Folders tab.
-  const openFolder = (folderId: string | null) => {
-    setCurrentFolderId(folderId)
-    setActiveTab("drive")
-  }
   const menuRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -376,7 +368,7 @@ function FilesPageInner() {
   const allSelected = filteredFiles.length > 0 && filteredFiles.every((f) => selectedFiles.has(f.id))
 
   return (
-    <Tabs selectedKey={activeTab} onSelectionChange={(key) => setActiveTab(key as "drive" | "folders")} className="flex-1 flex flex-col">
+    <Tabs defaultSelectedKey="drive" className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 mb-6">
         <h1 className="shrink-0 text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
           <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
@@ -395,8 +387,8 @@ function FilesPageInner() {
                 Drive
                 <Tabs.Indicator />
               </Tabs.Tab>
-              <Tabs.Tab id="folders">
-                Folders
+              <Tabs.Tab id="deleted" isDisabled>
+                Recently deleted
                 <Tabs.Indicator />
               </Tabs.Tab>
             </Tabs.List>
@@ -469,20 +461,38 @@ function FilesPageInner() {
       </div>
 
       <Tabs.Panel id="drive" className="flex-1 flex flex-col">
-        {filteredFiles.length === 0 ? (
+        {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
-          <div className="animate-in fade-in duration-300">
-            <ListView
-              files={paginatedFiles}
-              selectedFiles={selectedFiles}
-              onSelectionChange={setSelectedFiles}
-              onContextMenu={(e, id) => {
-                e.preventDefault();
-                setOpenMenuId(id);
-                setContextMenuPos({ x: e.clientX, y: e.clientY });
-              }}
-            />
+          <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+            {filteredFolders.length > 0 && (
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
+                {filteredFolders.map(folder => (
+                  <FolderTile
+                    key={folder.id}
+                    name={folder.name}
+                    onOpen={() => setCurrentFolderId(folder.id)}
+                    onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {filteredFiles.length > 0 && (
+              <div>
+                {filteredFolders.length > 0 && <div className="border-t border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] mb-4" />}
+                <ListView
+                  files={paginatedFiles}
+                  selectedFiles={selectedFiles}
+                  onSelectionChange={setSelectedFiles}
+                  onContextMenu={(e, id) => {
+                    e.preventDefault();
+                    setOpenMenuId(id);
+                    setContextMenuPos({ x: e.clientX, y: e.clientY });
+                  }}
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -509,23 +519,6 @@ function FilesPageInner() {
                 Next
               </Button>
             </div>
-          </div>
-        )}
-      </Tabs.Panel>
-
-      <Tabs.Panel id="folders" className="flex-1">
-        {filteredFolders.length === 0 ? (
-          <p className="text-[15px] text-[#666] dark:text-[#898e97]">No folders here.</p>
-        ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 animate-in fade-in duration-300">
-            {filteredFolders.map(folder => (
-              <FolderTile
-                key={folder.id}
-                name={folder.name}
-                onOpen={() => openFolder(folder.id)}
-                onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
-              />
-            ))}
           </div>
         )}
       </Tabs.Panel>
