@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Card } from "@heroui/react";
 import { Navbar } from "@/components/navbar";
 import { StatusBanner } from "@/components/status-banner";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/footer";
+import DotGrid from "@/components/ui/dot-grid";
 
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION, PREVIEW_URL } from "@/constants";
 
@@ -41,8 +41,19 @@ export default function Home() {
         {/* Purely decorative — sits behind all real content, never intercepts
             clicks. `absolute` inside this relative wrapper so it stretches to
             the full scrollable page height, not just one fixed viewport. */}
-        <div className="absolute inset-2 sm:inset-3 z-0 pointer-events-none" aria-hidden="true">
-          <Card variant="transparent" className="!p-0 h-full w-full rounded-[16px] border-none bg-accent">{null}</Card>
+        <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+          <DotGrid
+            className="pointer-events-none"
+            dotSize={5}
+            gap={14}
+            baseColor="#383838"
+            activeColor="#0056ff"
+            proximity={70}
+            shockRadius={200}
+            shockStrength={4}
+            resistance={750}
+            returnDuration={1.5}
+          />
         </div>
         <main className="relative z-10 min-h-screen text-foreground w-full overflow-hidden flex flex-col">
           <Suspense fallback={null}>
