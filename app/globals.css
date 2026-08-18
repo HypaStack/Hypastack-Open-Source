@@ -88,12 +88,12 @@
   --border-bottom: #2c2c30;
   --input: #2c2c30;
   --ring: #9b9b9b;
-  /* Hypastack brand primary, reclaimed -- this class sits on a descendant
-     div, so its own --accent above (legacy neutral gray, unrelated to
-     HeroUI's brand meaning of the same name) wins for every HeroUI
-     component nested inside it unless restated here. */
-  --accent: #80DBA2;
-  --accent-foreground: #000000;
+  /* HeroUI's default accent, restated -- this class sits on a descendant div,
+     so its own --accent above (legacy neutral gray, unrelated to HeroUI's
+     brand meaning of the same name) wins for every HeroUI component nested
+     inside it unless restated here. */
+  --accent: oklch(0.6204 0.195 253.83);
+  --accent-foreground: oklch(0.9911 0 0);
   --muted: #9f9fa9;
 }
 
@@ -169,9 +169,9 @@ input:-webkit-autofill:focus {
   --border: #e4e4e7;
   --input: #ffffff;
   --ring: #111111;
-  /* Hypastack brand primary, reclaimed -- same collision as .theme-dark. */
-  --accent: #80DBA2;
-  --accent-foreground: #000000;
+  /* HeroUI's default accent, restated -- same collision as .theme-dark. */
+  --accent: oklch(0.6204 0.195 253.83);
+  --accent-foreground: oklch(0.9911 0 0);
   --muted: #6b7280;
 }
 
@@ -425,9 +425,9 @@ html[data-theme="dark"] {
   --default-soft: #262626;
   --default-soft-foreground: var(--foreground);
 
-  /* Hypastack's brand primary, reclaimed from the colliding legacy tokens above. */
-  --accent: #80DBA2;
-  --accent-foreground: #000000;
+  /* HeroUI's default accent, reclaimed from the colliding legacy tokens above. */
+  --accent: oklch(0.6204 0.195 253.83);
+  --accent-foreground: oklch(0.9911 0 0);
   --muted: #9f9fa9;
 
   --border: rgba(255,255,255,0.08);
