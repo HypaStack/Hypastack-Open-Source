@@ -246,7 +246,7 @@ function ManageLayoutInner({
                 <Dropdown.Item
                   id="add-account"
                   textValue="Add another account"
-                  onAction={() => toast.danger("We're working on that, stay tuned!")}
+                  onAction={() => toast.warning("We're working on that, stay tuned!")}
                   className="flex items-center gap-2"
                 >
                   <MIcon name="add" size={20} className="shrink-0" />
