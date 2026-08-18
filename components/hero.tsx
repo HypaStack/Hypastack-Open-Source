@@ -67,15 +67,7 @@ export function Hero() {
               className="text-center text-[clamp(26px,4vw,48px)] leading-[1.1] tracking-[-0.03em] text-[#f7f8f8] pb-1 font-normal"
               style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
             >
-              I&rsquo;m{" "}
-              <img
-                src="https://r2.hypastack.com/cdn/jxvmdjwe4dnu/hellbound.png"
-                alt="Kiko"
-                className="inline-block rounded-full object-cover select-none pointer-events-none align-middle"
-                style={{ width: "0.5em", height: "0.5em" }}
-                draggable={false}
-              />{" "}
-              Kiko. Built private cloud storage because i was tired of{" "}
+              Built private cloud storage because i was tired of{" "}
               <span className="inline-flex items-center align-middle isolate">
                 <img
                   src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
