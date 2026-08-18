@@ -381,11 +381,13 @@ function FilesPageInner() {
         </h1>
 
         <SharedElementTransition>
-          <Tabs.List>
-            <Tabs.Tab id="drive">Drive</Tabs.Tab>
-            <Tabs.Tab id="folders">Folders</Tabs.Tab>
-            <Tabs.Indicator />
-          </Tabs.List>
+          <Tabs.ListContainer>
+            <Tabs.List>
+              <Tabs.Tab id="drive">Drive</Tabs.Tab>
+              <Tabs.Tab id="folders">Folders</Tabs.Tab>
+              <Tabs.Indicator />
+            </Tabs.List>
+          </Tabs.ListContainer>
         </SharedElementTransition>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0">
