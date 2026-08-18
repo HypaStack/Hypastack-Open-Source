@@ -7,9 +7,8 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, Dropdown, Meter, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
+import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
-import { formatStoragePct } from "@/lib/format"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { HypaNotifProvider } from "@/components/ui/hypa-notif"
@@ -23,7 +22,7 @@ import {
   STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
-import { getTierLimits, normalizeTier, isUnlimited } from "@/constants/tier-limits"
+import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
@@ -43,12 +42,6 @@ function formatStorageSize(bytes: number): string {
   const sizes = ["B", "KB", "MB", "GB", "TB"]
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1)
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i]
-}
-
-function meterColor(pct: number): "success" | "warning" | "danger" {
-  if (pct >= 85) return "danger"
-  if (pct >= 60) return "warning"
-  return "success"
 }
 
 function sectionTitle(pathname: string): string {
@@ -122,7 +115,7 @@ function ManageLayoutInner({
   const router = useRouter()
   const pathname = usePathname()
   const { isAuthenticated } = useAuth()
-  const { user, stats, files, cdnAssets, isLoading, logout } = useManage()
+  const { user, stats, isLoading, logout } = useManage()
   const { resolvedTheme } = useTheme()
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
@@ -203,15 +196,8 @@ function ManageLayoutInner({
   }
 
   const initials = (user.nickname || "?").charAt(0).toUpperCase()
-  const usedPct = stats?.storagePercent ?? 0
 
-  // Sidebar usage indicators for shared file links and CDN assets, against the
-  // user's tier caps. Meter color goes success → warning (60%) → danger (85%).
   const tierLimits = getTierLimits(normalizeTier(user.tier))
-  const sharedUsed = files?.length ?? 0
-  const cdnUsed = stats?.cdnAssets ?? cdnAssets?.length ?? 0
-  const sharedPct = isUnlimited(tierLimits.maxFileLinks) || tierLimits.maxFileLinks <= 0 ? 0 : (sharedUsed / tierLimits.maxFileLinks) * 100
-  const cdnPct = isUnlimited(tierLimits.maxCdnLinks) || tierLimits.maxCdnLinks <= 0 ? 0 : (cdnUsed / tierLimits.maxCdnLinks) * 100
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -235,7 +221,7 @@ function ManageLayoutInner({
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
-              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5"
+              className="flex items-center gap-2.5 rounded-2xl transition-colors duration-150 cursor-pointer bg-black border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:scale-100"
               style={{ width: SIDEBAR_CONTENT_WIDTH, height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
             >
               <img decoding="async"
@@ -286,50 +272,6 @@ function ManageLayoutInner({
                   <MIcon name="sentiment_satisfied" size={18} className="text-muted" />
                 </Dropdown.Item>
               </Dropdown.Menu>
-
-              <div className="h-px bg-white/10" />
-
-              <div className="px-1.5 py-2.5 space-y-1.5">
-                <div>
-                  <div className="flex items-center justify-between text-[11px] mb-0.5">
-                    <span className="text-muted">Storage</span>
-                    <span className="text-muted">{formatStoragePct(usedPct)}%</span>
-                  </div>
-                  <Meter value={usedPct} minValue={0} maxValue={100} color={meterColor(usedPct)} size="sm" aria-label="Storage used">
-                    <Meter.Track>
-                      <Meter.Fill />
-                    </Meter.Track>
-                  </Meter>
-                </div>
-
-                {!isUnlimited(tierLimits.maxFileLinks) && (
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] mb-0.5">
-                      <span className="text-muted">Shared Links</span>
-                      <span className="text-muted">{sharedUsed}/{tierLimits.maxFileLinks}</span>
-                    </div>
-                    <Meter value={sharedPct} minValue={0} maxValue={100} color={meterColor(sharedPct)} size="sm" aria-label="Shared links used">
-                      <Meter.Track>
-                        <Meter.Fill />
-                      </Meter.Track>
-                    </Meter>
-                  </div>
-                )}
-
-                {!isUnlimited(tierLimits.maxCdnLinks) && (
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] mb-0.5">
-                      <span className="text-muted">Edge Assets</span>
-                      <span className="text-muted">{cdnUsed}/{tierLimits.maxCdnLinks}</span>
-                    </div>
-                    <Meter value={cdnPct} minValue={0} maxValue={100} color={meterColor(cdnPct)} size="sm" aria-label="CDN assets used">
-                      <Meter.Track>
-                        <Meter.Fill />
-                      </Meter.Track>
-                    </Meter>
-                  </div>
-                )}
-              </div>
 
               <div className="h-px bg-white/10" />
 
