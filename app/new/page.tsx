@@ -18,6 +18,7 @@ export default function CreateAccountPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [nickname, setNickname] = useState("")
+  const [inviteCode, setInviteCode] = useState("")
   const [generatedKey, setGeneratedKey] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [ageConfirmed, setAgeConfirmed] = useState(false)
@@ -49,7 +50,7 @@ export default function CreateAccountPage() {
     nickname.length > 12 ? "Must be 12 characters or fewer." : ""
   const isLengthError = nickname.length > 0 && (nickname.length < 3 || nickname.length > 12) && /^[A-Za-z0-9]*$/.test(nickname)
   const isNicknameValid = /^[A-Za-z0-9]{3,12}$/.test(nickname)
-  const canSubmit = isNicknameValid && ageConfirmed && !isLoading && (turnstileToken || process.env.NODE_ENV === "development")
+  const canSubmit = isNicknameValid && inviteCode.trim().length > 0 && ageConfirmed && !isLoading && (turnstileToken || process.env.NODE_ENV === "development")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -168,7 +169,7 @@ export default function CreateAccountPage() {
                 Create account
               </h1>
               <p className="mt-1.5 text-[14px] text-[#898e97]">
-                No email, no phone number — just a private identifier only you know.
+                create your fantastic hypastack account
               </p>
             </div>
 
@@ -184,6 +185,23 @@ export default function CreateAccountPage() {
                   <Label>Username</Label>
                   <Input
                     type="text"
+                    placeholder="username"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                  />
+                </TextField>
+              </div>
+
+              <div>
+                <TextField isRequired value={inviteCode} onChange={setInviteCode} className="w-full">
+                  <Label>Invite code</Label>
+                  <Input
+                    type="text"
+                    placeholder="code"
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"

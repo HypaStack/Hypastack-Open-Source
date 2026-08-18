@@ -155,7 +155,7 @@ export default function SignInPage() {
                 Sign in
               </h1>
               <p className="mt-1.5 text-[14px] text-[#898e97]">
-                Enter your identifier to access your files.
+                Enter your identifier here.
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -164,6 +164,7 @@ export default function SignInPage() {
                     <Label>Identifier</Label>
                     <Input
                       type="password"
+                      placeholder="Identifier"
                       autoComplete="new-password"
                       autoCorrect="off"
                       autoCapitalize="off"
