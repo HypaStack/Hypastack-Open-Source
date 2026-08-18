@@ -14,8 +14,7 @@ import { unwrapFunnelFileKey, decryptFunnelName, downloadAndDecryptFunnelFile } 
 import { FunnelCreateTray } from "@/components/funnel/create-tray"
 import { apiFetch } from "@/lib/http/fetch"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
-import { gridVariants } from "../cdn/_helpers"
-import { FunnelFileTile, type FunnelFileDto } from "./_file-tile"
+import { FunnelFileTable, type FunnelFileDto } from "./_file-table"
 
 export default function FunnelInboxPage() {
   const { user } = useManage()
@@ -29,13 +28,6 @@ export default function FunnelInboxPage() {
   const [trayOpen, setTrayOpen] = useState(false)
 
   const seenIds = useRef<Set<string> | null>(null)
-  const dragModeRef = useRef<"select" | "deselect" | null>(null)
-
-  useEffect(() => {
-    const clear = () => { dragModeRef.current = null }
-    window.addEventListener("mouseup", clear)
-    return () => window.removeEventListener("mouseup", clear)
-  }, [])
 
   const decryptNames = useCallback(async (fileList: FunnelFileDto[]) => {
     const master = await getSessionKey()
@@ -84,18 +76,6 @@ export default function FunnelInboxPage() {
     const t = setInterval(() => load(true), 15000)
     return () => clearInterval(t)
   }, [load])
-
-  const toggleSelect = (id: string, forceMode?: "select" | "deselect") => {
-    setSelected((prev) => {
-      const isSelected = prev.has(id)
-      if (forceMode === "select" && isSelected) return prev
-      if (forceMode === "deselect" && !isSelected) return prev
-      const next = new Set(prev)
-      if (forceMode === "select" || (!forceMode && !isSelected)) next.add(id)
-      else next.delete(id)
-      return next
-    })
-  }
 
   const allSelected = files.length > 0 && files.every((f) => selected.has(f.id))
 
@@ -248,31 +228,12 @@ export default function FunnelInboxPage() {
           </Button>
         </div>
       ) : (
-        <motion.div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
-          initial="hidden"
-          animate="visible"
-          variants={gridVariants}
-        >
-          {files.map((f) => (
-            <FunnelFileTile
-              key={f.id}
-              file={f}
-              name={names[f.id]}
-              selected={selected.has(f.id)}
-              onToggleSelect={() => toggleSelect(f.id)}
-              onDragAction={(action) => {
-                if (action === "start") {
-                  const mode = selected.has(f.id) ? "deselect" : "select"
-                  dragModeRef.current = mode
-                  toggleSelect(f.id, mode)
-                } else if (action === "enter") {
-                  if (dragModeRef.current) toggleSelect(f.id, dragModeRef.current)
-                }
-              }}
-            />
-          ))}
-        </motion.div>
+        <FunnelFileTable
+          files={files}
+          names={names}
+          selectedIds={selected}
+          onSelectionChange={setSelected}
+        />
       )}
 
       <FunnelCreateTray open={trayOpen} onClose={() => setTrayOpen(false)} />
