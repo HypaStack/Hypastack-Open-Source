@@ -15,7 +15,7 @@ export function PageLogo({ size = 26, borderRadius = 6, pulse = false, className
   const { resolvedTheme } = useTheme()
   const src = darkSrc && resolvedTheme === "dark"
     ? darkSrc
-    : "https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+    : "https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
 
   return (
     <Image

@@ -65,7 +65,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
         <div className="flex justify-center mb-8">
           <Link href="/" className="hover:opacity-80 transition-opacity active:scale-[0.97]">
             <img 
-              src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp" 
+              src="https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
               className="select-none h-14 w-14 rounded-md object-contain" 
               alt="Hypastack" 
               draggable={false} 

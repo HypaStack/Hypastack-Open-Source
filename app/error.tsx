@@ -28,7 +28,7 @@ export default function ErrorPage({
       >
         <Link href="/" className="mb-6 inline-block hover:opacity-80 transition-opacity">
           <img
-            src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+            src="https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
             alt="Hypastack"
             className="w-[52px] h-auto object-contain select-none"
             draggable={false}

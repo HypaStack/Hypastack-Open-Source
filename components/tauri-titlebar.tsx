@@ -143,7 +143,7 @@ export function TauriTitleBar() {
       <div className="tauri-titlebar" data-tauri-drag-region>
         <div className="tauri-titlebar-left" data-tauri-drag-region>
           <img
-            src="https://r2.hypastack.com/cdn/zvo7jefzshuu/logo-main.webp"
+            src="https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
             alt="Hypastack"
             className="tauri-titlebar-icon select-none pointer-events-none"
             draggable={false}

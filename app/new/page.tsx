@@ -96,7 +96,7 @@ export default function CreateAccountPage() {
         <div className="relative z-10 w-full max-w-[360px]">
             <div className="mb-9">
               <img
-                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+                src="https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
                 alt="Hypastack"
                 className="w-[44px] h-[44px] object-contain"
               />
@@ -156,9 +156,9 @@ export default function CreateAccountPage() {
     <>
       <div className="flex min-h-screen items-center justify-center bg-black px-8 py-12">
         <div className="relative z-10 w-full max-w-[360px]">
-            <div className="mb-9">
+            <div className="mb-5">
               <img
-                src="https://r2.hypastack.com/cdn/lvko6iovrtq7/footer.webp"
+                src="https://r2.hypastack.com/cdn/hypaasset/hypastack.webp"
                 alt="Hypastack"
                 className="w-[44px] h-[44px] object-contain mb-4"
               />
