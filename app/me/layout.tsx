@@ -303,6 +303,8 @@ function ManageLayoutInner({
         </div>
       </aside>
 
+      <div className="hidden lg:block shrink-0 w-px my-4 bg-white/10" />
+
       <AnimatePresence>
         {drawerOpen && (
           <motion.div
