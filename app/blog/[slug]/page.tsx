@@ -8,6 +8,7 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import { Footer } from "@/components/footer"
 import { MIcon } from "@/components/ui/material-icon"
 import { getPostBySlug, getAllSlugs } from "@/lib/blogPosts"
+import { PREVIEW_URL } from "@/constants"
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -36,6 +37,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       url: `https://hypastack.com/blog/${slug}`,
       authors: ["Kiko"],
+      images: [PREVIEW_URL],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.summary,
+      images: [PREVIEW_URL],
     },
   }
 }

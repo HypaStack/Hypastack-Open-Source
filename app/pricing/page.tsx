@@ -4,13 +4,28 @@ import { PricingCards } from "@/components/pricing-cards"
 import { PricingComparison } from "@/components/pricing-comparison"
 import { Typography, Link } from "@heroui/react"
 import type { Metadata } from "next"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Choose the Hypastack plan that fits how you share. Free forever, or upgrade for more storage, larger uploads, custom links and funnels."
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description:
-    "Choose the Hypastack plan that fits how you share. Free forever, or upgrade for more storage, larger uploads, custom links and funnels.",
+  description,
   alternates: {
     canonical: "https://hypastack.com/pricing",
+  },
+  openGraph: {
+    title: "Pricing (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/pricing",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
   },
 }
 

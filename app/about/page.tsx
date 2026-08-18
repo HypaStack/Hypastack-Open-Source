@@ -1,12 +1,28 @@
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import type { Metadata } from "next"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Hypastack is a private, source-available file sharing platform and CDN built in Europe. No tracking, no personal data collected, and free to use."
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Hypastack is a private, source-available file sharing platform and CDN built in Europe. No tracking, no personal data collected, and free to use.",
+  description,
   alternates: {
     canonical: "https://hypastack.com/about",
+  },
+  openGraph: {
+    title: "About (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/about",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
   },
 }
 

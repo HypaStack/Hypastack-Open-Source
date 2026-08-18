@@ -1,10 +1,29 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Hypastack's privacy policy. No personal data collected, no tracking or logs, no IP logging, and no advertising. Your files stay private."
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Hypastack's privacy policy. No personal data collected, no tracking or logs, no IP logging, and no advertising. Your files stay private.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/privacy",
+  },
+  openGraph: {
+    title: "Privacy Policy (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/privacy",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function PrivacyPolicy() {

@@ -1,10 +1,29 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Hypastack's process for handling copyright takedown requests under the Digital Millennium Copyright Act."
 
 export const metadata: Metadata = {
   title: "DMCA Policy",
-  description: "Hypastack's process for handling copyright takedown requests under the Digital Millennium Copyright Act.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/dmca",
+  },
+  openGraph: {
+    title: "DMCA Policy (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/dmca",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DMCA Policy (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function DmcaPolicy() {

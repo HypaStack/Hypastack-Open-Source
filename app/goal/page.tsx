@@ -1,12 +1,28 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Why Hypastack exists, a private, source-available alternative to Dropbox and WeTransfer. No ads, no data collection, EU-based servers, and free to use."
 
 export const metadata: Metadata = {
   title: "Our Mission",
-  description: "Why Hypastack exists, a private, source-available alternative to Dropbox and WeTransfer. No ads, no data collection, EU-based servers, and free to use.",
+  description,
   alternates: {
     canonical: "https://hypastack.com/goal",
+  },
+  openGraph: {
+    title: "Our Mission (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/goal",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Our Mission (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
   },
 }
 

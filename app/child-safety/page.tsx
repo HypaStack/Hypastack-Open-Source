@@ -1,10 +1,29 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Hypastack's commitment to child safety, including proactive CSAM detection and prevention measures."
 
 export const metadata: Metadata = {
   title: "Child Safety Policy",
-  description: "Hypastack's commitment to child safety, including proactive CSAM detection and prevention measures.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/child-safety",
+  },
+  openGraph: {
+    title: "Child Safety Policy (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/child-safety",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Child Safety Policy (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function ChildSafety() {

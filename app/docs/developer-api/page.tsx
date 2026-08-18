@@ -9,12 +9,27 @@ import { EndpointCard } from "@/components/docs/endpoint-card"
 import { CodeBlock } from "@/components/docs/code-block"
 import { HEADING_FONT, PANEL } from "@/components/docs/doc-style"
 import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "The Hypastack REST API. Upload, list and delete files and CDN assets from your own code. Plain JSON, one error shape, no SDK required."
 
 export const metadata: Metadata = {
   title: "Developer API",
-  description:
-    "The Hypastack REST API. Upload, list and delete files and CDN assets from your own code. Plain JSON, one error shape, no SDK required.",
+  description,
   alternates: { canonical: "https://hypastack.com/docs/developer-api" },
+  openGraph: {
+    title: "Developer API (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/docs/developer-api",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Developer API (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 // Read at build time so the documented example and the script people actually

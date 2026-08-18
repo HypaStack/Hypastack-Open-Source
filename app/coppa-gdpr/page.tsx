@@ -1,10 +1,29 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "How Hypastack complies with COPPA and GDPR regulations. No personal data is collected or stored."
 
 export const metadata: Metadata = {
   title: "COPPA & GDPR Compliance",
-  description: "How Hypastack complies with COPPA and GDPR regulations. No personal data is collected or stored.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/coppa-gdpr",
+  },
+  openGraph: {
+    title: "COPPA & GDPR Compliance (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/coppa-gdpr",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "COPPA & GDPR Compliance (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function CoppaGdpr() {

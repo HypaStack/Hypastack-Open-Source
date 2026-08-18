@@ -2,20 +2,28 @@ import type { Metadata } from "next"
 import { Footer } from "@/components/footer"
 import { blogPosts } from "@/lib/blogPosts"
 import { ButtonLink } from "@/components/ui/button-link"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Notes from Kiko, the developer behind Hypastack. On privacy, building in public and making software that respects people."
 
 export const metadata: Metadata = {
   title: "Blog",
-  description:
-    "Notes from Kiko, the developer behind Hypastack. On privacy, building in public and making software that respects people.",
+  description,
   alternates: {
     canonical: "https://hypastack.com/blog",
   },
   openGraph: {
     title: "Blog (Hypastack)",
-    description:
-      "Notes from Kiko, the developer behind Hypastack. On privacy, building in public and making software that respects people.",
+    description,
     type: "website",
     url: "https://hypastack.com/blog",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
   },
 }
 

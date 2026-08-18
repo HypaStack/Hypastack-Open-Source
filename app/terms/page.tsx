@@ -1,10 +1,29 @@
 import type { Metadata } from "next"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Terms of Service for Hypastack, a free, source-available file sharing and CDN hosting platform based in the EU."
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Hypastack, a free, source-available file sharing and CDN hosting platform based in the EU.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/terms",
+  },
+  openGraph: {
+    title: "Terms of Service (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/terms",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function TermsOfService() {

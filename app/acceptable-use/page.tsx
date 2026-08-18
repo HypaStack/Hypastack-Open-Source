@@ -1,10 +1,29 @@
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import type { Metadata } from "next"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Guidelines for responsible use of Hypastack's file sharing and CDN services."
 
 export const metadata: Metadata = {
   title: "Acceptable Use Policy",
-  description: "Guidelines for responsible use of Hypastack's file sharing and CDN services.",
+  description,
+  alternates: {
+    canonical: "https://hypastack.com/acceptable-use",
+  },
+  openGraph: {
+    title: "Acceptable Use Policy (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/acceptable-use",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Acceptable Use Policy (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
+  },
 }
 
 export default function AcceptableUse() {

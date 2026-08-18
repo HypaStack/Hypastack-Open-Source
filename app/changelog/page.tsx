@@ -2,12 +2,28 @@ import type { Metadata } from "next"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { ChangelogList } from "@/components/changelog-list"
+import { PREVIEW_URL } from "@/constants"
+
+const description = "Everything new, improved, and fixed at Hypastack."
 
 export const metadata: Metadata = {
   title: "Changelog",
-  description: "Everything new, improved, and fixed at Hypastack.",
+  description,
   alternates: {
     canonical: "https://hypastack.com/changelog",
+  },
+  openGraph: {
+    title: "Changelog (Hypastack)",
+    description,
+    type: "website",
+    url: "https://hypastack.com/changelog",
+    images: [PREVIEW_URL],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Changelog (Hypastack)",
+    description,
+    images: [PREVIEW_URL],
   },
 }
 
