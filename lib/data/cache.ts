@@ -13,14 +13,8 @@ function prefixed(key: string): string {
 
 const inflight = new Map<string, Promise<any>>()
 
-/**
- * Cache-aside: check Redis first, fall through to fetcher on miss/error.
- * Uses Promise deduplication to prevent Cache Stampedes.
- * 
- * @param key   - Cache key (will be auto-prefixed with `hs:`)
- * @param ttl   - Time-to-live in seconds
- * @param fetcher - Async function that queries Postgres
- */
+// Cache-aside: Redis first, fall through to fetcher on miss/error. Promise
+// deduplication prevents cache stampedes. key is auto-prefixed with "hs:".
 export async function cached<T>(
   key: string,
   ttl: number,

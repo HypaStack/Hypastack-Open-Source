@@ -65,14 +65,8 @@ export interface StagingInput {
   created_at?: Date
 }
 
-/**
- * Creates a staging record for an upload.
- * When `maxFileLinks` is provided the INSERT is wrapped in a CTE that
- * atomically counts both committed files AND in-flight staging rows for
- * this user. If the combined count already equals or exceeds the limit the
- * INSERT is skipped and the function returns `false`, eliminating the
- * TOCTOU race that allowed concurrent upload inits to exceed quota.
- */
+// With maxFileLinks, the INSERT is wrapped in a CTE that atomically counts
+// committed + in-flight rows, skipping the insert over quota to avoid a TOCTOU race.
 export async function createStagingRecord(
   input: StagingInput,
   maxFileLinks?: number
@@ -350,14 +344,7 @@ export async function getFileBySlugOrId(value: string, retries = 2): Promise<Fil
   }
 }
 
-/**
- * True if a slug is unavailable, claimed by a committed file or an in-flight
- * staging row (last 2h, matching the staging quota window). The `id = $1` clause
- * is defense-in-depth: the 9-char slug minimum already makes a slug equal to an
- * 8-char file id impossible, but the check costs nothing and survives any future
- * change to the id format. Best-effort pre-check; the partial unique index is
- * the real race guard.
- */
+// Best-effort pre-check, the partial unique index is the real race guard.
 export async function isSlugTaken(slug: string): Promise<boolean> {
   await ensureDatabase()
   const pool = getPool()
@@ -490,14 +477,8 @@ export async function getFilesByUserId(userId: string): Promise<FileRecord[]> {
   })
 }
 
-/**
- * Cursor page of a user's files, newest first. Separate from getFilesByUserId
- * because that one loads and caches the whole drive, fine for the dashboard,
- * wrong for a public API that must stay flat as an account grows.
- *
- * Sorted by (upload_date, id) so the tiebreaker is total and a page boundary
- * can never repeat or skip a row. Fetch limit+1 and let buildPage drop the probe.
- */
+// Separate from getFilesByUserId, which caches the whole drive, wrong for a
+// public API. Sorted by (upload_date, id) so a page boundary never repeats/skips.
 export async function getFilesPage(
   userId: string,
   limit: number,

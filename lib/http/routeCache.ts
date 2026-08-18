@@ -102,13 +102,8 @@ export function withRouteCache<P = unknown>(
   }
 }
 
-/**
- * Invalidate all route-level cache entries for a given user + route baseKey.
- * Call this after any mutation (delete, update) that would stale the cached response.
- *
- * @param userId  - The user whose cache to bust
- * @param baseKey - Must match the `baseKey` used in the corresponding withRouteCache call
- */
+// Call after any mutation that would stale the cached response. baseKey must
+// match the one used in the corresponding withRouteCache call.
 export async function bustRouteCache(userId: string, baseKey: string): Promise<void> {
   const redis = getRedis()
   if (!redis) return

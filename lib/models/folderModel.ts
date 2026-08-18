@@ -90,14 +90,8 @@ async function ensureFolderPath(userId: string, path: string, baseFolderId: stri
   return currentParentId
 }
 
-/**
- * Validates an explicit folderId belongs to the user (if given) and, when a
- * file `path` like "Folder/Sub/file.ext" is provided, ensures the directory
- * portion exists, creating folders as needed. Returns the resolved folder id.
- *
- * Shared by the upload init handlers (single + multipart) which had this block
- * copy-pasted. Kept free of HTTP concerns, callers map `{ ok: false }` to 403.
- */
+// Validates folderId belongs to the user and creates any missing path folders.
+// Shared by the upload init handlers, callers map { ok: false } to 403.
 export async function resolveUploadFolder(
   userId: string,
   folderId: string | null | undefined,

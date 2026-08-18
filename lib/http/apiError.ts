@@ -1,21 +1,7 @@
 import { NextResponse } from "next/server"
 
-/**
- * Standard JSON error response for API routes.
- *
- * Replaces the repeated `console.error("[API Error] …")` + `NextResponse.json`
- * pair so the logged line and the returned body can't drift apart.
- *
- * The body carries two fields: `error` (friendly, code-free copy, see
- * constants/errors.ts) and `message` (the route's specific human detail, if
- * any). Clients should show `message` and fall back to `error`; neither ever
- * exposes a raw status code or internal server detail to the user.
- *
- * @param status  HTTP status code (also used in the log line).
- * @param error   The friendly error value returned to the client (an API_ERRORS constant).
- * @param logMessage  Optional specific detail, logged in full, and surfaced to the user for 4xx.
- * @param extra  Optional extra fields merged into the JSON body (e.g. `retryAfter`, `suggestions`).
- */
+// Standard JSON error response: keeps the logged line and returned body from drifting apart.
+// Body has `error` (friendly copy, see constants/errors.ts) and `message` (route-specific detail).
 export function apiError(
   status: number,
   error: string,

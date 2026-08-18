@@ -316,14 +316,8 @@ export async function deleteObjectsBatch(r2Keys: string[]): Promise<string[]> {
   return failedKeys
 }
 
-/**
- * One ranged GET that answers everything a completion needs: the object's real
- * size, its stored content type, and the leading bytes for magic-byte checks.
- * A separate HEAD would double the request count on multi-file batches, and the
- * range response already carries the full size in Content-Range.
- *
- * Returns null when the object isn't there, matching headCdnObject.
- */
+// One ranged GET covers size, content type, and magic-byte check bytes, a
+// separate HEAD would double the request count on multi-file batches.
 export async function headAndSniffCdnObject(
   r2Key: string,
   bytes: number = 65536,

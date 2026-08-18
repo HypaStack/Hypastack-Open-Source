@@ -1,17 +1,5 @@
-/**
- * Custom file slug validation.
- *
- * Slugs become the public share URL (`/d/{slug}`). The charset is dictated by
- * the proxy's public-GET allow-list (`/^\/api\/v2\/files\/[a-zA-Z0-9_-]+$/` in
- * proxy.ts), anything outside `[a-z0-9-]` would be blocked by the proxy-key
- * check, so we constrain to lowercase letters, digits, and single hyphens.
- *
- * Resolution in fileModel is id-first (`WHERE id = $1 OR slug = $1` ordered so an
- * id match wins). The minimum length is 9, strictly longer than the 8-char
- * random file id (generateFileId), so the slug and id namespaces are
- * structurally disjoint: a slug can never equal any id, and a future random id
- * can never equal an existing slug. No collision is possible in either direction.
- */
+// Custom file slug validation. Charset matches the proxy's public-GET allow-list.
+// Min length 9 is strictly longer than the 8-char file id, so slugs and ids never collide.
 
 const SLUG_MIN = 9
 const SLUG_MAX = 64

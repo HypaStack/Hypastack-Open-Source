@@ -109,15 +109,8 @@ export async function countActiveApiKeys(userId: string): Promise<number> {
   return Number(result.rows[0]?.count ?? 0)
 }
 
-/**
- * Resolve a presented key to its row plus its rank among the account's active
- * keys. Rank is computed in SQL rather than in the caller so the downgrade rule
- * can't disagree with itself between the API and the UI.
- *
- * Returns null when the key is unknown. A revoked key still resolves, the
- * caller turns that into the same 401 as unknown, but resolving it lets the
- * cache hold a negative-ish result instead of re-querying on every retry.
- */
+// Rank is computed in SQL so the downgrade rule can't disagree between API and UI.
+// A revoked key still resolves (caller maps that to the same 401 as unknown).
 export async function resolveApiKey(presentedKey: string): Promise<ResolvedKey | null> {
   const lookup = computeKeyLookup(presentedKey)
 

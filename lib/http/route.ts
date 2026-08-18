@@ -21,17 +21,8 @@ interface WithAuthOptions {
 
 type AuthedHandler<P> = (ctx: AuthedContext<P>) => Promise<Response> | Response
 
-/**
- * Wraps an authenticated API route handler with the auth/rate-limit/error
- * plumbing that was previously copy-pasted into every handler:
- *
- *   - 401 if there's no current user
- *   - 429 if `rateLimit` is set and the API rate limit is exceeded
- *   - 500 (logged with `label`) if the handler throws
- *
- * The handler receives `{ request, user, params }` and only contains the
- * route's real logic. Dynamic params are awaited and passed through.
- */
+// Wraps auth/rate-limit/error plumbing that was copy-pasted into every handler:
+// 401 with no user, 429 over the rate limit, 500 (logged with label) if it throws.
 export function withAuth<P = Record<string, never>>(
   handler: AuthedHandler<P>,
   options: WithAuthOptions = {},
