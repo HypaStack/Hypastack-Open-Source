@@ -382,8 +382,22 @@ function ManageLayoutInner({
             onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
-            className="border-white/10"
+            className="relative border-transparent"
           >
+            {/* Border fades from full accent at the top edge to fully
+                transparent by the vertical midpoint — a plain border-color
+                can't do this, so it's a masked gradient overlay instead. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 rounded-[inherit]"
+              style={{
+                padding: 1,
+                background: "linear-gradient(to bottom, var(--accent) 0%, transparent 50%)",
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
             Upgrade plan
           </Button>
         </div>
