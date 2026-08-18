@@ -50,16 +50,6 @@ export default function BinPage() {
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <Button
-            variant="tertiary"
-            size="md"
-            onPress={() => setContent("")}
-            isDisabled={saving || !content}
-            style={{ gap: 8 }}
-          >
-            <MIcon name="clear_all" size={17} className="shrink-0" />
-            <span className="hidden sm:inline">Clear</span>
-          </Button>
-          <Button
             variant="primary"
             onPress={handleSave}
             isDisabled={saving || !content.trim()}
