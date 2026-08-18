@@ -233,7 +233,6 @@ function ManageLayoutInner({
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
               />
               <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
-              <MIcon name="expand_more" size={18} className="shrink-0 text-muted" />
             </Dropdown.Trigger>
 
             <Dropdown.Popover placement="top" className="p-0 bg-black border border-white/10 rounded-2xl overflow-hidden" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
