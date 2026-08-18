@@ -18,7 +18,6 @@ import {
   type NavItem,
   SECTION_BUTTONS,
   SIDEBAR_WIDTH,
-  STORAGE_KEY_DONATION_NOTICE,
   API_BASE,
 } from "@/constants"
 import { getTierLimits, normalizeTier, type Tier } from "@/constants/tier-limits"
@@ -147,7 +146,6 @@ function ManageLayoutInner({
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("account")
   const [copiedId, setCopiedId] = useState(false)
-  const [showDonationNotice, setShowDonationNotice] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [feedbackLinkAccount, setFeedbackLinkAccount] = useState(true)
   const [feedbackText, setFeedbackText] = useState("")
@@ -204,12 +202,6 @@ function ManageLayoutInner({
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [drawerOpen])
-
-  useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY_DONATION_NOTICE) !== "true") {
-      setShowDonationNotice(true)
-    }
-  }, [])
 
   if (isLoading) {
     return <ManageSkeleton pathname={pathname} />
@@ -618,47 +610,6 @@ function ManageLayoutInner({
       </Modal>
 
     </div>
-
-    <AnimatePresence>
-      {showDonationNotice && (
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-          className="fixed bottom-4 right-4 left-4 sm:left-auto z-[9999] w-auto sm:w-full sm:max-w-sm bg-white dark:bg-[#121212] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]"
-          style={{ borderRadius: 14, padding: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)' }}
-        >
-          <div className="flex flex-col">
-            <h3 className="text-[15px] font-semibold text-[#111] dark:text-[#f0f0f0] mb-2 leading-tight">A quick note</h3>
-            <p className="text-[13.5px] text-[#666] dark:text-[#a1a1aa] leading-relaxed mb-5">
-              Please don't reveal photos for no reason and spam it, this will lower costs of keeping this platform alive. If you want, you can support us by clicking Donate.
-            </p>
-            <div className="flex items-center gap-2.5">
-              <a
-                href="https://ko-fi.com/hypastack"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center bg-[#facc15] hover:bg-[#eab308] text-black font-semibold transition-colors active:scale-[0.97]"
-                style={{ height: 34, paddingLeft: 16, paddingRight: 16, borderRadius: 6, fontSize: 13 }}
-              >
-                Donate
-              </a>
-              <Button
-                variant="tertiary"
-                onPress={() => {
-                  setShowDonationNotice(false)
-                  localStorage.setItem(STORAGE_KEY_DONATION_NOTICE, "true")
-                }}
-                size="sm"
-                style={{ height: 34 }}
-              >
-                Hide notification
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
 
     {/*
       Persistent, always-mounted upload zone. It stays idle/hidden during normal

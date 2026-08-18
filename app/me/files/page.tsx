@@ -10,7 +10,6 @@ import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, Contex
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, toast } from "@heroui/react"
-import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
 import { FILES_PER_PAGE } from "@/constants"
@@ -35,7 +34,6 @@ function FilesPageInner() {
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
   const activeContextMenuFile = files.find(f => f.id === openMenuId)
   const [uploadOpen, setUploadOpen] = useState(false)
-  const [wtStep, setWtStep] = useState(0)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -56,7 +54,6 @@ function FilesPageInner() {
     const cloned = dt.files
     setPendingUploadFiles(cloned)
     setUploadOpen(true)
-    setWtStep(s => s === 0 ? 1 : s)
     // reset so picking the same file again triggers onChange
     e.target.value = ""
   }, [])
@@ -64,18 +61,9 @@ function FilesPageInner() {
   const closeUpload = useCallback(() => {
     setUploadOpen(false)
     setPendingUploadFiles(null)
-    setWtStep(s => s === 1 ? 2 : s)
     // Refresh data after upload to pick up new files
     refreshUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const handleUploadStateChange = useCallback((uploadState: string) => {
-    if (uploadState === "uploading" || uploadState === "encrypting" || uploadState === "zipping") {
-      setWtStep(s => s === 1 ? 2 : s)
-    } else if (uploadState === "copied") {
-      setWtStep(s => s === 2 ? 3 : s)
-    }
   }, [])
 
   const handleUploadComplete = useCallback(() => {
@@ -149,7 +137,6 @@ function FilesPageInner() {
       setSortField(field)
       setSortDirection(field === "name" ? "asc" : "desc")
     }
-    setWtStep(s => s === 4 ? 5 : s)
   }
 
   const totalPages = Math.ceil(filteredFiles.length / FILES_PER_PAGE)
@@ -162,8 +149,6 @@ function FilesPageInner() {
     navigator.clipboard.writeText(shareUrl)
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 2000)
-    // Step 2->3 is now handled by the UploadZone's internal copy button, but we keep this as a fallback
-    setWtStep(s => s === 2 ? 3 : s)
   }
 
   const handleDelete = async (fileId: string) => {
@@ -182,7 +167,6 @@ function FilesPageInner() {
           throw new Error(data.message || "Failed to delete file")
         }
         setFiles((prev) => prev.filter((f) => f.id !== fileId))
-        setWtStep(s => s === 5 ? 6 : s)
         setSelectedIds((prev) => {
           const next = new Set(prev)
           next.delete(fileId)
@@ -534,7 +518,6 @@ function FilesPageInner() {
           initialFiles={pendingUploadFiles}
           autoStart={false}
           currentFolderId={currentFolderId}
-          onUploadStateChange={handleUploadStateChange}
           onUploadComplete={handleUploadComplete}
           onClose={closeUpload}
         />
@@ -571,10 +554,9 @@ function FilesPageInner() {
                   </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 bg-transparent">
-                  <UploadZone 
+                  <UploadZone
                     currentFolderId={currentFolderId}
-                    onUploadStateChange={handleUploadStateChange} 
-                    onUploadComplete={handleUploadComplete} 
+                    onUploadComplete={handleUploadComplete}
                   />
                 </div>
               </motion.div>
@@ -628,17 +610,6 @@ function FilesPageInner() {
           </>
         )}
       </ContextMenu>
-
-      <Walkthrough
-        id="drive_onboarding"
-        currentStep={wtStep}
-        steps={[
-          { text: "Click the Upload button in the top-right to add your first file.", icon: "cloud_upload" },
-          { text: "Now click Start in the bottom right to upload your files.", icon: "play_arrow" },
-          { text: "Once uploaded, click 'Copy link' in the upload tray to get your secure share URL.", icon: "content_copy" },
-          { text: "You're all set! Your files are encrypted and under your control.", icon: "celebration" },
-        ]}
-      />
     </div>
   )
 }

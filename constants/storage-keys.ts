@@ -7,9 +7,6 @@ export const STORAGE_KEY_LANGUAGE = "hypa-language"
 /** Interrupted upload state for resumable uploads */
 export const STORAGE_KEY_INTERRUPTED_UPLOAD = "hypa_interrupted_upload"
 
-/** Whether the donation/support notice banner has been dismissed */
-export const STORAGE_KEY_DONATION_NOTICE = "hypastack_donation_notice_hidden"
-
 /** Exported E2E master key for the active session */
 export const STORAGE_KEY_E2E_MASTER = "hpsk_e2e_master"
 

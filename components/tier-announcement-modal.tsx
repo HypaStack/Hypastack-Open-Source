@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { MIcon } from "@/components/ui/material-icon";
-import { Button } from "@heroui/react";
-import { Loader } from "@/components/ui/loader";
+import { Button, Modal, Typography } from "@heroui/react";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
 import { PLAN_INFO } from "@/constants/plans";
@@ -43,92 +41,38 @@ export function TierAnnouncementModal() {
     }
   };
 
+  if (!user) return null;
+
   return (
-    <AnimatePresence>
-      {open && user && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="tier-announcement-title"
-          className="fixed inset-0 z-[200] flex items-center justify-center"
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            aria-hidden
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={handleDismiss}
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className="theme-dashboard relative w-[calc(100%-2rem)] sm:w-full max-w-[720px] rounded-[20px] overflow-hidden"
-            style={{ backgroundColor: '#121212', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.22)' }}
-          >
-            <Button
-              variant="tertiary"
-              isIconOnly
-              size="sm"
-              onPress={handleDismiss}
-              aria-label="Dismiss"
-              style={{ position: 'absolute', top: 14, right: 14, zIndex: 10 }}
-            >
-              <MIcon name="close" size={18} />
-            </Button>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2">
-              <div className="flex flex-col items-start text-left px-8 pt-11 pb-10">
-                <div className="flex size-14 items-center justify-center mb-6">
-                  <MIcon name="auto_awesome" className="text-[#f7f8f8]" size={28} />
-                </div>
-
-                <h2
-                  id="tier-announcement-title"
-                  className="text-[26px] tracking-tight text-[#f7f8f8] mb-2"
-                  style={{ fontWeight: 600, letterSpacing: '-0.02em', fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}
-                >
-                  You're now on {tierLabel}
-                </h2>
-                <p className="text-[14px] leading-relaxed text-[#898e97] mb-8">
-                  Thanks for supporting us! Your new limits are unlocked everywhere,
-                  uploads, CDN storage, and retention windows.
-                </p>
-
-                <Button
-                  variant="primary"
-                  size="md"
-                  fullWidth
-                  className="mt-auto"
-                  onPress={handleDismiss}
-                  isDisabled={closing}
-                >
-                  {closing ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Loader size={16} />
-                      Closing..
-                    </span>
-                  ) : "Alright"}
-                </Button>
-              </div>
-
-              <div className="px-8 py-11 border-t sm:border-t-0 sm:border-l border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
-                <p className="text-[13px] font-semibold text-[#f7f8f8] mb-5">What's included</p>
-                <ul className="space-y-4">
-                  {benefits.map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <MIcon name="check" size={17} className="shrink-0 mt-0.5 text-[#a5b4fc]" />
-                      <span className="text-[14px] leading-snug text-[#d4d6d9]">{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+    <Modal isOpen={open} onOpenChange={(isOpen) => { if (!isOpen) handleDismiss() }}>
+      <Modal.Backdrop isDismissable variant="blur">
+        <Modal.Container placement="center" size="md">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading>You&rsquo;re now on {tierLabel}</Modal.Heading>
+              <Modal.CloseTrigger />
+            </Modal.Header>
+            <Modal.Body className="space-y-3">
+              <Typography type="body-sm" color="muted">
+                Thanks for supporting us! Your new limits are unlocked everywhere.
+              </Typography>
+              <ul className="space-y-2">
+                {benefits.map((b) => (
+                  <li key={b} className="flex items-start gap-2">
+                    <MIcon name="check" size={16} className="text-muted shrink-0 mt-0.5" />
+                    <Typography type="body-sm" className="text-foreground">{b}</Typography>
+                  </li>
+                ))}
+              </ul>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onPress={handleDismiss} isDisabled={closing}>
+                Alright
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

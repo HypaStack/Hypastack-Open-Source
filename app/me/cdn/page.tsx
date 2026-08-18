@@ -5,7 +5,6 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Loader } from "@/components/ui/loader"
 import { Button, toast } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
-import { Walkthrough } from "@/components/ui/walkthrough"
 import { UploadZone } from "@/components/upload"
 import { useManage, type CdnAssetItem } from "@/hooks/useManage"
 import { AnimatePresence, motion } from "motion/react"
@@ -50,7 +49,6 @@ export default function CdnPage() {
   // Upload state
   const [uploadOpen, setUploadOpen] = useState(false)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
-  const [wtStep, setWtStep] = useState(0)
   const [swapLoading, setSwapLoading] = useState<string | null>(null)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -77,7 +75,6 @@ export default function CdnPage() {
     for (let i = 0; i < rawFiles.length; i++) dt.items.add(rawFiles[i])
     setPendingUploadFiles(dt.files)
     setUploadOpen(true)
-    setWtStep(s => s === 0 ? 1 : s)
     e.target.value = ""
   }, [])
 
@@ -86,14 +83,7 @@ export default function CdnPage() {
       setAssets((prev) => [newAsset, ...prev])
     }
     refreshUser()
-    setWtStep(s => s === 1 ? 2 : s)
   }
-
-  const handleUploadStateChange = useCallback((uploadState: string) => {
-    if (uploadState === "copied") {
-      setWtStep(s => s === 2 ? 3 : s)
-    }
-  }, [])
 
   // --- Folder helpers ---
   const getBreadcrumbs = () => {
@@ -230,7 +220,6 @@ export default function CdnPage() {
     if (!ok) return
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 2000)
-    setWtStep(s => s === 2 ? 3 : s)
   }
 
   const handleDelete = async (assetId: string) => {
@@ -249,7 +238,6 @@ export default function CdnPage() {
           throw new Error(data.message || "Failed to delete")
         }
         setAssets((prev) => prev.filter((a) => a.id !== assetId))
-        setWtStep(s => s === 4 ? 5 : s)
         setSelectedAssets((prev) => {
           const next = new Set(prev)
           next.delete(assetId)
@@ -489,7 +477,6 @@ export default function CdnPage() {
       }
       return newSet
     })
-    setWtStep(s => s === 3 ? 4 : s)
   }
 
   // Filter to current folder
@@ -729,7 +716,6 @@ export default function CdnPage() {
             uploadType="cdn"
             autoStart={true}
             onUploadComplete={handleUploadComplete}
-            onUploadStateChange={handleUploadStateChange}
             currentFolderId={currentFolderId}
           />
         </div>
@@ -864,17 +850,6 @@ export default function CdnPage() {
           onMove={handleBulkMove}
         />
       )}
-
-      <Walkthrough
-        id="cdn_onboarding"
-        currentStep={wtStep}
-        steps={[
-          { text: "Click the Upload button in the top-right to add your first CDN asset.", icon: "cloud_upload" },
-          { text: "Your files are uploading, CDN assets get a permanent, public URL.", icon: "public" },
-          { text: "Once uploaded, click 'Copy link' in the upload tray to get your CDN URL.", icon: "content_copy" },
-          { text: "You're all set! Your CDN assets are live and ready to use.", icon: "celebration" },
-        ]}
-      />
     </div>
   )
 }
