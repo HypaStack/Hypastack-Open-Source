@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MIcon } from "@/components/ui/material-icon";
+import { useRouter } from "next/navigation";
 import { Button, Modal, Typography } from "@heroui/react";
 import { useManage } from "@/hooks/useManage";
 import { TIER_LABELS } from "@/constants";
-import { PLAN_INFO } from "@/constants/plans";
 import { apiFetch } from "@/lib/http/fetch"
 
 export function TierAnnouncementModal() {
   const { user, refreshUser } = useManage();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
 
@@ -22,7 +22,6 @@ export function TierAnnouncementModal() {
   }, [user]);
 
   const tierLabel = user ? (TIER_LABELS[user.tier] ?? user.tier) : "";
-  const benefits = user ? (PLAN_INFO.find((p) => p.key === user.tier)?.details ?? []) : [];
 
   const handleDismiss = async () => {
     if (closing) return;
@@ -45,27 +44,22 @@ export function TierAnnouncementModal() {
 
   return (
     <Modal isOpen={open} onOpenChange={(isOpen) => { if (!isOpen) handleDismiss() }}>
-      <Modal.Backdrop isDismissable variant="blur">
-        <Modal.Container placement="center" size="md">
+      <Modal.Backdrop isDismissable variant="blur" className="bg-black/60">
+        <Modal.Container placement="center" size="sm">
           <Modal.Dialog>
             <Modal.Header>
               <Modal.Heading>You&rsquo;re now on {tierLabel}</Modal.Heading>
               <Modal.CloseTrigger />
             </Modal.Header>
-            <Modal.Body className="space-y-3">
+            <Modal.Body>
               <Typography type="body-sm" color="muted">
                 Thanks for supporting us! Your new limits are unlocked everywhere.
               </Typography>
-              <ul className="space-y-2">
-                {benefits.map((b) => (
-                  <li key={b} className="flex items-start gap-2">
-                    <MIcon name="check" size={16} className="text-muted shrink-0 mt-0.5" />
-                    <Typography type="body-sm" className="text-foreground">{b}</Typography>
-                  </li>
-                ))}
-              </ul>
             </Modal.Body>
             <Modal.Footer>
+              <Button variant="tertiary" onPress={() => router.push("/pricing")}>
+                See benefits
+              </Button>
               <Button variant="primary" onPress={handleDismiss} isDisabled={closing}>
                 Alright
               </Button>
