@@ -347,15 +347,6 @@ function FilesPageInner() {
     return crumbs
   }
 
-  const toggleSelect = (id: string) => {
-    setSelectedFiles((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
   const toggleSelectAll = () => {
     if (filteredFiles.length === 0) return
     const allFilteredSelected = filteredFiles.every((f) => selectedFiles.has(f.id))
@@ -479,7 +470,7 @@ function FilesPageInner() {
               <ListView
                 files={paginatedFiles}
                 selectedFiles={selectedFiles}
-                onToggleSelect={toggleSelect}
+                onSelectionChange={setSelectedFiles}
                 onContextMenu={(e, id) => {
                   e.preventDefault();
                   setOpenMenuId(id);

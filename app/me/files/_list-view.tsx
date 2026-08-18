@@ -1,51 +1,64 @@
 "use client"
 
 import { Table, Checkbox } from "@heroui/react"
+import { type Selection } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem } from "@/hooks/useManage"
 import { getFileIconForType } from "./_helpers"
 import { formatBytes } from "@/lib/format"
 
+function SelectionCheckbox() {
+  return (
+    <Checkbox slot="selection">
+      <Checkbox.Content>
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+      </Checkbox.Content>
+    </Checkbox>
+  )
+}
+
 export function ListView({
   files,
   selectedFiles,
-  onToggleSelect,
+  onSelectionChange,
   onContextMenu,
 }: {
   files: FileItem[]
   selectedFiles: Set<string>
-  onToggleSelect: (id: string) => void
+  onSelectionChange: (ids: Set<string>) => void
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
+  const handleSelectionChange = (keys: Selection) => {
+    onSelectionChange(keys === "all" ? new Set(files.map((f) => f.id)) : new Set(Array.from(keys, String)))
+  }
+
   return (
-    <Table variant="secondary">
+    <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="Files">
+        <Table.Content
+          aria-label="Files"
+          selectionMode="multiple"
+          selectedKeys={selectedFiles}
+          onSelectionChange={handleSelectionChange}
+        >
           <Table.Header>
-            <Table.Column className="w-10" />
+            <Table.Column>
+              <SelectionCheckbox />
+            </Table.Column>
             <Table.Column isRowHeader>Name</Table.Column>
-            <Table.Column className="w-28 text-right">Size</Table.Column>
+            <Table.Column className="text-right">Size</Table.Column>
           </Table.Header>
           <Table.Body>
             {files.map((file) => (
-              <Table.Row key={file.id} onContextMenu={(e) => onContextMenu(e, file.id)}>
+              <Table.Row key={file.id} id={file.id} onContextMenu={(e) => onContextMenu(e, file.id)}>
                 <Table.Cell>
-                  <Checkbox
-                    isSelected={selectedFiles.has(file.id)}
-                    onChange={() => onToggleSelect(file.id)}
-                    aria-label={`Select ${file.name}`}
-                  >
-                    <Checkbox.Content>
-                      <Checkbox.Control>
-                        <Checkbox.Indicator />
-                      </Checkbox.Control>
-                    </Checkbox.Content>
-                  </Checkbox>
+                  <SelectionCheckbox />
                 </Table.Cell>
                 <Table.Cell>
                   <div
                     className="flex items-center gap-2 min-w-0 cursor-pointer"
-                    onClick={() => onToggleSelect(file.id)}
                     onDoubleClick={() => window.open(`/d/${file.id}`, "_blank")}
                   >
                     <MIcon name={getFileIconForType(file.contentType, file.name)} size={18} className="shrink-0 text-muted" />
