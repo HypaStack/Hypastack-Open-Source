@@ -85,7 +85,7 @@ function NavRow({
       <MIcon
         name={item.icon}
         size="16px"
-        style={{ fontVariationSettings: "'FILL' 0, 'wght' 600, 'GRAD' -25, 'opsz' 48" }}
+        style={{ fontVariationSettings: "'FILL' 0, 'wght' 700, 'GRAD' -25, 'opsz' 48" }}
         className="shrink-0"
       />
       <div className="overflow-hidden whitespace-nowrap flex items-center justify-between flex-1">

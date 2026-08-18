@@ -21,7 +21,7 @@ export const SECTION_BUTTONS: NavItem[] = [
 ]
 
 /** width of the secondary (sub-nav) sidebar in pixels */
-export const SIDEBAR_WIDTH = 248
+export const SIDEBAR_WIDTH = 233
 
 /** Number of files shown per page in the file list */
 export const FILES_PER_PAGE = 10
