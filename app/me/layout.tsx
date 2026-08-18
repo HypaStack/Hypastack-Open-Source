@@ -261,13 +261,11 @@ function ManageLayoutInner({
               <div className="h-px bg-white/10" />
 
               <Dropdown.Menu aria-label="Account actions" className="p-1.5">
-                <Dropdown.Item id="account" onAction={() => openPreferences("account")} textValue="Account settings" className="flex items-center justify-between gap-2">
-                  <span>Account settings</span>
-                  <MIcon name="person" size={18} className="text-muted" />
+                <Dropdown.Item id="account" onAction={() => openPreferences("account")} textValue="Account settings">
+                  Account settings
                 </Dropdown.Item>
-                <Dropdown.Item id="feedback" onAction={() => setFeedbackOpen(true)} textValue="Feedback" className="flex items-center justify-between gap-2">
-                  <span>Feedback</span>
-                  <MIcon name="sentiment_satisfied" size={18} className="text-muted" />
+                <Dropdown.Item id="feedback" onAction={() => setFeedbackOpen(true)} textValue="Feedback">
+                  Feedback
                 </Dropdown.Item>
               </Dropdown.Menu>
 
@@ -278,11 +276,9 @@ function ManageLayoutInner({
                   variant="danger-soft"
                   fullWidth
                   onPress={logout}
-                  className="flex items-center justify-between"
                   style={{ paddingLeft: 12, paddingRight: 12 }}
                 >
-                  <span>Sign out</span>
-                  <MIcon name="logout" size={18} />
+                  Sign out
                 </Button>
               </div>
             </Dropdown.Popover>
