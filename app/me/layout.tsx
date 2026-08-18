@@ -27,10 +27,10 @@ import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 // The account menu trigger/popover and the Upgrade button all live inside a
-// px-2 (8px each side) wrapper in the sidebar — this is that shared content
-// width, so the trigger and its popover always render pixel-identical no
-// matter what state either is in.
-const SIDEBAR_CONTENT_WIDTH = SIDEBAR_WIDTH - 16
+// px-1 (4px each side) wrapper in the sidebar — this is that shared
+// content width, so the trigger and its popover always render pixel-identical
+// no matter what state either is in.
+const SIDEBAR_CONTENT_WIDTH = SIDEBAR_WIDTH - 8
 
 function isSectionActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
@@ -205,7 +205,7 @@ function ManageLayoutInner({
         className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <nav className="flex-1 min-h-0 px-2 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <nav className="flex-1 min-h-0 px-1 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="space-y-1">
             {SECTION_BUTTONS.map((item) => (
               <NavRow
@@ -217,7 +217,7 @@ function ManageLayoutInner({
           </div>
         </nav>
 
-        <div className="relative z-20 shrink-0 px-2 pt-3 pb-2">
+        <div className="relative z-20 shrink-0 px-1 pt-3 pb-2">
           <Dropdown>
             <Dropdown.Trigger
               aria-label="Account menu"
@@ -291,7 +291,7 @@ function ManageLayoutInner({
           </Dropdown>
         </div>
 
-        <div className="px-2 pb-3 shrink-0">
+        <div className="px-1 pb-3 shrink-0">
           <Button
             variant="outline"
             onPress={() => openPreferences("plans")}
