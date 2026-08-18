@@ -382,17 +382,19 @@ function ManageLayoutInner({
             onPress={() => openPreferences("plans")}
             size="md"
             fullWidth
-            className="relative border-white/10"
+            className="relative border-transparent"
           >
-            {/* Border fades from full accent at the bottom edge to fully
-                transparent by the vertical midpoint — a plain border-color
-                can't do this, so it's a masked gradient overlay instead. */}
+            {/* Single ring border, fading from full accent at the bottom edge to
+                the normal border color by the vertical midpoint — a plain
+                border-color can't do this, so it's a masked gradient overlay
+                instead. Button's own border is transparent so this is the only
+                ring drawn, keeping it pixel-aligned with the rounded corners. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 rounded-[inherit]"
               style={{
                 padding: 1,
-                background: "linear-gradient(to top, var(--accent) 0%, transparent 50%)",
+                background: "linear-gradient(to top, var(--accent) 0%, rgba(255,255,255,0.1) 50%)",
                 WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                 WebkitMaskComposite: "xor",
                 maskComposite: "exclude",
