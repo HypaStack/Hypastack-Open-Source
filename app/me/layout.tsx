@@ -475,10 +475,10 @@ function ManageLayoutInner({
 
       <div className="flex flex-1 min-w-0 flex-col h-[calc(100vh-16px)] my-2 ml-1 mr-2 rounded-[18px] bg-white dark:bg-transparent shadow-none overflow-hidden relative">
         {/* Docked: the sidebar claims no width at all and the button sits on the
-            page's first line, left of the headline — left-6/top-4 are the main's
-            own lg padding, so it lines up with the text it sits beside. */}
+            page's first line, left of the headline. top-2 puts it on the same
+            line as the sidebar's own top row (aside my-2 + pt-2 = 16px). */}
         {sidebarCollapsed && (
-          <div className="hidden lg:block absolute left-6 top-4 z-20">
+          <div className="hidden lg:block absolute left-6 top-2 z-20">
             <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
           </div>
         )}
@@ -513,7 +513,7 @@ function ManageLayoutInner({
               initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="h-full flex flex-col px-3 sm:px-5 lg:px-6 pt-4 pb-6"
+              className="h-full flex flex-col px-3 sm:px-5 lg:px-6 pt-2 pb-6"
             >
               {children}
             </motion.main>
