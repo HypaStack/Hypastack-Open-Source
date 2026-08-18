@@ -19,12 +19,6 @@ export const FOOTER_COLUMNS = [
     ],
   },
   {
-    title: "Partnerships",
-    links: [
-      { label: "Streamduck", href: "https://streamduck.site/" },
-    ],
-  },
-  {
     title: "Legal",
     links: [
       { label: "Terms of service", href: "/terms" },
