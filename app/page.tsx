@@ -41,14 +41,14 @@ export default function Home() {
         {/* Purely decorative — sits behind all real content, never intercepts
             clicks. `absolute` inside this relative wrapper so it stretches to
             the full scrollable page height, not just one fixed viewport. */}
-        <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute -inset-6 z-0 pointer-events-none" aria-hidden="true">
           <DotGrid
             className="pointer-events-none"
             dotSize={5}
             gap={14}
             baseColor="#383838"
             activeColor="#0056ff"
-            proximity={70}
+            proximity={140}
             shockRadius={200}
             shockStrength={4}
             resistance={750}
