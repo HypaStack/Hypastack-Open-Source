@@ -73,8 +73,8 @@
 
 /* Dark theme — scoped to /me dashboard */
 .theme-dark {
-  /* Not pure black — a touch of gray so the panels read as surfaces against it. */
-  --background: #0c0c0d;
+  /* Matches the landing page's background. */
+  --background: #08090a;
   --foreground: #fafafa;
   --card: #18181b;
   --popover: #18181b;
@@ -123,7 +123,7 @@ html.is-dashboard, html.is-dashboard body {
 }
 
 html.is-dashboard.dark, html.is-dashboard.dark body {
-  background-color: #0c0c0d !important;
+  background-color: #08090a !important;
 }
 
 
