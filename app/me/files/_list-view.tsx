@@ -5,6 +5,7 @@ import { Table, Checkbox, Button } from "@heroui/react"
 import { type Selection } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem, type FolderItem } from "@/hooks/useManage"
+import { getFileIconForType } from "./_helpers"
 import { formatBytes } from "@/lib/format"
 
 function SelectionCheckbox() {
@@ -114,7 +115,7 @@ export function ListView({
                       style={{ paddingLeft: row.depth * 20 }}
                       onClick={() => onOpenFolder(row.folder.id)}
                     >
-                      <MIcon name="folder" size={18} className="shrink-0 text-muted" />
+                      <MIcon name="folder" size={14} className="shrink-0 text-muted" />
                       <span className="truncate font-medium" title={row.folder.name}>{row.folder.name}</span>
                     </div>
                   </Table.Cell>
@@ -148,6 +149,7 @@ export function ListView({
                       style={{ paddingLeft: row.depth * 20 }}
                       onDoubleClick={() => window.open(`/d/${row.file.id}`, "_blank")}
                     >
+                      <MIcon name={getFileIconForType(row.file.contentType, row.file.name)} size={14} className="shrink-0 text-muted" />
                       <span className="truncate" title={row.file.name}>{row.file.name}</span>
                       {!!row.file.burnOnRead && (
                         <span title="Burn on read" className="shrink-0 text-orange-400">
