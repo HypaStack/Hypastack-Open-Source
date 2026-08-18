@@ -233,7 +233,12 @@ function ManageLayoutInner({
               style={{ width: SIDEBAR_CONTENT_WIDTH }}
             >
               <Dropdown.Menu aria-label="Accounts" className="p-1.5">
-                <Dropdown.Item id="current" textValue={user.nickname} className="flex items-center gap-2">
+                <Dropdown.Item
+                  id="current"
+                  textValue={user.nickname}
+                  onAction={() => toast.warning("You're already logged in on this account")}
+                  className="flex items-center gap-2"
+                >
                   <img decoding="async"
                     src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
                     alt={user.nickname}
@@ -242,6 +247,7 @@ function ManageLayoutInner({
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
                   />
                   <span className="min-w-0 truncate">{user.nickname}</span>
+                  <Chip size="sm" variant="soft" className="ml-auto shrink-0">Logged in</Chip>
                 </Dropdown.Item>
                 <Dropdown.Item
                   id="add-account"
