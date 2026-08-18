@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { Button } from "@heroui/react"
+import { Button, TextField, TextArea } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/http/fetch"
 import { errorMessage } from "@/lib/errors"
 
-export default function DumpsterPage() {
+export default function BinPage() {
   const [content, setContent] = useState("")
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
@@ -45,7 +45,7 @@ export default function DumpsterPage() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-          <span className="text-[#333] dark:text-[#ccc]">New Paste</span>
+          <span className="text-[#333] dark:text-[#ccc]">New Bin</span>
         </h1>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -71,7 +71,7 @@ export default function DumpsterPage() {
             ) : (
               <MIcon name="save" size={15} className="shrink-0" />
             )}
-            <span>Save Paste</span>
+            <span>Save</span>
           </Button>
         </div>
       </div>
@@ -82,15 +82,14 @@ export default function DumpsterPage() {
         </AlertMessage>
       )}
 
-      <div className="flex-1 bg-white dark:bg-[rgba(255,255,255,0.02)] rounded-[16px] border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)] overflow-hidden flex flex-col">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+      <TextField value={content} onChange={setContent} className="flex-1 flex flex-col">
+        <TextArea
+          rows={1}
+          className="resize-none flex-1 h-full p-5 font-sans leading-relaxed custom-scrollbar"
           placeholder="Type or paste your text here..."
-          className="w-full h-full p-5 bg-transparent border-none focus:outline-none resize-none text-[14px] font-sans leading-relaxed text-[#171717] dark:text-[#f7f8f8] custom-scrollbar flex-1"
           spellCheck={false}
         />
-      </div>
+      </TextField>
     </div>
   )
 }

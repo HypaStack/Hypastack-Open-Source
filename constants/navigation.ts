@@ -17,7 +17,7 @@ export const SECTION_BUTTONS: NavItem[] = [
   { label: "Edge", href: "/me/cdn", icon: "cloud", hint: "Host assets on permanent URLs" },
   { label: "Funnel", href: "/me/funnel", icon: "forward_to_inbox", hint: "Receive files through one-time links" },
   { label: "Peerline", href: "/me/peerline", icon: "swap_horiz", hint: "Send files device to device, nothing stored" },
-  { label: "Scratch", href: "/me/dumpster", icon: "edit_note", hint: "Paste and share text" },
+  { label: "Bin", href: "/me/bin", icon: "edit_note", hint: "Paste and share text" },
 ]
 
 /** width of the secondary (sub-nav) sidebar in pixels */
