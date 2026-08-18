@@ -10,13 +10,12 @@ import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, Contex
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Tabs, toast } from "@heroui/react"
-import { SharedElementTransition, useDrop } from "react-aria-components"
+import { SharedElementTransition } from "react-aria-components"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
 import { FILES_PER_PAGE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
-import { readDroppedIds } from "./_drag-payload"
 import { type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
@@ -41,7 +40,6 @@ function FilesPageInner() {
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const rootDropRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // "Upload files" button -> open the OS picker directly. Once files come back
@@ -274,17 +272,26 @@ function FilesPageInner() {
     }
   }
 
-  // Accept unconditionally: returning "cancel" here stops react-aria from
-  // calling preventDefault on dragover, and the browser then refuses the drop
-  // outright. Non-file payloads are filtered in onDrop instead.
-  useDrop({
-    ref: rootDropRef,
-    getDropOperation: () => "move",
-    onDrop: async (e) => {
-      const moved = await readDroppedIds(e.items)
-      if (moved.length > 0) moveFiles(moved, null)
-    },
-  })
+  // Native DnD handlers rather than react-aria's useDrop: the drag source
+  // writes ids to the dataTransfer as text/plain (newline-joined for multiple),
+  // so reading it directly removes every assumption about the library's drop
+  // layer. defaultPrevented means the table already claimed the drop.
+  const handleRootDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (e.defaultPrevented) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+  }
+
+  const handleRootDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    if (e.defaultPrevented) return
+    e.preventDefault()
+    const dropped = e.dataTransfer
+      .getData("text/plain")
+      .split("\n")
+      .map((id) => id.trim())
+      .filter((id) => files.some((f) => f.id === id))
+    if (dropped.length > 0) moveFiles(dropped, null)
+  }
 
   const moveFiles = async (ids: string[], folderId: string | null) => {
     if (ids.length === 0) return
@@ -487,7 +494,7 @@ function FilesPageInner() {
             component that only spreads props, so the drop ref isn't guaranteed
             to reach a DOM node. flex-1 makes the zone cover the empty area
             below the table. */}
-        <div ref={rootDropRef} className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col" onDragOver={handleRootDragOver} onDrop={handleRootDrop}>
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
