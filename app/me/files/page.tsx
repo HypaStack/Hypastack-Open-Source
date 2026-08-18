@@ -41,6 +41,14 @@ function FilesPageInner() {
   const [wtStep, setWtStep] = useState(0)
   const [pendingUploadFiles, setPendingUploadFiles] = useState<FileList | null>(null)
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<"drive" | "folders">("drive")
+
+  // Opening a folder should surface its files (Drive tab), not leave you
+  // stranded looking at its subfolders on the Folders tab.
+  const openFolder = (folderId: string | null) => {
+    setCurrentFolderId(folderId)
+    setActiveTab("drive")
+  }
   const menuRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -368,7 +376,7 @@ function FilesPageInner() {
   const allSelected = filteredFiles.length > 0 && filteredFiles.every((f) => selectedFiles.has(f.id))
 
   return (
-    <Tabs defaultSelectedKey="drive" className="flex-1 flex flex-col">
+    <Tabs selectedKey={activeTab} onSelectionChange={(key) => setActiveTab(key as "drive" | "folders")} className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 mb-6">
         <h1 className="shrink-0 text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
           <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
@@ -514,7 +522,7 @@ function FilesPageInner() {
               <FolderTile
                 key={folder.id}
                 name={folder.name}
-                onOpen={() => setCurrentFolderId(folder.id)}
+                onOpen={() => openFolder(folder.id)}
                 onDelete={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id, folder.name) }}
               />
             ))}
