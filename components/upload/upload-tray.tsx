@@ -4,9 +4,8 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence, useSpring } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, TextField, Label, Input, TextArea, InputGroup } from "@heroui/react"
+import { Button, Chip, TextField, Input, TextArea, InputGroup, Switch } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
-import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { Slider } from "@/components/ui/slider"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { Loader } from "@/components/ui/loader"
@@ -598,7 +597,13 @@ function ToggleRow({
           {label}
         </span>
         <span onClick={(e) => e.stopPropagation()} style={{ display: "inline-flex" }}>
-          <ToggleSwitch checked={on} onChange={onToggle} width={36} height={20} aria-label={label} />
+          <Switch isSelected={on} onChange={onToggle} aria-label={label}>
+            <Switch.Content>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Content>
+          </Switch>
         </span>
       </div>
       {sub && <p className={`mt-1.5 leading-snug ${MUTED}`}>{sub}</p>}
