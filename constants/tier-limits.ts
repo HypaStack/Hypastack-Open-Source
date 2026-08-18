@@ -138,16 +138,8 @@ export function getTierUploadConcurrency(tier: Tier): number {
   }
 }
 
-/**
- * Render a tier byte limit as its marketing-facing label (e.g. "2.5 GB",
- * "300 GB", "1 TB"). This is the single formatter behind every size shown in
- * the plans UI, the FAQ and the account modal, so those never drift from the
- * numbers above.
- *
- * Per-file caps are authored in MiB and read decimally (1000 MiB → "1 GB",
- * 2500 MiB → "2.5 GB"); storage caps are whole GiB and read as-is
- * (300 GiB → "300 GB", 1000 GiB → "1 TB").
- */
+// Single formatter behind every size shown in plans/FAQ/account modal. Per-file
+// caps read decimally (1000 MiB -> "1 GB"); storage caps read as whole GiB.
 export function formatTierSize(bytes: number): string {
   const mib = Math.round(bytes / MB)
   // Whole-GiB values are storage caps → group by 1000 into TB.

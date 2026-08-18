@@ -18,14 +18,7 @@ function subscribe(onStoreChange: () => void) {
   }
 }
 
-/**
- * Whether the Developer tab is revealed in preferences. Survives reloads via
- * localStorage and broadcasts so the toggle (Account tab) and the tab list
- * (modal shell) stay in sync without threading state through props.
- *
- * This is a UI reveal only, it does not grant API access. Tier gating is
- * enforced separately by the caller (and, once the API lands, server-side).
- */
+// UI reveal only, doesn't grant API access, tier gating is enforced by the caller.
 export function useDeveloperMode() {
   // Read through useSyncExternalStore rather than an effect: React reads the
   // store during the hydration commit, so the stored value is in place before

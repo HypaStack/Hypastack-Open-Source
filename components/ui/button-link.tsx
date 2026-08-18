@@ -17,12 +17,7 @@ interface ButtonLinkProps extends ButtonVariants {
   "aria-label"?: string
 }
 
-/**
- * HeroUI's Button (react-aria-components) can't render as an anchor, so
- * navigational buttons need their own element. This applies HeroUI's real
- * `buttonVariants()` classes, the same ones `<Button>` uses internally, to a
- * Link element. No styling of its own; purely a DOM-element bridge.
- */
+// HeroUI's Button can't render as an anchor, this applies its real buttonVariants() to a Link.
 export function ButtonLink({
   href,
   as: Link = "a",

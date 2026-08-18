@@ -28,12 +28,7 @@ async function deleteExpiredNow(fileId: string, r2Key: string, userId: string | 
   }
 }
 
-/**
- * Arm a precise deletion timer for a file. Prefers handing the job to the
- * hypasched sidecar (which owns any horizon and survives restarts); when the
- * sidecar is unreachable, falls back to the legacy in-process timer for
- * files expiring within the next hour (the hourly sweep backstops the rest).
- */
+// Prefers the hypasched sidecar; falls back to the local timer if unreachable.
 export function scheduleFileExpiry(
   fileId: string,
   r2Key: string,
@@ -64,12 +59,7 @@ function scheduleLocalExpiry(
   timers.set(fileId, timer)
 }
 
-/**
- * Arm precise LOCAL timers for every committed file expiring within the next
- * hour. Fallback path only: runs when the hypasched sidecar is unreachable,
- * on startup and each hourly cleanup tick, to recover timers lost to a
- * restart and to catch files that have since entered the one-hour window.
- */
+// Fallback only, runs on startup and each cleanup tick to recover timers lost to a restart.
 export async function scheduleUpcomingExpiries(): Promise<void> {
   try {
     const { getFilesExpiringWithinHour } = await import('@/lib/models/fileModel')

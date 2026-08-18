@@ -9,13 +9,7 @@ export interface MaterialIconProps {
   strokeWidth?: number // ignored, kept for Lucide compat
 }
 
-/**
- * Wrapper around Google Material Symbols (Rounded).
- *
- * Renders a `<span class="material-symbols-rounded">` with the icon's
- * ligature name as text content.  Accepts className / style / size
- * the same way Lucide icons do so the migration is a near-drop-in.
- */
+// Renders Material Symbols Rounded, accepts className/style/size like Lucide for a near-drop-in.
 export function MIcon({ name, className = "", style, size }: MaterialIconProps) {
   // +2 px nudge makes every icon slightly larger site-wide without editing call-sites
   const adjusted = typeof size === "number" ? size + 2 : size
