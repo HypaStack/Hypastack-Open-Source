@@ -479,16 +479,7 @@ function FilesPageInner() {
               <ListView
                 files={paginatedFiles}
                 selectedFiles={selectedFiles}
-                allSelected={allSelected}
-                sortField={sortField}
-                sortDirection={sortDirection}
-                onToggleSort={toggleSort}
                 onToggleSelect={toggleSelect}
-                onToggleSelectAll={toggleSelectAll}
-                onCopyLink={handleCopyLink}
-                copiedId={copiedId}
-                onDelete={handleDelete}
-                deleteLoading={deleteLoading}
                 onContextMenu={(e, id) => {
                   e.preventDefault();
                   setOpenMenuId(id);
