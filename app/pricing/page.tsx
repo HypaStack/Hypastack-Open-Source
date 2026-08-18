@@ -22,8 +22,6 @@ export default function Pricing() {
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-16">
           <div className="relative text-center mb-12">
-            {/* soft spotlight behind the title */}
-            <div className="pointer-events-none absolute left-1/2 -top-32 -translate-x-1/2 w-[440px] max-w-[85vw] h-[260px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.09),transparent_70%)] blur-2xl" />
             <Typography type="h1" className="relative text-[clamp(40px,4.6vw,58px)] text-foreground">
               Pricing
             </Typography>
