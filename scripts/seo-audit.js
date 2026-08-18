@@ -126,17 +126,16 @@ function analyzeRobots() {
 }
 
 function analyzeSitemap() {
-  Logger.section('Sitemap Architecture (sitemap.xml)');
-  const content = readSafe('public/sitemap.xml');
-  if (!content) return Logger.fail('sitemap.xml not found');
-
-  // sitemap.xml is a sitemap index; the URLs live in sitemap-0.xml
-  const urls = readSafe('public/sitemap-0.xml') || content;
+  Logger.section('Sitemap Architecture (app/sitemap.ts)');
+  // Dynamic Next.js sitemap route (auto-served at /sitemap.xml), replaces the
+  // old hand-maintained public/sitemap.xml, which went stale and missed pages.
+  const content = readSafe('app/sitemap.ts');
+  if (!content) return Logger.fail('app/sitemap.ts not found');
 
   const tests = [
-    { name: 'XML Declaration', req: () => content.includes('<?xml') },
-    { name: 'URL Set', req: () => urls.includes('urlset') || content.includes('sitemapindex') },
-    { name: 'Loc Tags', req: () => urls.includes('loc') }
+    { name: 'MetadataRoute.Sitemap export', req: () => content.includes('MetadataRoute.Sitemap') },
+    { name: 'Default export function', req: () => content.includes('export default function sitemap') },
+    { name: 'Uses SITE_URL constant', req: () => content.includes('SITE_URL') },
   ];
 
   for (const t of tests) {
@@ -144,8 +143,8 @@ function analyzeSitemap() {
     else Logger.fail(`Missing: ${t.name}`);
   }
 
-  const count = (urls.match(/<url>/g) || []).length;
-  Logger.info(`Indexed ${count} URLs`);
+  const count = (content.match(/url:/g) || []).length
+  Logger.info(`Lists ${count} static route(s), plus blog posts mapped at runtime`);
 }
 
 function analyzeLayout() {
@@ -195,7 +194,7 @@ async function runAudit() {
 
   Logger.section('Core Assets');
   checkFile('public/robots.txt', 'robots.txt');
-  checkFile('public/sitemap.xml', 'sitemap.xml');
+  checkFile('app/sitemap.ts', 'app/sitemap.ts (dynamic, served at /sitemap.xml)');
   checkFile('public/manifest.json', 'manifest.json');
   console.log();
 
