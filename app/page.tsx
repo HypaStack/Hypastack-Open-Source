@@ -37,20 +37,20 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background p-2 sm:p-3">
-        <Card
-          variant="transparent"
-          className="relative !p-0 min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-1.5rem)] w-full flex flex-col overflow-hidden rounded-[16px] border-none bg-overlay text-foreground"
-        >
-          <main className="relative w-full flex-1 flex flex-col overflow-hidden">
-            <Suspense fallback={null}>
-              <StatusBanner />
-            </Suspense>
-            <Hero />
-            <Footer />
-          </main>
-        </Card>
+      {/* Purely decorative — sits behind all real content, never intercepts clicks.
+          Shows through wherever the page content itself is transparent (the
+          footer, the gaps between sections) since `main` no longer paints its
+          own black background over it. */}
+      <div className="fixed inset-2 sm:inset-3 z-0 pointer-events-none" aria-hidden="true">
+        <Card variant="transparent" className="!p-0 h-full w-full rounded-[16px] border-none bg-accent">{null}</Card>
       </div>
+      <main className="relative z-10 min-h-screen text-foreground w-full overflow-hidden flex flex-col">
+        <Suspense fallback={null}>
+          <StatusBanner />
+        </Suspense>
+        <Hero />
+        <Footer />
+      </main>
     </>
   );
 }
