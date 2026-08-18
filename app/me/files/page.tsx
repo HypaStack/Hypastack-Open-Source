@@ -10,6 +10,7 @@ import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, Contex
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Tabs } from "@heroui/react"
+import { SharedElementTransition } from "react-aria-components"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -379,11 +380,13 @@ function FilesPageInner() {
           ))}
         </h1>
 
-        <Tabs.List>
-          <Tabs.Tab id="drive">Drive</Tabs.Tab>
-          <Tabs.Tab id="folders">Folders</Tabs.Tab>
-          <Tabs.Indicator />
-        </Tabs.List>
+        <SharedElementTransition>
+          <Tabs.List>
+            <Tabs.Tab id="drive">Drive</Tabs.Tab>
+            <Tabs.Tab id="folders">Folders</Tabs.Tab>
+            <Tabs.Indicator />
+          </Tabs.List>
+        </SharedElementTransition>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {selectedFiles.size > 0 ? (
