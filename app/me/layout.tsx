@@ -53,6 +53,21 @@ function sectionTitle(pathname: string): string {
 }
 
 
+function DockButton({ collapsed, onPress }: { collapsed: boolean; onPress: () => void }) {
+  return (
+    <Button
+      variant="outline"
+      isIconOnly
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      onPress={onPress}
+      className="border-white/10 shrink-0"
+      style={{ height: 38, width: 38 }}
+    >
+      <MIcon name="dock_to_right" size={18} className="text-muted" />
+    </Button>
+  )
+}
+
 function NavRow({
   item,
   active,
@@ -122,6 +137,7 @@ function ManageLayoutInner({
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("general")
   const [copiedId, setCopiedId] = useState(false)
@@ -203,8 +219,16 @@ function ManageLayoutInner({
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-background text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
+      {/* Collapsed: the sidebar is gone and only the dock button stays, on the
+          left of the main panel, as the way back. */}
+      {sidebarCollapsed && (
+        <div className="hidden lg:flex shrink-0 items-start my-2 ml-2 mr-1">
+          <DockButton collapsed onPress={() => setSidebarCollapsed(false)} />
+        </div>
+      )}
+
       <aside
-        className="hidden lg:flex shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1"
+        className={`${sidebarCollapsed ? "hidden" : "hidden lg:flex"} shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1`}
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="relative z-20 shrink-0 flex items-center gap-2 px-0 pt-2" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
@@ -262,15 +286,7 @@ function ManageLayoutInner({
             </Dropdown.Popover>
           </Dropdown>
 
-          <Button
-            variant="outline"
-            isIconOnly
-            aria-label="Collapse sidebar"
-            className="border-white/10 shrink-0"
-            style={{ height: 38, width: 38 }}
-          >
-            <MIcon name="dock_to_right" size={18} />
-          </Button>
+          <DockButton collapsed={false} onPress={() => setSidebarCollapsed(true)} />
         </div>
 
         <nav className="flex-1 min-h-0 px-0 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
