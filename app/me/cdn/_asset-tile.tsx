@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "motion/react"
-import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
-import { Button } from "@heroui/react"
+import { Button, Card, Typography } from "@heroui/react"
 import { toPressHandler } from "@/components/ui/button-press"
 import { Checkmark } from "@/components/ui/checkmark"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider } from "@/components/ui/context-menu"
@@ -81,20 +80,21 @@ export function CdnAssetTile({
 
   return (
     <motion.div variants={gridItemVariants} className="group relative">
-      <div
-        onClick={(e) => {
+      <Card
+        variant="transparent"
+        onClick={(e: React.MouseEvent) => {
           if (!e.ctrlKey) {
             onToggleSelect()
           }
         }}
-        onMouseDown={(e) => {
+        onMouseDown={(e: React.MouseEvent) => {
           if (e.ctrlKey) {
             e.preventDefault()
             onDragAction('start')
           }
         }}
-        onContextMenu={(e) => onContextMenu(e, asset.id)}
-        onMouseEnter={(e) => {
+        onContextMenu={(e: React.MouseEvent) => onContextMenu(e, asset.id)}
+        onMouseEnter={(e: React.MouseEvent) => {
           setHover(true)
           if (e.buttons === 1 && e.ctrlKey) {
             onDragAction('enter')
@@ -103,29 +103,23 @@ export function CdnAssetTile({
         onMouseLeave={() => setHover(false)}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
+        onKeyDown={(e: React.KeyboardEvent) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault()
             onToggleSelect()
           }
         }}
-        className="relative w-full aspect-square overflow-hidden bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)] cursor-pointer transition-all select-none border border-[#e5e5e5] dark:border-[rgba(255,255,255,0.06)]"
-        style={{
-          borderRadius: 12,
-          outline: `3px solid ${selected ? "rgba(38,128,191,0.5)" : hover ? "rgba(38,128,191,0.2)" : "transparent"}`,
-          outlineOffset: 2,
-        }}
+        className={`!p-0 relative w-full aspect-square overflow-hidden bg-surface cursor-pointer transition-all select-none border !border-solid rounded-[12px] ${
+          selected ? "border-accent" : hover ? "border-accent/40" : "border-white/10"
+        }`}
       >
         {!revealed && isImage && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)]">
-            <div className="flex items-center justify-center mb-3">
-              <MIcon name="image" size={20} style={{ color: '#999' }} />
-            </div>
-            <p className="flex items-center justify-center w-full min-w-0 text-[#888] dark:text-[#898e97]" style={{ fontSize: 12, marginBottom: 10 }}>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-surface">
+            <Typography type="body-xs" color="muted" className="flex items-center justify-center w-full min-w-0 mb-2.5">
               <span className="shrink-0">Load&nbsp;</span>
-              <span className="truncate min-w-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>{baseName}</span>
-              {dotIdx > 0 && <span className="shrink-0 text-[#333] dark:text-[#f7f8f8]" style={{ fontWeight: 500 }}>.{ext}</span>}
-            </p>
+              <span className="truncate min-w-0 font-medium text-foreground">{baseName}</span>
+              {dotIdx > 0 && <span className="shrink-0 font-medium text-foreground">.{ext}</span>}
+            </Typography>
             <Button
               variant="tertiary"
               size="sm"
@@ -142,7 +136,7 @@ export function CdnAssetTile({
         {revealed && showImage ? (
           <>
             {imgLoading && showSpinner && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#121212]">
+              <div className="absolute inset-0 flex items-center justify-center bg-surface">
                 <LoadingSvg size={28} />
               </div>
             )}
@@ -155,9 +149,8 @@ export function CdnAssetTile({
             />
           </>
         ) : revealed && !showImage ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2 bg-[#f0f0f0] dark:bg-[rgba(255,255,255,0.02)]">
-            <MIcon name="preview_off" size={24} style={{ color: '#bbb' }} />
-            <span className="text-[12px] font-medium text-[#999] dark:text-[#898e97] dark:text-[#a1a1aa]">No preview available</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-surface">
+            <Typography type="body-xs" color="muted" weight="medium">No preview available</Typography>
           </div>
         ) : null}
 
@@ -174,9 +167,7 @@ export function CdnAssetTile({
             aria-label={`Select ${asset.name}`}
           />
         </div>
-
-
-      </div>
+      </Card>
 
       <div className="mt-2 px-1.5 pb-1 min-w-0">
         <p
