@@ -384,6 +384,33 @@ function FilesPageInner() {
       cancelText: "Cancel",
     })
     if (!confirmed) return
+
+    // Mirrors the server's own recursive walk (deleteFolderRecursively) so the
+    // whole subtree — nested folders and their files — can be removed from
+    // the UI immediately, before the request finishes.
+    const foldersToDelete = new Set<string>([folderId])
+    let added = true
+    while (added) {
+      added = false
+      for (const f of folders) {
+        if (f.parentId && foldersToDelete.has(f.parentId) && !foldersToDelete.has(f.id)) {
+          foldersToDelete.add(f.id)
+          added = true
+        }
+      }
+    }
+    const filesToDelete = new Set(files.filter((f) => f.folderId && foldersToDelete.has(f.folderId)).map((f) => f.id))
+
+    const prevFolders = folders
+    const prevFiles = files
+
+    // Optimistic: the folder (and everything inside it) disappears immediately
+    // and the toast fires right away, while the actual deletion keeps running
+    // in the background.
+    setFolders((prev) => prev.filter((f) => !foldersToDelete.has(f.id)))
+    setFiles((prev) => prev.filter((f) => !filesToDelete.has(f.id)))
+    toast.success("Folder deleted")
+
     try {
       const res = await apiFetch("/api/v2/folders", {
         method: "DELETE",
@@ -392,13 +419,16 @@ function FilesPageInner() {
       })
       if (res.ok) {
         await refreshUser()
-        toast.success("Folder deleted")
       } else {
-        const data = await res.json()
-        hypaError(data.message ||"Failed to delete folder")
+        const data = await res.json().catch(() => ({}))
+        setFolders(prevFolders)
+        setFiles(prevFiles)
+        hypaError(data.message || "Failed to delete folder")
       }
     } catch (err) {
       console.error("Delete folder error", err)
+      setFolders(prevFolders)
+      setFiles(prevFiles)
       hypaError("Failed to delete folder", errorMessage(err))
     }
   }
