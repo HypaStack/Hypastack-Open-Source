@@ -70,8 +70,10 @@ a:hover .material-symbols-rounded,
   --border-bottom: rgba(255, 255, 255, 0.05);
   --input: #0a0b0c;
   --ring: rgba(255, 255, 255, 0.2);
-  --radius: 0.125rem;
-  --field-radius: 0.5rem;
+  /* HeroUI theme — Radius (S), Radius Form (L). Every --radius-* step below
+     derives from these two, so this is the only place corners are set. */
+  --radius: 0.25rem;
+  --field-radius: 0.75rem;
   /* Sidebar (dashboard) */
   --sidebar: #08090a;
   --sidebar-foreground: #f7f8f8;}
@@ -197,10 +199,6 @@ input:-webkit-autofill:focus {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
 
   --color-sidebar: var(--sidebar);
 }
