@@ -247,7 +247,8 @@ function ManageLayoutInner({
                   />
                   <p className="min-w-0 truncate text-[16px] font-semibold leading-tight text-foreground">{user.nickname}</p>
                   <Chip size="sm" variant="soft" className="shrink-0">{tierLimits.label}</Chip>
-                  <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0">
+                  {/* h-5/px-2/text-xs matches Chip sm — no Button size is that small. */}
+                  <Button variant="danger-soft" size="sm" onPress={logout} className="ml-auto shrink-0 h-5 px-2 text-xs md:h-5">
                     Sign out
                   </Button>
                 </div>
