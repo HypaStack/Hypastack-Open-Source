@@ -75,7 +75,7 @@ export function Hero() {
                 style={{ width: "0.5em", height: "0.5em" }}
                 draggable={false}
               />{" "}
-              Kiko, and i built a private cloud storage service, because i was tired of{" "}
+              Kiko. Built private cloud storage because i was tired of{" "}
               <span className="inline-flex items-center align-middle isolate">
                 <img
                   src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
