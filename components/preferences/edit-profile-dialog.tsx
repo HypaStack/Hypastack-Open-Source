@@ -53,7 +53,7 @@ export function EditProfileDialog({
       body: JSON.stringify({ nickname_encrypted }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.message || data.error || "Profile update failed, contact us at t.me/hypastack")
+    if (!res.ok) throw new Error(data.message || data.error || "Profile update failed, Submit feedback")
     await refreshUser()
   }
 

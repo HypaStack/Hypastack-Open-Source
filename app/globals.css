@@ -24,7 +24,7 @@
 @font-face { font-family: "Instrument Sans"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu2ZGRqXp6pRwM.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Instrument Sans"; font-style: italic; font-weight: 400 700; font-display: swap; src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu15GRqXp6pQ.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
-/* Material Symbols Rounded — global config */
+/* Material Symbols Rounded, global config */
 .material-symbols-rounded {
   font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 200, 'opsz' 20;
   font-size: inherit;
@@ -41,7 +41,7 @@
   height: 1em;
   flex-shrink: 0;
   overflow: hidden;
-  /* Prefixes required — without -webkit-/-moz- the ligature text was still
+  /* Prefixes required, without -webkit-/-moz- the ligature text was still
      selectable/copyable in Chromium, leaking icon names like "bug_report". */
   user-select: none;
   -webkit-user-select: none;
@@ -61,17 +61,13 @@
   --destructive: #ff3333;
   --border: rgba(255, 255, 255, 0.08);
   --border-bottom: rgba(255, 255, 255, 0.05);
-  --input: #0a0b0c;
   --ring: rgba(255, 255, 255, 0.2);
-  /* HeroUI theme — Radius (S), Radius Form (L). Every --radius-* step below
-     derives from these two, so this is the only place corners are set. */
+  /* HeroUI theme, Radius (S) / Radius Form (L). Every --radius-* step derives from these two. */
   --radius: 0.25rem;
   --field-radius: 0.75rem;
-  /* Sidebar (dashboard) */
-  --sidebar: #08090a;
-  --sidebar-foreground: #f7f8f8;}
+}
 
-/* Dark theme — scoped to /me dashboard */
+/* Dark theme, scoped to /me dashboard */
 .theme-dark {
   /* Matches the landing page's background. */
   --background: #08090a;
@@ -86,12 +82,8 @@
   --destructive: #e5484d;
   --border: #3a3a3b;
   --border-bottom: #2c2c30;
-  --input: #2c2c30;
   --ring: #9b9b9b;
-  /* HeroUI's default accent, restated -- this class sits on a descendant div,
-     so its own --accent above (legacy neutral gray, unrelated to HeroUI's
-     brand meaning of the same name) wins for every HeroUI component nested
-     inside it unless restated here. */
+  /* HeroUI's real accent, restated, the legacy --accent above would otherwise win. */
   --accent: oklch(0.6204 0.195 253.83);
   --accent-foreground: oklch(0.9911 0 0);
   --muted: #9f9fa9;
@@ -135,7 +127,7 @@ input:-webkit-autofill:focus {
   caret-color: #2c2c2c !important;
 }
 
-/* Dark overrides — restore dark styles inside .theme-dark */
+/* Dark overrides, restore dark styles inside .theme-dark */
 .theme-dark ::selection {
   background-color: #ffffff;
   color: #000000;
@@ -155,26 +147,6 @@ input:-webkit-autofill:focus {
 }
 
 
-/* Dashboard override — Light mode requested by user */
-.theme-dashboard {
-  --background: #ffffff;
-  --foreground: #111111;
-  --card: #ffffff;
-  --popover: #ffffff;
-  --primary: #111111;
-  --secondary: #f4f4f5;
-  --muted: #f4f4f5;
-  --muted-foreground: #6b7280;
-  --accent: #e5e5e5;
-  --border: #e4e4e7;
-  --input: #ffffff;
-  --ring: #111111;
-  /* HeroUI's default accent, restated -- same collision as .theme-dark. */
-  --accent: oklch(0.6204 0.195 253.83);
-  --accent-foreground: oklch(0.9911 0 0);
-  --muted: #6b7280;
-}
-
 @theme inline {
   --font-sans: "Instrument Sans", system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
@@ -191,15 +163,11 @@ input:-webkit-autofill:focus {
   --color-accent: var(--accent);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
-  --color-input: var(--input);
   --color-ring: var(--ring);
-
-  --color-sidebar: var(--sidebar);
 }
 
 /* Tauri desktop app pure black background */
-html.is-tauri,
-html.is-tauri .theme-dashboard {
+html.is-tauri {
   --background: #0a0a0a;
   --card: #141414;
   -webkit-user-select: none;
@@ -262,22 +230,6 @@ html.is-tauri [contenteditable="true"] {
   ::-moz-selection {
     background-color: #ffffff;
     color: #000000;
-  }
-
-  /* Override browser autofill background */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  textarea:-webkit-autofill,
-  textarea:-webkit-autofill:hover,
-  textarea:-webkit-autofill:focus,
-  select:-webkit-autofill,
-  select:-webkit-autofill:hover,
-  select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px #2c2c2c inset !important;
-    -webkit-text-fill-color: #fafafa !important;
-    caret-color: #fafafa !important;
-    transition: background-color 5000s ease-in-out 0s;
   }
 
   /* Headlines */
@@ -381,47 +333,26 @@ html.is-tauri [contenteditable="true"] {
 .blog-prose pre { font-family: var(--font-mono); font-size: 13px; background: #0a0b0c; border: 1px solid rgba(255,255,255,0.08); border-radius: calc(var(--radius) - 2px); padding: 1.25rem; overflow-x: auto; margin: 1.5rem 0; color: #f7f8f8; }
 .blog-prose pre code { background: none; border: none; padding: 0; }
 
-/* ── HeroUI theme bridge ──────────────────────────────────────────────
-   This must be higher-specificity than a bare `.dark`/`:root` and must NOT
-   rely on source order: Hypastack's pre-existing shadcn-style `:root` block
-   (above) already defines `--accent` and `--muted` for its own unrelated
-   purposes (a neutral gray fill and a dark muted-background, respectively —
-   nothing to do with HeroUI's brand-color and muted-text tokens of the same
-   name). Both blocks are unlayered with equal (class-level) specificity, so
-   the textually-later declaration wins outright regardless of who "should"
-   win conceptually — which used to be that legacy block, silently
-   overriding HeroUI's real accent blue with a neutral gray. `html.dark`
-   (element+class) outranks both, but only for properties actually
-   redeclared here — `--accent`/`--muted` MUST be restated (as HeroUI's own
-   real default values, not new colors) precisely because of the collision;
-   leaving them out here does not mean "inherit HeroUI's default", it means
-   "let the legacy block keep winning". */
-html.dark,
-html[data-theme="dark"] {
+/* HeroUI theme bridge, html.dark outranks the legacy :root --accent/--muted
+   collision above, but only for properties restated here. */
+html.dark {
   --background: #08090a;
   --foreground: #f7f8f8;
 
-  /* Bumped off the background (#08090a) so a plain bg-surface is visible on
-     its own, without every caller having to remember to reach for the
-     -secondary/-tertiary step just to be seen against the page. */
+  /* Bumped off the background so a plain bg-surface is visible on its own. */
   --surface: #161616;
   --surface-foreground: var(--foreground);
   --surface-secondary: #1c1c1c;
   --surface-tertiary: #222222;
 
-  /* Matches the dashboard page background, so every overlay surface (modals,
-     popovers, dropdowns, the upload tray) reads the same without per-component
-     bg overrides. Declared here rather than on .theme-dark because overlays
-     portal to <body>, outside that wrapper, and would never see it. */
+  /* Overlays portal to body, outside .theme-dark, so declared here instead. */
   --overlay: #0c0c0d;
   --overlay-foreground: var(--foreground);
 
   --default: #1a1b1c;
   --default-foreground: var(--foreground);
 
-  /* HeroUI derives this as a color-mix of --default at 50% transparent, which
-     on a black page is nearly indistinguishable from the background. Bumped
-     to a flat visible gray so soft Chips etc. actually read as pills. */
+  /* Flat visible gray, HeroUI's default color-mix is invisible on a black page. */
   --default-soft: #262626;
   --default-soft-foreground: var(--foreground);
 
@@ -441,13 +372,7 @@ html[data-theme="dark"] {
   --backdrop: rgba(0,0,0,0.6);
 }
 
-/* HeroUI animates toasts exclusively through the View Transitions API — every
-   enter/exit keyframe lives in ::view-transition-old/new, and the stack reflow
-   (each toast sliding back and scaling down as a new one lands in front) is the
-   default view-transition group animation. In a browser without that API there
-   is no fallback, so toasts pop in and out instantly and the stack looks like a
-   replace instead of an overlap. Same motion, driven directly, only where view
-   transitions are unavailable. */
+/* HeroUI toasts animate only via View Transitions, this is the fallback for browsers without it. */
 @supports not (view-transition-name: none) {
   .toast {
     transition:
@@ -470,15 +395,12 @@ html[data-theme="dark"] {
   }
 }
 
-/* Toast is the only overlay HeroUI paints with --surface instead of --overlay,
-   which leaves it a step lighter than every modal/popover. Level it out. */
+/* Toast is the only overlay HeroUI paints with --surface, level it to --overlay. */
 .toast {
   background-color: var(--overlay);
 }
 
-/* HeroUI tints the indicator to match the title for success/warning/danger but
-   ships no such rule for accent (toast.info), so its icon stays the default
-   white while the title is branded. Complete the set. */
+/* HeroUI tints the indicator for success/warning/danger but not accent, complete the set. */
 .toast--accent .toast__indicator {
   color: var(--accent-soft-foreground);
 }

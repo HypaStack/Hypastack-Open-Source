@@ -36,7 +36,7 @@ export default function Pricing() {
 
           <Typography type="body-sm" color="muted" className="mt-16 text-center">
             Need more capabilities?{" "}
-            <Link href="https://t.me/hypastack" target="_blank" rel="noopener noreferrer" className="text-foreground">
+            <Link href="mailto:usekiko@hypamail.me" target="_blank" rel="noopener noreferrer" className="text-foreground">
               Contact us
             </Link>
           </Typography>
