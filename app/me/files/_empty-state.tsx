@@ -6,20 +6,18 @@ import { MIcon } from "@/components/ui/material-icon"
 
 export function EmptyState({ query, username }: { query: string; username: string }) {
   const FACTS = [
-    `Nothing here yet, ${username}.`,
-    "Drop a file in and get a link back.",
-    "This is where your shared files land.",
-    "Drag something onto the page to start.",
-    "Files get encrypted before they leave your browser.",
-    "Set a link to burn and it dies after one download.",
-    "Links can last a minute or a month. Your call.",
-    "We hold the scrambled version. Only you hold the key.",
-    "Nothing to see, which is kind of the point.",
-    "Zip a batch and share the whole thing as one link.",
-    "Add a note and it shows up next to the download.",
-    "No ads, no trackers, no selling anything.",
-    "Built by one developer who reads every bug report.",
-    "Delete a file and it is actually gone.",
+    `still empty ${username}`,
+    "no algorithm deciding what you see here",
+    "we're not training an ai on your files",
+    "no thirty page terms of service to hide anything in",
+    "we don't sell what we can't even read",
+    "no cookie banner because there's nothing to track",
+    "your files don't become someone else's dataset",
+    "delete actually means delete here",
+    "no exec somewhere staring at a graph of your uploads",
+    "one guy runs this not a growth team",
+    "no dark patterns just a button that uploads a file",
+    "burn on read because delete shouldn't need air quotes",
   ];
 
   const [index, setIndex] = useState(0);

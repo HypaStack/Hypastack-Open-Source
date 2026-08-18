@@ -6,24 +6,18 @@ import { MIcon } from "@/components/ui/material-icon"
 
 export function EmptyState({ query, username }: { query: string; username: string }) {
   const FACTS = [
-    `What's your move, ${username}?`,
-    "Wanna share a file?",
-    "Thanks for using Hypastack, I appreciate it.",
-    "Did you know Hypastack was made by a solo European developer?",
-    "Drive files are end-to-end encrypted. CDN assets are public by design.",
-    "Hypastack doesn't use third-party tracking scripts.",
-    "No ads. No selling data. Just pure file sharing.",
-    "Every image gets its EXIF and GPS data stripped on upload.",
-    "CDN links are meant to be shared. Keep private things in your Drive.",
-    "Upload up to your limit, instantly.",
-    "Hypastack runs entirely on edge networks.",
-    "Share links automatically burn if you want them to.",
-    "No email required to start sharing.",
-    "Your data is wiped cleanly when you delete it. No lingering ghosts.",
-    "A quiet place to store loud ideas.",
-    "We sleep well at night knowing your data is yours alone.",
-    "Designed for the privacy-conscious.",
-    "Simple on the outside, engineered like a tank on the inside."
+    `what's your move ${username}`,
+    "still empty here",
+    "one solo dev not a whole growth team",
+    "these links are public that's the whole point of cdn",
+    "no tracking scripts phoning home",
+    "exif and gps data get stripped on upload",
+    "no ads no data broker no middleman",
+    "served off the edge so it loads fast",
+    "no email required to start sharing",
+    "delete it and it's actually gone",
+    "no exec tracking your engagement numbers",
+    "keep the private stuff in drive this part's for sharing",
   ];
 
   const [index, setIndex] = useState(0);
