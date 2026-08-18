@@ -73,7 +73,7 @@ export function UploadTray({
   handleUpload,
   handleCopy,
   handleCopyOne,
-  handleReset,
+  doFullReset,
   getUploadStats,
   user,
   uploadType,
@@ -408,7 +408,7 @@ export function UploadTray({
 
                 {state === "selected" ? (
                   <div className="flex items-center justify-between gap-2">
-                    <Button variant="tertiary" size="sm" onPress={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={doFullReset}>
                       Cancel
                     </Button>
                     <Button
@@ -424,7 +424,7 @@ export function UploadTray({
                   </div>
                 ) : (state === "done" || state === "error") && shareUrl && shareUrl.includes("\n") ? (
                   <div className="flex items-center justify-between gap-2">
-                    <Button variant="tertiary" size="sm" onPress={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={doFullReset}>
                       Done
                     </Button>
                     <Button
@@ -443,7 +443,7 @@ export function UploadTray({
                   </div>
                 ) : (
                   <div className="flex items-center justify-between gap-2">
-                    <Button variant="tertiary" size="sm" onPress={handleReset}>
+                    <Button variant="tertiary" size="sm" onPress={doFullReset}>
                       Clear
                     </Button>
                     <Button

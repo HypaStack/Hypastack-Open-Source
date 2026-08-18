@@ -608,6 +608,7 @@ export function useUpload({
     handleCopy,
     handleCopyOne,
     handleReset,
+    doFullReset,
     handleAbortUpload,
     handleResumeUpload,
     handleResumeFileSelected,
