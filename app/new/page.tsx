@@ -226,10 +226,11 @@ export default function CreateAccountPage() {
                     <Checkbox.Indicator />
                   </Checkbox.Control>
                   <span>
-                    I accept the{" "}
+                    I accept all the{" "}
                     <Link href="/terms" className="font-semibold hover:underline">Terms</Link>
                     {" "}&amp;{" "}
                     <Link href="/privacy" className="font-semibold hover:underline">Privacy Policy</Link>
+                    , and I confirm my age is above 18.
                   </span>
                 </Checkbox.Content>
               </Checkbox>
