@@ -16,6 +16,7 @@ import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/u
 import { errorMessage } from "@/lib/errors"
 import { FILES_PER_PAGE } from "@/constants"
 import { apiFetch } from "@/lib/http/fetch"
+import { readDroppedIds } from "./_drag-payload"
 import { type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
@@ -273,14 +274,14 @@ function FilesPageInner() {
     }
   }
 
+  // Accept unconditionally: returning "cancel" here stops react-aria from
+  // calling preventDefault on dragover, and the browser then refuses the drop
+  // outright. Non-file payloads are filtered in onDrop instead.
   useDrop({
     ref: rootDropRef,
-    getDropOperation: (types) => (types.has("text/plain") ? "move" : "cancel"),
+    getDropOperation: () => "move",
     onDrop: async (e) => {
-      const ids = await Promise.all(
-        e.items.map((item) => (item.kind === "text" ? item.getText("text/plain") : Promise.resolve("")))
-      )
-      const moved = ids.filter(Boolean)
+      const moved = await readDroppedIds(e.items)
       if (moved.length > 0) moveFiles(moved, null)
     },
   })

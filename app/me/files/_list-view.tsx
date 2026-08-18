@@ -2,19 +2,12 @@
 
 import { useState } from "react"
 import { Table, Checkbox, Button } from "@heroui/react"
-import { type DropItem, type Selection, useDragAndDrop } from "react-aria-components"
+import { type Selection, useDragAndDrop } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem, type FolderItem } from "@/hooks/useManage"
+import { FILE_DRAG_TYPE, readDroppedIds } from "./_drag-payload"
 import { getFileIconForType } from "./_helpers"
 import { formatBytes } from "@/lib/format"
-
-/** Pulls the dragged file ids back out of the drop payload. */
-async function readDroppedIds(items: readonly DropItem[]): Promise<string[]> {
-  const ids = await Promise.all(
-    items.map((item) => (item.kind === "text" ? item.getText("text/plain") : Promise.resolve("")))
-  )
-  return ids.filter(Boolean)
-}
 
 function SelectionCheckbox() {
   return (
@@ -97,9 +90,9 @@ export function ListView({
     // brings the whole selection along, minus any folders (no move endpoint).
     getItems: (keys) => {
       const dragged = [...keys].map(String).filter((id) => fileIds.has(id))
-      return dragged.map((id) => ({ "text/plain": id }))
+      return dragged.map((id) => ({ [FILE_DRAG_TYPE]: id }))
     },
-    acceptedDragTypes: ["text/plain"],
+    acceptedDragTypes: "all",
     shouldAcceptItemDrop: (target) => folderIds.has(String(target.key)),
     onItemDrop: async (e) => {
       const moved = await readDroppedIds(e.items)
