@@ -10,7 +10,7 @@ import { formatBytes } from "@/lib/format"
 
 function SelectionCheckbox() {
   return (
-    <Checkbox slot="selection">
+    <Checkbox slot="selection" className="h-7 justify-center">
       <Checkbox.Content>
         <Checkbox.Control className="border-white/30">
           <Checkbox.Indicator />
@@ -103,7 +103,7 @@ export function ListView({
                         type="button"
                         onClick={() => toggleExpanded(row.folder.id)}
                         aria-label={expandedFolders.has(row.folder.id) ? `Collapse ${row.folder.name}` : `Expand ${row.folder.name}`}
-                        className="flex items-center justify-center h-6 w-6 text-muted hover:text-foreground transition-colors"
+                        className="flex items-center justify-center h-7 w-7 text-muted hover:text-foreground transition-colors"
                       >
                         <MIcon name={expandedFolders.has(row.folder.id) ? "expand_more" : "chevron_right"} size={18} />
                       </button>
@@ -111,7 +111,7 @@ export function ListView({
                   </Table.Cell>
                   <Table.Cell>
                     <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer min-h-9"
+                      className="flex items-center gap-2 min-w-0 cursor-pointer"
                       style={{ paddingLeft: row.depth * 20 }}
                       onClick={() => onOpenFolder(row.folder.id)}
                     >
@@ -125,6 +125,7 @@ export function ListView({
                         variant="ghost"
                         isIconOnly
                         size="sm"
+                        style={{ height: 28, width: 28 }}
                         onPress={() => onDeleteFolder(row.folder.id, row.folder.name)}
                         aria-label={`Delete folder ${row.folder.name}`}
                       >
@@ -144,7 +145,7 @@ export function ListView({
                   </Table.Cell>
                   <Table.Cell>
                     <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer min-h-9"
+                      className="flex items-center gap-2 min-w-0 cursor-pointer"
                       style={{ paddingLeft: row.depth * 20 }}
                       onDoubleClick={() => window.open(`/d/${row.file.id}`, "_blank")}
                     >
