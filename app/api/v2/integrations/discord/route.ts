@@ -6,10 +6,8 @@ import { API_ERRORS, DISCORD_MAX_CONTENT_LENGTH } from "@/constants"
 
 export const dynamic = "force-dynamic"
 
-// Server-side relay to a Discord webhook. Browsers can't POST to Discord
-// webhooks directly (no CORS), and the payload is a keyless upload
-// notification, so relaying it here is safe. SSRF-guarded: only well-formed
-// Discord webhook URLs are ever fetched, and redirects are refused.
+// Relays to Discord since browsers can't POST webhooks directly (no CORS).
+// SSRF-guarded: only well-formed Discord webhook URLs fetched, redirects refused.
 export const POST = withAuth(async ({ request }) => {
   const body = await request.json().catch(() => ({}))
   const { url, content } = body

@@ -1,7 +1,5 @@
-// Avatar/banner objects live under an opaque per-user namespace
-// (profiles/{storageToken}/…) so their public URLs never reveal the account id.
-// Legacy objects used the raw user id as the namespace; both are accepted when
-// validating that a stored key really belongs to the acting user.
+// Avatar/banner keys live under an opaque storageToken namespace, not the raw
+// user id, so public URLs never reveal the account. Legacy raw-id keys still validate.
 
 export function isOwnProfileKey(
   key: string | null | undefined,

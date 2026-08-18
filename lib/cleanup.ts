@@ -104,10 +104,8 @@ async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string
   return { cleaned, errors }
 }
 
-// Sweep abandoned funnel drops (init wrote a funnel_staging row, complete never
-// cleared it). Rows past 2 hours never completed: delete the orphaned R2 object
-// and the row. Ids that became a live funnel_files row are skipped (object kept)
-// and their stale markers just dropped.
+// Sweep funnel_staging rows past 2 hours whose init never completed, deleting
+// the orphaned R2 object. Rows that became a live funnel_files row are skipped.
 async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0
@@ -150,16 +148,9 @@ async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string
   return { cleaned, errors }
 }
 
-// Sweep abandoned CDN uploads (init wrote a cdn_staging row, complete never
-// cleared it). Rows past 2 hours never completed: delete the orphaned R2 object
-// and the row.
-//
-// The "is it live" test is on r2_key, not id. Two inits can reserve the same
-// custom slug before either completes, isCdnSlugTaken only sees cdn_assets,
-// so both staging rows carry the same key while only the winner's id becomes an
-// asset. Matching on id would let the loser's sweep delete the winner's live
-// object. Keys still referenced by an asset keep their object; the stale marker
-// is dropped either way.
+// Sweep cdn_staging rows past 2 hours whose init never completed. Matches on
+// r2_key not id, two racing inits for the same slug can share a key, and
+// matching on id would let the loser's sweep delete the winner's live object.
 async function cleanupCdnStaging(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0

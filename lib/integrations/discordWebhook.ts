@@ -1,10 +1,5 @@
-// Discord webhook integration. Fires from the browser after an upload and sends
-// a notification with the link *minus its key fragment*, the decryption key
-// (after `#`) is never included, so the webhook only tells you an upload
-// happened, it doesn't hand out access. Config + a small activity log live in
-// localStorage (per device). The actual POST to Discord is relayed through our
-// own API (`/api/v2/integrations/discord`) because browsers can't call Discord
-// webhooks directly (no CORS); the relay only forwards validated Discord URLs.
+// Fires after an upload, link sent minus its decryption key fragment. Relayed
+// through /api/v2/integrations/discord since browsers can't call webhooks (no CORS).
 
 import { apiFetch } from "@/lib/http/fetch"
 import {
@@ -99,11 +94,8 @@ export async function sendTest(url: string): Promise<void> {
   await post(url, "✅ Hypastack webhook connected — you'll get a ping here on each upload.")
 }
 
-// ── Persistent send queue ────────────────────────────────────────────────────
-// Messages wait in localStorage until actually delivered, so closing the tab
-// mid-drain loses nothing, the queue resumes on the next visit
-// (resumeWebhookQueue). Messages are spaced WEBHOOK_BATCH_DELAY_MS apart to
-// stay clear of Discord's rate limit.
+// ── Persistent send queue ──────────────────────────────────────────────────
+// Messages wait in localStorage until delivered, closing the tab mid-drain loses nothing.
 
 interface QueueEntry {
   content: string
@@ -159,10 +151,8 @@ export function resumeWebhookQueue(): void {
   if (getQueue().length > 0) void drainQueue(cfg.url)
 }
 
-// Fire-and-forget for a completed upload. Never throws, a webhook problem must
-// not affect the upload UX; failures are recorded in the activity log instead.
-// Multi-file uploads are packed into a single message, split only when
-// Discord's 2000-char content cap forces it.
+// Fire-and-forget, never throws, a webhook problem must not affect upload UX.
+// Multi-file uploads pack into one message, split only past Discord's 2000-char cap.
 export async function dispatchUploadLinks(links: string[]): Promise<void> {
   const cfg = getWebhookConfig()
   if (!cfg.enabled || !isValidDiscordWebhook(cfg.url) || links.length === 0) return

@@ -1,9 +1,7 @@
 import http from "node:http"
 
-// Client for the hypasched Erlang sidecar, which owns file expiry and burn
-// deletion scheduling. It talks HTTP over a Unix domain socket (shared via a
-// co-mounted volume). Callers fall back to the legacy in-process timers and
-// hourly sweep when this throws, so the socket being absent/down is non-fatal.
+// Client for the hypasched Erlang sidecar (file expiry/burn deletion), over a Unix
+// socket. Callers fall back to the legacy in-process timers when this throws.
 
 const SOCKET_PATH = process.env.SCHED_SOCKET_PATH || "/run/hypasched/sched.sock"
 const TIMEOUT_MS = 1500

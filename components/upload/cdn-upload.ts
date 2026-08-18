@@ -31,10 +31,7 @@ function resolveConcurrency(tierCap: number, files: FileWithPreview[]): number {
   return Math.max(1, Math.min(cap, files.length))
 }
 
-// Uploads the selected files to the CDN: one batched init (a single Turnstile
-// check), a direct PUT per file to R2, then a batched finalize. CDN assets are
-// served raw (no client-side encryption), unlike Drive uploads. Returns the
-// joined share-URL text (copy-all) plus the raw per-file URLs (copy-one).
+// Batched init, direct PUT per file to R2 (unencrypted, unlike Drive), batched finalize.
 export async function runCdnUpload(
   files: FileWithPreview[],
   csrfToken: string,

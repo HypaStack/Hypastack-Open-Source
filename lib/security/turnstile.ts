@@ -1,11 +1,8 @@
 import { errorMessage } from "@/lib/errors"
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY
 
-// A solved token may legitimately back a single user action that fans out to a
-// few backend calls (e.g. a multi-file upload makes one init call per file with
-// the same token). We cache the verified result briefly so those calls succeed,
-// but cap reuse so one solved challenge can't authorize an unbounded burst of
-// requests within the window.
+// A multi-file upload reuses one solved token across several init calls, so we
+// cache the verified result briefly, but cap reuse to bound abuse per token.
 const TOKEN_TTL_MS = 60000
 const MAX_TOKEN_REUSES = 50
 const verifiedTokens = new Map<string, { at: number; uses: number }>()

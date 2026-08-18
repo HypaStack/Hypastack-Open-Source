@@ -1,9 +1,7 @@
 import http from "node:http"
 
-// Client for the hypasan Go sidecar. It talks HTTP over a Unix domain socket
-// (shared via a co-mounted volume) and returns the same sanitized note string
-// the in-process DOMPurify pipeline produces. Callers fall back to the Node
-// implementation if this throws, so the socket being absent/down is non-fatal.
+// Client for the hypasan Go sidecar over a Unix socket, same output as the
+// in-process DOMPurify pipeline. Callers fall back to Node if this throws.
 
 const SOCKET_PATH = process.env.SAN_SOCKET_PATH || "/run/hypasan/san.sock"
 const TIMEOUT_MS = 1500

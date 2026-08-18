@@ -1,9 +1,7 @@
 import http from "node:http"
 
-// Client for the hypahash Go sidecar. It talks HTTP over a Unix domain socket
-// (shared via a co-mounted volume) and returns the exact same hash string the
-// in-process pbkdf2 produces. Callers fall back to the Node implementation if
-// this throws, so the socket being absent/down is non-fatal.
+// Client for the hypahash Go sidecar over a Unix socket, same output as the
+// in-process pbkdf2. Callers fall back to Node if this throws.
 
 const SOCKET_PATH = process.env.HASH_SOCKET_PATH || "/run/hypahash/hash.sock"
 const TIMEOUT_MS = 2000

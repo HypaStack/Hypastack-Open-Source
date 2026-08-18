@@ -20,10 +20,8 @@ interface InitMultipart {
   totalParts: number
 }
 
-// Drop a single file into a funnel: generate a random AES key, encrypt the file
-// (and its name) with it, RSA-wrap the AES key with the funnel's public key, and
-// hand the ciphertext + wrapped key to the server. Mirrors the authed upload
-// transport but swaps the URL-fragment key for a public-key wrap.
+// Encrypts the file with a random AES key, RSA-wraps that key with the funnel's
+// public key instead of an URL-fragment key, then uploads both to the server.
 export async function dropFile(opts: {
   slug: string
   file: File

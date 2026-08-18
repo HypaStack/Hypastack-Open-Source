@@ -6,10 +6,7 @@ import { useThemeMode, type ThemeMode } from "./use-theme-mode"
 
 const PALETTE = {
   dark: {
-    // Recessed darker fill so the field reads as distinct from any surrounding
-    // card/page rather than blending into it. A uniform hairline border keeps
-    // the rounded corners smooth; inset top/bottom bevels give the button-like
-    // depth without a corner miter.
+    // Recessed fill keeps the field distinct from surrounding card/page.
     bg: "rgba(0,0,0,0.22)",
     text: "#ffffff",
     placeholder: "rgba(255,255,255,0.5)",
@@ -60,14 +57,7 @@ interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "si
   rows?: number
 }
 
-/**
- * Text field: translucent fill, hairline border that brightens on focus, no
- * shine or glow. Accepts every native <input> prop.
- *
- * Portable: all essential styling is inline (works with or without Tailwind) and
- * focus is handled in JS, so no global CSS is required. `leading`/`trailing`
- * wrap the input in a flex row and the border moves to that wrapper.
- */
+// Portable: styling is inline (no Tailwind needed), focus handled in JS, no global CSS.
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(
   {
     theme = "auto",
@@ -102,9 +92,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
     opacity: disabled ? 0.5 : 1,
   }
 
-  // Shared field styling. border/background are intentionally omitted here: a
-  // standalone input carries the framed look itself (frame merged in below),
-  // while a wrapped input sits inside the framed wrapper and stays transparent.
+  // border/background omitted: standalone gets frame merged in below, wrapped stays transparent.
   const field: CSSProperties = {
     boxSizing: "border-box",
     width: "100%",

@@ -20,13 +20,8 @@ const EDGE = 8
 const PANEL = menuVariants() + " shadow-[0_16px_48px_rgba(0,0,0,0.16),0_3px_10px_rgba(0,0,0,0.08)] bg-[var(--overlay)]"
 const ROW = menuItemVariants() + " text-left"
 
-/**
- * Right-click context menu: portaled, positioned at the click coordinates and
- * clamped back inside the viewport. No HeroUI component anchors to arbitrary
- * cursor coordinates (their Menu triggers off a real DOM element), so this
- * positioning shell stays custom, everything it renders (panel, rows,
- * dividers) uses HeroUI's real menu classes/tokens/Separator.
- */
+// Portaled, positioned at click coordinates, no HeroUI Menu anchors to a cursor.
+// Positioning shell is custom, everything it renders uses HeroUI's real menu classes.
 export function ContextMenu({
   isOpen,
   pos,

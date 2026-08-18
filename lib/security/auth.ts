@@ -45,13 +45,9 @@ function generateSalt(): string {
   return crypto.randomBytes(16).toString("hex")
 }
 
-// Deterministic, indexable lookup value for a credential: login access keys
-// (~190 bits) and v3 API keys (256 bits). Both are CSPRNG-generated, never
-// user-chosen, so a plain SHA-256 is the right call, a slow KDF only buys time
-// against a guessable input, and there's nothing to guess at this entropy. It
-// also runs on every v3 request, where PBKDF2 would be a self-inflicted DoS.
-// CodeQL's js/insufficient-password-hash flags this because it reads any
-// credential as a password. Don't "fix" it by swapping in a KDF.
+// Plain SHA-256 is correct here: keys are CSPRNG-generated, not user-chosen, so
+// there's nothing to guess and a slow KDF would just be a DoS on every v3 request.
+// CodeQL flags this as js/insufficient-password-hash, don't "fix" it with a KDF.
 export function computeKeyLookup(key: string): string {
   return crypto.createHash("sha256").update(key).digest("hex")
 }

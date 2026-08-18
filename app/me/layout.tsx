@@ -31,10 +31,7 @@ const TIER_CHIP_COLOR: Record<Tier, "default" | "accent" | "warning" | "danger">
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-// The account menu trigger/popover and the Upgrade button all live inside a
-// no horizontal inset on the sidebar wrapper, this is that shared content
-// width, so the trigger and its popover always render pixel-identical no
-// matter what state either is in.
+// Shared content width so the account trigger and its popover render pixel-identical.
 const SIDEBAR_CONTENT_WIDTH = SIDEBAR_WIDTH
 
 function isSectionActive(pathname: string, href: string): boolean {

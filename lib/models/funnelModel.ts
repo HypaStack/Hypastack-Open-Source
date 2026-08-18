@@ -68,10 +68,8 @@ export function funnelObjectKey(funnelId: string, fileId: string): string {
   return `funnels/${funnelId}/${fileId}`
 }
 
-// Create a funnel, enforcing the active-link cap atomically. A per-user advisory
-// lock serializes concurrent creates so the count-then-insert can't race past the
-// cap (TOCTOU). Returns 'cap' when the limit is already reached, 'ok' otherwise.
-// A slug conflict still surfaces as a 23505 for the caller to handle.
+// Per-user advisory lock serializes concurrent creates so count-then-insert can't
+// race past the cap. Slug conflicts still surface as a 23505 for the caller.
 export async function createFunnelWithCap(input: CreateFunnelInput, maxActive: number): Promise<'ok' | 'cap'> {
   await ensureDatabase()
   const client = await getClient()

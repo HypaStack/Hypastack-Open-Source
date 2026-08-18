@@ -1,9 +1,5 @@
-// Biometric unlock: a WebAuthn passkey acts as a local, biometric-gated vault
-// for the access key. We never register the credential server-side, the
-// passkey is only used to derive a stable secret via the PRF extension, which
-// wraps the access key on this device. Unlock = biometric -> PRF -> unwrap the
-// access key -> the caller replays the normal login. Nothing new reaches the
-// server, so the zero-knowledge model is untouched.
+// A local WebAuthn passkey (never registered server-side) derives a PRF secret
+// that wraps the access key on-device. Unlock: biometric -> PRF -> unwrap -> login.
 
 import { STORAGE_KEY_BIOMETRIC, BIOMETRIC_PRF_SALT_LABEL } from "@/constants"
 
