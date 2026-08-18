@@ -2,8 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button } from "@heroui/react"
-import { MenuItem } from "@/components/ui/menu-item"
+import { Button, Card, Typography } from "@heroui/react"
 import type { UseUploadReturn } from "./use-upload"
 
 type ResumePopupProps = Pick<
@@ -43,64 +42,53 @@ export function ResumePopup({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: 0.15 } }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
-            className={`fixed z-[201] bottom-4 left-4 right-4 w-auto sm:left-auto sm:bottom-4 sm:w-[360px] pointer-events-auto overflow-hidden bg-[#121212] border border-[rgba(255,255,255,0.08)] rounded-[16px] ${desktopPosition}`}
-            style={{
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)",
-              padding: 6,
-            }}
+            className={`fixed z-[201] bottom-4 left-4 right-4 w-auto sm:left-auto sm:bottom-4 sm:w-[360px] pointer-events-auto ${desktopPosition}`}
+            style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)" }}
           >
-            {/* Title + description */}
-            <div style={{ padding: "10px 14px 6px 14px" }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: 3 }}>
-                <p className="text-[#f0f0f0]" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>
-                  Continue upload?
-                </p>
+            <Card
+              variant="transparent"
+              className="!p-0 !gap-0 overflow-hidden rounded-[16px] border !border-solid border-white/10 bg-overlay"
+            >
+              <Card.Header className="flex-row items-start justify-between gap-3 px-3 pt-3 pb-2">
+                <div className="min-w-0">
+                  <Card.Title className="text-base">Continue upload?</Card.Title>
+                  <Card.Description>
+                    You have an unfinished upload from a previous session. Resume it where you left off?
+                  </Card.Description>
+                </div>
                 <Button
                   variant="ghost"
                   isIconOnly
                   size="sm"
                   onPress={() => setShowResumePopup(false)}
                   aria-label="Dismiss"
-                  style={{ height: 24, width: 24 }}
                 >
                   <MIcon name="close" size={16} />
                 </Button>
-              </div>
-              <p className="text-[#898e97]" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>
-                You have an unfinished upload from a previous session. Resume it where you left off?
-              </p>
-            </div>
+              </Card.Header>
 
-            {/* File */}
-            <div
-              className="bg-[rgba(255,255,255,0.04)] rounded-[10px] border border-[rgba(255,255,255,0.06)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-              style={{ margin: "0 0 6px 0", padding: 4, maxHeight: 140, overflowY: "auto" }}
-            >
-              <div className="flex items-center gap-2.5" style={{ height: 32, paddingLeft: 10, paddingRight: 10, borderRadius: 6 }}>
-                <MIcon name="description" size={14} className="text-[#a1a1aa]" style={{ flexShrink: 0 }} />
-                <span className="text-[#ccc]" style={{ fontSize: 13, fontWeight: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {interruptedSession.fileName} · {(interruptedSession.fileSize / 1024 / 1024).toFixed(1)} MB
-                </span>
-              </div>
-            </div>
+              <Card.Content className="px-3 pb-3">
+                <Card variant="transparent" className="!p-2.5 bg-surface rounded-[10px]">
+                  <div className="flex items-center gap-2.5">
+                    <MIcon name="description" size={14} className="shrink-0 text-muted" />
+                    <Typography type="body-sm" className="min-w-0 truncate text-foreground">
+                      {interruptedSession.fileName} · {(interruptedSession.fileSize / 1024 / 1024).toFixed(1)} MB
+                    </Typography>
+                  </div>
+                </Card>
+              </Card.Content>
 
-            {/* Actions */}
-            <div className="bg-[#121212] rounded-[10px] border border-[rgba(255,255,255,0.06)]" style={{ padding: 4 }}>
-              <MenuItem
-                onClick={handleResumeUpload}
-                icon={<MIcon name="play_arrow" size={15} />}
-                style={{ height: 36, paddingLeft: 12, paddingRight: 12 }}
-              >
-                Resume upload
-              </MenuItem>
-              <MenuItem
-                onClick={handleAbortUpload}
-                icon={<MIcon name="delete_outline" size={15} />}
-                style={{ height: 36, paddingLeft: 12, paddingRight: 12, fontWeight: 400 }}
-              >
-                Cancel upload
-              </MenuItem>
-            </div>
+              <Card.Footer className="gap-2 px-3 pb-3">
+                <Button variant="tertiary" onPress={handleAbortUpload} className="flex-1" style={{ gap: 8 }}>
+                  <MIcon name="delete_outline" size={16} />
+                  Cancel upload
+                </Button>
+                <Button variant="primary" onPress={handleResumeUpload} className="flex-1" style={{ gap: 8 }}>
+                  <MIcon name="play_arrow" size={16} />
+                  Resume
+                </Button>
+              </Card.Footer>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
