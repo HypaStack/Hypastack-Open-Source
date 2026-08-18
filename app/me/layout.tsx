@@ -503,13 +503,17 @@ function ManageLayoutInner({
         </header>
 
         <div className="flex-1 relative overflow-hidden">
-          <div className="absolute inset-0 overflow-y-auto">
+          {/* Indent lives here, not on <main>: main already carries px-3/sm:px-5/
+              lg:px-6 and a second padding utility on the same element loses the
+              ordering race. This element carries none, and padding (unlike a
+              parent's) still applies inside an inset-0 box. */}
+          <div className={`absolute inset-0 overflow-y-auto ${sidebarCollapsed ? "lg:pl-[50px]" : ""}`}>
             <motion.main
               key={pathname}
               initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className={`h-full flex flex-col px-3 sm:px-5 lg:pr-6 pt-4 pb-6 ${sidebarCollapsed ? "lg:pl-[74px]" : "lg:pl-6"}`}
+              className="h-full flex flex-col px-3 sm:px-5 lg:px-6 pt-4 pb-6"
             >
               {children}
             </motion.main>
