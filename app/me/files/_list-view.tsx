@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Table, Checkbox, Button } from "@heroui/react"
-import { type Selection } from "react-aria-components"
+import { type Selection, useDragAndDrop } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem, type FolderItem } from "@/hooks/useManage"
 import { getFileIconForType } from "./_helpers"
@@ -33,6 +33,7 @@ export function ListView({
   onSelectionChange,
   onOpenFolder,
   onDeleteFolder,
+  onMoveFiles,
   onContextMenu,
 }: {
   folders: FolderItem[]
@@ -43,6 +44,7 @@ export function ListView({
   onSelectionChange: (ids: Set<string>) => void
   onOpenFolder: (id: string) => void
   onDeleteFolder: (id: string) => void
+  onMoveFiles: (fileIds: string[], folderId: string) => void
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
@@ -77,6 +79,29 @@ export function ListView({
     onSelectionChange(keys === "all" ? new Set(allRowIds) : new Set(Array.from(keys, String)))
   }
 
+  // Drag files onto a folder row to move them — no dialog. Folder rows are the
+  // only valid drop targets, and only file rows produce drag items.
+  const fileIds = new Set(rows.filter((r) => r.kind === "file").map((r) => r.file.id))
+  const folderIds = new Set(rows.filter((r) => r.kind === "folder").map((r) => r.folder.id))
+
+  const { dragAndDropHooks } = useDragAndDrop({
+    // Dragging an unselected row drags just that row; dragging a selected one
+    // brings the whole selection along, minus any folders (no move endpoint).
+    getItems: (keys) => {
+      const dragged = [...keys].map(String).filter((id) => fileIds.has(id))
+      return dragged.map((id) => ({ "text/plain": id }))
+    },
+    acceptedDragTypes: ["text/plain"],
+    shouldAcceptItemDrop: (target) => folderIds.has(String(target.key)),
+    onItemDrop: async (e) => {
+      const ids = await Promise.all(
+        e.items.map((item) => (item.kind === "text" ? item.getText("text/plain") : Promise.resolve("")))
+      )
+      const moved = ids.filter(Boolean)
+      if (moved.length > 0) onMoveFiles(moved, String(e.target.key))
+    },
+  })
+
   return (
     <Table className="-mr-1 -mb-1">
       <Table.ScrollContainer>
@@ -85,6 +110,7 @@ export function ListView({
           selectionMode="multiple"
           selectedKeys={selectedIds}
           onSelectionChange={handleSelectionChange}
+          dragAndDropHooks={dragAndDropHooks}
         >
           <Table.Header>
             <Table.Column className="w-10 pr-2 py-2">

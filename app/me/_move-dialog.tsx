@@ -98,7 +98,9 @@ export function MoveDialog({
 
   return (
     <Modal isOpen onOpenChange={(isOpen) => { if (!isOpen) onCancel() }}>
-      <Modal.Backdrop isDismissable variant="blur">
+      {/* Not dismissable: a press anywhere inside was closing it, so only
+          Cancel, the X and Esc close this one. */}
+      <Modal.Backdrop isDismissable={false} variant="blur">
         <Modal.Container placement="center" size="md" scroll="inside">
           <Modal.Dialog>
             <Modal.Header>

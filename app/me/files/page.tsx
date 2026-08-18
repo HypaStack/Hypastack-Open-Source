@@ -19,7 +19,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { type SortField, type SortDirection } from "./_helpers"
 import { EmptyState } from "./_empty-state"
 import { ListView } from "./_list-view"
-import { MoveDialog, toTree } from "../_move-dialog"
+import { toTree } from "../_move-dialog"
 
 
 function FilesPageInner() {
@@ -31,7 +31,6 @@ function FilesPageInner() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [moveOpen, setMoveOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
@@ -273,12 +272,6 @@ function FilesPageInner() {
     }
   }
 
-  const handleBulkMove = async (folderId: string | null) => {
-    // Moving only applies to files — folders don't have a move endpoint yet.
-    const fileIds = Array.from(selectedIds).filter((id) => files.some((f) => f.id === id))
-    await moveFiles(fileIds, folderId)
-  }
-
   const moveFiles = async (ids: string[], folderId: string | null) => {
     if (ids.length === 0) return
     try {
@@ -295,7 +288,6 @@ function FilesPageInner() {
       const movedIds = new Set(ids)
       setFiles((prev) => prev.map((f) => (movedIds.has(f.id) ? { ...f, folderId } : f)))
       setSelectedIds(new Set())
-      setMoveOpen(false)
       toast.success(`Moved ${ids.length} file${ids.length === 1 ? "" : "s"}`)
     } catch (err) {
       console.error("Move error:", err)
@@ -409,15 +401,6 @@ function FilesPageInner() {
           {selectedIds.size > 0 ? (
             <>
               <Button
-                variant="tertiary"
-                size="md"
-                onPress={() => setMoveOpen(true)}
-                style={{ gap: 8 }}
-              >
-                <MIcon name="drive_file_move" size={16} className="shrink-0" />
-                <span className="hidden sm:inline">Move</span>
-              </Button>
-              <Button
                 variant="danger"
                 size="md"
                 onPress={handleBulkDelete}
@@ -484,6 +467,7 @@ function FilesPageInner() {
               onSelectionChange={setSelectedIds}
               onOpenFolder={setCurrentFolderId}
               onDeleteFolder={handleDeleteFolder}
+              onMoveFiles={(ids, folderId) => moveFiles(ids, folderId)}
               onContextMenu={(e, id) => {
                 e.preventDefault();
                 setOpenMenuId(id);
@@ -578,17 +562,6 @@ function FilesPageInner() {
           </>
         )}
       </AnimatePresence>
-
-      {moveOpen && (
-        <MoveDialog
-          count={selectedIds.size}
-          folders={folders}
-          currentFolderId={currentFolderId}
-          rootLabel="Drive"
-          onCancel={() => setMoveOpen(false)}
-          onMove={handleBulkMove}
-        />
-      )}
 
       <ContextMenu isOpen={!!activeContextMenuFile} pos={contextMenuPos} onClose={() => { setOpenMenuId(null); setContextMenuPos(null) }}>
         {activeContextMenuFile && (
