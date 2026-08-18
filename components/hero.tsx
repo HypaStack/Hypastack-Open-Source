@@ -72,7 +72,7 @@ export function Hero() {
                 src="https://r2.hypastack.com/cdn/jxvmdjwe4dnu/hellbound.png"
                 alt="Kiko"
                 className="inline-block rounded-full object-cover select-none pointer-events-none align-middle"
-                style={{ width: "0.8em", height: "0.8em" }}
+                style={{ width: "0.6em", height: "0.6em" }}
                 draggable={false}
               />{" "}
               Kiko, and i built a private cloud storage service, because i was tired of{" "}
