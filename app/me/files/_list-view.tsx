@@ -2,11 +2,19 @@
 
 import { useState } from "react"
 import { Table, Checkbox, Button } from "@heroui/react"
-import { type Selection, useDragAndDrop } from "react-aria-components"
+import { type DropItem, type Selection, useDragAndDrop } from "react-aria-components"
 import { MIcon } from "@/components/ui/material-icon"
 import { type FileItem, type FolderItem } from "@/hooks/useManage"
 import { getFileIconForType } from "./_helpers"
 import { formatBytes } from "@/lib/format"
+
+/** Pulls the dragged file ids back out of the drop payload. */
+async function readDroppedIds(items: readonly DropItem[]): Promise<string[]> {
+  const ids = await Promise.all(
+    items.map((item) => (item.kind === "text" ? item.getText("text/plain") : Promise.resolve("")))
+  )
+  return ids.filter(Boolean)
+}
 
 function SelectionCheckbox() {
   return (
@@ -44,7 +52,7 @@ export function ListView({
   onSelectionChange: (ids: Set<string>) => void
   onOpenFolder: (id: string) => void
   onDeleteFolder: (id: string) => void
-  onMoveFiles: (fileIds: string[], folderId: string) => void
+  onMoveFiles: (fileIds: string[], folderId: string | null) => void
   onContextMenu: (e: React.MouseEvent, id: string) => void
 }) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
@@ -94,11 +102,13 @@ export function ListView({
     acceptedDragTypes: ["text/plain"],
     shouldAcceptItemDrop: (target) => folderIds.has(String(target.key)),
     onItemDrop: async (e) => {
-      const ids = await Promise.all(
-        e.items.map((item) => (item.kind === "text" ? item.getText("text/plain") : Promise.resolve("")))
-      )
-      const moved = ids.filter(Boolean)
+      const moved = await readDroppedIds(e.items)
       if (moved.length > 0) onMoveFiles(moved, String(e.target.key))
+    },
+    // Dropping on the table itself rather than on a folder row — back to root.
+    onRootDrop: async (e) => {
+      const moved = await readDroppedIds(e.items)
+      if (moved.length > 0) onMoveFiles(moved, null)
     },
   })
 
