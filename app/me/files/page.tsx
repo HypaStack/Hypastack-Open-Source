@@ -9,8 +9,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { ContextMenu, ContextMenuItem, ContextMenuAction, ContextMenuSub, ContextMenuTreeItem, ContextMenuDivider, ContextMenuLink } from "@/components/ui/context-menu"
 import { useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Tabs, toast } from "@heroui/react"
-import { SharedElementTransition } from "react-aria-components"
+import { Button, toast } from "@heroui/react"
 import { Walkthrough } from "@/components/ui/walkthrough"
 import { hypaConfirm, hypaPrompt, hypaError, hypaProgress } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -401,9 +400,8 @@ function FilesPageInner() {
   if (!user) return null
 
   return (
-    <Tabs defaultSelectedKey="drive" className="flex-1 flex flex-col">
-      {/* h-10 matches the Tabs list (tab h-8 + list p-1), so the headline is
-          centred on the same line as the tabs and the sidebar's top row. */}
+    <div className="flex-1 flex flex-col">
+      {/* h-10 keeps the headline centred on the same line as the sidebar's top row. */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 sm:h-10 mb-2">
         <h1 className="shrink-0 text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
           <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#f7f8f8] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
@@ -414,21 +412,6 @@ function FilesPageInner() {
             </span>
           ))}
         </h1>
-
-        <SharedElementTransition>
-          <Tabs.ListContainer>
-            <Tabs.List aria-label="View">
-              <Tabs.Tab id="drive">
-                Drive
-                <Tabs.Indicator />
-              </Tabs.Tab>
-              <Tabs.Tab id="deleted" isDisabled className="whitespace-nowrap">
-                Recently deleted
-                <Tabs.Indicator />
-              </Tabs.Tab>
-            </Tabs.List>
-          </Tabs.ListContainer>
-        </SharedElementTransition>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0">
           {selectedIds.size > 0 ? (
@@ -488,13 +471,9 @@ function FilesPageInner() {
 
       {/* Dropping a dragged file anywhere in the panel but not on a folder row
           sends it back to the Drive root. Drops handled by the table itself
-          (onto a folder, or its own root area) never reach here. */}
-      <Tabs.Panel id="drive" className="flex-1 flex flex-col p-0">
-        {/* Plain div rather than the Panel itself: Tabs.Panel is a function
-            component that only spreads props, so the drop ref isn't guaranteed
-            to reach a DOM node. flex-1 makes the zone cover the empty area
-            below the table. */}
-        <div className="flex-1 flex flex-col" onDragOver={handleRootDragOver} onDrop={handleRootDrop}>
+          (onto a folder, or its own root area) never reach here. flex-1 makes
+          the zone cover the empty area below the table. */}
+      <div className="flex-1 flex flex-col" onDragOver={handleRootDragOver} onDrop={handleRootDrop}>
         {filteredFiles.length === 0 && filteredFolders.length === 0 ? (
           <EmptyState query={searchQuery} username={user.nickname} />
         ) : (
@@ -543,10 +522,9 @@ function FilesPageInner() {
             </div>
           </div>
         )}
-        </div>
-      </Tabs.Panel>
+      </div>
 
-      {/* 
+      {/*
         When files were pre-selected via the OS picker, render the UploadZone
         outside any modal so only the bottom-right tray appears, no drop zone.
         The full modal is only used when opening the upload area without pre-selected files.
@@ -661,7 +639,7 @@ function FilesPageInner() {
           { text: "You're all set! Your files are encrypted and under your control.", icon: "celebration" },
         ]}
       />
-    </Tabs>
+    </div>
   )
 }
 
