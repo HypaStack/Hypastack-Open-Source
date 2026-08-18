@@ -90,7 +90,9 @@ export function ListView({
             <Table.Column className="w-10 pr-2 py-2">
               <SelectionCheckbox />
             </Table.Column>
-            <Table.Column isRowHeader className="py-2">Name</Table.Column>
+            {/* pl-6 = the rows' chevron column (w-7 with -mx-1 = 20px) plus the
+                gap-1 after it, so "Name" starts exactly where the names do. */}
+            <Table.Column isRowHeader className="py-2 pl-6">Name</Table.Column>
             <Table.Column className="w-28 text-right py-2">Size</Table.Column>
           </Table.Header>
           <Table.Body>
