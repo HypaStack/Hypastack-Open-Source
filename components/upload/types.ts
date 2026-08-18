@@ -24,6 +24,8 @@ export interface UploadZoneProps {
   uploadType?: "files" | "cdn"
   onUploadComplete?: (asset: CdnAssetItem | null) => void
   onUploadStateChange?: (state: UploadState) => void
+  /** Called when the tray resets to idle (Cancel/Done/Clear) — e.g. to close a parent modal. */
+  onClose?: () => void
   currentFolderId?: string | null
 }
 

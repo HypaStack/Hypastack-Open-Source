@@ -27,6 +27,7 @@ export function useUpload({
   uploadType = "files",
   onUploadComplete,
   onUploadStateChange,
+  onClose,
   currentFolderId = null,
 }: UploadZoneProps) {
   const [state, setState] = useState<UploadState>("idle")
@@ -485,6 +486,7 @@ export function useUpload({
     if (turnstileRef.current) turnstileRef.current.reset()
     if (inputRef.current) inputRef.current.value = ""
     initialFilesProcessed.current = false
+    if (onClose) onClose()
   }
 
   const handleReset = () => {

@@ -526,12 +526,13 @@ function FilesPageInner() {
         The full modal is only used when opening the upload area without pre-selected files.
       */}
       {uploadOpen && pendingUploadFiles && (
-        <UploadZone 
-          initialFiles={pendingUploadFiles} 
-          autoStart={false} 
+        <UploadZone
+          initialFiles={pendingUploadFiles}
+          autoStart={false}
           currentFolderId={currentFolderId}
           onUploadStateChange={handleUploadStateChange}
           onUploadComplete={handleUploadComplete}
+          onClose={closeUpload}
         />
       )}
 
