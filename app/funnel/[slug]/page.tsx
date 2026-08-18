@@ -132,9 +132,12 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
         {!loading && meta && !closed && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
-              <Card.Header className="flex-row items-center justify-between gap-3">
-                <Card.Title className="text-lg truncate">Send a file to {ownerName}</Card.Title>
-                <Chip size="sm" variant="soft" className="shrink-0">Up to {fmt(meta.maxUploadSize)}</Chip>
+              <Card.Header className="gap-1">
+                <div className="flex items-center justify-between gap-3">
+                  <Card.Title className="text-lg truncate">Send a file to {ownerName}</Card.Title>
+                  <Chip size="sm" variant="soft" className="shrink-0">Up to {fmt(meta.maxUploadSize)}</Chip>
+                </div>
+                <Card.Description>Encrypted in your browser before it leaves your device.</Card.Description>
               </Card.Header>
 
               {(fileError || sendError) && (
