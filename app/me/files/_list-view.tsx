@@ -111,7 +111,7 @@ export function ListView({
                   </Table.Cell>
                   <Table.Cell>
                     <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer"
+                      className="flex items-center gap-2 min-w-0 cursor-pointer min-h-9"
                       style={{ paddingLeft: row.depth * 20 }}
                       onClick={() => onOpenFolder(row.folder.id)}
                     >
@@ -144,7 +144,7 @@ export function ListView({
                   </Table.Cell>
                   <Table.Cell>
                     <div
-                      className="flex items-center gap-2 min-w-0 cursor-pointer"
+                      className="flex items-center gap-2 min-w-0 cursor-pointer min-h-9"
                       style={{ paddingLeft: row.depth * 20 }}
                       onDoubleClick={() => window.open(`/d/${row.file.id}`, "_blank")}
                     >
