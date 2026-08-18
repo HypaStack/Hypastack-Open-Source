@@ -7,9 +7,8 @@ import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from "@/hooks/useAuth"
 import { ManageProvider, useManage } from "@/hooks/useManage"
 import { MIcon } from "@/components/ui/material-icon"
-import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, toast, typographyVariants } from "@heroui/react"
+import { Button, Chip, Dropdown, Modal, Switch, TextField, TextArea, Label, ProgressBar, toast, typographyVariants } from "@heroui/react"
 import { Tooltip } from "@/components/ui/tooltip"
-import { ProgressBar } from "@/components/ui/progress-bar"
 import { PreferencesModal, type PreferencesTab } from "@/components/preferences-modal"
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { useTheme } from "@/hooks/useTheme"
@@ -299,7 +298,11 @@ function ManageLayoutInner({
             <Label className="font-medium text-foreground">Storage</Label>
             <span className="text-[14px] font-medium text-foreground">{(stats?.storagePercent ?? 0).toFixed(1)}%</span>
           </div>
-          <ProgressBar value={stats?.storagePercent ?? 0} aria-label="Storage used" />
+          <ProgressBar value={stats?.storagePercent ?? 0} aria-label="Storage used">
+            <ProgressBar.Track>
+              <ProgressBar.Fill />
+            </ProgressBar.Track>
+          </ProgressBar>
         </div>
 
         <div className="relative z-20 shrink-0 px-0 pt-3 pb-2">
