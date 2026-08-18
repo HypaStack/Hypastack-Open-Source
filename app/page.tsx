@@ -37,20 +37,21 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      {/* Purely decorative — sits behind all real content, never intercepts clicks.
-          Shows through wherever the page content itself is transparent (the
-          footer, the gaps between sections) since `main` no longer paints its
-          own black background over it. */}
-      <div className="fixed inset-2 sm:inset-3 z-0 pointer-events-none" aria-hidden="true">
-        <Card variant="transparent" className="!p-0 h-full w-full rounded-[16px] border-none bg-accent">{null}</Card>
+      <div className="relative min-h-screen">
+        {/* Purely decorative — sits behind all real content, never intercepts
+            clicks. `absolute` inside this relative wrapper so it stretches to
+            the full scrollable page height, not just one fixed viewport. */}
+        <div className="absolute inset-2 sm:inset-3 z-0 pointer-events-none" aria-hidden="true">
+          <Card variant="transparent" className="!p-0 h-full w-full rounded-[16px] border-none bg-accent">{null}</Card>
+        </div>
+        <main className="relative z-10 min-h-screen text-foreground w-full overflow-hidden flex flex-col">
+          <Suspense fallback={null}>
+            <StatusBanner />
+          </Suspense>
+          <Hero />
+          <Footer />
+        </main>
       </div>
-      <main className="relative z-10 min-h-screen text-foreground w-full overflow-hidden flex flex-col">
-        <Suspense fallback={null}>
-          <StatusBanner />
-        </Suspense>
-        <Hero />
-        <Footer />
-      </main>
     </>
   );
 }
