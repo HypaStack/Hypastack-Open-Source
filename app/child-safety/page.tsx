@@ -63,7 +63,7 @@ export default function ChildSafety() {
                 For files uploaded through the website, my zero-knowledge architecture limits the data I can provide to:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>The hashed nickname associated with the account</li>
+                <li>The account ID</li>
                 <li>The encrypted nickname blob</li>
                 <li>Account creation timestamp</li>
                 <li>Last activity timestamp</li>
@@ -76,9 +76,12 @@ export default function ChildSafety() {
                 required.
               </p>
               <p className="mt-4">
-                In no case do I have email addresses, IP addresses, or real identities. I am transparent
-                about this limitation. It is a consequence of the account model and the zero-knowledge
-                pipeline, not an attempt to shield abusers.
+                In no case do I have email addresses or real identities. I do hold a one-way hashed
+                version of IP addresses used briefly for rate limiting, it cannot be reversed back to
+                the original address, but I will provide it when lawfully required, since it can still
+                be matched against a specific IP if authorities already have one. I am transparent
+                about these limitations. They are a consequence of the account model and the
+                zero-knowledge pipeline, not an attempt to shield abusers.
               </p>
             </section>
 
