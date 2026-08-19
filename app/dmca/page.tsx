@@ -94,7 +94,7 @@ export default function DmcaPolicy() {
               <h2 className="text-[clamp(22px,3vw,32px)] font-semibold tracking-tight text-[#f7f8f8] mb-5" style={{ fontFamily: "'Instrument Sans', var(--font-syne), 'Syne', sans-serif" }}>Repeat Infringers</h2>
               <p>
                 I will terminate accounts of repeat infringers when I can identify them. Given
-                my account model, identification is limited to the hashed nickname and
+                my account model, identification is limited to the account ID and
                 associated file records.
               </p>
             </section>
