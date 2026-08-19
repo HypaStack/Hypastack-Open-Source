@@ -3,7 +3,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { PREVIEW_URL } from "@/constants"
 
-const description = "How Hypastack complies with COPPA and GDPR regulations. No personal data is collected or stored."
+const description = "How Hypastack complies with COPPA and GDPR regulations, and exactly what account data is collected."
 
 export const metadata: Metadata = {
   title: "COPPA & GDPR Compliance",
@@ -60,7 +60,7 @@ export default function CoppaGdpr() {
               </p>
               <ul className="list-disc list-inside space-y-3 ml-2">
                 <li><strong className="text-[#f7f8f8]">Right to be Forgotten (Erasure):</strong> You have the absolute right to delete your data. Because you control the decryption keys, you can unilaterally render the data unreadable at any time by simply destroying your URL. Furthermore, you can actively trigger a deletion of the ciphertext from my edge nodes at any time using my platform tools, fulfilling the right to erasure instantly.</li>
-                <li><strong className="text-[#f7f8f8]">Data Minimization:</strong> I practice absolute data minimization. I collect zero PII. There is no account registration with email, and users authenticate with a username and a cryptographically hashed password. I do not run analytics on your encrypted files.</li>
+                <li><strong className="text-[#f7f8f8]">Data Minimization:</strong> I practice real data minimization, though not zero collection, and I would rather be accurate than make an absolute claim I cannot back up. There is no account registration with email. Accounts authenticate with a randomly generated account ID and a passkey that I store as a one-way hash, never in readable form. Your account ID and encrypted nickname are personal data under GDPR, since they can identify a specific account over time even without revealing who you are. I do not run analytics on your encrypted files.</li>
                 <li><strong className="text-[#f7f8f8]">Data Processing:</strong> Because the server never possesses the decryption keys, I do not "process" your personal data in the traditional sense. I merely route indistinguishable blocks of ciphertext. Any PII contained within your files remains entirely obfuscated from my servers.</li>
               </ul>
             </section>
@@ -91,7 +91,7 @@ export default function CoppaGdpr() {
                 <li><strong className="text-[#f7f8f8]">Files uploaded through the developer API:</strong> These are not encrypted either. I can provide the actual contents. Where the upload was made through a third party&apos;s application, the file resides in that developer&apos;s account and that developer is the controller of it. I can confirm what I hold, but requests concerning that content should also be directed to them.</li>
               </ul>
               <p>
-                In every case I can provide the account metadata I hold, which is deliberately minimal: no email address, no password, no IP addresses, and a nickname that is itself encrypted in your browser before it reaches me.
+                In every case I can provide the account metadata I hold, which is deliberately minimal: no email address, no readable passkey (I only hold a one-way hash of it), and a nickname that is itself encrypted in your browser before it reaches me. I do hold a hashed, one-way version of your IP address, used only for short-lived rate limiting, see my <a href="/privacy" className="underline hover:opacity-70 transition-opacity">Privacy Policy</a> for exactly how that works.
               </p>
             </section>
           </div>
