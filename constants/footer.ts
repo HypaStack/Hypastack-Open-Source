@@ -1,5 +1,11 @@
 export const FOOTER_COLUMNS = [
   {
+    title: "Contributors",
+    links: [
+      { label: "gabytz777", href: "https://github.com/gabytz777" },
+    ],
+  },
+  {
     title: "Platform",
     links: [
       { label: "Dashboard", href: "/new" },
