@@ -6,13 +6,10 @@ export const FOOTER_COLUMNS = [
       { label: "Mailing", href: "https://hypamail.me/" },
       { label: "Pricing", href: "/pricing" },
       { label: "Uptime", href: "https://status.hypastack.com" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
+      { label: "Developer API", href: "/docs/developer-api" },
       { label: "About", href: "/about" },
-      { label: "Our goal", href: "/goal" },
+      { label: "Changelog", href: "/changelog" },
+      { label: "Goal", href: "/goal" },
     ],
   },
   {

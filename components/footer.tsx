@@ -1,8 +1,6 @@
 import { Dropdown, cn } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
-import { FOOTER_COLUMNS } from "@/constants/footer";
-
-const columns = FOOTER_COLUMNS.filter((c) => c.title !== "Company");
+import { FOOTER_COLUMNS as columns } from "@/constants/footer";
 
 export function Footer() {
   return (
