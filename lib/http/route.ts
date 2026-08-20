@@ -2,6 +2,7 @@ import { NextRequest } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getCurrentUser } from "@/lib/security/auth"
 import { checkApiRateLimit } from "@/lib/data/rateLimit"
+import { isOwner } from "@/lib/models/userModel"
 import { API_ERRORS } from "@/constants"
 
 type AuthedUser = { userId: string; sessionId: string }
@@ -17,6 +18,8 @@ interface WithAuthOptions {
   rateLimit?: boolean
   /** Prefix for the 500 error log, e.g. "Files GET". Falls back to "Route". */
   label?: string
+  /** 403 unless is_owner is true, re-checked fresh from the DB every request. */
+  ownerOnly?: boolean
 }
 
 type AuthedHandler<P> = (ctx: AuthedContext<P>) => Promise<Response> | Response
@@ -35,6 +38,10 @@ export function withAuth<P = Record<string, never>>(
       const user = await getCurrentUser(request)
       if (!user) {
         return apiError(401, API_ERRORS.UNAUTHORIZED, "401 Not Authenticated")
+      }
+
+      if (options.ownerOnly && !(await isOwner(user.userId))) {
+        return apiError(403, API_ERRORS.FORBIDDEN, "403 Not Owner")
       }
 
       if (options.rateLimit) {
