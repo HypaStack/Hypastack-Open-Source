@@ -187,7 +187,7 @@ export default async function RootLayout({
                   ],
                   contactPoint: {
                     "@type": "ContactPoint",
-                    url: "https://t.me/t_usekiko",
+                    email: "usekiko@hypamail.me",
                     contactType: "customer support",
                     availableLanguage: ["English"],
                   },
