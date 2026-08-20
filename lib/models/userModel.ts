@@ -1,4 +1,4 @@
-import { getPool, ensureDatabase } from '@/lib/data/db'
+import { getPool, getClient, ensureDatabase } from '@/lib/data/db'
 import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { DISPLAY_NAME_HOLD_DAYS } from "@/constants/profile"
@@ -52,19 +52,45 @@ export interface CreateUserInput {
   id: string
   nickname_encrypted: string
   password_hash: string
+  inviteCode: string
   key_lookup?: string
 }
 
-export async function createUser(input: CreateUserInput): Promise<void> {
+// Claiming the invite code and inserting the account happen in one
+// transaction, so a code can never end up marked used without a matching
+// account, and two signups racing the same code can't both win. Returns
+// false (no account created) when the code doesn't exist or is already used.
+export async function createUser(input: CreateUserInput): Promise<boolean> {
   await ensureDatabase()
-  const pool = getPool()
-
+  const client = await getClient()
   const storageToken = crypto.randomBytes(16).toString('hex')
-  await pool.query(
-    `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, storage_token, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
-    [input.id, input.nickname_encrypted, input.password_hash, input.key_lookup ?? null, storageToken]
-  )
+
+  try {
+    await client.query('BEGIN')
+
+    const claim = await client.query(
+      `UPDATE invite_codes SET used_by = $1, used_at = NOW() WHERE code = $2 AND used_by IS NULL`,
+      [input.id, input.inviteCode]
+    )
+    if (claim.rowCount === 0) {
+      await client.query('ROLLBACK')
+      return false
+    }
+
+    await client.query(
+      `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, storage_token, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+      [input.id, input.nickname_encrypted, input.password_hash, input.key_lookup ?? null, storageToken]
+    )
+
+    await client.query('COMMIT')
+    return true
+  } catch (error) {
+    await client.query('ROLLBACK')
+    throw error
+  } finally {
+    client.release()
+  }
 }
 
 // Returns the user's opaque storage namespace, generating + persisting one for
