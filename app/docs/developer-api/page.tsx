@@ -3,7 +3,6 @@ import { readFileSync } from "fs"
 import { join } from "path"
 import { Card, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
-import { Footer } from "@/components/footer"
 import { DocNav } from "@/components/docs/doc-nav"
 import { DocGuide } from "@/components/docs/doc-guide"
 import { EndpointCard } from "@/components/docs/endpoint-card"
@@ -124,8 +123,6 @@ export default function DeveloperApiDocs() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }
