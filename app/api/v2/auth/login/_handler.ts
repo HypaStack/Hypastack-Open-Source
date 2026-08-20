@@ -9,6 +9,7 @@ import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { validateCsrfToken } from "@/lib/security/security"
 import { getHashedIp } from "@/lib/http/ip"
 import { rejectIfBlacklisted, enforceOwnerIpGate } from "@/lib/security/ownerGate"
+import { rememberAccount } from "@/lib/security/accountsCookie"
 import { API_ERRORS } from "@/constants"
 
 // keeping timing consistent.
@@ -109,6 +110,8 @@ export async function handleLoginPost(request: NextRequest) {
     const token = generateToken({ userId: matchedUserId, sessionId })
     await setAuthCookie(token)
     await setRefreshCookie(refreshToken)
+    // keeps any account already signed in on this browser switchable
+    await rememberAccount(matchedUserId, refreshToken)
 
     // Return the resolved account id so the client can derive its E2E master
     // key for cid_ identifiers (which, unlike legacy hpsk_ keys, don't embed it).

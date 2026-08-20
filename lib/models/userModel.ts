@@ -329,6 +329,49 @@ export async function atomicRotateRefreshToken(
   return result.rows[0] ?? null
 }
 
+export interface SwitcherProfile {
+  id: string
+  nickname_encrypted: string
+  display_name: string | null
+  avatar_url: string | null
+  suspended: boolean
+}
+
+// Just enough to draw a row in the account switcher. The nickname stays
+// encrypted here, only the browser holding that account's master key can read it.
+export async function getSwitcherProfiles(ids: string[]): Promise<SwitcherProfile[]> {
+  if (ids.length === 0) return []
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query(
+    `SELECT id, nickname_encrypted, display_name, avatar_url, suspended
+     FROM users WHERE id = ANY($1::text[])`,
+    [ids]
+  )
+  return result.rows.map((row) => ({
+    id: row.id,
+    nickname_encrypted: row.nickname_encrypted,
+    display_name: row.display_name ?? null,
+    avatar_url: row.avatar_url ?? null,
+    suspended: row.suspended ?? false,
+  }))
+}
+
+// Account switching hands back a refresh token the browser stashed at login.
+// Scoped to the user id so a token can only ever resume its own account.
+export async function getLiveSessionByRefreshHash(
+  userId: string,
+  refreshTokenHash: string
+): Promise<{ id: string } | null> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<{ id: string }>(
+    `SELECT id FROM user_sessions WHERE user_id = $1 AND refresh_token_hash = $2 AND revoked = FALSE`,
+    [userId, refreshTokenHash]
+  )
+  return result.rows[0] ?? null
+}
+
 export async function revokeSession(sessionId: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { clearAuthCookie, clearRefreshCookie, getCurrentUser } from "@/lib/security/auth"
 import { revokeSession } from "@/lib/models/userModel"
+import { forgetAccount } from "@/lib/security/accountsCookie"
 import { bustCache } from "@/lib/data/cache"
 import { API_ERRORS } from "@/constants"
 
@@ -12,6 +13,8 @@ export async function POST(request: NextRequest) {
     const currentUser = await getCurrentUser(request)
     if (currentUser?.sessionId) {
       await revokeSession(currentUser.sessionId)
+      // only this account leaves the switcher, the others stay signed in
+      await forgetAccount(currentUser.userId)
       // Bust the cached revocation flag (getCurrentUser caches it for 60s),
       // otherwise a just-revoked/stolen token stays valid until the TTL lapses.
       await bustCache(`session:${currentUser.sessionId}:revoked`)
