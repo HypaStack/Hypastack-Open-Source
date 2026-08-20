@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
+import { Card, Chip, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -8,7 +9,6 @@ import { DocNav } from "@/components/docs/doc-nav"
 import { DocGuide } from "@/components/docs/doc-guide"
 import { EndpointCard } from "@/components/docs/endpoint-card"
 import { CodeBlock } from "@/components/docs/code-block"
-import { HEADING_FONT, PANEL } from "@/components/docs/doc-style"
 import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
 import { PREVIEW_URL } from "@/constants"
 
@@ -40,21 +40,17 @@ const REFERENCE_SCRIPT = readFileSync(join(process.cwd(), "scripts/v3-reference.
 function SectionHeading({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <div className="mt-20 mb-6">
-      <h2
-        id={id}
-        className="scroll-mt-28 text-[27px] font-semibold tracking-tight text-[#f7f8f8] mb-2"
-        style={HEADING_FONT}
-      >
+      <Typography type="h2" id={id} className="scroll-mt-28 text-foreground mb-2">
         {title}
-      </h2>
-      <p className="text-[15px] text-[#898e97] leading-[1.75] max-w-[62ch]">{children}</p>
+      </Typography>
+      <Typography type="body" color="muted" className="max-w-[62ch]">{children}</Typography>
     </div>
   )
 }
 
 export default function DeveloperApiDocs() {
   return (
-    <main className="flex min-h-screen flex-col bg-[#08090a]">
+    <main className="flex min-h-screen flex-col bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -75,26 +71,20 @@ export default function DeveloperApiDocs() {
           {/* Hero, centred with the same soft spotlight the marketing pages use */}
           <div className="relative text-center mb-20">
             <div className="pointer-events-none absolute left-1/2 -top-32 -translate-x-1/2 w-[440px] max-w-[85vw] h-[260px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.09),transparent_70%)] blur-2xl" />
-            <p className="relative text-[11px] font-semibold tracking-[0.14em] uppercase text-[#5a5f66] mb-4">
+            <Typography type="body-xs" weight="semibold" className="relative tracking-[0.14em] uppercase text-muted mb-4">
               Developer API · v3
-            </p>
-            <h1
-              className="relative text-[clamp(38px,4.6vw,58px)] font-bold tracking-tight text-[#f7f8f8] leading-[1.05]"
-              style={HEADING_FONT}
-            >
+            </Typography>
+            <Typography type="h1" className="relative text-[clamp(38px,4.6vw,58px)] text-foreground">
               Build on Hypastack
-            </h1>
-            <p className="relative mt-4 text-[16px] text-[#898e97] leading-relaxed max-w-[52ch] mx-auto">
+            </Typography>
+            <Typography type="body" color="muted" className="relative mt-4 max-w-[52ch] mx-auto">
               Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
               make an HTTP request, you already know this API.
-            </p>
-            <div
-              className="relative inline-flex items-center gap-3 mt-8 px-4 py-2.5"
-              style={{ ...PANEL, borderRadius: 999 }}
-            >
-              <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-[#5a5f66]">Base URL</span>
-              <code className="text-[13px] text-[#f7f8f8] font-mono">https://api.hypastack.com/v3</code>
-            </div>
+            </Typography>
+            <Chip size="lg" variant="soft" className="relative mt-8 gap-3">
+              <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-muted">Base URL</span>
+              <code className="text-[13px] text-foreground font-mono">https://api.hypastack.com/v3</code>
+            </Chip>
           </div>
 
           <div className="flex gap-12">
@@ -135,16 +125,16 @@ export default function DeveloperApiDocs() {
               </SectionHeading>
               <CodeBlock label="v3-reference.mjs" code={REFERENCE_SCRIPT} />
 
-              <div className="mt-14 px-5 py-4" style={{ ...PANEL, borderRadius: 16 }}>
-                <p className="text-[14px] text-[#f7f8f8] font-medium mb-1">Something not working?</p>
-                <p className="text-[13.5px] text-[#898e97] leading-relaxed">
-                  Grab the <code className="text-[#f7f8f8] font-mono">request_id</code> from the response and send it to{" "}
-                  <a href="mailto:usekiko@hypamail.me" className="text-[#f7f8f8] underline underline-offset-2">
+              <Card variant="transparent" className="mt-14 !gap-1 rounded-[16px] border !border-solid border-white/10 bg-overlay px-5 py-4">
+                <Typography type="body-sm" weight="medium" className="text-foreground">Something not working?</Typography>
+                <Typography type="body-sm" color="muted" className="leading-relaxed">
+                  Grab the <code className="text-foreground font-mono">request_id</code> from the response and send it to{" "}
+                  <a href="mailto:usekiko@hypamail.me" className="text-foreground underline underline-offset-2">
                     usekiko@hypamail.me
                   </a>
                   . With that one string I can find exactly what happened.
-                </p>
-              </div>
+                </Typography>
+              </Card>
             </div>
           </div>
         </div>

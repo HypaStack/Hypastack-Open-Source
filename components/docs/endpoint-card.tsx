@@ -1,43 +1,45 @@
+import { Card, Chip, Separator, Typography } from "@heroui/react"
 import { CodeBlock, MethodBadge } from "./code-block"
-import { HEADING_FONT, PANEL } from "./doc-style"
 import { type Endpoint, type EndpointParam } from "@/lib/docs/v3-endpoints"
 
 function ParamTable({ title, params }: { title: string; params: EndpointParam[] }) {
   return (
     <div className="mb-5">
-      <p className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#5a5f66] mb-2.5">{title}</p>
-      <div className="divide-y divide-[rgba(255,255,255,0.05)]">
-        {params.map((p) => (
-          <div key={p.name} className="py-2.5 flex flex-col sm:flex-row sm:gap-5">
+      <Typography type="body-xs" weight="semibold" className="tracking-[0.08em] uppercase text-muted mb-2.5">{title}</Typography>
+      <Separator />
+      {params.map((p) => (
+        <div key={p.name}>
+          <div className="py-2.5 flex flex-col sm:flex-row sm:gap-5">
             <div className="sm:w-[180px] shrink-0 flex items-baseline gap-2">
-              <code className="text-[12.5px] text-[#f7f8f8] font-mono">{p.name}</code>
-              <span className="text-[10.5px] text-[#5a5f66]">{p.type}</span>
-              {p.required && <span className="text-[9.5px] text-[#f0883e] tracking-wide uppercase">req</span>}
+              <code className="text-[12.5px] text-foreground font-mono">{p.name}</code>
+              <Typography type="body-xs" color="muted">{p.type}</Typography>
+              {p.required && <Chip size="sm" variant="soft" color="warning" className="uppercase tracking-wide">req</Chip>}
             </div>
-            <p className="text-[13.5px] text-[#898e97] leading-relaxed mt-1 sm:mt-0">{p.description}</p>
+            <Typography type="body-sm" color="muted" className="leading-relaxed mt-1 sm:mt-0">{p.description}</Typography>
           </div>
-        ))}
-      </div>
+          <Separator />
+        </div>
+      ))}
     </div>
   )
 }
 
 export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
   return (
-    <section id={endpoint.id} className="scroll-mt-28 mb-5 overflow-hidden" style={{ ...PANEL, borderRadius: 20 }}>
-      <div className="px-5 sm:px-6 pt-5 pb-6">
+    <Card
+      id={endpoint.id}
+      variant="transparent"
+      className="scroll-mt-28 mb-5 !p-0 !gap-0 overflow-hidden rounded-[20px] border !border-solid border-white/10 bg-overlay"
+    >
+      <Card.Content className="px-5 sm:px-6 pt-5 pb-6">
         <div className="flex items-center gap-2.5 mb-3 flex-wrap">
           <MethodBadge method={endpoint.method} />
-          <code className="text-[13.5px] text-[#f7f8f8] font-mono">{endpoint.path}</code>
-          <code className="text-[10.5px] text-[#6b7076] font-mono ml-auto px-2 py-[3px] rounded-full bg-[rgba(255,255,255,0.04)]">
-            {endpoint.scope}
-          </code>
+          <code className="text-[13.5px] text-foreground font-mono">{endpoint.path}</code>
+          <Chip size="sm" variant="soft" className="ml-auto font-mono text-[10.5px]">{endpoint.scope}</Chip>
         </div>
 
-        <h3 className="text-[18px] font-semibold text-[#f7f8f8] tracking-tight mb-2" style={HEADING_FONT}>
-          {endpoint.title}
-        </h3>
-        <p className="text-[14px] text-[#898e97] leading-[1.7] mb-5 max-w-[62ch]">{endpoint.description}</p>
+        <Card.Title className="text-[18px] mb-2">{endpoint.title}</Card.Title>
+        <Typography type="body-sm" color="muted" className="leading-[1.7] mb-5 max-w-[62ch]">{endpoint.description}</Typography>
 
         {endpoint.query && <ParamTable title="Query" params={endpoint.query} />}
         {endpoint.params && <ParamTable title="Body" params={endpoint.params} />}
@@ -46,8 +48,8 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
           <CodeBlock label="Request" code={buildCurl(endpoint)} />
           <CodeBlock label="Response" code={endpoint.response} />
         </div>
-      </div>
-    </section>
+      </Card.Content>
+    </Card>
   )
 }
 

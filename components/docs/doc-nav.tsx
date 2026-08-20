@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Typography } from "@heroui/react"
 import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
 
 const GUIDE = [
@@ -43,21 +44,21 @@ export function DocNav() {
   }, [])
 
   return (
-    <nav className="text-[13px]">
+    <nav>
       {GROUPS.map((group) => (
         <div key={group.title} className="mb-6">
-          <p className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#5a5f66] mb-2 px-2">
+          <Typography type="body-xs" weight="semibold" className="tracking-[0.08em] uppercase text-muted mb-2 px-2">
             {group.title}
-          </p>
+          </Typography>
           <ul className="space-y-0.5">
             {group.items.map((item) => (
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
-                  className={`block px-2 py-1 rounded-md transition-colors ${
+                  className={`block px-2 py-1 rounded-md text-[13px] transition-colors ${
                     active === item.id
-                      ? "text-[#f7f8f8] bg-[rgba(255,255,255,0.06)] font-medium"
-                      : "text-[#898e97] hover:text-[#f7f8f8] hover:bg-[rgba(255,255,255,0.03)]"
+                      ? "text-foreground bg-white/[0.06] font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/[0.03]"
                   }`}
                 >
                   {item.label}
