@@ -41,13 +41,20 @@ export async function listInviteCodes(opts: { limit?: number; offset?: number } 
   const offset = opts.offset ?? 0
 
   const result = await pool.query(
-    `SELECT ic.code, ic.max_uses, ic.uses_count, ic.created_at,
+    // Limit before aggregating, otherwise every redemption of every code is
+    // grouped just to return one page of them.
+    `WITH page AS (
+       SELECT code, max_uses, uses_count, created_at
+       FROM invite_codes
+       ORDER BY created_at DESC
+       LIMIT $1 OFFSET $2
+     )
+     SELECT page.code, page.max_uses, page.uses_count, page.created_at,
             COALESCE(array_agg(r.user_id) FILTER (WHERE r.user_id IS NOT NULL), '{}') AS redeemed_by
-     FROM invite_codes ic
-     LEFT JOIN invite_code_redemptions r ON r.code = ic.code
-     GROUP BY ic.code, ic.max_uses, ic.uses_count, ic.created_at
-     ORDER BY ic.created_at DESC
-     LIMIT $1 OFFSET $2`,
+     FROM page
+     LEFT JOIN invite_code_redemptions r ON r.code = page.code
+     GROUP BY page.code, page.max_uses, page.uses_count, page.created_at
+     ORDER BY page.created_at DESC`,
     [limit, offset]
   )
   return result.rows

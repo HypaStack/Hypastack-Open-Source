@@ -126,12 +126,12 @@ export async function getStorageToken(userId: string): Promise<string> {
 // Resolve an account by the deterministic identifier lookup (cid_ keys, which
 // don't embed the user id). Returns password_hash so the caller can still
 // authenticate with PBKDF2.
-export async function getUserForAuthByKeyLookup(keyLookup: string): Promise<{ id: string; password_hash: string; suspended: boolean } | null> {
+export async function getUserForAuthByKeyLookup(keyLookup: string): Promise<{ id: string; password_hash: string; suspended: boolean; is_owner: boolean } | null> {
   await ensureDatabase()
   const pool = getPool()
 
   const result = await pool.query(
-    `SELECT id, password_hash, suspended FROM users WHERE key_lookup = $1`,
+    `SELECT id, password_hash, suspended, is_owner FROM users WHERE key_lookup = $1`,
     [keyLookup]
   )
 
@@ -190,12 +190,12 @@ export async function getUserById(id: string): Promise<User | null> {
 
 
 
-export async function getUserForAuthById(id: string): Promise<{ id: string; password_hash: string; suspended: boolean } | null> {
+export async function getUserForAuthById(id: string): Promise<{ id: string; password_hash: string; suspended: boolean; is_owner: boolean } | null> {
   await ensureDatabase()
   const pool = getPool()
 
   const result = await pool.query(
-    `SELECT id, password_hash, suspended FROM users WHERE id = $1`,
+    `SELECT id, password_hash, suspended, is_owner FROM users WHERE id = $1`,
     [id]
   )
 
@@ -357,6 +357,23 @@ export async function getSwitcherProfiles(ids: string[]): Promise<SwitcherProfil
   }))
 }
 
+// One round trip for the whole switcher instead of a query per stashed account,
+// which also caps the work a forged accounts cookie can cause.
+export async function getLiveSessionUserIds(
+  pairs: { userId: string; refreshTokenHash: string }[]
+): Promise<Set<string>> {
+  if (pairs.length === 0) return new Set()
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<{ user_id: string }>(
+    `SELECT user_id FROM user_sessions
+     WHERE revoked = FALSE
+       AND (user_id, refresh_token_hash) IN (SELECT * FROM unnest($1::text[], $2::text[]))`,
+    [pairs.map((p) => p.userId), pairs.map((p) => p.refreshTokenHash)]
+  )
+  return new Set(result.rows.map((r) => r.user_id))
+}
+
 // Account switching hands back a refresh token the browser stashed at login.
 // Scoped to the user id so a token can only ever resume its own account.
 export async function getLiveSessionByRefreshHash(
@@ -429,14 +446,20 @@ export async function listUsersAdmin(opts: { search?: string; limit?: number; of
   const search = opts.search?.trim() || null
 
   const result = await pool.query(
-    `SELECT u.id, u.display_name, u.avatar_url, u.tier, u.suspended, u.is_owner, u.created_at, u.last_login,
-            COALESCE(f.storage, 0) + COALESCE(c.storage, 0) AS storage_used
-     FROM users u
-     LEFT JOIN (SELECT user_id, SUM(file_size) AS storage FROM basedrop_files GROUP BY user_id) f ON f.user_id = u.id
-     LEFT JOIN (SELECT user_id, SUM(file_size) AS storage FROM cdn_assets GROUP BY user_id) c ON c.user_id = u.id
-     WHERE $1::text IS NULL OR u.id ILIKE $1 || '%' OR u.display_name ILIKE '%' || $1 || '%'
-     ORDER BY u.created_at DESC
-     LIMIT $2 OFFSET $3`,
+    // The page of users is picked first, then storage is summed per row. Summing
+    // both tables up front meant a full scan of every file on every page view.
+    `WITH page AS (
+       SELECT u.id, u.display_name, u.avatar_url, u.tier, u.suspended, u.is_owner, u.created_at, u.last_login
+       FROM users u
+       WHERE $1::text IS NULL OR u.id ILIKE $1 || '%' OR u.display_name ILIKE '%' || $1 || '%'
+       ORDER BY u.created_at DESC
+       LIMIT $2 OFFSET $3
+     )
+     SELECT page.*, COALESCE(f.storage, 0) + COALESCE(c.storage, 0) AS storage_used
+     FROM page
+     LEFT JOIN LATERAL (SELECT SUM(file_size) AS storage FROM basedrop_files WHERE user_id = page.id) f ON TRUE
+     LEFT JOIN LATERAL (SELECT SUM(file_size) AS storage FROM cdn_assets WHERE user_id = page.id) c ON TRUE
+     ORDER BY page.created_at DESC`,
     [search, limit, offset]
   )
 

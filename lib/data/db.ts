@@ -587,6 +587,8 @@ UPDATE users SET last_acknowledged_tier = CASE last_acknowledged_tier
 WHERE last_acknowledged_tier IN ('essential','advanced','premium','ultimate');
 ` },
       // trigger has to know the new names or an upgrade stops stamping an expiry
+      // Both admin lists page by created_at DESC, which was sorting without an index.
+      { version: '2026-08-21-invite-codes-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_invite_codes_created_at ON invite_codes(created_at DESC)` },
       { version: '2026-08-21-tier-expiry-trigger-rename', sql: `
 CREATE OR REPLACE FUNCTION set_tier_expiry() RETURNS trigger AS $fn$
 BEGIN

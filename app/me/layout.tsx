@@ -13,7 +13,7 @@ import { PreferencesModal, type PreferencesTab } from "@/components/preferences-
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
-import { ManageSkeleton, SKELETON_DELAY_MS, SKELETON_FADE_MS } from "./_skeleton"
+import { ManageSkeleton, SKELETON_DELAY_MS, SKELETON_FADE_SECONDS } from "./_skeleton"
 import { AccountSwitcher } from "./_account-switcher"
 import {
   type NavItem,
@@ -233,7 +233,7 @@ function ManageLayoutInner({
           key="dashboard-skeleton"
           className="fixed inset-0 z-[60]"
           exit={{ opacity: 0 }}
-          transition={{ duration: SKELETON_FADE_MS, ease: "easeOut" }}
+          transition={{ duration: SKELETON_FADE_SECONDS, ease: "easeOut" }}
         >
           <ManageSkeleton pathname={pathname} />
         </motion.div>

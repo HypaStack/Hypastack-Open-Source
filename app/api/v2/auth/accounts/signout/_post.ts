@@ -7,6 +7,7 @@ import { activateStashedAccount, hashRefreshToken } from "@/lib/security/account
 import { getLiveSessionByRefreshHash, revokeSession } from "@/lib/models/userModel"
 import { validateCsrfToken } from "@/lib/security/security"
 import { checkAccountSwitchRateLimit } from "@/lib/data/rateLimit"
+import { rejectIfBlacklisted } from "@/lib/security/ownerGate"
 import { getHashedIp } from "@/lib/http/ip"
 import { bustCache } from "@/lib/data/cache"
 import { API_ERRORS } from "@/constants"
@@ -21,6 +22,9 @@ const SignOutSchema = z.object({
 // the user on the login page.
 export async function POST(request: NextRequest) {
   try {
+    const blacklisted = await rejectIfBlacklisted(request)
+    if (blacklisted) return blacklisted
+
     const rateLimit = await checkAccountSwitchRateLimit(getHashedIp(request))
     if (!rateLimit.allowed) {
       return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "rate limit exceeded")

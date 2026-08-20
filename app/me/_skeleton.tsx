@@ -12,8 +12,8 @@ import { GridSkeleton } from "./hosting/_grid-skeleton"
 /** Fast loads never show a skeleton at all, a flash of one reads worse than a beat of nothing. */
 export const SKELETON_DELAY_MS = 1000
 
-/** Long enough to read as a crossfade over the real dashboard underneath. */
-export const SKELETON_FADE_MS = 0.35
+/** Seconds, motion's unit. Long enough to read as a crossfade over the real dashboard. */
+export const SKELETON_FADE_SECONDS = 0.35
 
 export function ManageSkeleton({ pathname }: { pathname: string }) {
   const isHosting = pathname.startsWith("/me/hosting")

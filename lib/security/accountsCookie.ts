@@ -20,10 +20,15 @@ export async function readAccounts(): Promise<StashedAccount[]> {
   try {
     const parsed = JSON.parse(Buffer.from(raw, "base64url").toString())
     if (!Array.isArray(parsed)) return []
-    return parsed.filter(
-      (a): a is StashedAccount =>
-        typeof a?.userId === "string" && typeof a?.refreshToken === "string"
-    )
+    // Capped on the way in as well as out: this cookie is attacker-controlled,
+    // and every entry costs work on an endpoint that doesn't require auth.
+    return parsed
+      .filter(
+        (a): a is StashedAccount =>
+          typeof a?.userId === "string" && typeof a?.refreshToken === "string" &&
+          a.userId.length <= 64 && a.refreshToken.length <= 256
+      )
+      .slice(0, MAX_ACCOUNTS)
   } catch {
     return []
   }

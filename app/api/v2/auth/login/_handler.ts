@@ -3,7 +3,7 @@ import { apiError } from "@/lib/http/apiError"
 import crypto from "crypto"
 import { z } from "zod"
 import { verifyPasswordAsync, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword, computeKeyLookup } from "@/lib/security/auth"
-import { getUserForAuthById, getUserForAuthByKeyLookup, setUserKeyLookup, updateLastLogin, createUserSession, isOwner } from "@/lib/models/userModel"
+import { getUserForAuthById, getUserForAuthByKeyLookup, setUserKeyLookup, updateLastLogin, createUserSession } from "@/lib/models/userModel"
 import { checkLoginRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { validateCsrfToken } from "@/lib/security/security"
@@ -57,6 +57,7 @@ export async function handleLoginPost(request: NextRequest) {
     // key_lookup column. Either way the PBKDF2 password_hash authenticates.
     let matchedUserId: string | null = null
     let matchedSuspended = false
+    let matchedIsOwner = false
     const parts = accessKey.split("_")
     const isLegacy = parts.length === 3 && parts[0] === "hpsk" && parts[1].length === 32
 
@@ -69,6 +70,7 @@ export async function handleLoginPost(request: NextRequest) {
         if (await verifyPasswordAsync(accessKey, user.password_hash)) {
           matchedUserId = user.id
           matchedSuspended = user.suspended
+          matchedIsOwner = user.is_owner
           // Backfill so future logins can also use the indexed lookup path.
           await setUserKeyLookup(user.id, computeKeyLookup(accessKey))
         }
@@ -81,6 +83,7 @@ export async function handleLoginPost(request: NextRequest) {
         if (await verifyPasswordAsync(accessKey, user.password_hash)) {
           matchedUserId = user.id
           matchedSuspended = user.suspended
+          matchedIsOwner = user.is_owner
         }
       } else {
         await verifyPasswordAsync(accessKey, DUMMY_HASH)
@@ -98,7 +101,7 @@ export async function handleLoginPost(request: NextRequest) {
     // Correct credentials for the owner account from an IP that isn't
     // allowlisted is a real compromise signal, not a typo, so this blacklists
     // the caller rather than just bouncing the request.
-    if (await isOwner(matchedUserId)) {
+    if (matchedIsOwner) {
       const ownerGate = await enforceOwnerIpGate(request)
       if (ownerGate) return ownerGate
     }

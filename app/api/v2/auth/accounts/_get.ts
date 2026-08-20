@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getCurrentUser } from "@/lib/security/auth"
 import { readAccounts, writeAccounts, rememberAccount } from "@/lib/security/accountsCookie"
-import { getSwitcherProfiles, getLiveSessionByRefreshHash } from "@/lib/models/userModel"
+import { getSwitcherProfiles, getLiveSessionByRefreshHash, getLiveSessionUserIds } from "@/lib/models/userModel"
 import { API_ERRORS, MAX_SWITCHABLE_ACCOUNTS } from "@/constants"
 import crypto from "crypto"
 
@@ -31,10 +31,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ accounts: [], canAddMore: true })
     }
 
-    const live = await Promise.all(
-      stashed.map(async (a) => (await getLiveSessionByRefreshHash(a.userId, hashToken(a.refreshToken))) ? a : null)
+    const liveUserIds = await getLiveSessionUserIds(
+      stashed.map((a) => ({ userId: a.userId, refreshTokenHash: hashToken(a.refreshToken) }))
     )
-    const usable = live.filter((a) => a !== null)
+    const usable = stashed.filter((a) => liveUserIds.has(a.userId))
     if (usable.length !== stashed.length) await writeAccounts(usable)
 
     const profiles = await getSwitcherProfiles(usable.map((a) => a.userId))

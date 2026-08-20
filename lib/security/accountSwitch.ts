@@ -3,7 +3,7 @@ import crypto from "crypto"
 import { apiError } from "@/lib/http/apiError"
 import { generateToken, setAuthCookie, setRefreshCookie } from "@/lib/security/auth"
 import { forgetAccount, type StashedAccount } from "@/lib/security/accountsCookie"
-import { getLiveSessionByRefreshHash, getUserForAuthById, isOwner, updateLastLogin } from "@/lib/models/userModel"
+import { getLiveSessionByRefreshHash, getUserForAuthById, updateLastLogin } from "@/lib/models/userModel"
 import { enforceOwnerIpGate } from "@/lib/security/ownerGate"
 import { API_ERRORS } from "@/constants"
 
@@ -36,7 +36,8 @@ export async function activateStashedAccount(
     return apiError(403, API_ERRORS.FORBIDDEN, "Account suspended")
   }
 
-  if (await isOwner(account.userId)) {
+  // is_owner rides along on the row above, still read fresh, no second lookup
+  if (user.is_owner) {
     const ownerGate = await enforceOwnerIpGate(request)
     if (ownerGate) return ownerGate
   }
