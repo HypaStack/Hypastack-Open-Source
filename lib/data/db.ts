@@ -555,6 +555,19 @@ CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE F
         reason     TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )` },
+      // Codes can now be redeemed more than once (max_uses), so "who used it"
+      // is a one-to-many relation, not a single used_by column.
+      { version: '2026-08-21-invite-codes-max-uses', sql: `ALTER TABLE invite_codes ADD COLUMN IF NOT EXISTS max_uses INTEGER NOT NULL DEFAULT 1` },
+      { version: '2026-08-21-invite-codes-uses-count', sql: `ALTER TABLE invite_codes ADD COLUMN IF NOT EXISTS uses_count INTEGER NOT NULL DEFAULT 0` },
+      { version: '2026-08-21-invite-codes-backfill-uses', sql: `UPDATE invite_codes SET uses_count = 1 WHERE used_by IS NOT NULL AND uses_count = 0` },
+      { version: '2026-08-21-invite-code-redemptions', sql: `CREATE TABLE IF NOT EXISTS invite_code_redemptions (
+        id         SERIAL       PRIMARY KEY,
+        code       VARCHAR(64)  NOT NULL,
+        user_id    VARCHAR(36)  NOT NULL,
+        used_at    TIMESTAMPTZ  DEFAULT NOW()
+      )` },
+      { version: '2026-08-21-invite-code-redemptions-code-idx', sql: `CREATE INDEX IF NOT EXISTS idx_invite_code_redemptions_code ON invite_code_redemptions(code)` },
+      { version: '2026-08-21-invite-code-redemptions-backfill', sql: `INSERT INTO invite_code_redemptions (code, user_id, used_at) SELECT code, used_by, used_at FROM invite_codes WHERE used_by IS NOT NULL` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
