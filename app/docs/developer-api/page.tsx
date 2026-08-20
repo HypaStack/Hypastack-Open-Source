@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
-import { Card, Chip, ScrollShadow, Typography } from "@heroui/react"
+import { Card, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -67,67 +67,63 @@ export default function DeveloperApiDocs() {
       <Navbar />
 
       <section className="flex-1 pt-32 pb-40">
-        <div className="mx-auto max-w-[1180px] px-6 sm:px-10">
-          {/* Hero, fully centred */}
-          <div className="flex flex-col items-center text-center mb-20">
-            <Typography type="h1" align="center" className="text-[clamp(38px,4.6vw,58px)] text-foreground">
-              Build on Hypastack
-            </Typography>
-            <Typography type="body" align="center" color="muted" className="mt-4 max-w-[52ch]">
-              Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
-              make an HTTP request, you already know this API.
-            </Typography>
-            <Chip size="lg" variant="soft" className="mt-8 gap-3">
-              <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-muted">Base URL</span>
-              <code className="text-[13px] text-foreground font-mono">https://api.hypastack.com/v3</code>
-            </Chip>
-          </div>
+        <div className="mx-auto max-w-[900px] px-6 sm:px-10 flex flex-col items-center text-center mb-20">
+          <Typography type="h1" align="center" className="text-[clamp(38px,4.6vw,58px)] text-foreground">
+            Build on Hypastack
+          </Typography>
+          <Typography type="body" align="center" color="muted" className="mt-4 max-w-[52ch]">
+            Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
+            make an HTTP request, you already know this API.
+          </Typography>
+          <Typography type="body-sm" color="muted" className="mt-8 font-mono">
+            Base URL <span className="text-foreground/30 mx-1.5">·</span> <code className="text-foreground">https://api.hypastack.com/v3</code>
+          </Typography>
+        </div>
 
-          <div className="flex gap-12">
-            {/* Fixed height (not max-height) is what makes this scroll, self-start stops it stretching. */}
-            <aside className="hidden lg:block w-[190px] shrink-0 self-start sticky top-28 h-[calc(100vh-9rem)]">
-              <ScrollShadow className="h-full pr-1" size={28}>
-                <DocNav />
-                <div aria-hidden className="h-8" />
-              </ScrollShadow>
-            </aside>
+        {/* Sidebar is fixed to the viewport so it stays put top-to-bottom while the page scrolls; only its own list scrolls. */}
+        <aside className="hidden lg:flex lg:flex-col fixed left-6 xl:left-10 top-28 bottom-8 w-[200px]">
+          <ScrollShadow className="flex-1 pr-1" size={28}>
+            <DocNav />
+            <div aria-hidden className="h-8" />
+          </ScrollShadow>
+        </aside>
 
-            <div className="min-w-0 flex-1 max-w-[760px]">
-              <DocGuide />
+        <div className="px-6 sm:px-10">
+          <div className="max-w-[920px] lg:pl-[240px]">
+            <DocGuide />
 
-              <SectionHeading id="files" title="Files">
-                Expiring file storage. Every file has a lifetime after which it deletes itself. Filenames are encrypted
-                at rest, contents uploaded through the API are not. See Encryption above before you build on this.
-              </SectionHeading>
-              {FILE_ENDPOINTS.map((endpoint) => (
-                <EndpointCard key={endpoint.id} endpoint={endpoint} />
-              ))}
+            <SectionHeading id="files" title="Files">
+              Expiring file storage. Every file has a lifetime after which it deletes itself. Filenames are encrypted
+              at rest, contents uploaded through the API are not. See Encryption above before you build on this.
+            </SectionHeading>
+            {FILE_ENDPOINTS.map((endpoint) => (
+              <EndpointCard key={endpoint.id} endpoint={endpoint} />
+            ))}
 
-              <SectionHeading id="cdn" title="CDN">
-                Public, permanent assets on a global edge. Images are re-encoded on upload and their EXIF, GPS and
-                camera metadata is stripped.
-              </SectionHeading>
-              {CDN_ENDPOINTS.map((endpoint) => (
-                <EndpointCard key={endpoint.id} endpoint={endpoint} />
-              ))}
+            <SectionHeading id="cdn" title="CDN">
+              Public, permanent assets on a global edge. Images are re-encoded on upload and their EXIF, GPS and
+              camera metadata is stripped.
+            </SectionHeading>
+            {CDN_ENDPOINTS.map((endpoint) => (
+              <EndpointCard key={endpoint.id} endpoint={endpoint} />
+            ))}
 
-              <SectionHeading id="reference-script" title="Full example">
-                Everything above, in one runnable file with no dependencies. Save it, set your key, and run it. It uploads
-                a file and a CDN asset, reads them back, swaps the asset in place, then deletes both.
-              </SectionHeading>
-              <CodeBlock label="v3-reference.mjs" code={REFERENCE_SCRIPT} />
+            <SectionHeading id="reference-script" title="Full example">
+              Everything above, in one runnable file with no dependencies. Save it, set your key, and run it. It uploads
+              a file and a CDN asset, reads them back, swaps the asset in place, then deletes both.
+            </SectionHeading>
+            <CodeBlock label="v3-reference.mjs" code={REFERENCE_SCRIPT} />
 
-              <Card className="mt-14 !gap-1 rounded-[16px] px-5 py-4">
-                <Typography type="body-sm" weight="medium" className="text-foreground">Something not working?</Typography>
-                <Typography type="body-sm" color="muted" className="leading-relaxed">
-                  Grab the <code className="text-foreground font-mono">request_id</code> from the response and send it to{" "}
-                  <a href="mailto:usekiko@hypamail.me" className="text-foreground underline underline-offset-2">
-                    usekiko@hypamail.me
-                  </a>
-                  . With that one string I can find exactly what happened.
-                </Typography>
-              </Card>
-            </div>
+            <Card className="mt-14 !gap-1 rounded-[16px] px-5 py-4">
+              <Typography type="body-sm" weight="medium" className="text-foreground">Something not working?</Typography>
+              <Typography type="body-sm" color="muted" className="leading-relaxed">
+                Grab the <code className="text-foreground font-mono">request_id</code> from the response and send it to{" "}
+                <a href="mailto:usekiko@hypamail.me" className="text-foreground underline underline-offset-2">
+                  usekiko@hypamail.me
+                </a>
+                . With that one string I can find exactly what happened.
+              </Typography>
+            </Card>
           </div>
         </div>
       </section>
