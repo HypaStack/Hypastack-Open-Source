@@ -368,7 +368,8 @@ function ManageLayoutInner({
         </div>
       </aside>
 
-      <div className="hidden lg:block shrink-0 w-px my-4 ml-1 bg-white/10" />
+      {/* nothing to separate once the sidebar is docked away */}
+      <div className={`${sidebarCollapsed ? "hidden" : "hidden lg:block"} shrink-0 w-px my-4 ml-1 bg-white/10`} />
 
       <AnimatePresence>
         {drawerOpen && (
