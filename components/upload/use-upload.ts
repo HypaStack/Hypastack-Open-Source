@@ -50,7 +50,7 @@ export function useUpload({
   const [customFilename, setCustomFilename] = useState("")
   const [customSlug, setCustomSlug] = useState("")
   const [slugError, setSlugError] = useState<{ message: string; suggestions: string[] } | null>(null)
-  // Custom expiration in minutes (Essential+). Defaults to the max (30 days) so
+  // Custom expiration in minutes (Plus+). Defaults to the max (30 days) so
   // an untouched picker never shortens a paid user's default lifetime.
   const [expirationMinutes, setExpirationMinutes] = useState<number>(MAX_EXPIRATION_MINUTES)
   const [zippedFile, setZippedFile] = useState<File | null>(null)

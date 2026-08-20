@@ -222,7 +222,7 @@ export const ERROR_CODES: ErrorCode[] = [
 
 export const TIER_TABLE = [
   { tier: "Free", keys: "None", rate: "—" },
-  { tier: "Essential", keys: "1", rate: "120 / minute" },
+  { tier: "Plus", keys: "1", rate: "120 / minute" },
   { tier: "Pro", keys: "3", rate: "600 / minute" },
   { tier: "Max", keys: "5", rate: "1800 / minute" },
 ]

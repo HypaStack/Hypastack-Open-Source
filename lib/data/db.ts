@@ -568,6 +568,41 @@ CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE F
       )` },
       { version: '2026-08-21-invite-code-redemptions-code-idx', sql: `CREATE INDEX IF NOT EXISTS idx_invite_code_redemptions_code ON invite_code_redemptions(code)` },
       { version: '2026-08-21-invite-code-redemptions-backfill', sql: `INSERT INTO invite_code_redemptions (code, user_id, used_at) SELECT code, used_by, used_at FROM invite_codes WHERE used_by IS NOT NULL` },
+      // Tier ids now match what the UI calls them: essential -> plus, premium -> pro,
+      // ultimate -> max. Existing rows move over so nobody loses their plan.
+      { version: '2026-08-21-tier-rename', sql: `
+UPDATE users SET tier = CASE tier
+  WHEN 'essential' THEN 'plus'
+  WHEN 'advanced'  THEN 'plus'
+  WHEN 'premium'   THEN 'pro'
+  WHEN 'ultimate'  THEN 'max'
+  ELSE tier END
+WHERE tier IN ('essential','advanced','premium','ultimate');
+UPDATE users SET last_acknowledged_tier = CASE last_acknowledged_tier
+  WHEN 'essential' THEN 'plus'
+  WHEN 'advanced'  THEN 'plus'
+  WHEN 'premium'   THEN 'pro'
+  WHEN 'ultimate'  THEN 'max'
+  ELSE last_acknowledged_tier END
+WHERE last_acknowledged_tier IN ('essential','advanced','premium','ultimate');
+` },
+      // trigger has to know the new names or an upgrade stops stamping an expiry
+      { version: '2026-08-21-tier-expiry-trigger-rename', sql: `
+CREATE OR REPLACE FUNCTION set_tier_expiry() RETURNS trigger AS $fn$
+BEGIN
+  IF NEW.tier IS DISTINCT FROM OLD.tier THEN
+    IF NEW.tier IN ('plus','pro','max') THEN
+      IF NEW.tier_expires_at IS NOT DISTINCT FROM OLD.tier_expires_at THEN
+        NEW.tier_expires_at := NOW() + INTERVAL '1 month';
+      END IF;
+    ELSE
+      NEW.tier_expires_at := NULL;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$fn$ LANGUAGE plpgsql;
+` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])

@@ -16,9 +16,9 @@ export const POST = withAuth(async ({ request, user: auth }) => {
         return apiError(404, API_ERRORS.NOT_FOUND, "404 Not Found")
     }
 
-    // Banners are a paid-plan (Essential and above) branding feature.
+    // Banners are a paid-plan (Plus and above) branding feature.
     if (!isPaidTier(normalizeTier(user.tier))) {
-        return apiError(403, API_ERRORS.FORBIDDEN, "Download-page banners are available on Essential and above.")
+        return apiError(403, API_ERRORS.FORBIDDEN, "Download-page banners are available on Plus and above.")
     }
 
     const formData = await request.formData()

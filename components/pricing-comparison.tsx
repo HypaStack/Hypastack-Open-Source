@@ -2,10 +2,10 @@ import { MIcon } from "@/components/ui/material-icon"
 import { Table, Typography } from "@heroui/react"
 import { getTierLimits, formatTierSize, isUnlimited, type PreferencesTier, type TierLimits } from "@/constants"
 
-// Columns align with the three plan cards above (Essential, Pro, Max).
-const TIERS: PreferencesTier[] = ["essential", "premium", "ultimate"]
+// Columns align with the three plan cards above (Plus, Pro, Max).
+const TIERS: PreferencesTier[] = ["plus", "pro", "max"]
 const LIMITS = TIERS.map(getTierLimits)
-const TIER_LABELS = ["Essential", "Pro", "Max"]
+const TIER_LABELS = ["Plus", "Pro", "Max"]
 
 type Cell = { on: boolean; main: string; suffix?: string; infinity?: boolean }
 type Row = [Cell, Cell, Cell]

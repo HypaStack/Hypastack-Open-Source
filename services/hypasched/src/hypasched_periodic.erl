@@ -179,7 +179,7 @@ cleanup_cdn_staging() ->
 %% paid-only branding stripped on the same tick.
 expire_plans() ->
     Sql = <<"UPDATE users SET tier = 'free', tier_expires_at = NULL "
-            "WHERE tier IN ('essential','premium','ultimate','advanced') "
+            "WHERE tier IN ('plus','pro','max') "
             "AND tier_expires_at IS NOT NULL AND tier_expires_at < NOW()">>,
     case hypasched_db:query(Sql, []) of
         {ok, Count} -> report("plan-expiry", Count);
@@ -191,7 +191,7 @@ expire_plans() ->
 %% columns. The avatar is intentionally left alone (it's not a paid feature).
 reconcile_downgrades() ->
     Sql = <<"SELECT id, banner_url, display_name FROM users "
-            "WHERE tier NOT IN ('essential','premium','ultimate','advanced') "
+            "WHERE tier NOT IN ('plus','pro','max') "
             "AND (banner_url IS NOT NULL OR display_name IS NOT NULL) LIMIT 200">>,
     case hypasched_db:query(Sql, []) of
         {ok, Rows} when is_list(Rows) ->

@@ -6,7 +6,7 @@ import { apiFetch } from "@/lib/http/fetch"
 import { SESSION_FETCH_MAX_RETRIES, SESSION_FETCH_RETRY_DELAY_MS, STORAGE_KEY_E2E_MASTER } from "@/constants"
 import { resumeWebhookQueue } from "@/lib/integrations/discordWebhook"
 
-type Tier = "free" | "essential" | "premium" | "ultimate"
+type Tier = "free" | "plus" | "pro" | "max"
 
 interface User {
   id: string

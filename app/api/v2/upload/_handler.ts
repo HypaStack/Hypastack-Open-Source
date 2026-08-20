@@ -83,7 +83,7 @@ export async function handleUploadPost(request: NextRequest) {
     let finalSlug: string | null = null
     if (customSlug != null && String(customSlug).trim() !== "") {
       if (!isPaidTier(normalizeTier(userTier))) {
-        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Essential plan and above.")
+        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Plus plan and above.")
       }
       const slugCheck = validateSlug(String(customSlug))
       if (!slugCheck.ok) {

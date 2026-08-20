@@ -1,5 +1,5 @@
 
-export type Tier = "free" | "essential" | "premium" | "ultimate"
+export type Tier = "free" | "plus" | "pro" | "max"
 
 export interface TierLimits {
   label: string
@@ -42,8 +42,8 @@ export const FREE_LIMITS: TierLimits = {
   maxApiKeys: 0, // API not available on Free
 }
 
-const ESSENTIAL_LIMITS: TierLimits = {
-  label: "Essential",
+const PLUS_LIMITS: TierLimits = {
+  label: "Plus",
   maxNormalUploadSize: 1 * GB,
   maxCdnFileSize: 200 * MB,
   maxCdnStorage: 300 * GB,
@@ -58,7 +58,7 @@ const ESSENTIAL_LIMITS: TierLimits = {
   maxApiKeys: 1,
 }
 
-const PREMIUM_LIMITS: TierLimits = {
+const PRO_LIMITS: TierLimits = {
   label: "Pro",
   maxNormalUploadSize: 5 * GB,
   maxCdnFileSize: 500 * MB,
@@ -74,7 +74,7 @@ const PREMIUM_LIMITS: TierLimits = {
   maxApiKeys: 3,
 }
 
-export const ULTIMATE_LIMITS: TierLimits = {
+export const MAX_LIMITS: TierLimits = {
   label: "Max",
   maxNormalUploadSize: 100 * GB,
   maxCdnFileSize: 2 * GB,
@@ -92,21 +92,24 @@ export const ULTIMATE_LIMITS: TierLimits = {
 
 const TIER_TO_LIMITS: Record<Tier, TierLimits> = {
   free: FREE_LIMITS,
-  essential: ESSENTIAL_LIMITS,
-  premium: PREMIUM_LIMITS,
-  ultimate: ULTIMATE_LIMITS,
+  plus: PLUS_LIMITS,
+  pro: PRO_LIMITS,
+  max: MAX_LIMITS,
 }
 
 export function normalizeTier(value: string | null | undefined): Tier {
   if (!value) return "free"
   const v = value.toLowerCase()
-  if (v === "essential" || v === "premium" || v === "ultimate" || v === "free") return v
-  if (v === "advanced" || v === "local") return v === "advanced" ? "essential" : "free"
+  if (v === "free" || v === "plus" || v === "pro" || v === "max") return v
+  // pre-rename values still in the wild (db rows, old sessions, saved payloads)
+  if (v === "essential" || v === "advanced") return "plus"
+  if (v === "premium") return "pro"
+  if (v === "ultimate") return "max"
   return "free"
 }
 
 export function getTierLimits(tier: Tier | boolean): TierLimits {
-  if (typeof tier === "boolean") return tier ? ESSENTIAL_LIMITS : FREE_LIMITS
+  if (typeof tier === "boolean") return tier ? PLUS_LIMITS : FREE_LIMITS
   return TIER_TO_LIMITS[tier] ?? FREE_LIMITS
 }
 
@@ -130,9 +133,9 @@ export function getTierDelayMs(tier: Tier): number {
  */
 export function getTierUploadConcurrency(tier: Tier): number {
   switch (tier) {
-    case 'ultimate': return 16
-    case 'premium': return 8
-    case 'essential': return 4
+    case 'max': return 16
+    case 'pro': return 8
+    case 'plus': return 4
     case 'free':
     default: return 2
   }

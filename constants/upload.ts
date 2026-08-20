@@ -96,7 +96,7 @@ export const NATIVE_UPLOAD_EVENT = "hypadrive:upload"
 export const MAX_EXPIRATION_MINUTES = 30 * 24 * 60 // 43200
 
 /**
- * Discrete steps for the custom-expiration slider (Essential+). The slider
+ * Discrete steps for the custom-expiration slider (Plus+). The slider
  * indexes into this array; each step maps to a duration in minutes.
  */
 export const EXPIRATION_STEPS: { minutes: number; label: string }[] = [

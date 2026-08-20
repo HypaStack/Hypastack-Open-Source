@@ -123,7 +123,7 @@ export function getExpirationDate(fileSize: number, multiplier: number = 1): Dat
 }
 
 /**
- * Custom expiration chosen by the user (Essential+). Clamps to [1 minute,
+ * Custom expiration chosen by the user (Plus+). Clamps to [1 minute,
  * 30 days] so a tampered client can't request an out-of-range lifetime.
  */
 export function getCustomExpirationDate(minutes: number): Date {

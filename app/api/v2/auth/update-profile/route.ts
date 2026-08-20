@@ -75,7 +75,7 @@ export const POST = withAuth(async ({ request, user: auth }) => {
     // --- Public display name: cooldown + uniqueness + release hold ---
     if (display_name !== undefined) {
       if (!isPaidTier(normalizeTier(user.tier))) {
-        return friendly(403, API_ERRORS.FORBIDDEN, "A display name is available on Essential and above.")
+        return friendly(403, API_ERRORS.FORBIDDEN, "A display name is available on Plus and above.")
       }
 
       const trimmed = display_name.trim()

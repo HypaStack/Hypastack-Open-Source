@@ -12,14 +12,14 @@ export const WINDOW_MINUTES = {
 } as const
 
 export const MAX_ATTEMPTS = {
-  upload:         { free: 5,  essential: 30, premium: 60,  ultimate: 120 },
-  cdnUpload:      { free: 5,  essential: 30, premium: 60,  ultimate: 120 },
-  download:       { free: 10,   essential: 15,  premium: 20,  ultimate: 25  },
+  upload:         { free: 5,  plus: 30, pro: 60,  max: 120 },
+  cdnUpload:      { free: 5,  plus: 30, pro: 60,  max: 120 },
+  download:       { free: 10,   plus: 15,  pro: 20,  max: 25  },
   login:          { free: 5 },
   register:       { free: 5 },
   api:            { free: 150 },
-  forumPost:      { free: 5,  essential: 15, premium: 30,  ultimate: 60  },
-  forumUpload:    { free: 3,  essential: 15, premium: 30,  ultimate: 60  },
+  forumPost:      { free: 5,  plus: 15, pro: 30,  max: 60  },
+  forumUpload:    { free: 3,  plus: 15, pro: 30,  max: 60  },
   proxyToken:     { free: 60 },
   funnelUpload:   { free: 20 },
 } as const
@@ -31,9 +31,9 @@ export const MAX_ATTEMPTS = {
  */
 export const V3_REQUESTS_PER_MINUTE = {
   free: 0,
-  essential: 120,
-  premium: 600,
-  ultimate: 1800,
+  plus: 120,
+  pro: 600,
+  max: 1800,
 } as const
 
 /** Hard ceiling on all v3 traffic per minute, across every key and account. */

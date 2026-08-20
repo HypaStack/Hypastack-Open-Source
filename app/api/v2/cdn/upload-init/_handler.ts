@@ -130,7 +130,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
     let finalSlug: string | null = null
     if (body.customSlug != null && String(body.customSlug).trim() !== "") {
       if (!isPaidTier(normalizeTier(userTier))) {
-        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Essential plan and above.")
+        return apiError(403, API_ERRORS.FORBIDDEN, "Custom links are available on the Plus plan and above.")
       }
       if (sanitizedFiles.length !== 1) {
         return apiError(400, API_ERRORS.BAD_REQUEST, "Custom links are only available when uploading a single file.")

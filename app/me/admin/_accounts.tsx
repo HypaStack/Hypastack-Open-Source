@@ -14,9 +14,9 @@ import { useAdminData, type AdminUser } from "./_data"
 
 const TIER_LABEL: Record<AdminUser["tier"], string> = {
   free: "Free",
-  essential: "Essential",
-  premium: "Pro",
-  ultimate: "Max",
+  plus: "Plus",
+  pro: "Pro",
+  max: "Max",
 }
 const TIERS = Object.keys(TIER_LABEL) as AdminUser["tier"][]
 

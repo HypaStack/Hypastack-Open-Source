@@ -138,7 +138,7 @@ export default function FunnelInboxPage() {
             Create one-time links and receive files straight to your inbox, encrypted so only you can open them.
           </p>
           <AlertMessage tone="info" className="mt-5" style={{ marginBottom: 0, fontSize: 13, lineHeight: "20px" }}>
-            Funnels are available on the Essential, Pro and Max plans.
+            Funnels are available on the Plus, Pro and Max plans.
           </AlertMessage>
           <div className="mt-5">
             <ButtonLink href="/pricing" variant="primary" size="md" aria-label="See plans">

@@ -25,9 +25,9 @@ import { getTierLimits, normalizeTier, type Tier } from "@/constants/tier-limits
 
 const TIER_CHIP_COLOR: Record<Tier, "default" | "accent" | "warning" | "danger"> = {
   free: "default",
-  essential: "accent",
-  premium: "warning",
-  ultimate: "danger",
+  plus: "accent",
+  pro: "warning",
+  max: "danger",
 }
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect

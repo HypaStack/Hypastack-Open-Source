@@ -148,9 +148,9 @@ describe("pagination", () => {
 describe("tier budgets", () => {
   it("matches the documented numbers", () => {
     expect(limitForTier("free")).toBe(0)
-    expect(limitForTier("essential")).toBe(120)
-    expect(limitForTier("premium")).toBe(600)
-    expect(limitForTier("ultimate")).toBe(1800)
+    expect(limitForTier("plus")).toBe(120)
+    expect(limitForTier("pro")).toBe(600)
+    expect(limitForTier("max")).toBe(1800)
   })
 })
 
@@ -162,7 +162,7 @@ describe("global ceiling", () => {
   it("sits far above what any single account can spend", () => {
     // If the largest per-key budget ever approached the ceiling, one Max key
     // could shed everyone else's traffic on its own.
-    expect(limitForTier("ultimate")).toBeLessThan(V3_GLOBAL_REQUESTS_PER_MINUTE / 10)
+    expect(limitForTier("max")).toBeLessThan(V3_GLOBAL_REQUESTS_PER_MINUTE / 10)
   })
 })
 

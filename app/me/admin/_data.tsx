@@ -18,7 +18,7 @@ export interface AdminUser {
   id: string
   displayName: string | null
   avatarUrl: string | null
-  tier: "free" | "essential" | "premium" | "ultimate"
+  tier: "free" | "plus" | "pro" | "max"
   suspended: boolean
   isOwner: boolean
   storageUsed: number

@@ -2,7 +2,7 @@ import { getPool } from '@/lib/data/db'
 import { getRedis } from '@/lib/data/redis'
 import { WINDOW_MINUTES, MAX_ATTEMPTS } from '@/constants'
 
-type TierKey = 'free' | 'essential' | 'premium' | 'ultimate'
+type TierKey = 'free' | 'plus' | 'pro' | 'max'
 
 function getTierAttempts(limits: Record<string, number>, tier: string): number {
   return limits[tier as TierKey] ?? limits['free']

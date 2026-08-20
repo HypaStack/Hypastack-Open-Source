@@ -6,7 +6,7 @@ import { setUserTierAdmin, setUserSuspended } from "@/lib/models/userModel"
 import { API_ERRORS } from "@/constants"
 
 const PatchSchema = z.object({
-  tier: z.enum(["free", "essential", "premium", "ultimate"]).optional(),
+  tier: z.enum(["free", "plus", "pro", "max"]).optional(),
   suspended: z.boolean().optional(),
 })
 

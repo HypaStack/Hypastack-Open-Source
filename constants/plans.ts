@@ -20,19 +20,19 @@ const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annua
     annual: "Free forever",
     features: ["Standard expiration"],
   },
-  essential: {
-    label: "Essential",
+  plus: {
+    label: "Plus",
     monthly: "13.99 € / month",
     annual: "139.99 € / year",
     features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Developer API (1 key)"],
   },
-  premium: {
+  pro: {
     label: "Pro",
     monthly: "24.99 € / month",
     annual: "249.99 € / year",
     features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Developer API (3 keys)", "Fast support"],
   },
-  ultimate: {
+  max: {
     label: "Max",
     monthly: "32.99 € / month",
     annual: "329.99 € / year",
@@ -40,7 +40,7 @@ const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annua
   },
 }
 
-const TIER_KEYS: PreferencesTier[] = ["free", "essential", "premium", "ultimate"]
+const TIER_KEYS: PreferencesTier[] = ["free", "plus", "pro", "max"]
 
 function buildDetails(key: PreferencesTier): string[] {
   const l = getTierLimits(key)
@@ -62,8 +62,8 @@ function buildDetails(key: PreferencesTier): string[] {
     ]
   }
 
-  // Ultimate says "4x expiration"; the other paid tiers say "…windows".
-  const expiry = key === "ultimate"
+  // Max says "4x expiration"; the other paid tiers say "…windows".
+  const expiry = key === "max"
     ? `${l.expirationMultiplier}x expiration`
     : `${l.expirationMultiplier}x expiration windows`
 

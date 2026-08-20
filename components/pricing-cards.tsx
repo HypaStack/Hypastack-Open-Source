@@ -9,22 +9,16 @@ import { Card, Chip, Switch, Typography } from "@heroui/react"
 import { TIER_ORDER, getTierLimits, formatTierSize, isUnlimited, type PreferencesTier } from "@/constants"
 import { PLAN_INFO } from "@/constants/plans"
 
-// Tier rendered as the accent "best value" card. Visual-only rename premium → Pro.
-const POPULAR: PreferencesTier = "premium"
+// Tier rendered as the accent "best value" card.
+const POPULAR: PreferencesTier = "pro"
 
 const PAID_TIERS = TIER_ORDER.filter((t) => t !== "free")
 
-function displayLabel(tier: PreferencesTier, label: string): string {
-  if (tier === "premium") return "Pro"
-  if (tier === "ultimate") return "Max"
-  return label
-}
-
 const TAGLINE: Record<PreferencesTier, string> = {
   free: "For getting started",
-  essential: "For everyday sharing",
-  premium: "For power users",
-  ultimate: "For heavy workloads",
+  plus: "For everyday sharing",
+  pro: "For power users",
+  max: "For heavy workloads",
 }
 
 // Feature bullets per tier (storage is shown separately in the metric box).
@@ -38,7 +32,7 @@ function bullets(tier: PreferencesTier): string[] {
     : `${l.maxFileLinks} file + ${l.maxCdnLinks} CDN links`
 
   switch (tier) {
-    case "essential":
+    case "plus":
       return [
         `Up to ${upload} per file`,
         `Up to ${cdn} per CDN Asset`,
@@ -48,7 +42,7 @@ function bullets(tier: PreferencesTier): string[] {
         `Create funnels, ${l.maxFunnelLinks} links`,
         "Download-page branding",
       ]
-    case "premium":
+    case "pro":
       return [
         `Up to ${upload} per file`,
         `Up to ${cdn} per CDN Asset`,
@@ -57,7 +51,7 @@ function bullets(tier: PreferencesTier): string[] {
         `${l.maxFunnelLinks} funnel links`,
         "Fast support",
       ]
-    case "ultimate":
+    case "max":
       return [
         `Up to ${upload} per file`,
         `Up to ${cdn} per CDN Asset`,
@@ -73,9 +67,9 @@ function bullets(tier: PreferencesTier): string[] {
 
 const PLUS_HEADER: Record<PreferencesTier, string | null> = {
   free: null,
-  essential: null,
-  premium: "Everything in Essential, plus:",
-  ultimate: "Everything in Pro, plus:",
+  plus: null,
+  pro: "Everything in Plus, plus:",
+  max: "Everything in Pro, plus:",
 }
 
 // "13.99 € / month" -> "13.99 €".
@@ -106,7 +100,7 @@ export function PricingCards() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {PAID_TIERS.map((tier, i) => {
           const plan = PLAN_INFO.find((p) => p.key === tier)!
-          const label = displayLabel(tier, plan.label)
+          const label = plan.label
           const green = tier === POPULAR
           const storage = formatTierSize(getTierLimits(tier).maxCdnStorage)
           const plusHeader = PLUS_HEADER[tier]

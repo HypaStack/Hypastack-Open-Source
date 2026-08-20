@@ -403,7 +403,7 @@ export function UploadTray({
                     />
                     <Separator />
 
-                    {/* Custom expiration (Essential plan and above) */}
+                    {/* Custom expiration (Plus plan and above) */}
                     <ToggleField
                       label="Expires after"
                       sub="How long the link stays active before it's gone."
@@ -465,7 +465,7 @@ export function UploadTray({
                   </div>
                 )}
 
-                {normalizeTier(user?.tier) !== "ultimate" && (
+                {normalizeTier(user?.tier) !== "max" && (
                   <div className={`${PAD} pb-3 pt-2`}>
                     <p className="text-[11px] text-muted">
                       Want faster uploads and deletes?{" "}
