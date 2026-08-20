@@ -86,7 +86,7 @@ export default function DeveloperApiDocs() {
         </aside>
 
         <div className="px-6 sm:px-10">
-          <div className="max-w-[920px] lg:pl-[240px]">
+          <div className="lg:pl-[240px]">
             <DocGuide />
 
             <SectionHeading id="files" title="Files">
