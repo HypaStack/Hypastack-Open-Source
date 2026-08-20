@@ -17,6 +17,7 @@ import { ManageSkeleton } from "./_skeleton"
 import {
   type NavItem,
   SECTION_BUTTONS,
+  ADMIN_NAV_ITEM,
   SIDEBAR_WIDTH,
   API_BASE,
 } from "@/constants"
@@ -212,6 +213,7 @@ function ManageLayoutInner({
   const tier = normalizeTier(user.tier)
   const tierLimits = getTierLimits(tier)
   const tierChipColor = TIER_CHIP_COLOR[tier]
+  const sectionItems = user.isOwner ? [...SECTION_BUTTONS, ADMIN_NAV_ITEM] : SECTION_BUTTONS
   return (
     <>
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
@@ -283,7 +285,7 @@ function ManageLayoutInner({
 
         <nav className="flex-1 min-h-0 px-0 pt-4 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="space-y-1">
-            {SECTION_BUTTONS.map((item) => (
+            {sectionItems.map((item) => (
               <NavRow
                 key={item.href}
                 item={item}
@@ -446,7 +448,7 @@ function ManageLayoutInner({
               </div>
 
               <div className="flex flex-col gap-1 px-3 py-2">
-                {SECTION_BUTTONS.map((item) => (
+                {sectionItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}

@@ -19,6 +19,9 @@ export const SECTION_BUTTONS: NavItem[] = [
   { label: "Bin", href: "/me/bin", icon: "edit_note", hint: "Paste and share text" },
 ]
 
+/** Owner-only, appended to SECTION_BUTTONS at render time when user.isOwner. */
+export const ADMIN_NAV_ITEM: NavItem = { label: "Admin", href: "/me/admin", icon: "shield_person", hint: "Manage invite codes and accounts" }
+
 /** width of the secondary (sub-nav) sidebar in pixels */
 export const SIDEBAR_WIDTH = 233
 
