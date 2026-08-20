@@ -23,7 +23,7 @@ Zero-knowledge file sharing and a free global CDN. Encrypted in your browser bef
 <br />
 
 <div align="center">
-  <img src="https://r2.hypastack.com/cdn/wpoxysqdixzy/preview-main.png" alt="Hypastack preview" width="720" />
+  <img src="https://r2.hypastack.com/cdn/kdszwcn7wzr3/hypav3.webp" alt="Hypastack preview" width="720" />
 </div>
 
 <br />
