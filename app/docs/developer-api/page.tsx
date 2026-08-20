@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
-import { Card, Chip, ScrollShadow, Typography } from "@heroui/react"
+import { Card, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
+import { BaseUrlToolbar } from "@/components/docs/base-url-toolbar"
 import { DocNav } from "@/components/docs/doc-nav"
 import { DocGuide } from "@/components/docs/doc-guide"
 import { EndpointCard } from "@/components/docs/endpoint-card"
@@ -81,10 +82,7 @@ export default function DeveloperApiDocs() {
                 Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
                 make an HTTP request, you already know this API.
               </Typography>
-              <Chip size="lg" className="mt-8 gap-2 font-mono max-w-full flex-wrap !shrink">
-                <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-muted">Base URL</span>
-                <code className="text-foreground">https://api.hypastack.com/v3</code>
-              </Chip>
+              <BaseUrlToolbar />
             </div>
 
             <DocGuide />
