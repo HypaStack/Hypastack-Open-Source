@@ -6,7 +6,7 @@ That changes what "contributing" means here, so here's the honest version.
 
 ## Security reports — always welcome
 
-**Please don't open a public issue for security vulnerabilities.** If you find a flaw in the encryption or anything else that could compromise the platform, DM me on Telegram: **[@t_usekiko](https://t.me/t_usekiko)**, or email **usekiko@hypamail.me**.
+**Please don't open a public issue for security vulnerabilities.** If you find a flaw in the encryption or anything else that could compromise the platform, email me at **usekiko@hypamail.me**.
 
 This is the contribution I care about most, and the licence protects it explicitly. Section 2(c) grants you an irrevocable right to publish good-faith security and privacy findings, including the code excerpts needed to explain them. I waived any claim against that on purpose. A licence that lets me silence a researcher would make the whole "read the code and verify it yourself" argument worthless.
 
