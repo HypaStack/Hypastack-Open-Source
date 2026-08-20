@@ -185,7 +185,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
               <span className="ml-auto flex shrink-0 items-center gap-1.5">
                 {account.isCurrent && (
                   <Chip size="sm" color="accent" className="shrink-0 text-[11px]">
-                    Logged in
+                    Current
                   </Chip>
                 )}
                 {/* react-aria presses don't bubble, and the pointer handler stops
