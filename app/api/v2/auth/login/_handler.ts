@@ -3,11 +3,12 @@ import { apiError } from "@/lib/http/apiError"
 import crypto from "crypto"
 import { z } from "zod"
 import { verifyPasswordAsync, generateToken, generateRefreshToken, setAuthCookie, setRefreshCookie, hashPassword, computeKeyLookup } from "@/lib/security/auth"
-import { getUserForAuthById, getUserForAuthByKeyLookup, setUserKeyLookup, updateLastLogin, createUserSession } from "@/lib/models/userModel"
+import { getUserForAuthById, getUserForAuthByKeyLookup, setUserKeyLookup, updateLastLogin, createUserSession, isOwner } from "@/lib/models/userModel"
 import { checkLoginRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { validateCsrfToken } from "@/lib/security/security"
 import { getHashedIp } from "@/lib/http/ip"
+import { rejectIfBlacklisted, enforceOwnerIpGate } from "@/lib/security/ownerGate"
 import { API_ERRORS } from "@/constants"
 
 // keeping timing consistent.
@@ -21,6 +22,9 @@ const LoginSchema = z.object({
 
 export async function handleLoginPost(request: NextRequest) {
   try {
+    const blacklisted = await rejectIfBlacklisted(request)
+    if (blacklisted) return blacklisted
+
     const body = await request.json()
 
     const validation = LoginSchema.safeParse(body)
@@ -88,6 +92,14 @@ export async function handleLoginPost(request: NextRequest) {
 
     if (matchedSuspended) {
       return apiError(403, API_ERRORS.FORBIDDEN, "Account suspended")
+    }
+
+    // Correct credentials for the owner account from an IP that isn't
+    // allowlisted is a real compromise signal, not a typo, so this blacklists
+    // the caller rather than just bouncing the request.
+    if (await isOwner(matchedUserId)) {
+      const ownerGate = await enforceOwnerIpGate(request)
+      if (ownerGate) return ownerGate
     }
 
     await updateLastLogin(matchedUserId)

@@ -7,6 +7,7 @@ import { checkRegisterRateLimit } from "@/lib/data/rateLimit"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
 import { validateCsrfToken } from "@/lib/security/security"
 import { getHashedIp } from "@/lib/http/ip"
+import { rejectIfBlacklisted } from "@/lib/security/ownerGate"
 import { API_ERRORS } from "@/constants"
 const CIPHERTEXT_REGEX = /^[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/
 
@@ -24,6 +25,9 @@ const RegisterSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const blacklisted = await rejectIfBlacklisted(request)
+    if (blacklisted) return blacklisted
+
     const body = await request.json()
 
     const validation = RegisterSchema.safeParse(body)
