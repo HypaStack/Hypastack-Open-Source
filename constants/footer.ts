@@ -12,7 +12,7 @@ export const FOOTER_COLUMNS = [
       { label: "Mailing", href: "https://hypamail.me/" },
       { label: "Pricing", href: "/pricing" },
       { label: "Uptime", href: "https://status.hypastack.com" },
-      { label: "Developer API", href: "/docs/developer-api" },
+      { label: "Developer API", href: "https://docs.hypastack.com/api-reference/overview" },
       { label: "About", href: "/about" },
       { label: "Changelog", href: "/changelog" },
       { label: "Goal", href: "/goal" },
