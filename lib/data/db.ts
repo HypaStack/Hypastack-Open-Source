@@ -541,6 +541,13 @@ CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE F
         created_at TIMESTAMPTZ  DEFAULT NOW()
       )` },
       { version: '2026-08-20-invite-codes-used-by-idx', sql: `CREATE INDEX IF NOT EXISTS idx_invite_codes_used_by ON invite_codes(used_by)` },
+      // Owner flag for the admin panel. Never settable through any API, the
+      // only way this is ever true is a direct UPDATE run by hand.
+      { version: '2026-08-20-user-is-owner', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_owner BOOLEAN NOT NULL DEFAULT FALSE` },
+      // Suspension blocks login outright, checked at auth time, not just hidden in the UI.
+      { version: '2026-08-20-user-suspended', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended BOOLEAN NOT NULL DEFAULT FALSE` },
+      { version: '2026-08-20-user-suspended-at', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ` },
+      { version: '2026-08-20-users-created-at-idx', sql: `CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
