@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, InputGroup, Table, Select, ListBox, ListBoxItem, Chip } from "@heroui/react"
-import { MIcon } from "@/components/ui/material-icon"
-import { LoadingSvg } from "@/components/ui/loading-svg"
+import {
+  Avatar, Button, Card, Chip, ListBox, ListBoxItem, SearchField,
+  Select, Spinner, Table, Typography,
+} from "@heroui/react"
 import { apiFetch } from "@/lib/http/fetch"
 import { useManage } from "@/hooks/useManage"
 import { hypaConfirm, hypaToast, hypaError } from "@/components/ui/hypa-notif"
@@ -13,6 +14,7 @@ import { formatTierSize } from "@/constants/tier-limits"
 interface AdminUser {
   id: string
   displayName: string | null
+  avatarUrl: string | null
   tier: "free" | "essential" | "premium" | "ultimate"
   suspended: boolean
   isOwner: boolean
@@ -55,11 +57,6 @@ export function AccountsPanel() {
   }
 
   useEffect(() => { load() }, [])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    load({ q: search.trim() || undefined })
-  }
 
   const handleLoadMore = async () => {
     setLoadingMore(true)
@@ -116,63 +113,80 @@ export function AccountsPanel() {
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h2 className="text-[18px] font-medium text-[#171717] dark:text-[#e3e3e3]">Accounts</h2>
-        <form onSubmit={handleSearch}>
-          <InputGroup>
-            <InputGroup.Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by id or name"
-              aria-label="Search accounts"
-              className="w-56"
-            />
-            <InputGroup.Suffix className="p-0.5">
-              <Button type="submit" variant="secondary" size="sm" isIconOnly aria-label="Search">
-                <MIcon name="search" size={16} />
-              </Button>
-            </InputGroup.Suffix>
-          </InputGroup>
-        </form>
-      </div>
+    <Card>
+      <Card.Header className="flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col">
+          <Card.Title>Accounts</Card.Title>
+          <Card.Description>Search by account id or display name.</Card.Description>
+        </div>
+        <SearchField
+          value={search}
+          onChange={setSearch}
+          onSubmit={(q) => load({ q: q.trim() || undefined })}
+          onClear={() => load()}
+          aria-label="Search accounts"
+          className="w-64"
+        >
+          <SearchField.Group>
+            <SearchField.SearchIcon />
+            <SearchField.Input placeholder="id or name" />
+            <SearchField.ClearButton />
+          </SearchField.Group>
+        </SearchField>
+      </Card.Header>
 
-      {users === null ? (
-        <div className="py-8 flex justify-center"><LoadingSvg /></div>
-      ) : users.length === 0 ? (
-        <p className="text-[13.5px] text-[#898e97]">No accounts match.</p>
-      ) : (
-        <>
-          <Table>
+      <Card.Content className="gap-0">
+        {users === null ? (
+          <div className="flex justify-center py-10"><Spinner /></div>
+        ) : (
+          <Table variant="secondary">
             <Table.ScrollContainer>
               <Table.Content aria-label="Accounts">
                 <Table.Header>
                   <Table.Column isRowHeader>Account</Table.Column>
-                  <Table.Column>Tier</Table.Column>
+                  <Table.Column className="w-36">Tier</Table.Column>
                   <Table.Column>Storage</Table.Column>
                   <Table.Column>Joined</Table.Column>
-                  <Table.Column className="text-right">Actions</Table.Column>
+                  <Table.Column className="w-48 text-right">Actions</Table.Column>
                 </Table.Header>
-                <Table.Body>
+                <Table.Body
+                  renderEmptyState={() => (
+                    <Typography type="body-sm" color="muted" className="block py-10 text-center">
+                      No accounts match.
+                    </Typography>
+                  )}
+                >
                   {users.map((u) => {
                     const isSelf = u.id === currentUser?.id
                     return (
                       <Table.Row key={u.id} id={u.id}>
-                        <Table.Cell className="py-1.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[12.5px]">{u.id}</span>
-                            {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
-                            {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
+                        <Table.Cell className="py-2">
+                          <div className="flex items-center gap-3">
+                            <Avatar size="sm">
+                              {u.avatarUrl && <Avatar.Image src={u.avatarUrl} alt="" />}
+                              <Avatar.Fallback color={u.suspended ? "danger" : "accent"}>
+                                {(u.displayName ?? u.id).slice(0, 2).toUpperCase()}
+                              </Avatar.Fallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-2">
+                                <Typography type="body-sm" weight="medium" className="text-foreground">
+                                  {u.displayName ?? "no display name"}
+                                </Typography>
+                                {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
+                                {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
+                              </div>
+                              <Typography type="body-xs" color="muted">{u.id}</Typography>
+                            </div>
                           </div>
-                          <p className="text-[12px] text-muted mt-0.5">{u.displayName ?? "no display name"}</p>
                         </Table.Cell>
-                        <Table.Cell className="py-1.5">
+                        <Table.Cell className="py-2">
                           <Select
                             aria-label="Tier"
                             selectedKey={u.tier}
                             onSelectionChange={(key) => handleTierChange(u.id, String(key))}
                           >
-                            <Select.Trigger className="w-28" style={{ height: 32 }}>
+                            <Select.Trigger className="h-8 w-full">
                               <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
                               <Select.Indicator />
                             </Select.Trigger>
@@ -187,10 +201,16 @@ export function AccountsPanel() {
                             </Select.Popover>
                           </Select>
                         </Table.Cell>
-                        <Table.Cell className="py-1.5 text-muted">{formatTierSize(u.storageUsed)}</Table.Cell>
-                        <Table.Cell className="py-1.5 text-muted">{new Date(u.createdAt).toLocaleDateString()}</Table.Cell>
-                        <Table.Cell className="py-1.5 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <Table.Cell className="py-2">
+                          <Typography type="body-sm" color="muted">{formatTierSize(u.storageUsed)}</Typography>
+                        </Table.Cell>
+                        <Table.Cell className="py-2">
+                          <Typography type="body-sm" color="muted">
+                            {new Date(u.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </Table.Cell>
+                        <Table.Cell className="py-2">
+                          <div className="flex items-center justify-end gap-2">
                             <Button variant="secondary" size="sm" isDisabled={isSelf} onPress={() => handleToggleSuspend(u)}>
                               {u.suspended ? "Unsuspend" : "Suspend"}
                             </Button>
@@ -205,17 +225,23 @@ export function AccountsPanel() {
                 </Table.Body>
               </Table.Content>
             </Table.ScrollContainer>
-          </Table>
 
-          {hasMore && (
-            <div className="flex justify-center">
-              <Button variant="secondary" size="sm" isDisabled={loadingMore} onPress={handleLoadMore}>
-                {loadingMore ? "Loading..." : "Load more"}
-              </Button>
-            </div>
-          )}
-        </>
-      )}
-    </section>
+            {users.length > 0 && (
+              <Table.Footer className="justify-between">
+                <Typography type="body-xs" color="muted">
+                  {users.length} account{users.length === 1 ? "" : "s"} shown
+                </Typography>
+                {hasMore && (
+                  <Button variant="secondary" size="sm" isDisabled={loadingMore} onPress={handleLoadMore}>
+                    {loadingMore ? <Spinner size="sm" /> : null}
+                    Load more
+                  </Button>
+                )}
+              </Table.Footer>
+            )}
+          </Table>
+        )}
+      </Card.Content>
+    </Card>
   )
 }
