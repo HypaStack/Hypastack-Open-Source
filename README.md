@@ -34,12 +34,12 @@ I'm a solo developer, and I built Hypastack because I got tired of "private" fil
 
 ## What it does
 
-- **Secure File Sharing** — encrypted client-side (AES-GCM 256) before upload. The decryption key lives in the URL fragment, which never reaches the server. I genuinely cannot read these files.
-- **Permanent CDN Hosting** — public, permanent links for images and static assets. Not encrypted (a browser has to render them), but EXIF/GPS/camera metadata is stripped on upload.
-- **The Bin** — a short recovery window for anything you delete by accident, before it's gone for good.
-- **Funnels** — collect one-time file drops from people who don't have (or don't want) an account.
-- **Forum** — a public community board with file attachments.
-- **Developer API** — plain REST, plain JSON, bearer tokens with scoped keys. No SDK required. See [docs.hypastack.com](https://docs.hypastack.com/api-reference/overview).
+- **Secure File Sharing**: encrypted client-side (AES-GCM 256) before upload. The decryption key lives in the URL fragment, which never reaches the server. I genuinely cannot read these files.
+- **Permanent CDN Hosting**: public, permanent links for images and static assets. Not encrypted (a browser has to render them), but EXIF/GPS/camera metadata is stripped on upload.
+- **The Bin**: a short recovery window for anything you delete by accident, before it's gone for good.
+- **Funnels**: collect one-time file drops from people who don't have (or don't want) an account.
+- **Forum**: a public community board with file attachments.
+- **Developer API**: plain REST, plain JSON, bearer tokens with scoped keys. No SDK required. See [docs.hypastack.com](https://docs.hypastack.com/api-reference/overview).
 
 No email, no phone number. An account is a random ID plus a passkey, and that's it.
 
@@ -67,7 +67,7 @@ Everyone who's filed a bug, reported a security issue, or otherwise made this th
 
 <div align="center">
 
-**[HypaLabs License (Reference-Only)](./LICENSE)** — © 2025–2026 HypaLabs. All rights reserved.
+**[HypaLabs License (Reference-Only)](./LICENSE)** - (c) 2025-2026 HypaLabs. All rights reserved.
 
 Questions the license doesn't answer: **usekiko@hypamail.me**
 
