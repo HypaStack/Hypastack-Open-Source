@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
         tier,
         lastAcknowledgedTier,
         inactivityPurgeDays: user.inactivity_purge_days ?? 7,
+        isOwner: user.is_owner,
       }
     }
 

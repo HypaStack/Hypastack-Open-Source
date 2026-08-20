@@ -22,6 +22,7 @@ interface User {
   tier: Tier
   lastAcknowledgedTier: Tier
   inactivityPurgeDays: number
+  isOwner: boolean
 }
 
 export interface StorageStats {
