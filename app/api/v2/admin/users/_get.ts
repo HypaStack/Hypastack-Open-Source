@@ -6,7 +6,7 @@ export const GET = withAuth(async ({ request }) => {
   const search = request.nextUrl.searchParams.get("q") || undefined
   const offset = Number(request.nextUrl.searchParams.get("offset")) || 0
 
-  const users = await listUsersAdmin({ search, offset })
+  const users = await listUsersAdmin({ search, offset, limit: 25 })
 
   return NextResponse.json({
     users: users.map((u) => ({
