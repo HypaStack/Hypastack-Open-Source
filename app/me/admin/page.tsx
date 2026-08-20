@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Spinner, Tabs, Typography } from "@heroui/react"
 import { useManage } from "@/hooks/useManage"
+import { AdminDataProvider } from "./_data"
 import { InviteCodesPanel } from "./_invite-codes"
 import { AccountsPanel } from "./_accounts"
 import { BlacklistPanel } from "./_blacklist"
@@ -41,19 +42,27 @@ export default function AdminPage() {
           </Typography>
         </div>
 
-        <Tabs defaultSelectedKey="invites">
-          <Tabs.ListContainer className="self-start">
-            <Tabs.List aria-label="Admin sections">
-              <Tabs.Tab id="invites"><Tabs.Indicator />Invite codes</Tabs.Tab>
-              <Tabs.Tab id="accounts"><Tabs.Indicator />Accounts</Tabs.Tab>
-              <Tabs.Tab id="blacklist"><Tabs.Indicator />Blacklist</Tabs.Tab>
-            </Tabs.List>
-          </Tabs.ListContainer>
+        <AdminDataProvider>
+          <Tabs defaultSelectedKey="invites">
+            <Tabs.ListContainer className="w-full max-w-xl">
+              <Tabs.List aria-label="Admin sections" className="w-full">
+                <Tabs.Tab id="invites" className="flex-1 whitespace-nowrap">
+                  <Tabs.Indicator />Invite codes
+                </Tabs.Tab>
+                <Tabs.Tab id="accounts" className="flex-1 whitespace-nowrap">
+                  <Tabs.Indicator />Accounts
+                </Tabs.Tab>
+                <Tabs.Tab id="blacklist" className="flex-1 whitespace-nowrap">
+                  <Tabs.Indicator />Blacklist
+                </Tabs.Tab>
+              </Tabs.List>
+            </Tabs.ListContainer>
 
-          <Tabs.Panel id="invites" className="p-0"><InviteCodesPanel /></Tabs.Panel>
-          <Tabs.Panel id="accounts" className="p-0"><AccountsPanel /></Tabs.Panel>
-          <Tabs.Panel id="blacklist" className="p-0"><BlacklistPanel /></Tabs.Panel>
-        </Tabs>
+            <Tabs.Panel id="invites" className="p-0"><InviteCodesPanel /></Tabs.Panel>
+            <Tabs.Panel id="accounts" className="p-0"><AccountsPanel /></Tabs.Panel>
+            <Tabs.Panel id="blacklist" className="p-0"><BlacklistPanel /></Tabs.Panel>
+          </Tabs>
+        </AdminDataProvider>
       </div>
     </div>
   )

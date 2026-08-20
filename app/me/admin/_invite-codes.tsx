@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Button, ButtonGroup, Card, Chip, Form, Input, Label, NumberField,
   Spinner, Table, TextField, Typography,
@@ -9,34 +9,14 @@ import { MIcon } from "@/components/ui/material-icon"
 import { apiFetch } from "@/lib/http/fetch"
 import { hypaConfirm, hypaToast, hypaError } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
-
-interface InviteCode {
-  code: string
-  maxUses: number
-  usesCount: number
-  redeemedBy: string[]
-  createdAt: string
-}
+import { useAdminData } from "./_data"
 
 export function InviteCodesPanel() {
-  const [codes, setCodes] = useState<InviteCode[] | null>(null)
+  const { codes, refreshCodes } = useAdminData()
   const [customCode, setCustomCode] = useState("")
   const [count, setCount] = useState(1)
   const [maxUses, setMaxUses] = useState(1)
   const [generating, setGenerating] = useState(false)
-
-  const load = async () => {
-    try {
-      const res = await apiFetch("/api/v2/admin/invite-codes")
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to load invite codes")
-      setCodes(data.codes)
-    } catch (err) {
-      hypaError(errorMessage(err))
-    }
-  }
-
-  useEffect(() => { load() }, [])
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,7 +35,7 @@ export function InviteCodesPanel() {
       if (!res.ok) throw new Error(data.error || "Failed to generate codes")
       hypaToast({ title: `Generated ${data.codes.length} code${data.codes.length === 1 ? "" : "s"}` })
       setCustomCode("")
-      await load()
+      await refreshCodes()
     } catch (err) {
       hypaError(errorMessage(err))
     } finally {
@@ -75,7 +55,7 @@ export function InviteCodesPanel() {
         if (!res.ok) throw new Error(data.error || "Failed to revoke code")
       },
     })
-    if (confirmed) await load()
+    if (confirmed) await refreshCodes()
   }
 
   const handleCopy = (code: string) => {
@@ -125,65 +105,61 @@ export function InviteCodesPanel() {
           </Button>
         </Form>
 
-        {codes === null ? (
-          <div className="flex justify-center py-10"><Spinner /></div>
-        ) : (
-          <Table variant="secondary">
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Invite codes">
-                <Table.Header>
-                  <Table.Column isRowHeader>Code</Table.Column>
-                  <Table.Column>Uses</Table.Column>
-                  <Table.Column>Last redeemed by</Table.Column>
-                  <Table.Column>Created</Table.Column>
-                  <Table.Column className="w-28 text-right">Actions</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <Typography type="body-sm" color="muted" className="block py-10 text-center">
-                      No invite codes yet, generate some above.
-                    </Typography>
-                  )}
-                >
-                  {codes.map((c) => {
-                    const spent = c.usesCount >= c.maxUses
-                    return (
-                      <Table.Row key={c.code} id={c.code}>
-                        <Table.Cell className="py-2">{c.code}</Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Chip size="sm" variant="soft" color={spent ? "default" : "success"}>
-                            {c.usesCount}/{c.maxUses}
-                          </Chip>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Typography type="body-sm" color="muted">
-                            {c.redeemedBy.at(-1) ?? "nobody yet"}
-                          </Typography>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Typography type="body-sm" color="muted">
-                            {new Date(c.createdAt).toLocaleDateString()}
-                          </Typography>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          {/* only Buttons go straight in here, ButtonGroup clones its direct children and the marker prop leaks onto anything else */}
-                          <ButtonGroup variant="secondary" size="sm" className="float-right">
-                            <Button isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
-                              <MIcon name="content_copy" size={14} />
-                            </Button>
-                            <Button isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
-                              <MIcon name="delete" size={14} />
-                            </Button>
-                          </ButtonGroup>
-                        </Table.Cell>
-                      </Table.Row>
-                    )
-                  })}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        )}
+        <Table variant="secondary">
+          <Table.ScrollContainer>
+            <Table.Content aria-label="Invite codes">
+              <Table.Header>
+                <Table.Column isRowHeader>Code</Table.Column>
+                <Table.Column>Uses</Table.Column>
+                <Table.Column>Last redeemed by</Table.Column>
+                <Table.Column>Created</Table.Column>
+                <Table.Column className="w-28 text-right">Actions</Table.Column>
+              </Table.Header>
+              <Table.Body
+                renderEmptyState={() => (
+                  <Typography type="body-sm" color="muted" className="block py-10 text-center">
+                    No invite codes yet, generate some above.
+                  </Typography>
+                )}
+              >
+                {codes.map((c) => {
+                  const spent = c.usesCount >= c.maxUses
+                  return (
+                    <Table.Row key={c.code} id={c.code}>
+                      <Table.Cell className="py-2">{c.code}</Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Chip size="sm" variant="soft" color={spent ? "default" : "success"}>
+                          {c.usesCount}/{c.maxUses}
+                        </Chip>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">
+                          {c.redeemedBy.at(-1) ?? "nobody yet"}
+                        </Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">
+                          {new Date(c.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        {/* only Buttons go straight in here, ButtonGroup clones its direct children and the marker prop leaks onto anything else */}
+                        <ButtonGroup variant="secondary" size="sm" className="float-right">
+                          <Button isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
+                            <MIcon name="content_copy" size={14} />
+                          </Button>
+                          <Button isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
+                            <MIcon name="delete" size={14} />
+                          </Button>
+                        </ButtonGroup>
+                      </Table.Cell>
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
+        </Table>
       </Card.Content>
     </Card>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Avatar, Button, Card, Chip, ListBox, ListBoxItem, SearchField,
   Select, Spinner, Table, Typography,
@@ -10,18 +10,7 @@ import { useManage } from "@/hooks/useManage"
 import { hypaConfirm, hypaToast, hypaError } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
 import { formatTierSize } from "@/constants/tier-limits"
-
-interface AdminUser {
-  id: string
-  displayName: string | null
-  avatarUrl: string | null
-  tier: "free" | "essential" | "premium" | "ultimate"
-  suspended: boolean
-  isOwner: boolean
-  storageUsed: number
-  createdAt: string
-  lastLogin: string | null
-}
+import { useAdminData, type AdminUser } from "./_data"
 
 const TIER_LABEL: Record<AdminUser["tier"], string> = {
   free: "Free",
@@ -30,37 +19,15 @@ const TIER_LABEL: Record<AdminUser["tier"], string> = {
   ultimate: "Max",
 }
 const TIERS = Object.keys(TIER_LABEL) as AdminUser["tier"][]
-const PAGE_SIZE = 25
 
 export function AccountsPanel() {
   const { user: currentUser } = useManage()
-  const [users, setUsers] = useState<AdminUser[] | null>(null)
-  const [search, setSearch] = useState("")
+  const { users, usersHaveMore, userSearch, setUserSearch, loadUsers } = useAdminData()
   const [loadingMore, setLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-
-  // append=false replaces the list (fresh search or first load), true sticks
-  // the next page on the end for "Load more".
-  const load = async (opts: { q?: string; offset?: number; append?: boolean } = {}) => {
-    try {
-      const params = new URLSearchParams()
-      if (opts.q) params.set("q", opts.q)
-      params.set("offset", String(opts.offset ?? 0))
-      const res = await apiFetch(`/api/v2/admin/users?${params}`)
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to load accounts")
-      setUsers((prev) => (opts.append && prev ? [...prev, ...data.users] : data.users))
-      setHasMore(data.users.length === PAGE_SIZE)
-    } catch (err) {
-      hypaError(errorMessage(err))
-    }
-  }
-
-  useEffect(() => { load() }, [])
 
   const handleLoadMore = async () => {
     setLoadingMore(true)
-    await load({ q: search.trim() || undefined, offset: users?.length ?? 0, append: true })
+    await loadUsers({ append: true })
     setLoadingMore(false)
   }
 
@@ -78,7 +45,7 @@ export function AccountsPanel() {
     try {
       await patch(id, { tier })
       hypaToast({ title: "Tier updated" })
-      await load({ q: search.trim() || undefined })
+      await loadUsers()
     } catch (err) {
       hypaError(errorMessage(err))
     }
@@ -94,7 +61,7 @@ export function AccountsPanel() {
       destructive: !u.suspended,
       onConfirm: async () => { await patch(u.id, { suspended: !u.suspended }) },
     })
-    if (confirmed) await load({ q: search.trim() || undefined })
+    if (confirmed) await loadUsers()
   }
 
   const handleDelete = async (id: string) => {
@@ -109,7 +76,7 @@ export function AccountsPanel() {
         if (!res.ok) throw new Error(data.error || "Failed to delete account")
       },
     })
-    if (confirmed) await load({ q: search.trim() || undefined })
+    if (confirmed) await loadUsers()
   }
 
   return (
@@ -120,10 +87,10 @@ export function AccountsPanel() {
           <Card.Description>Search by account id or display name.</Card.Description>
         </div>
         <SearchField
-          value={search}
-          onChange={setSearch}
-          onSubmit={(q) => load({ q: q.trim() || undefined })}
-          onClear={() => load()}
+          value={userSearch}
+          onChange={setUserSearch}
+          onSubmit={(q) => loadUsers({ q })}
+          onClear={() => loadUsers({ q: "" })}
           aria-label="Search accounts"
           className="w-64"
         >
@@ -136,111 +103,108 @@ export function AccountsPanel() {
       </Card.Header>
 
       <Card.Content className="gap-0">
-        {users === null ? (
-          <div className="flex justify-center py-10"><Spinner /></div>
-        ) : (
-          <Table variant="secondary">
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Accounts">
-                <Table.Header>
-                  <Table.Column isRowHeader>Account</Table.Column>
-                  <Table.Column className="w-36">Tier</Table.Column>
-                  <Table.Column>Storage</Table.Column>
-                  <Table.Column>Joined</Table.Column>
-                  <Table.Column className="w-48 text-right">Actions</Table.Column>
-                </Table.Header>
-                <Table.Body
-                  renderEmptyState={() => (
-                    <Typography type="body-sm" color="muted" className="block py-10 text-center">
-                      No accounts match.
-                    </Typography>
-                  )}
-                >
-                  {users.map((u) => {
-                    const isSelf = u.id === currentUser?.id
-                    return (
-                      <Table.Row key={u.id} id={u.id}>
-                        <Table.Cell className="py-2">
-                          <div className="flex items-center gap-3">
-                            <Avatar size="sm">
-                              {u.avatarUrl && <Avatar.Image src={u.avatarUrl} alt="" />}
-                              <Avatar.Fallback color={u.suspended ? "danger" : "accent"}>
-                                {(u.displayName ?? u.id).slice(0, 2).toUpperCase()}
-                              </Avatar.Fallback>
-                            </Avatar>
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-2">
-                                <Typography type="body-sm" weight="medium" className="text-foreground">
-                                  {u.displayName ?? "no display name"}
-                                </Typography>
-                                {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
-                                {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
-                              </div>
-                              <Typography type="body-xs" color="muted">{u.id}</Typography>
-                            </div>
-                          </div>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Select
-                            aria-label="Tier"
-                            selectedKey={u.tier}
-                            onSelectionChange={(key) => handleTierChange(u.id, String(key))}
-                          >
-                            <Select.Trigger className="h-8 w-full">
-                              <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
-                              <Select.Indicator />
-                            </Select.Trigger>
-                            <Select.Popover>
-                              <ListBox aria-label="Tier options">
-                                {TIERS.map((t) => (
-                                  <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
-                                    {TIER_LABEL[t]}
-                                  </ListBoxItem>
-                                ))}
-                              </ListBox>
-                            </Select.Popover>
-                          </Select>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Typography type="body-sm" color="muted">{formatTierSize(u.storageUsed)}</Typography>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <Typography type="body-sm" color="muted">
-                            {new Date(u.createdAt).toLocaleDateString()}
-                          </Typography>
-                        </Table.Cell>
-                        <Table.Cell className="py-2">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button variant="secondary" size="sm" isDisabled={isSelf} onPress={() => handleToggleSuspend(u)}>
-                              {u.suspended ? "Unsuspend" : "Suspend"}
-                            </Button>
-                            <Button variant="danger-soft" size="sm" isDisabled={isSelf} onPress={() => handleDelete(u.id)}>
-                              Delete
-                            </Button>
-                          </div>
-                        </Table.Cell>
-                      </Table.Row>
-                    )
-                  })}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-
-            {users.length > 0 && (
-              <Table.Footer className="justify-between">
-                <Typography type="body-xs" color="muted">
-                  {users.length} account{users.length === 1 ? "" : "s"} shown
-                </Typography>
-                {hasMore && (
-                  <Button variant="secondary" size="sm" isDisabled={loadingMore} onPress={handleLoadMore}>
-                    {loadingMore ? <Spinner size="sm" /> : null}
-                    Load more
-                  </Button>
+        <Table variant="secondary">
+          <Table.ScrollContainer>
+            <Table.Content aria-label="Accounts">
+              <Table.Header>
+                <Table.Column isRowHeader>Account</Table.Column>
+                <Table.Column className="w-36">Tier</Table.Column>
+                <Table.Column>Storage</Table.Column>
+                <Table.Column>Joined</Table.Column>
+                <Table.Column className="w-48 text-right">Actions</Table.Column>
+              </Table.Header>
+              <Table.Body
+                renderEmptyState={() => (
+                  <Typography type="body-sm" color="muted" className="block py-10 text-center">
+                    No accounts match.
+                  </Typography>
                 )}
-              </Table.Footer>
-            )}
-          </Table>
-        )}
+              >
+                {users.map((u) => {
+                  const isSelf = u.id === currentUser?.id
+                  return (
+                    <Table.Row key={u.id} id={u.id}>
+                      <Table.Cell className="py-2">
+                        <div className="flex items-center gap-3">
+                          <Avatar size="sm">
+                            {u.avatarUrl && <Avatar.Image src={u.avatarUrl} alt="" />}
+                            <Avatar.Fallback color={u.suspended ? "danger" : "accent"}>
+                              {(u.displayName ?? u.id).slice(0, 2).toUpperCase()}
+                            </Avatar.Fallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <Typography type="body-sm" weight="medium" className="text-foreground">
+                                {u.displayName ?? "no display name"}
+                              </Typography>
+                              {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
+                              {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
+                            </div>
+                            <Typography type="body-xs" color="muted">{u.id}</Typography>
+                          </div>
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Select
+                          aria-label="Tier"
+                          selectedKey={u.tier}
+                          onSelectionChange={(key) => handleTierChange(u.id, String(key))}
+                        >
+                          <Select.Trigger className="h-8 w-full">
+                            <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
+                            <Select.Indicator />
+                          </Select.Trigger>
+                          {/* popover defaults to bg-overlay, way darker than the table sitting behind it */}
+                          <Select.Popover className="bg-surface-tertiary">
+                            <ListBox aria-label="Tier options">
+                              {TIERS.map((t) => (
+                                <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
+                                  {TIER_LABEL[t]}
+                                </ListBoxItem>
+                              ))}
+                            </ListBox>
+                          </Select.Popover>
+                        </Select>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">{formatTierSize(u.storageUsed)}</Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">
+                          {new Date(u.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button variant="secondary" size="sm" isDisabled={isSelf} onPress={() => handleToggleSuspend(u)}>
+                            {u.suspended ? "Unsuspend" : "Suspend"}
+                          </Button>
+                          <Button variant="danger-soft" size="sm" isDisabled={isSelf} onPress={() => handleDelete(u.id)}>
+                            Delete
+                          </Button>
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
+
+          {users.length > 0 && (
+            <Table.Footer className="justify-between">
+              <Typography type="body-xs" color="muted">
+                {users.length} account{users.length === 1 ? "" : "s"} shown
+              </Typography>
+              {usersHaveMore && (
+                <Button variant="secondary" size="sm" isDisabled={loadingMore} onPress={handleLoadMore}>
+                  {loadingMore ? <Spinner size="sm" /> : null}
+                  Load more
+                </Button>
+              )}
+            </Table.Footer>
+          )}
+        </Table>
       </Card.Content>
     </Card>
   )
