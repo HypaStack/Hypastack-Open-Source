@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button, Chip, Dropdown, toast } from "@heroui/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { apiFetch } from "@/lib/http/fetch"
@@ -50,22 +50,24 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
     { id: userId, name: nickname, isCurrent: true, canSwitch: true },
   ])
   const [canAddMore, setCanAddMore] = useState(true)
-  const [loaded, setLoaded] = useState(false)
   const [busy, setBusy] = useState(false)
 
-  const load = async () => {
-    try {
-      const res = await apiFetch("/api/v2/auth/accounts")
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to load accounts")
-      const list = await Promise.all((data.accounts as ApiAccount[]).map(toSwitchable))
-      if (list.length > 0) setAccounts(list)
-      setCanAddMore(data.canAddMore !== false)
-      setLoaded(true)
-    } catch (err) {
-      toast.danger(errorMessage(err))
-    }
-  }
+  // Fetched with the page, not on open, so the menu is complete the first time
+  // it's pulled down instead of filling in under the cursor.
+  useEffect(() => {
+    let cancelled = false
+    apiFetch("/api/v2/auth/accounts")
+      .then(async (res) => {
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || "Failed to load accounts")
+        const list = await Promise.all((data.accounts as ApiAccount[]).map(toSwitchable))
+        if (cancelled) return
+        if (list.length > 0) setAccounts(list)
+        setCanAddMore(data.canAddMore !== false)
+      })
+      .catch((err) => { if (!cancelled) toast.danger(errorMessage(err)) })
+    return () => { cancelled = true }
+  }, [])
 
   const switchTo = async (account: SwitchableAccount) => {
     // Without the master key nothing on the account would decrypt, so send them
@@ -128,7 +130,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
   }
 
   return (
-    <Dropdown onOpenChange={(open) => { if (open && !loaded) load() }}>
+    <Dropdown>
       <Dropdown.Trigger
         aria-label="Switch account"
         className="flex min-w-0 flex-1 items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"

@@ -13,7 +13,7 @@ import { PreferencesModal, type PreferencesTab } from "@/components/preferences-
 import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
-import { ManageSkeleton } from "./_skeleton"
+import { ManageSkeleton, SKELETON_DELAY_MS, SKELETON_FADE_MS } from "./_skeleton"
 import { AccountSwitcher } from "./_account-switcher"
 import {
   type NavItem,
@@ -140,6 +140,7 @@ function ManageLayoutInner({
 
   const [shouldRedirect, setShouldRedirect] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [delayPassed, setDelayPassed] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [preferencesOpen, setPreferencesOpen] = useState(false)
   const [preferencesTab, setPreferencesTab] = useState<PreferencesTab>("account")
@@ -201,22 +202,41 @@ function ManageLayoutInner({
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [drawerOpen])
 
-  if (isLoading) {
-    return <ManageSkeleton pathname={pathname} />
-  }
+  // Only a load slow enough to notice earns a skeleton. delayPassed staying true
+  // afterwards is fine, showSkeleton is gated on isLoading anyway.
+  useEffect(() => {
+    if (!isLoading) return
+    const timer = setTimeout(() => setDelayPassed(true), SKELETON_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [isLoading])
 
-  if (!isAuthenticated || !user) {
+  const showSkeleton = isLoading && delayPassed
+
+  if (!isLoading && (!isAuthenticated || !user)) {
     return null
   }
 
-  const initials = (user.nickname || "?").charAt(0).toUpperCase()
-
-  const tier = normalizeTier(user.tier)
+  const tier = normalizeTier(user?.tier)
   const tierLimits = getTierLimits(tier)
   const tierChipColor = TIER_CHIP_COLOR[tier]
-  const sectionItems = user.isOwner ? [...SECTION_BUTTONS, ADMIN_NAV_ITEM] : SECTION_BUTTONS
+  const sectionItems = user?.isOwner ? [...SECTION_BUTTONS, ADMIN_NAV_ITEM] : SECTION_BUTTONS
   return (
     <>
+    {/* Sits over the real dashboard so it can fade off it, rather than blinking out. */}
+    <AnimatePresence>
+      {showSkeleton && (
+        <motion.div
+          key="dashboard-skeleton"
+          className="fixed inset-0 z-[60]"
+          exit={{ opacity: 0 }}
+          transition={{ duration: SKELETON_FADE_MS, ease: "easeOut" }}
+        >
+          <ManageSkeleton pathname={pathname} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {user && (
     <div className={`flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-black text-[#171717] dark:text-[#e3e3e3]${resolvedTheme === 'dark' ? ' theme-dark' : ''}`}>
       <aside
         className={`${sidebarCollapsed ? "hidden" : "hidden lg:flex"} shrink-0 flex-col sticky top-0 z-10 h-[calc(100vh-16px)] my-2 ml-2 mr-1`}
@@ -541,6 +561,7 @@ function ManageLayoutInner({
       </Modal>
 
     </div>
+    )}
 
     {/* Always mounted so a fresh load can still detect an interrupted upload. */}
     <UploadZone />

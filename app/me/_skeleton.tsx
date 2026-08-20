@@ -9,6 +9,12 @@ import { GridSkeleton } from "./hosting/_grid-skeleton"
 // swapped for Skeletons sized to the element they stand in for, so the real UI
 // drops in without anything shifting. The layout returns null until the user
 // loads, so this shell has to live here, a page level skeleton never mounts.
+/** Fast loads never show a skeleton at all, a flash of one reads worse than a beat of nothing. */
+export const SKELETON_DELAY_MS = 1000
+
+/** Long enough to read as a crossfade over the real dashboard underneath. */
+export const SKELETON_FADE_MS = 0.35
+
 export function ManageSkeleton({ pathname }: { pathname: string }) {
   const isHosting = pathname.startsWith("/me/hosting")
   const isStorage = pathname.startsWith("/me/storage")
