@@ -367,6 +367,7 @@ export async function isOwner(userId: string): Promise<boolean> {
 export interface AdminUserRow {
   id: string
   display_name: string | null
+  avatar_url: string | null
   tier: Tier
   suspended: boolean
   is_owner: boolean
@@ -385,7 +386,7 @@ export async function listUsersAdmin(opts: { search?: string; limit?: number; of
   const search = opts.search?.trim() || null
 
   const result = await pool.query(
-    `SELECT u.id, u.display_name, u.tier, u.suspended, u.is_owner, u.created_at, u.last_login,
+    `SELECT u.id, u.display_name, u.avatar_url, u.tier, u.suspended, u.is_owner, u.created_at, u.last_login,
             COALESCE(f.storage, 0) + COALESCE(c.storage, 0) AS storage_used
      FROM users u
      LEFT JOIN (SELECT user_id, SUM(file_size) AS storage FROM basedrop_files GROUP BY user_id) f ON f.user_id = u.id
@@ -399,6 +400,7 @@ export async function listUsersAdmin(opts: { search?: string; limit?: number; of
   return result.rows.map((row) => ({
     id: row.id,
     display_name: row.display_name,
+    avatar_url: row.avatar_url,
     tier: normalizeTier(row.tier),
     suspended: row.suspended,
     is_owner: row.is_owner,

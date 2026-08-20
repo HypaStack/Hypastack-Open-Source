@@ -12,6 +12,7 @@ export const GET = withAuth(async ({ request }) => {
     users: users.map((u) => ({
       id: u.id,
       displayName: u.display_name,
+      avatarUrl: u.avatar_url,
       tier: u.tier,
       suspended: u.suspended,
       isOwner: u.is_owner,
