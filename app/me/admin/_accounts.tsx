@@ -160,7 +160,7 @@ export function AccountsPanel() {
                       <Table.Row key={u.id} id={u.id}>
                         <Table.Cell className="py-1.5">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <code className="text-[12.5px] font-mono">{u.id}</code>
+                            <span className="text-[12.5px]">{u.id}</span>
                             {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
                             {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
                           </div>
