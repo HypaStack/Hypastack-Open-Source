@@ -180,10 +180,9 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
                 onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
               />
               <span className="min-w-0 truncate">{account.name}</span>
-              <span className="ml-auto flex shrink-0 items-center gap-1">
+              <span className="ml-auto flex shrink-0 items-center gap-1.5">
                 {account.isCurrent && (
                   <Chip size="sm" color="accent" className="shrink-0 text-[11px]">
-                    <MIcon name="check_circle" size={12} />
                     Logged in
                   </Chip>
                 )}
@@ -193,15 +192,16 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {/* sized to match Chip sm, same trick the account menu uses */}
                   <Button
-                    isIconOnly
+                    variant="danger-soft"
                     size="sm"
-                    variant="ghost"
                     aria-label={`Sign out ${account.name}`}
                     isDisabled={busy}
                     onPress={() => signOut(account)}
+                    className="shrink-0 h-5 px-2 text-[11px] md:h-5 rounded-2xl"
                   >
-                    <MIcon name="logout" size={14} />
+                    Sign out
                   </Button>
                 </span>
               </span>
