@@ -68,7 +68,7 @@ export default function CreateAccountPage() {
       const response = await apiFetch("/api/v2/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, accessKey, nickname_encrypted, turnstileToken, csrfToken }),
+        body: JSON.stringify({ userId, accessKey, nickname_encrypted, inviteCode: inviteCode.trim(), turnstileToken, csrfToken }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Failed to create account")
