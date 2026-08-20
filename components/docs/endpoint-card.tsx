@@ -10,9 +10,9 @@ function ParamTable({ title, params }: { title: string; params: EndpointParam[] 
       {params.map((p) => (
         <div key={p.name}>
           <div className="py-2.5 flex flex-col sm:flex-row sm:gap-5">
-            <div className="sm:w-[180px] shrink-0 flex items-baseline gap-2">
+            <div className="sm:w-[180px] shrink-0 flex items-center gap-2 flex-wrap">
               <code className="text-[12.5px] text-foreground font-mono">{p.name}</code>
-              <Typography type="body-xs" color="muted">{p.type}</Typography>
+              <Chip size="sm" variant="soft" className="font-mono">{p.type}</Chip>
               {p.required && <Chip size="sm" variant="soft" color="warning" className="uppercase tracking-wide">req</Chip>}
             </div>
             <Typography type="body-sm" color="muted" className="leading-relaxed mt-1 sm:mt-0">{p.description}</Typography>

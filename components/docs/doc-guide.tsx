@@ -1,4 +1,4 @@
-import { Separator, Typography } from "@heroui/react"
+import { Chip, Separator, Typography } from "@heroui/react"
 import { CodeBlock } from "./code-block"
 import { V3_SCOPES, V3_SCOPE_LABELS } from "@/lib/http/v3/scopes"
 import { ERROR_CODES, TIER_TABLE } from "@/lib/docs/v3-endpoints"
@@ -208,8 +208,8 @@ do {
       {ERROR_CODES.map((e) => (
         <div key={e.code}>
           <div className="py-2.5 flex flex-col sm:flex-row sm:gap-4">
-            <div className="sm:w-[220px] shrink-0 flex items-baseline gap-2">
-              <Typography type="body-xs" color="muted" className="font-mono">{e.status}</Typography>
+            <div className="sm:w-[220px] shrink-0 flex items-center gap-2">
+              <Chip size="sm" variant="soft" color={e.status >= 500 ? "danger" : "warning"} className="font-mono">{e.status}</Chip>
               <code className="text-[12.5px] text-foreground font-mono">{e.code}</code>
             </div>
             <Typography type="body-sm" color="muted" className="leading-relaxed mt-1 sm:mt-0">{e.when}</Typography>
