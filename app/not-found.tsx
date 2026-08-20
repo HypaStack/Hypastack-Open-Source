@@ -28,7 +28,7 @@ export default function NotFoundPage() {
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-lg">
           <Link href="/me/files" className={linkVariants().base()}>Dashboard</Link>
           <Link href="/" className={linkVariants().base()}>Home</Link>
-          <Link href="/docs/developer-api" className={linkVariants().base()}>Developer API</Link>
+          <Link href="https://docs.hypastack.com/api-reference/overview" target="_blank" rel="noopener noreferrer" className={linkVariants().base()}>Developer API</Link>
         </div>
       </div>
     </main>
