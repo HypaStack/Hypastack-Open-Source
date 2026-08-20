@@ -32,7 +32,7 @@ export default function AdminPage() {
   if (!user.isOwner) return null
 
   return (
-    <div className="flex-1 flex flex-col gap-8">
+    <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-8 pb-8">
       <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Admin</h1>
       <InviteCodesPanel />
       <AccountsPanel />
