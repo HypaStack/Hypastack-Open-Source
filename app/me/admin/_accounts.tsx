@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import {
-  Avatar, Button, Card, Chip, ListBox, ListBoxItem, SearchField,
-  Select, Spinner, Table, Typography,
+  Autocomplete, Avatar, Button, Card, Chip, ListBox, ListBoxItem,
+  SearchField, Spinner, Table, Typography,
 } from "@heroui/react"
 import { apiFetch } from "@/lib/http/fetch"
 import { useManage } from "@/hooks/useManage"
@@ -108,7 +108,8 @@ export function AccountsPanel() {
             <Table.Content aria-label="Accounts">
               <Table.Header>
                 <Table.Column isRowHeader>Account</Table.Column>
-                <Table.Column className="w-36">Tier</Table.Column>
+                {/* the autocomplete popover is capped to the trigger width, so the column needs room for its search box */}
+                <Table.Column className="w-44">Tier</Table.Column>
                 <Table.Column>Storage</Table.Column>
                 <Table.Column>Joined</Table.Column>
                 <Table.Column className="w-48 text-right">Actions</Table.Column>
@@ -145,26 +146,34 @@ export function AccountsPanel() {
                         </div>
                       </Table.Cell>
                       <Table.Cell className="py-2">
-                        <Select
+                        <Autocomplete
                           aria-label="Tier"
                           selectedKey={u.tier}
                           onSelectionChange={(key) => handleTierChange(u.id, String(key))}
                         >
-                          <Select.Trigger className="h-8 w-full">
-                            <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
-                            <Select.Indicator />
-                          </Select.Trigger>
+                          <Autocomplete.Trigger className="min-h-8 w-full py-1">
+                            <Autocomplete.Value>{TIER_LABEL[u.tier]}</Autocomplete.Value>
+                            <Autocomplete.Indicator />
+                          </Autocomplete.Trigger>
                           {/* popover defaults to bg-overlay, way darker than the table sitting behind it */}
-                          <Select.Popover className="bg-surface-tertiary">
-                            <ListBox aria-label="Tier options">
-                              {TIERS.map((t) => (
-                                <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
-                                  {TIER_LABEL[t]}
-                                </ListBoxItem>
-                              ))}
-                            </ListBox>
-                          </Select.Popover>
-                        </Select>
+                          <Autocomplete.Popover className="bg-surface-tertiary">
+                            <Autocomplete.Filter>
+                              <SearchField aria-label="Filter tiers" autoFocus>
+                                <SearchField.Group>
+                                  <SearchField.SearchIcon />
+                                  <SearchField.Input placeholder="Search..." />
+                                </SearchField.Group>
+                              </SearchField>
+                              <ListBox aria-label="Tier options">
+                                {TIERS.map((t) => (
+                                  <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
+                                    {TIER_LABEL[t]}
+                                  </ListBoxItem>
+                                ))}
+                              </ListBox>
+                            </Autocomplete.Filter>
+                          </Autocomplete.Popover>
+                        </Autocomplete>
                       </Table.Cell>
                       <Table.Cell className="py-2">
                         <Typography type="body-sm" color="muted">{formatTierSize(u.storageUsed)}</Typography>
