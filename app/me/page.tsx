@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 
 // /me has no dashboard of its own, it lands users straight in their Drive.
-// The real sections are /me/files, /me/cdn and /me/bin.
+// The real sections are /me/storage, /me/hosting and /me/paste.
 export default function ManagePage() {
-  redirect("/me/files")
+  redirect("/me/storage")
 }

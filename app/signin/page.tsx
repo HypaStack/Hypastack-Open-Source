@@ -32,14 +32,14 @@ export default function SignInPage() {
     isBiometricSupported().then((ok) => setBioEnrolled(ok && isBiometricEnrolled()))
   }, [])
   useEffect(() => {
-    if (!authLoading && isAuthenticated) router.replace("/me/files")
+    if (!authLoading && isAuthenticated) router.replace("/me/storage")
   }, [isAuthenticated, authLoading, router])
 
   const goToApp = () => {
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get("redirect")
-    const allowedRedirects = new Set(["/me/files"])
-    window.location.href = redirect && allowedRedirects.has(redirect) ? redirect : "/me/files"
+    const allowedRedirects = new Set(["/me/storage"])
+    window.location.href = redirect && allowedRedirects.has(redirect) ? redirect : "/me/storage"
   }
 
   // Shared login path: recover a session from an access key, whether the user

@@ -3,15 +3,15 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { SIDEBAR_WIDTH } from "@/constants"
 import { SURFACE } from "@/components/ui/surface"
-import { ListSkeleton } from "./files/_list-skeleton"
-import { GridSkeleton } from "./cdn/_grid-skeleton"
+import { ListSkeleton } from "./storage/_list-skeleton"
+import { GridSkeleton } from "./hosting/_grid-skeleton"
 
 // Mirrors ManageLayout's shell: icon rail, sidebar card, main card. The layout
 // returns null until the user loads, so the skeleton has to live here, a page
 // level one never mounts.
 export function ManageSkeleton({ pathname }: { pathname: string }) {
-  const isCdn = pathname.startsWith("/me/cdn")
-  const isFiles = pathname.startsWith("/me/files")
+  const isCdn = pathname.startsWith("/me/hosting")
+  const isFiles = pathname.startsWith("/me/storage")
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f0f0f0] dark:bg-[#0d0d0d] animate-in fade-in duration-200">

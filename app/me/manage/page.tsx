@@ -18,7 +18,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isLoading && user && !user.isOwner) {
-      router.replace("/me/files")
+      router.replace("/me/storage")
     }
   }, [isLoading, user, router])
 

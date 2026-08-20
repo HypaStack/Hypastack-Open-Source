@@ -48,11 +48,11 @@ function formatStorageSize(bytes: number): string {
 }
 
 function sectionTitle(pathname: string): string {
-  if (pathname.startsWith("/me/files")) return "Drive"
-  if (pathname.startsWith("/me/funnel")) return "Funnel"
-  if (pathname.startsWith("/me/cdn")) return "Edge"
-  if (pathname.startsWith("/me/bin")) return "Bin"
-  return "Drive"
+  if (pathname.startsWith("/me/storage")) return "Storage"
+  if (pathname.startsWith("/me/requests")) return "Requests"
+  if (pathname.startsWith("/me/hosting")) return "Hosting"
+  if (pathname.startsWith("/me/paste")) return "Paste"
+  return "Storage"
 }
 
 
@@ -170,7 +170,7 @@ function ManageLayoutInner({
 
   useEffect(() => {
     if (pathname === "/me" || pathname === "/me/") {
-      router.replace("/me/files")
+      router.replace("/me/storage")
     }
   }, [pathname, router])
 

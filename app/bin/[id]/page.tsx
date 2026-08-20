@@ -89,7 +89,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
                 </Card.Description>
               </Card.Header>
               <Card.Footer className="gap-2">
-                <ButtonLink href="/me/bin" as={Link} variant="primary" className="flex-1">
+                <ButtonLink href="/me/paste" as={Link} variant="primary" className="flex-1">
                   New Paste
                 </ButtonLink>
                 <ButtonLink href="/" as={Link} variant="tertiary" size="lg" className="flex-1">

@@ -40,7 +40,7 @@ export default function CreateAccountPage() {
     setBioEnabled(ok)
   }
   useEffect(() => {
-    if (!authLoading && isAuthenticated) router.replace("/me/files")
+    if (!authLoading && isAuthenticated) router.replace("/me/storage")
   }, [isAuthenticated, authLoading, router])
 
   // Username policy: letters/numbers only, no spaces or symbols, 3–12 chars.
@@ -149,7 +149,7 @@ export default function CreateAccountPage() {
 
             <Button
               variant="primary"
-              onPress={() => { window.location.href = "/me/files" }}
+              onPress={() => { window.location.href = "/me/storage" }}
               size="lg"
               fullWidth
             >

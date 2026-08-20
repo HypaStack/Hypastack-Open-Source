@@ -323,7 +323,7 @@ export default function DownloadPage() {
               <Card.Footer className="gap-2">
                 <Button
                   variant="primary"
-                  onPress={() => router.push("/me/files")}
+                  onPress={() => router.push("/me/storage")}
                   className="flex-1"
                 >Upload a file</Button>
                 <Button
