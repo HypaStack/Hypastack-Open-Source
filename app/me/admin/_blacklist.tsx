@@ -64,10 +64,10 @@ export function BlacklistPanel() {
               <Table.Body>
                 {entries.map((e) => (
                   <Table.Row key={e.ipHash} id={e.ipHash}>
-                    <Table.Cell><code className="text-[12.5px] font-mono">{e.ipHash}</code></Table.Cell>
-                    <Table.Cell className="text-muted">{e.reason ?? "no reason logged"}</Table.Cell>
-                    <Table.Cell className="text-muted">{new Date(e.createdAt).toLocaleString()}</Table.Cell>
-                    <Table.Cell className="text-right">
+                    <Table.Cell className="py-1.5"><code className="text-[12.5px] font-mono">{e.ipHash}</code></Table.Cell>
+                    <Table.Cell className="py-1.5 text-muted">{e.reason ?? "no reason logged"}</Table.Cell>
+                    <Table.Cell className="py-1.5 text-muted">{new Date(e.createdAt).toLocaleString()}</Table.Cell>
+                    <Table.Cell className="py-1.5 text-right">
                       <Button variant="secondary" size="sm" onPress={() => handleRemove(e.ipHash)}>
                         Remove
                       </Button>
