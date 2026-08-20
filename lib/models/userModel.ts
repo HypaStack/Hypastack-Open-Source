@@ -3,6 +3,7 @@ import crypto from 'node:crypto'
 import { Tier, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { DISPLAY_NAME_HOLD_DAYS } from "@/constants/profile"
 import { cached, bustCache } from '@/lib/data/cache'
+import { deleteObjectsBatch } from '@/lib/storage/r2'
 
 
 export interface User {
@@ -20,6 +21,8 @@ export interface User {
   tier: Tier
   last_acknowledged_tier: Tier
   inactivity_purge_days: number
+  is_owner: boolean
+  suspended: boolean
 
   created_at: Date
   updated_at: Date
@@ -116,12 +119,12 @@ export async function getStorageToken(userId: string): Promise<string> {
 // Resolve an account by the deterministic identifier lookup (cid_ keys, which
 // don't embed the user id). Returns password_hash so the caller can still
 // authenticate with PBKDF2.
-export async function getUserForAuthByKeyLookup(keyLookup: string): Promise<{ id: string; password_hash: string } | null> {
+export async function getUserForAuthByKeyLookup(keyLookup: string): Promise<{ id: string; password_hash: string; suspended: boolean } | null> {
   await ensureDatabase()
   const pool = getPool()
 
   const result = await pool.query(
-    `SELECT id, password_hash FROM users WHERE key_lookup = $1`,
+    `SELECT id, password_hash, suspended FROM users WHERE key_lookup = $1`,
     [keyLookup]
   )
 
@@ -168,6 +171,8 @@ export async function getUserById(id: string): Promise<User | null> {
       tier: normalizeTier(row.tier),
       last_acknowledged_tier: normalizeTier(row.last_acknowledged_tier),
       inactivity_purge_days: row.inactivity_purge_days ?? 7,
+      is_owner: row.is_owner ?? false,
+      suspended: row.suspended ?? false,
 
       created_at: row.created_at,
       updated_at: row.updated_at,
@@ -178,12 +183,12 @@ export async function getUserById(id: string): Promise<User | null> {
 
 
 
-export async function getUserForAuthById(id: string): Promise<{ id: string; password_hash: string } | null> {
+export async function getUserForAuthById(id: string): Promise<{ id: string; password_hash: string; suspended: boolean } | null> {
   await ensureDatabase()
   const pool = getPool()
 
   const result = await pool.query(
-    `SELECT id, password_hash FROM users WHERE id = $1`,
+    `SELECT id, password_hash, suspended FROM users WHERE id = $1`,
     [id]
   )
 
@@ -336,6 +341,150 @@ export async function revokeOtherUserSessions(userId: string, currentSessionId: 
     [userId, currentSessionId]
   )
   return result.rowCount ?? 0
+}
+
+// ── Admin ────────────────────────────────────────────────────────────────
+// Everything below is gated by withAuth's ownerOnly option, which re-checks
+// is_owner fresh from the DB on every request. Nothing here is reachable by
+// a normal account no matter what the client claims.
+
+// Uncached on purpose: revoking is_owner has to take effect on the very next
+// request, not up to getUserById's 5-minute cache window.
+export async function isOwner(userId: string): Promise<boolean> {
+  await ensureDatabase()
+  const pool = getPool()
+  const result = await pool.query<{ is_owner: boolean }>(`SELECT is_owner FROM users WHERE id = $1`, [userId])
+  return result.rows[0]?.is_owner ?? false
+}
+
+export interface AdminUserRow {
+  id: string
+  display_name: string | null
+  tier: Tier
+  suspended: boolean
+  is_owner: boolean
+  storage_used: number
+  created_at: Date
+  last_login: Date | null
+}
+
+// Search matches the account id or display name (nicknames are encrypted
+// client-side, there is nothing else server-readable to search on).
+export async function listUsersAdmin(opts: { search?: string; limit?: number; offset?: number }): Promise<AdminUserRow[]> {
+  await ensureDatabase()
+  const pool = getPool()
+  const limit = Math.min(opts.limit ?? 50, 100)
+  const offset = opts.offset ?? 0
+  const search = opts.search?.trim() || null
+
+  const result = await pool.query(
+    `SELECT u.id, u.display_name, u.tier, u.suspended, u.is_owner, u.created_at, u.last_login,
+            COALESCE(f.storage, 0) + COALESCE(c.storage, 0) AS storage_used
+     FROM users u
+     LEFT JOIN (SELECT user_id, SUM(file_size) AS storage FROM basedrop_files GROUP BY user_id) f ON f.user_id = u.id
+     LEFT JOIN (SELECT user_id, SUM(file_size) AS storage FROM cdn_assets GROUP BY user_id) c ON c.user_id = u.id
+     WHERE $1::text IS NULL OR u.id ILIKE $1 || '%' OR u.display_name ILIKE '%' || $1 || '%'
+     ORDER BY u.created_at DESC
+     LIMIT $2 OFFSET $3`,
+    [search, limit, offset]
+  )
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    display_name: row.display_name,
+    tier: normalizeTier(row.tier),
+    suspended: row.suspended,
+    is_owner: row.is_owner,
+    storage_used: Number(row.storage_used),
+    created_at: row.created_at,
+    last_login: row.last_login,
+  }))
+}
+
+export async function setUserTierAdmin(userId: string, tier: Tier): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  await pool.query(`UPDATE users SET tier = $1, updated_at = NOW() WHERE id = $2`, [tier, userId])
+  await bustCache(`user:${userId}:profile`)
+}
+
+// Suspension is checked at login, not just hidden in the UI, an already-active
+// session still gets revoked below so it can't keep making requests.
+export async function setUserSuspended(userId: string, suspended: boolean): Promise<void> {
+  await ensureDatabase()
+  const pool = getPool()
+  await pool.query(
+    `UPDATE users SET suspended = $1, suspended_at = CASE WHEN $1 THEN NOW() ELSE NULL END, updated_at = NOW() WHERE id = $2`,
+    [suspended, userId]
+  )
+  if (suspended) {
+    await pool.query(`UPDATE user_sessions SET revoked = TRUE WHERE user_id = $1`, [userId])
+  }
+  await bustCache(`user:${userId}:profile`)
+}
+
+// Deletes the account and everything it owns: files, CDN assets, funnels,
+// sessions and API keys, both stored (R2) and in-flight (staging). Forum
+// posts/comments are left in place on purpose, deleting an account shouldn't
+// silently erase a public discussion other people replied to. The invite
+// code this account used is left alone too, so it stays a record of who
+// claimed it even after the account is gone.
+export async function deleteUserAccountAdmin(userId: string): Promise<boolean> {
+  await ensureDatabase()
+  const client = await getClient()
+
+  try {
+    await client.query('BEGIN')
+
+    const exists = await client.query(`SELECT 1 FROM users WHERE id = $1`, [userId])
+    if (exists.rows.length === 0) {
+      await client.query('ROLLBACK')
+      return false
+    }
+
+    const r2Keys: string[] = []
+    const collect = async (sql: string) => {
+      const res = await client.query<{ r2_key: string }>(sql, [userId])
+      for (const row of res.rows) r2Keys.push(row.r2_key)
+    }
+
+    await collect(`SELECT r2_key FROM basedrop_files WHERE user_id = $1`)
+    await collect(`SELECT r2_key FROM upload_staging WHERE user_id = $1`)
+    await collect(`SELECT r2_key FROM cdn_assets WHERE user_id = $1`)
+    await collect(`SELECT r2_key FROM cdn_staging WHERE user_id = $1`)
+    await collect(`SELECT r2_key FROM funnel_files WHERE user_id = $1`)
+    await collect(`SELECT fs.r2_key FROM funnel_staging fs JOIN funnels fn ON fn.id = fs.funnel_id WHERE fn.user_id = $1`)
+
+    await client.query(`DELETE FROM basedrop_files WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM basedrop_folders WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM upload_staging WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM cdn_assets WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM cdn_folders WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM cdn_staging WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM funnel_files WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM funnel_staging WHERE funnel_id IN (SELECT id FROM funnels WHERE user_id = $1)`, [userId])
+    await client.query(`DELETE FROM funnels WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM api_keys WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM user_sessions WHERE user_id = $1`, [userId])
+    await client.query(`DELETE FROM users WHERE id = $1`, [userId])
+
+    await client.query('COMMIT')
+
+    if (r2Keys.length > 0) {
+      // Best-effort: the account is already gone either way, a stray R2
+      // object left behind is a cleanup job, not a reason to fail this.
+      await deleteObjectsBatch(r2Keys).catch((err) => {
+        console.error(`[Admin] Failed to delete R2 objects for account ${userId}:`, err)
+      })
+    }
+
+    return true
+  } catch (error) {
+    await client.query('ROLLBACK')
+    throw error
+  } finally {
+    client.release()
+  }
 }
 
 
