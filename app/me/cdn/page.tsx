@@ -130,6 +130,7 @@ export default function CdnPage() {
     const folder = folders.find(f => f.id === folderId)
     const confirmed = await hypaConfirm({
       title: "Delete this folder and all its contents?",
+      description: "Every asset inside it stops serving and can't be recovered.",
       confirmText: "Delete",
       cancelText: "Cancel",
     })
@@ -225,6 +226,7 @@ export default function CdnPage() {
   const handleDelete = async (assetId: string) => {
     await hypaConfirm({
       title: "Are you sure you want to delete this asset forever?",
+      description: "Its CDN link stops working right away and can't be recovered.",
       confirmText: "Delete",
       cancelText: "Cancel",
       onConfirm: async () => {
@@ -415,6 +417,7 @@ export default function CdnPage() {
     const ids = Array.from(selectedAssets)
     const confirmed = await hypaConfirm({
       title: `Are you sure you want to delete ${ids.length} asset(s) forever?`,
+      description: "Their CDN links stop working right away and can't be recovered.",
       confirmText: "Delete",
       cancelText: "Cancel",
     })

@@ -14,7 +14,7 @@ export interface HypaNotifOptions {
   isInput?: boolean
   inputPlaceholder?: string
   inputDefaultValue?: string
-  /** Warning shown above the actions. Defaults to a permanent-delete note when destructive. */
+  /** One-off warning shown above the actions. */
   alertText?: string
   /** Async action run inside the dialog on confirm: the button shows a spinner,
    *  then the dialog closes. Errors show inline. */
@@ -97,7 +97,7 @@ function ProgressToastBody({ id, text }: { id: string; text?: string }) {
 }
 
 /** Treat delete/wipe-style confirmations as destructive even if the caller
- *  didn't set the flag, so they get the red button + permanent-delete warning. */
+ *  didn't set the flag, so they get the red confirm button. */
 function isDestructiveNotif(n: NotifState): boolean {
   if (n.destructive) return true
   const t = `${n.confirmText ?? ""} ${n.title ?? ""}`.toLowerCase()
@@ -130,7 +130,8 @@ function NotifDialog({ notif, onResolve }: { notif: NotifState; onResolve: (id: 
     }
   }
 
-  const warning = error ?? notif.alertText ?? (destructive && !notif.isInput ? "This permanently deletes it and can't be recovered." : null)
+  // the consequence belongs in the description, this is only for errors and one-off warnings
+  const warning = error ?? notif.alertText ?? null
 
   return (
     <Modal isOpen onOpenChange={(open) => { if (!open) cancel() }}>

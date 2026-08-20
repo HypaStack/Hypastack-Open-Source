@@ -155,6 +155,7 @@ function FilesPageInner() {
   const handleDelete = async (fileId: string) => {
     await hypaConfirm({
       title: "Are you sure you want to delete this file forever?",
+      description: "Its share link stops working right away and can't be recovered.",
       confirmText: "Delete",
       cancelText: "Cancel",
       onConfirm: async () => {
@@ -187,7 +188,9 @@ function FilesPageInner() {
     const itemCount = fileIds.length + folderIds.length
     const confirmed = await hypaConfirm({
       title: `Are you sure you want to delete ${itemCount} item(s) forever?`,
-      description: folderIds.length > 0 ? "Deleting a folder also deletes everything inside it. This cannot be undone." : undefined,
+      description: folderIds.length > 0
+        ? "Deleting a folder also deletes everything inside it. None of it can be recovered."
+        : "Their share links stop working right away and can't be recovered.",
       confirmText: "Delete",
       cancelText: "Cancel",
     })
