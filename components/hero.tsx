@@ -4,11 +4,18 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, type ReactNode } from "react";
 import { motion, useSpring, useTransform } from "motion/react";
 import Link from "next/link";
-import { Button } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { MIcon } from "@/components/ui/material-icon";
 import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
+
+// The overlapping stack in the headline, drawn back to front.
+const THE_OLD_GUARD = [
+  { src: "https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png", alt: "Dropbox", rotate: -9 },
+  { src: "https://r2.hypastack.com/cdn/i9tog2bv4rtq/google-logo.png", alt: "Google", rotate: 7 },
+  { src: "https://r2.hypastack.com/cdn/kghokwn73xbl/microslop-logo.png", alt: "Microsoft", rotate: -5 },
+];
 
 // One-time bouncy blur-in on mount. Driven by a useSpring MotionValue (0 -> 1)
 // rather than motion's animate/initial props, which don't tween in this setup.
@@ -71,27 +78,23 @@ export function Hero() {
               <br />
               because i was tired of{" "}
               <span className="inline-flex items-center align-middle isolate">
-                <img
-                  src="https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png"
-                  alt="Dropbox"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
-                  style={{ width: "0.85em", height: "0.85em", transform: "rotate(-9deg)", zIndex: 1 }}
-                  draggable={false}
-                />
-                <img
-                  src="https://r2.hypastack.com/cdn/i9tog2bv4rtq/google-logo.png"
-                  alt="Google"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
-                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(7deg)", zIndex: 2 }}
-                  draggable={false}
-                />
-                <img
-                  src="https://r2.hypastack.com/cdn/kghokwn73xbl/microslop-logo.png"
-                  alt="Microsoft"
-                  className="inline-block rounded-full object-cover select-none pointer-events-none relative"
-                  style={{ width: "0.85em", height: "0.85em", marginLeft: "-0.25em", transform: "rotate(-5deg)", zIndex: 3 }}
-                  draggable={false}
-                />
+                {THE_OLD_GUARD.map((logo, i) => (
+                  <Avatar
+                    key={logo.alt}
+                    className="relative shrink-0 rounded-full bg-transparent select-none pointer-events-none"
+                    style={{
+                      // em, not a fixed Avatar size, so they keep scaling with the clamped headline
+                      width: "0.85em",
+                      height: "0.85em",
+                      marginLeft: i === 0 ? undefined : "-0.25em",
+                      transform: `rotate(${logo.rotate}deg)`,
+                      zIndex: i + 1,
+                    }}
+                  >
+                    <Avatar.Image src={logo.src} alt={logo.alt} className="object-cover" />
+                    <Avatar.Fallback className="text-[0.4em]">{logo.alt.charAt(0)}</Avatar.Fallback>
+                  </Avatar>
+                ))}
               </span>
               .
             </h1>
