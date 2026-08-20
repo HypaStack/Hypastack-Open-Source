@@ -51,6 +51,7 @@ export async function handleLoginPost(request: NextRequest) {
     // cid_ identifiers don't, so those are resolved via the deterministic
     // key_lookup column. Either way the PBKDF2 password_hash authenticates.
     let matchedUserId: string | null = null
+    let matchedSuspended = false
     const parts = accessKey.split("_")
     const isLegacy = parts.length === 3 && parts[0] === "hpsk" && parts[1].length === 32
 
@@ -62,6 +63,7 @@ export async function handleLoginPost(request: NextRequest) {
       if (user && user.password_hash) {
         if (await verifyPasswordAsync(accessKey, user.password_hash)) {
           matchedUserId = user.id
+          matchedSuspended = user.suspended
           // Backfill so future logins can also use the indexed lookup path.
           await setUserKeyLookup(user.id, computeKeyLookup(accessKey))
         }
@@ -73,6 +75,7 @@ export async function handleLoginPost(request: NextRequest) {
       if (user && user.password_hash) {
         if (await verifyPasswordAsync(accessKey, user.password_hash)) {
           matchedUserId = user.id
+          matchedSuspended = user.suspended
         }
       } else {
         await verifyPasswordAsync(accessKey, DUMMY_HASH)
@@ -81,6 +84,10 @@ export async function handleLoginPost(request: NextRequest) {
 
     if (!matchedUserId) {
       return apiError(401, API_ERRORS.INVALID_IDENTIFIER, "Invalid identifier")
+    }
+
+    if (matchedSuspended) {
+      return apiError(403, API_ERRORS.FORBIDDEN, "Account suspended")
     }
 
     await updateLastLogin(matchedUserId)
