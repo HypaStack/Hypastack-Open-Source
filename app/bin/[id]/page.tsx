@@ -59,7 +59,7 @@ export default function BinViewerPage({ params }: { params: Promise<{ id: string
   const retentionDays = createdAt ? 180 - Math.floor((now - new Date(createdAt).getTime()) / 864e5) : 180
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-background">
+    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-black">
       <SideAd />
       <div className="relative w-full max-w-[440px]">
         <div className="flex justify-center mb-8">

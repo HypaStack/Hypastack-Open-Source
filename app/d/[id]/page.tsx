@@ -275,7 +275,7 @@ export default function DownloadPage() {
 
   if (missingKey) {
     return (
-      <main className="min-h-screen relative font-sans bg-background">
+      <main className="min-h-screen relative font-sans bg-black">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -294,7 +294,7 @@ export default function DownloadPage() {
   }
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-background">
+    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans bg-black">
       <SideAd />
       <div className="relative w-full max-w-[440px]">
         <div className="flex justify-center mb-8">
