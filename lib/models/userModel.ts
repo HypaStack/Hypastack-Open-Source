@@ -71,14 +71,21 @@ export async function createUser(input: CreateUserInput): Promise<boolean> {
   try {
     await client.query('BEGIN')
 
+    // uses_count < max_uses re-evaluates against the locked row, so N
+    // concurrent signups on the same multi-use code can't all squeeze past
+    // its limit.
     const claim = await client.query(
-      `UPDATE invite_codes SET used_by = $1, used_at = NOW() WHERE code = $2 AND used_by IS NULL`,
-      [input.id, input.inviteCode]
+      `UPDATE invite_codes SET uses_count = uses_count + 1 WHERE code = $1 AND uses_count < max_uses`,
+      [input.inviteCode]
     )
     if (claim.rowCount === 0) {
       await client.query('ROLLBACK')
       return false
     }
+    await client.query(
+      `INSERT INTO invite_code_redemptions (code, user_id) VALUES ($1, $2)`,
+      [input.inviteCode, input.id]
+    )
 
     await client.query(
       `INSERT INTO users (id, nickname_encrypted, password_hash, key_lookup, storage_token, created_at, updated_at)
