@@ -28,7 +28,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
   return (
     <Card
       id={endpoint.id}
-      className="scroll-mt-28 mb-5 !p-0 !gap-0 overflow-hidden rounded-[20px]"
+      className="scroll-mt-10 mb-5 !p-0 !gap-0 overflow-hidden rounded-[20px]"
     >
       <Card.Content className="px-5 sm:px-6 pt-5 pb-6">
         <div className="flex items-center gap-2.5 mb-3 flex-wrap">

@@ -3,7 +3,6 @@ import { readFileSync } from "fs"
 import { join } from "path"
 import { Card, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
-import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { DocNav } from "@/components/docs/doc-nav"
 import { DocGuide } from "@/components/docs/doc-guide"
@@ -40,7 +39,7 @@ const REFERENCE_SCRIPT = readFileSync(join(process.cwd(), "scripts/v3-reference.
 function SectionHeading({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <div className="mt-20 mb-6">
-      <Typography type="h2" id={id} className="scroll-mt-28 text-foreground mb-2">
+      <Typography type="h2" id={id} className="scroll-mt-10 text-foreground mb-2">
         {title}
       </Typography>
       <Typography type="body" color="muted" className="max-w-[62ch]">{children}</Typography>
@@ -64,9 +63,7 @@ export default function DeveloperApiDocs() {
           }),
         }}
       />
-      <Navbar />
-
-      <section className="flex-1 pt-32 pb-40">
+      <section className="flex-1 pt-16 pb-40">
         <div className="mx-auto max-w-[900px] px-6 sm:px-10 flex flex-col items-center text-center mb-20">
           <Typography type="h1" align="center" className="text-[clamp(38px,4.6vw,58px)] text-foreground">
             Build on Hypastack
@@ -81,7 +78,7 @@ export default function DeveloperApiDocs() {
         </div>
 
         {/* Sidebar is fixed to the viewport so it stays put top-to-bottom while the page scrolls; only its own list scrolls. */}
-        <aside className="hidden lg:flex lg:flex-col fixed left-6 xl:left-10 top-28 bottom-8 w-[200px]">
+        <aside className="hidden lg:flex lg:flex-col fixed left-6 xl:left-10 top-10 bottom-8 w-[200px]">
           <ScrollShadow className="flex-1 pr-1" size={28}>
             <DocNav />
             <div aria-hidden className="h-8" />

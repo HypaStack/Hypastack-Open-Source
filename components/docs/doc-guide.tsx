@@ -5,7 +5,7 @@ import { ERROR_CODES, TIER_TABLE } from "@/lib/docs/v3-endpoints"
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <Typography type="h2" id={id} className="scroll-mt-28 text-foreground mb-3 mt-16 first:mt-0">
+    <Typography type="h2" id={id} className="scroll-mt-10 text-foreground mb-3 mt-16 first:mt-0">
       {children}
     </Typography>
   )
