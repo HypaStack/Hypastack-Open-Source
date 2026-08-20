@@ -6,6 +6,7 @@ import { useManage } from "@/hooks/useManage"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { InviteCodesPanel } from "./_invite-codes"
 import { AccountsPanel } from "./_accounts"
+import { BlacklistPanel } from "./_blacklist"
 
 // Server-side routes are the real gate (withAuth ownerOnly re-checks is_owner
 // on every request), this redirect just keeps a non-owner from ever seeing
@@ -35,6 +36,7 @@ export default function AdminPage() {
       <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Admin</h1>
       <InviteCodesPanel />
       <AccountsPanel />
+      <BlacklistPanel />
     </div>
   )
 }
