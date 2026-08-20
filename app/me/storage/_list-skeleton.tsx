@@ -1,43 +1,46 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton, Table } from "@heroui/react"
 
-// Mirrors ListView's box exactly, same wrapper, same grid columns, same px/py,
-// so the real rows drop straight into these slots with no layout shift.
-const COLS = "grid grid-cols-[44px_1fr_44px] md:grid-cols-[44px_1fr_240px_140px_44px] items-center gap-2 md:gap-4 px-3"
+// Mirrors ListView: the same HeroUI Table, same columns and cell padding, so the
+// real rows drop into these slots with nothing shifting. Widths vary per row to
+// read like filenames rather than a stack of identical bars.
+const NAME_WIDTHS = ["58%", "34%", "71%", "45%", "62%", "29%"]
 
 export function ListSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div
-      className="bg-[#f4f4f4] dark:bg-[rgba(255,255,255,0.04)] border border-[rgba(0,0,0,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-[14px]"
-      style={{ padding: 1, boxShadow: "none" }}
-    >
-      <div className={`${COLS} py-2`}>
-        <Skeleton className="h-[18px] w-[18px] rounded-[5px]" />
-        <Skeleton className="h-[14px] w-[52px]" />
-        <div className="hidden md:block"><Skeleton className="h-[14px] w-[64px]" /></div>
-        <div className="hidden md:block"><Skeleton className="h-[14px] w-[36px]" /></div>
-        <span />
-      </div>
-
-      <div className="bg-white dark:bg-[#121212]" style={{ borderRadius: 12, overflow: "hidden" }}>
-        {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className={`${COLS} py-3`}>
-            <Skeleton className="h-[18px] w-[18px] rounded-[5px]" />
-
-            <div className="flex items-center gap-3.5 min-w-0">
-              <Skeleton className="h-8 w-8 rounded-md shrink-0" />
-              <div className="flex flex-col min-w-0 flex-1 gap-1">
-                <Skeleton className="h-[14px]" style={{ width: `${[68, 45, 82, 54, 73, 38][i % 6]}%`, maxWidth: 320 }} />
-                {/* The list shows size · date under the name below md, so mirror that too. */}
-                <Skeleton className="h-[12px] w-[110px] md:hidden" />
-              </div>
-            </div>
-
-            <span className="hidden md:block"><Skeleton className="h-[13px] w-[132px]" /></span>
-            <span className="hidden md:block"><Skeleton className="h-[13px] w-[48px]" /></span>
-            <span />
-          </div>
-        ))}
-      </div>
-    </div>
+    <Table className="-mr-1 -mb-1">
+      <Table.ScrollContainer>
+        <Table.Content aria-label="Loading files and folders">
+          <Table.Header>
+            <Table.Column className="w-10 pr-2 py-2">
+              <Skeleton className="h-[18px] w-[18px] rounded-[5px]" />
+            </Table.Column>
+            <Table.Column isRowHeader className="py-2 !pl-8">Name</Table.Column>
+            <Table.Column className="w-28 text-right py-2">Size</Table.Column>
+          </Table.Header>
+          <Table.Body>
+            {Array.from({ length: rows }).map((_, i) => (
+              <Table.Row key={i} id={i}>
+                <Table.Cell className="w-10 pr-2 py-2">
+                  <Skeleton className="h-[18px] w-[18px] rounded-[5px]" />
+                </Table.Cell>
+                <Table.Cell className="py-2 !pl-2">
+                  <div className="flex items-center gap-1 min-w-0">
+                    {/* stands in for the folder chevron, same box the real rows reserve */}
+                    <span className="h-5 w-7 -mx-1 shrink-0" />
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <Skeleton className="h-[14px] w-[14px] shrink-0 rounded-sm" />
+                      <Skeleton className="h-[14px] rounded-md" style={{ width: NAME_WIDTHS[i % NAME_WIDTHS.length], maxWidth: 320 }} />
+                    </div>
+                  </div>
+                </Table.Cell>
+                <Table.Cell className="w-28 py-2">
+                  <Skeleton className="ml-auto h-[14px] w-[52px] rounded-md" />
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table.Content>
+      </Table.ScrollContainer>
+    </Table>
   )
 }
