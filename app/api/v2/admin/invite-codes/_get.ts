@@ -9,8 +9,9 @@ export const GET = withAuth(async ({ request }) => {
   return NextResponse.json({
     codes: codes.map((c) => ({
       code: c.code,
-      usedBy: c.used_by,
-      usedAt: c.used_at,
+      maxUses: c.max_uses,
+      usesCount: c.uses_count,
+      redeemedBy: c.redeemed_by,
       createdAt: c.created_at,
     })),
   })
