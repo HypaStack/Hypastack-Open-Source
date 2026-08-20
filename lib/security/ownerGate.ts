@@ -22,9 +22,20 @@ export async function rejectIfBlacklisted(request: NextRequest) {
 // else means whoever's asking already has the credential, so the response
 // isn't just "deny this login", it's "blacklist this IP for good".
 export async function enforceOwnerIpGate(request: NextRequest): Promise<Response | null> {
+  // No Cloudflare in front locally, so there's no real IP to check, same
+  // reason Turnstile is skipped in dev.
+  if (process.env.NODE_ENV !== "production") return null
+
   const allowed = (process.env.OWNER_ALLOWED_IPS || "").split(",").map((s) => s.trim()).filter(Boolean)
   const rawIp = getRawIp(request)
   if (allowed.includes(rawIp)) return null
+
+  // "unknown" means the proxy headers didn't resolve to anything, not a real
+  // caller. Never blacklist that, it could be any number of unrelated people
+  // if this ever fires.
+  if (rawIp === "unknown") {
+    return apiError(403, API_ERRORS.FORBIDDEN, "Could not verify request origin")
+  }
 
   const hashedIp = getHashedIp(request)
   await blacklistIp(hashedIp, "Attempted owner login from a non-allowlisted IP")
