@@ -299,7 +299,7 @@ export default function ForumPostPage() {
 
   const handleReport = async () => {
     if (!post) return
-    window.open(`https://t.me/t_usekiko?text=${encodeURIComponent(`Reporting forum post: ${window.location.href}`)}`, "_blank")
+    window.location.href = `mailto:usekiko@hypamail.me?subject=${encodeURIComponent("Reporting forum post")}&body=${encodeURIComponent(`Reporting forum post: ${window.location.href}`)}`
     try {
       await fetch(`${API_BASE}/forum/${post.id}/report`, {
         method: "POST",
