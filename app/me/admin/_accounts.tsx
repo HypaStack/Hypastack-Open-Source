@@ -28,19 +28,27 @@ const TIER_LABEL: Record<AdminUser["tier"], string> = {
   ultimate: "Max",
 }
 const TIERS = Object.keys(TIER_LABEL) as AdminUser["tier"][]
+const PAGE_SIZE = 25
 
 export function AccountsPanel() {
   const { user: currentUser } = useManage()
   const [users, setUsers] = useState<AdminUser[] | null>(null)
   const [search, setSearch] = useState("")
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
 
-  const load = async (q?: string) => {
+  // append=false replaces the list (fresh search or first load), true sticks
+  // the next page on the end for "Load more".
+  const load = async (opts: { q?: string; offset?: number; append?: boolean } = {}) => {
     try {
-      const url = q ? `/api/v2/admin/users?q=${encodeURIComponent(q)}` : "/api/v2/admin/users"
-      const res = await apiFetch(url)
+      const params = new URLSearchParams()
+      if (opts.q) params.set("q", opts.q)
+      params.set("offset", String(opts.offset ?? 0))
+      const res = await apiFetch(`/api/v2/admin/users?${params}`)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to load accounts")
-      setUsers(data.users)
+      setUsers((prev) => (opts.append && prev ? [...prev, ...data.users] : data.users))
+      setHasMore(data.users.length === PAGE_SIZE)
     } catch (err) {
       hypaError(errorMessage(err))
     }
@@ -50,7 +58,13 @@ export function AccountsPanel() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    load(search.trim() || undefined)
+    load({ q: search.trim() || undefined })
+  }
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true)
+    await load({ q: search.trim() || undefined, offset: users?.length ?? 0, append: true })
+    setLoadingMore(false)
   }
 
   const patch = async (id: string, body: Record<string, unknown>) => {
@@ -67,7 +81,7 @@ export function AccountsPanel() {
     try {
       await patch(id, { tier })
       hypaToast({ title: "Tier updated" })
-      await load(search.trim() || undefined)
+      await load({ q: search.trim() || undefined })
     } catch (err) {
       hypaError(errorMessage(err))
     }
@@ -83,7 +97,7 @@ export function AccountsPanel() {
       destructive: !u.suspended,
       onConfirm: async () => { await patch(u.id, { suspended: !u.suspended }) },
     })
-    if (confirmed) await load(search.trim() || undefined)
+    if (confirmed) await load({ q: search.trim() || undefined })
   }
 
   const handleDelete = async (id: string) => {
@@ -98,7 +112,7 @@ export function AccountsPanel() {
         if (!res.ok) throw new Error(data.error || "Failed to delete account")
       },
     })
-    if (confirmed) await load(search.trim() || undefined)
+    if (confirmed) await load({ q: search.trim() || undefined })
   }
 
   return (
@@ -128,69 +142,79 @@ export function AccountsPanel() {
       ) : users.length === 0 ? (
         <p className="text-[13.5px] text-[#898e97]">No accounts match.</p>
       ) : (
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="Accounts">
-              <Table.Header>
-                <Table.Column isRowHeader>Account</Table.Column>
-                <Table.Column>Tier</Table.Column>
-                <Table.Column>Storage</Table.Column>
-                <Table.Column>Joined</Table.Column>
-                <Table.Column className="text-right">Actions</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {users.map((u) => {
-                  const isSelf = u.id === currentUser?.id
-                  return (
-                    <Table.Row key={u.id} id={u.id}>
-                      <Table.Cell>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <code className="text-[12.5px] font-mono">{u.id}</code>
-                          {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
-                          {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
-                        </div>
-                        <p className="text-[12px] text-muted mt-0.5">{u.displayName ?? "no display name"}</p>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Select
-                          aria-label="Tier"
-                          selectedKey={u.tier}
-                          onSelectionChange={(key) => handleTierChange(u.id, String(key))}
-                        >
-                          <Select.Trigger className="w-28">
-                            <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
-                            <Select.Indicator />
-                          </Select.Trigger>
-                          <Select.Popover>
-                            <ListBox aria-label="Tier options">
-                              {TIERS.map((t) => (
-                                <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
-                                  {TIER_LABEL[t]}
-                                </ListBoxItem>
-                              ))}
-                            </ListBox>
-                          </Select.Popover>
-                        </Select>
-                      </Table.Cell>
-                      <Table.Cell className="text-muted">{formatTierSize(u.storageUsed)}</Table.Cell>
-                      <Table.Cell className="text-muted">{new Date(u.createdAt).toLocaleDateString()}</Table.Cell>
-                      <Table.Cell className="text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button variant="secondary" size="sm" isDisabled={isSelf} onPress={() => handleToggleSuspend(u)}>
-                            {u.suspended ? "Unsuspend" : "Suspend"}
-                          </Button>
-                          <Button variant="danger-soft" size="sm" isDisabled={isSelf} onPress={() => handleDelete(u.id)}>
-                            Delete
-                          </Button>
-                        </div>
-                      </Table.Cell>
-                    </Table.Row>
-                  )
-                })}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
+        <>
+          <Table>
+            <Table.ScrollContainer>
+              <Table.Content aria-label="Accounts">
+                <Table.Header>
+                  <Table.Column isRowHeader>Account</Table.Column>
+                  <Table.Column>Tier</Table.Column>
+                  <Table.Column>Storage</Table.Column>
+                  <Table.Column>Joined</Table.Column>
+                  <Table.Column className="text-right">Actions</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  {users.map((u) => {
+                    const isSelf = u.id === currentUser?.id
+                    return (
+                      <Table.Row key={u.id} id={u.id}>
+                        <Table.Cell className="py-1.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <code className="text-[12.5px] font-mono">{u.id}</code>
+                            {u.isOwner && <Chip size="sm" variant="soft" color="accent">owner</Chip>}
+                            {u.suspended && <Chip size="sm" variant="soft" color="danger">suspended</Chip>}
+                          </div>
+                          <p className="text-[12px] text-muted mt-0.5">{u.displayName ?? "no display name"}</p>
+                        </Table.Cell>
+                        <Table.Cell className="py-1.5">
+                          <Select
+                            aria-label="Tier"
+                            selectedKey={u.tier}
+                            onSelectionChange={(key) => handleTierChange(u.id, String(key))}
+                          >
+                            <Select.Trigger className="w-28" style={{ height: 32 }}>
+                              <Select.Value>{TIER_LABEL[u.tier]}</Select.Value>
+                              <Select.Indicator />
+                            </Select.Trigger>
+                            <Select.Popover>
+                              <ListBox aria-label="Tier options">
+                                {TIERS.map((t) => (
+                                  <ListBoxItem key={t} id={t} textValue={TIER_LABEL[t]}>
+                                    {TIER_LABEL[t]}
+                                  </ListBoxItem>
+                                ))}
+                              </ListBox>
+                            </Select.Popover>
+                          </Select>
+                        </Table.Cell>
+                        <Table.Cell className="py-1.5 text-muted">{formatTierSize(u.storageUsed)}</Table.Cell>
+                        <Table.Cell className="py-1.5 text-muted">{new Date(u.createdAt).toLocaleDateString()}</Table.Cell>
+                        <Table.Cell className="py-1.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button variant="secondary" size="sm" isDisabled={isSelf} onPress={() => handleToggleSuspend(u)}>
+                              {u.suspended ? "Unsuspend" : "Suspend"}
+                            </Button>
+                            <Button variant="danger-soft" size="sm" isDisabled={isSelf} onPress={() => handleDelete(u.id)}>
+                              Delete
+                            </Button>
+                          </div>
+                        </Table.Cell>
+                      </Table.Row>
+                    )
+                  })}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
+
+          {hasMore && (
+            <div className="flex justify-center">
+              <Button variant="secondary" size="sm" isDisabled={loadingMore} onPress={handleLoadMore}>
+                {loadingMore ? "Loading..." : "Load more"}
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </section>
   )
