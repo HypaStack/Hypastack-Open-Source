@@ -11,10 +11,10 @@ import { Button, Card, Chip } from "@heroui/react"
 import { ButtonLink } from "@/components/ui/button-link"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { apiFetch } from "@/lib/http/fetch"
-import { dropFile, type DropState } from "@/components/funnel/transport"
+import { dropFile, type DropState } from "@/components/requests/transport"
 import { errorMessage } from "@/lib/errors"
 
-interface FunnelMeta {
+interface RequestMeta {
   publicKey: string
   maxUploadSize: number
   owner: { displayName: string | null; avatarUrl: string | null; verified: boolean }
@@ -29,10 +29,10 @@ function fmt(bytes: number): string {
 
 const isDev = process.env.NODE_ENV === "development"
 
-export default function FunnelDropPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function RequestDropPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
 
-  const [meta, setMeta] = useState<FunnelMeta | null>(null)
+  const [meta, setMeta] = useState<RequestMeta | null>(null)
   const [loading, setLoading] = useState(true)
   const [closed, setClosed] = useState(false)
 
@@ -78,7 +78,7 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
     setFileError("")
     if (!f) return
     if (meta && f.size > meta.maxUploadSize) {
-      setFileError(`That file is ${fmt(f.size)}, this funnel accepts up to ${fmt(meta.maxUploadSize)}.`)
+      setFileError(`That file is ${fmt(f.size)}, this fileRequest accepts up to ${fmt(meta.maxUploadSize)}.`)
       return
     }
     setFile(f)

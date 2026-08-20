@@ -10,17 +10,17 @@ import { AlertMessage } from "@/components/ui/alert-message"
 import { useManage } from "@/hooks/useManage"
 import { hypaToast, hypaError, hypaConfirm } from "@/components/ui/hypa-notif"
 import { getSessionKey } from "@/lib/security/cryptoClient"
-import { unwrapFunnelFileKey, decryptFunnelName, downloadAndDecryptFunnelFile } from "@/components/funnel/download"
-import { FunnelCreateTray } from "@/components/funnel/create-tray"
+import { unwrapRequestFileKey, decryptRequestName, downloadAndDecryptRequestFile } from "@/components/requests/download"
+import { RequestCreateTray } from "@/components/requests/create-tray"
 import { apiFetch } from "@/lib/http/fetch"
 import { isPaidTier, normalizeTier } from "@/constants/tier-limits"
-import { FunnelFileTable, type FunnelFileDto } from "./_file-table"
+import { RequestFileTable, type RequestFileDto } from "./_file-table"
 
-export default function FunnelInboxPage() {
+export default function RequestInboxPage() {
   const { user } = useManage()
   const paid = user ? isPaidTier(normalizeTier(user.tier)) : false
 
-  const [files, setFiles] = useState<FunnelFileDto[]>([])
+  const [files, setFiles] = useState<RequestFileDto[]>([])
   const [names, setNames] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [working, setWorking] = useState(false)
@@ -29,15 +29,15 @@ export default function FunnelInboxPage() {
 
   const seenIds = useRef<Set<string> | null>(null)
 
-  const decryptNames = useCallback(async (fileList: FunnelFileDto[]) => {
+  const decryptNames = useCallback(async (fileList: RequestFileDto[]) => {
     const master = await getSessionKey()
     if (!master) return
     const next: Record<string, string> = {}
     await Promise.all(
       fileList.map(async (f) => {
         try {
-          const key = await unwrapFunnelFileKey(f.wrappedPrivateKey, f.wrappedKey, master)
-          next[f.id] = await decryptFunnelName(f.nameEncrypted, key)
+          const key = await unwrapRequestFileKey(f.wrappedPrivateKey, f.wrappedKey, master)
+          next[f.id] = await decryptRequestName(f.nameEncrypted, key)
         } catch {
           next[f.id] = "Encrypted file"
         }
@@ -51,7 +51,7 @@ export default function FunnelInboxPage() {
       const res = await apiFetch("/api/v2/funnel")
       if (!res.ok) return
       const data = await res.json()
-      const nextFiles: FunnelFileDto[] = data.files || []
+      const nextFiles: RequestFileDto[] = data.files || []
       setFiles(nextFiles)
 
       if (seenIds.current === null) {
@@ -90,11 +90,11 @@ export default function FunnelInboxPage() {
       if (!master) { hypaError("Please sign in again to open these files."); return }
       for (const f of files.filter((f) => selected.has(f.id))) {
         try {
-          const aesKey = await unwrapFunnelFileKey(f.wrappedPrivateKey, f.wrappedKey, master)
+          const aesKey = await unwrapRequestFileKey(f.wrappedPrivateKey, f.wrappedKey, master)
           const res = await apiFetch(`/api/v2/funnel/files/${f.id}/download`)
           const data = await res.json().catch(() => ({}))
           if (!res.ok || !data.url) { hypaError("Couldn't fetch this file."); continue }
-          await downloadAndDecryptFunnelFile({
+          await downloadAndDecryptRequestFile({
             url: data.url,
             aesKey,
             fileName: names[f.id] || "download",
@@ -224,7 +224,7 @@ export default function FunnelInboxPage() {
           <p style={{ fontSize: 15, color: "#a1a1aa" }}>No files yet</p>
         </div>
       ) : (
-        <FunnelFileTable
+        <RequestFileTable
           files={files}
           names={names}
           selectedIds={selected}
@@ -232,7 +232,7 @@ export default function FunnelInboxPage() {
         />
       )}
 
-      <FunnelCreateTray open={trayOpen} onClose={() => setTrayOpen(false)} />
+      <RequestCreateTray open={trayOpen} onClose={() => setTrayOpen(false)} />
     </div>
   )
 }

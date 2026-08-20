@@ -56,8 +56,8 @@ export function startCleanupScheduler(): NodeJS.Timeout {
     await cleanupExpiredFiles()
     await cleanupStaging()
     await cleanupDumpsterPastes()
-    await cleanupUnusedFunnels()
-    await cleanupFunnelStaging()
+    await cleanupUnusedRequests()
+    await cleanupRequestStaging()
     await cleanupCdnStaging()
     await scheduleUpcomingExpiries()
   }
@@ -80,10 +80,10 @@ export async function cleanupStaging(): Promise<{
   return result
 }
 
-// Delete unused funnel links older than 7 days (never dropped into). There's no
+// Delete unused fileRequest links older than 7 days (never dropped into). There's no
 // R2 object for an unused link, just the row and its keypair. Consumed funnels
 // are kept so their received file stays decryptable.
-async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string[] }> {
+async function cleanupUnusedRequests(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0
   const client = await getClient()
@@ -95,7 +95,7 @@ async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string
     cleaned = result.rowCount ?? 0
     if (cleaned > 0) console.log(`[Cleanup] Unused funnels: cleaned=${cleaned}`)
   } catch (error) {
-    console.error('[Cleanup] Fatal error in cleanupUnusedFunnels:', error)
+    console.error('[Cleanup] Fatal error in cleanupUnusedRequests:', error)
     errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()
@@ -106,7 +106,7 @@ async function cleanupUnusedFunnels(): Promise<{ cleaned: number; errors: string
 
 // Sweep funnel_staging rows past 2 hours whose init never completed, deleting
 // the orphaned R2 object. Rows that became a live funnel_files row are skipped.
-async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string[] }> {
+async function cleanupRequestStaging(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
   let cleaned = 0
   const client = await getClient()
@@ -131,15 +131,15 @@ async function cleanupFunnelStaging(): Promise<{ cleaned: number; errors: string
         await client.query(`DELETE FROM funnel_staging WHERE id = $1`, [row.id])
         cleaned++
       } catch (error) {
-        const errorMsg = `Failed to delete funnel staging ${row.id}: ${errorMessage(error)}`
+        const errorMsg = `Failed to delete fileRequest staging ${row.id}: ${errorMessage(error)}`
         console.error(`[Cleanup] ${errorMsg}`)
         errors.push(errorMsg)
       }
     }
 
-    if (cleaned > 0) console.log(`[Cleanup] Funnel staging: cleaned=${cleaned}`)
+    if (cleaned > 0) console.log(`[Cleanup] Request staging: cleaned=${cleaned}`)
   } catch (error) {
-    console.error('[Cleanup] Fatal error in cleanupFunnelStaging:', error)
+    console.error('[Cleanup] Fatal error in cleanupRequestStaging:', error)
     errors.push(`Fatal error: ${errorMessage(error)}`)
   } finally {
     client.release()

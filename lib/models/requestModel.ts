@@ -2,7 +2,7 @@ import { getPool, getClient, ensureDatabase } from '@/lib/data/db'
 import { cached, bustCache } from '@/lib/data/cache'
 import crypto from 'crypto'
 
-export interface Funnel {
+export interface FileRequest {
   id: string
   slug: string
   user_id: string
@@ -13,7 +13,7 @@ export interface Funnel {
   consumed_at: Date | null
 }
 
-export interface CreateFunnelInput {
+export interface CreateRequestInput {
   id: string
   slug: string
   user_id: string
@@ -22,9 +22,9 @@ export interface CreateFunnelInput {
 }
 
 // A received file joined with the crypto material its owner needs to decrypt it:
-// the funnel's wrapped private key (unwraps with the master key) plus this file's
+// the fileRequest's wrapped private key (unwraps with the master key) plus this file's
 // wrapped AES key (unwraps with the private key).
-export interface FunnelFile {
+export interface RequestFile {
   id: string
   funnel_id: string
   r2_key: string
@@ -38,7 +38,7 @@ export interface FunnelFile {
   created_at: Date
 }
 
-export interface CreateFunnelFileInput {
+export interface CreateRequestFileInput {
   id: string
   funnel_id: string
   user_id: string
@@ -58,19 +58,19 @@ function generateId12(): string {
   return result
 }
 
-export const generateFunnelId = generateId12
-export const generateFunnelFileId = generateId12
+export const generateRequestId = generateId12
+export const generateRequestFileId = generateId12
 
-// R2 object key for a funnel drop's ciphertext. The name is opaque, the real
+// R2 object key for a fileRequest drop's ciphertext. The name is opaque, the real
 // filename is E2E-encrypted and stored separately. Init and complete both derive
 // the key from these ids so a sender can't redirect the write elsewhere.
-export function funnelObjectKey(funnelId: string, fileId: string): string {
-  return `funnels/${funnelId}/${fileId}`
+export function requestObjectKey(requestId: string, fileId: string): string {
+  return `funnels/${requestId}/${fileId}`
 }
 
 // Per-user advisory lock serializes concurrent creates so count-then-insert can't
 // race past the cap. Slug conflicts still surface as a 23505 for the caller.
-export async function createFunnelWithCap(input: CreateFunnelInput, maxActive: number): Promise<'ok' | 'cap'> {
+export async function createRequestWithCap(input: CreateRequestInput, maxActive: number): Promise<'ok' | 'cap'> {
   await ensureDatabase()
   const client = await getClient()
   try {
@@ -104,16 +104,16 @@ export async function createFunnelWithCap(input: CreateFunnelInput, maxActive: n
 // In-flight drop tracking: a row is written at init and cleared on complete, so
 // an abandoned upload's R2 object can be swept later (see hypasched_periodic /
 // lib/cleanup). Mirrors upload_staging.
-export async function createFunnelStaging(id: string, funnelId: string, r2Key: string): Promise<void> {
+export async function createRequestStaging(id: string, requestId: string, r2Key: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
   await pool.query(
     `INSERT INTO funnel_staging (id, funnel_id, r2_key) VALUES ($1, $2, $3)`,
-    [id, funnelId, r2Key]
+    [id, requestId, r2Key]
   )
 }
 
-export async function deleteFunnelStaging(id: string): Promise<void> {
+export async function deleteRequestStaging(id: string): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
   await pool.query(`DELETE FROM funnel_staging WHERE id = $1`, [id])
@@ -121,8 +121,8 @@ export async function deleteFunnelStaging(id: string): Promise<void> {
 
 // The slug is the public path segment (`/requests/<slug>`), so it must be unique
 // across funnels. The `id = $1` clause guards against a slug colliding with a
-// random funnel id.
-export async function isFunnelSlugTaken(slug: string): Promise<boolean> {
+// random fileRequest id.
+export async function isRequestSlugTaken(slug: string): Promise<boolean> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
@@ -132,19 +132,19 @@ export async function isFunnelSlugTaken(slug: string): Promise<boolean> {
   return result.rows.length > 0
 }
 
-export async function suggestAvailableFunnelSlugs(base: string, max = 3): Promise<string[]> {
+export async function suggestAvailableRequestSlugs(base: string, max = 3): Promise<string[]> {
   const { generateSlugCandidates } = await import('@/lib/validation/slug')
   const candidates = generateSlugCandidates(base)
   const available: string[] = []
   for (const candidate of candidates) {
     if (available.length >= max) break
-    if (!(await isFunnelSlugTaken(candidate))) available.push(candidate)
+    if (!(await isRequestSlugTaken(candidate))) available.push(candidate)
   }
   return available
 }
 
-// Public sender flow: only an active (unconsumed) funnel is drop-able.
-export async function getActiveFunnelBySlug(slug: string): Promise<Funnel | null> {
+// Public sender flow: only an active (unconsumed) fileRequest is drop-able.
+export async function getActiveRequestBySlug(slug: string): Promise<FileRequest | null> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
@@ -152,10 +152,10 @@ export async function getActiveFunnelBySlug(slug: string): Promise<Funnel | null
     [slug]
   )
   if (result.rows.length === 0) return null
-  return result.rows[0] as Funnel
+  return result.rows[0] as FileRequest
 }
 
-export async function getFunnelsByUserId(userId: string): Promise<Funnel[]> {
+export async function getRequestsByUserId(userId: string): Promise<FileRequest[]> {
   return cached(`user:${userId}:funnels`, 60, async () => {
     await ensureDatabase()
     const pool = getPool()
@@ -163,13 +163,13 @@ export async function getFunnelsByUserId(userId: string): Promise<Funnel[]> {
       `SELECT * FROM funnels WHERE user_id = $1 ORDER BY created_at DESC`,
       [userId]
     )
-    return result.rows as Funnel[]
+    return result.rows as FileRequest[]
   })
 }
 
-// Atomically claim an active funnel: flips it to consumed and returns the row.
+// Atomically claim an active fileRequest: flips it to consumed and returns the row.
 // A second concurrent drop on the same link gets null (the link is one-time).
-export async function consumeFunnel(id: string): Promise<Funnel | null> {
+export async function consumeRequest(id: string): Promise<FileRequest | null> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
@@ -178,14 +178,14 @@ export async function consumeFunnel(id: string): Promise<Funnel | null> {
     [id]
   )
   if (result.rows.length === 0) return null
-  const funnel = result.rows[0] as Funnel
-  await bustCache(`user:${funnel.user_id}:funnels`)
-  return funnel
+  const fileRequest = result.rows[0] as FileRequest
+  await bustCache(`user:${fileRequest.user_id}:funnels`)
+  return fileRequest
 }
 
 // Delete an unused (active) drop link. Consumed funnels are removed with their
-// received file instead (see deleteFunnelFile), so this is scoped to active rows.
-export async function deleteActiveFunnelBySlug(slug: string, userId: string): Promise<boolean> {
+// received file instead (see deleteRequestFile), so this is scoped to active rows.
+export async function deleteActiveRequestBySlug(slug: string, userId: string): Promise<boolean> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
@@ -196,7 +196,7 @@ export async function deleteActiveFunnelBySlug(slug: string, userId: string): Pr
   return (result.rowCount ?? 0) > 0
 }
 
-export async function createFunnelFile(input: CreateFunnelFileInput): Promise<void> {
+export async function createRequestFile(input: CreateRequestFileInput): Promise<void> {
   await ensureDatabase()
   const pool = getPool()
   await pool.query(
@@ -209,10 +209,10 @@ export async function createFunnelFile(input: CreateFunnelFileInput): Promise<vo
       input.encryption_chunk_size ?? null, input.encryption_total_parts ?? null,
     ]
   )
-  await bustCache(`user:${input.user_id}:funnel-files`, `user:${input.user_id}:storage`)
+  await bustCache(`user:${input.user_id}:fileRequest-files`, `user:${input.user_id}:storage`)
 }
 
-export async function getFunnelFilesByUserId(userId: string): Promise<FunnelFile[]> {
+export async function getRequestFilesByUserId(userId: string): Promise<RequestFile[]> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query(
@@ -240,10 +240,10 @@ export async function getFunnelFilesByUserId(userId: string): Promise<FunnelFile
   }))
 }
 
-// Delete a received file and its parent funnel (the keypair is no longer needed
+// Delete a received file and its parent fileRequest (the keypair is no longer needed
 // once the file is gone). Returns the r2_key for R2 cleanup, or null if not
 // owned/found.
-export async function deleteFunnelFile(id: string, userId: string): Promise<string | null> {
+export async function deleteRequestFile(id: string, userId: string): Promise<string | null> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query<{ r2_key: string; funnel_id: string }>(
@@ -252,12 +252,12 @@ export async function deleteFunnelFile(id: string, userId: string): Promise<stri
   )
   if (result.rows.length === 0) return null
   await pool.query(`DELETE FROM funnels WHERE id = $1 AND user_id = $2`, [result.rows[0].funnel_id, userId])
-  await bustCache(`user:${userId}:funnels`, `user:${userId}:funnel-files`, `user:${userId}:storage`)
+  await bustCache(`user:${userId}:funnels`, `user:${userId}:fileRequest-files`, `user:${userId}:storage`)
   return result.rows[0].r2_key
 }
 
 // Owner-scoped fetch of a single received file (for the authenticated download URL).
-export async function getFunnelFileForOwner(id: string, userId: string): Promise<{ r2_key: string; content_type: string } | null> {
+export async function getRequestFileForOwner(id: string, userId: string): Promise<{ r2_key: string; content_type: string } | null> {
   await ensureDatabase()
   const pool = getPool()
   const result = await pool.query<{ r2_key: string; content_type: string }>(

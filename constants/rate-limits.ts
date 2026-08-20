@@ -8,7 +8,7 @@ export const WINDOW_MINUTES = {
   forumPost: 10,
   forumUpload: 5,
   proxyToken: 1,
-  funnelUpload: 5,
+  requestUpload: 5,
   accountSwitch: 1,
 } as const
 
@@ -22,7 +22,7 @@ export const MAX_ATTEMPTS = {
   forumPost:      { free: 5,  plus: 15, pro: 30,  max: 60  },
   forumUpload:    { free: 3,  plus: 15, pro: 30,  max: 60  },
   proxyToken:     { free: 60 },
-  funnelUpload:   { free: 20 },
+  requestUpload:   { free: 20 },
   accountSwitch:  { free: 10 },
 } as const
 

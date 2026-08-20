@@ -1,28 +1,28 @@
 import { decryptChunk } from "@/lib/storage/multipart"
 import { decryptE2E } from "@/lib/security/cryptoClient"
-import { unwrapFunnelPrivateKey, unwrapAesKey } from "@/lib/security/funnelCrypto"
+import { unwrapRequestPrivateKey, unwrapAesKey } from "@/lib/security/requestCrypto"
 
 // Per-chunk AES-GCM overhead: 12-byte IV + 16-byte tag (see encryptChunk).
 const CHUNK_OVERHEAD = 28
 
-// Recover a received file's AES key: master key → funnel private key → AES key.
-export async function unwrapFunnelFileKey(
+// Recover a received file's AES key: master key → fileRequest private key → AES key.
+export async function unwrapRequestFileKey(
   wrappedPrivateKey: string,
   wrappedKey: string,
   masterKey: CryptoKey,
 ): Promise<CryptoKey> {
-  const privateKey = await unwrapFunnelPrivateKey(wrappedPrivateKey, masterKey)
+  const privateKey = await unwrapRequestPrivateKey(wrappedPrivateKey, masterKey)
   return unwrapAesKey(wrappedKey, privateKey)
 }
 
-export function decryptFunnelName(nameEncrypted: string, aesKey: CryptoKey): Promise<string> {
+export function decryptRequestName(nameEncrypted: string, aesKey: CryptoKey): Promise<string> {
   return decryptE2E(nameEncrypted, aesKey)
 }
 
 // Fetch the ciphertext from the presigned URL and decrypt it in-browser, then
 // trigger a save. Mirrors the multipart split used by the download page:
 // concatenated encrypted chunks of (chunkSize + 28) bytes, last one shorter.
-export async function downloadAndDecryptFunnelFile(opts: {
+export async function downloadAndDecryptRequestFile(opts: {
   url: string
   aesKey: CryptoKey
   fileName: string

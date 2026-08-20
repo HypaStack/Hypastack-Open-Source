@@ -39,7 +39,7 @@ function bullets(tier: PreferencesTier): string[] {
         links,
         "Custom share links",
         "Custom expiration up to 30 days",
-        `Create funnels, ${l.maxFunnelLinks} links`,
+        `Create funnels, ${l.maxRequestLinks} links`,
         "Download-page branding",
       ]
     case "pro":
@@ -48,7 +48,7 @@ function bullets(tier: PreferencesTier): string[] {
         `Up to ${cdn} per CDN Asset`,
         links,
         `${l.expirationMultiplier}× expiration windows`,
-        `${l.maxFunnelLinks} funnel links`,
+        `${l.maxRequestLinks} fileRequest links`,
         "Fast support",
       ]
     case "max":
@@ -57,7 +57,7 @@ function bullets(tier: PreferencesTier): string[] {
         `Up to ${cdn} per CDN Asset`,
         links,
         `${l.expirationMultiplier}× expiration windows`,
-        `${l.maxFunnelLinks} funnel links`,
+        `${l.maxRequestLinks} fileRequest links`,
         "Priority support",
       ]
     default:

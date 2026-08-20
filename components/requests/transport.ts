@@ -5,7 +5,7 @@ import {
   DEFAULT_CHUNK_SIZE,
 } from "@/lib/storage/multipart"
 import { encryptE2E } from "@/lib/security/cryptoClient"
-import { importFunnelPublicKey, wrapAesKey } from "@/lib/security/funnelCrypto"
+import { importRequestPublicKey, wrapAesKey } from "@/lib/security/requestCrypto"
 import { apiFetch } from "@/lib/http/fetch"
 
 export type DropState = "encrypting" | "uploading" | "done" | "error"
@@ -20,7 +20,7 @@ interface InitMultipart {
   totalParts: number
 }
 
-// Encrypts the file with a random AES key, RSA-wraps that key with the funnel's
+// Encrypts the file with a random AES key, RSA-wraps that key with the fileRequest's
 // public key instead of an URL-fragment key, then uploads both to the server.
 export async function dropFile(opts: {
   slug: string
@@ -34,7 +34,7 @@ export async function dropFile(opts: {
 
   onState?.("encrypting")
 
-  const publicKey = await importFunnelPublicKey(publicKeySpki)
+  const publicKey = await importRequestPublicKey(publicKeySpki)
   const { key: aesKey } = await generateEncryptionKey()
   const rawAesKey = await crypto.subtle.exportKey("raw", aesKey)
   const wrappedKey = await wrapAesKey(rawAesKey, publicKey)

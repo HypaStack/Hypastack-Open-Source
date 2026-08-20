@@ -467,7 +467,7 @@ export async function initDatabase(): Promise<void> {
       // Released display names are held (locked for everyone) for a period so they
       // can't be instantly re-registered; hypasched deletes rows once expired.
       { version: '2026-07-03-display-name-holds', sql: `CREATE TABLE IF NOT EXISTS display_name_holds (name_lower VARCHAR(64) PRIMARY KEY, released_by VARCHAR(36), expires_at TIMESTAMPTZ NOT NULL)` },
-      // Funnel: one-time inbound file-drop links. The keypair persists after the
+      // Requests: one-time inbound file-drop links. The keypair persists after the
       // link is consumed so the received file stays decryptable by the owner; the
       // private key is stored already-wrapped by the owner's master key.
       { version: '2026-07-08-funnels', sql: `CREATE TABLE IF NOT EXISTS funnels (
@@ -482,7 +482,7 @@ export async function initDatabase(): Promise<void> {
       )` },
       { version: '2026-07-08-funnels-user-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnels_user_id ON funnels(user_id)` },
       { version: '2026-07-08-funnels-slug-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnels_slug ON funnels(slug)` },
-      { version: '2026-07-08-funnel-files', sql: `CREATE TABLE IF NOT EXISTS funnel_files (
+      { version: '2026-07-08-fileRequest-files', sql: `CREATE TABLE IF NOT EXISTS funnel_files (
         id                      VARCHAR(12)  PRIMARY KEY,
         funnel_id               VARCHAR(12)  NOT NULL,
         user_id                 VARCHAR(36)  NOT NULL,
@@ -495,19 +495,19 @@ export async function initDatabase(): Promise<void> {
         encryption_total_parts  INTEGER,
         created_at              TIMESTAMPTZ  DEFAULT NOW()
       )` },
-      { version: '2026-07-08-funnel-files-user-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_user_id ON funnel_files(user_id)` },
-      { version: '2026-07-08-funnel-files-funnel-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_funnel_id ON funnel_files(funnel_id)` },
+      { version: '2026-07-08-fileRequest-files-user-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_user_id ON funnel_files(user_id)` },
+      { version: '2026-07-08-fileRequest-files-fileRequest-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_files_funnel_id ON funnel_files(funnel_id)` },
       // Tracks in-flight drops (id = the pending file id) so an abandoned upload's
       // R2 object gets swept, mirroring upload_staging. A row is written at init
       // and cleared on complete; hypasched deletes the object for rows that never
       // completed. The sweep skips ids that became a funnel_files row.
-      { version: '2026-07-08-funnel-staging', sql: `CREATE TABLE IF NOT EXISTS funnel_staging (
+      { version: '2026-07-08-fileRequest-staging', sql: `CREATE TABLE IF NOT EXISTS funnel_staging (
         id         VARCHAR(12)  PRIMARY KEY,
         funnel_id  VARCHAR(12)  NOT NULL,
         r2_key     VARCHAR(500) NOT NULL,
         created_at TIMESTAMPTZ  DEFAULT NOW()
       )` },
-      { version: '2026-07-08-funnel-staging-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_staging_created_at ON funnel_staging(created_at)` },
+      { version: '2026-07-08-fileRequest-staging-created-idx', sql: `CREATE INDEX IF NOT EXISTS idx_funnel_staging_created_at ON funnel_staging(created_at)` },
       // Paid tier lasts 1 month, then hypasched flips it back to 'free' (files keep
       // their own expiry). Trigger stamps tier_expires_at on upgrade, clears on downgrade.
       { version: '2026-07-16-user-tier-expiry', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS tier_expires_at TIMESTAMPTZ` },

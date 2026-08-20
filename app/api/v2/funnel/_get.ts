@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server"
-import { getFunnelsByUserId, getFunnelFilesByUserId } from "@/lib/models/funnelModel"
+import { getRequestsByUserId, getRequestFilesByUserId } from "@/lib/models/requestModel"
 
 // The owner inbox: active drop links (share/copy/delete) plus received files
 // (each carries the crypto material the browser needs to decrypt it locally).
-export async function handleFunnelList({
+export async function handleRequestList({
   user,
 }: {
   user: { userId: string }
 }): Promise<Response> {
   const [funnels, files] = await Promise.all([
-    getFunnelsByUserId(user.userId),
-    getFunnelFilesByUserId(user.userId),
+    getRequestsByUserId(user.userId),
+    getRequestFilesByUserId(user.userId),
   ])
 
   return NextResponse.json({

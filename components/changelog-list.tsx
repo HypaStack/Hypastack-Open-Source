@@ -41,9 +41,9 @@ const RELEASES: Release[] = [
   {
     version: "V2.4",
     date: "May 2026",
-    title: "Funnels and Peerline",
+    title: "FileRequests and Peerline",
     items: [
-      { type: "new", text: "Funnels: collect one-time file drops without an account." },
+      { type: "new", text: "FileRequests: collect one-time file drops without an account." },
       { type: "new", text: "Peerline: send files device to device, nothing stored." },
       { type: "improved", text: "Faster uploads for large files on paid plans." },
     ],

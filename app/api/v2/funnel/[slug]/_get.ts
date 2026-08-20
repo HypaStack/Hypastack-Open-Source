@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { getActiveFunnelBySlug } from "@/lib/models/funnelModel"
+import { getActiveRequestBySlug } from "@/lib/models/requestModel"
 import { getUserById } from "@/lib/models/userModel"
 import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { getPresignedDownloadUrl } from "@/lib/storage/r2"
@@ -10,9 +10,9 @@ import { checkApiRateLimit } from "@/lib/data/rateLimit"
 import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
-// Public meta for the sender page: the funnel's public key (to encrypt with), the
+// Public meta for the sender page: the fileRequest's public key (to encrypt with), the
 // owner's per-upload size limit, and light owner branding. 404 once consumed.
-export async function handleFunnelMeta(
+export async function handleRequestMeta(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
@@ -22,11 +22,11 @@ export async function handleFunnelMeta(
     const rl = await checkApiRateLimit(getHashedIp(request))
     if (!rl.allowed) return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
 
-    const funnel = await getActiveFunnelBySlug(slug)
-    if (!funnel) return apiError(404, API_ERRORS.NOT_FOUND, "This funnel link is closed or doesn't exist.")
+    const fileRequest = await getActiveRequestBySlug(slug)
+    if (!fileRequest) return apiError(404, API_ERRORS.NOT_FOUND, "This fileRequest link is closed or doesn't exist.")
 
-    const owner = await getUserById(funnel.user_id)
-    if (!owner) return apiError(404, API_ERRORS.NOT_FOUND, "This funnel link is closed or doesn't exist.")
+    const owner = await getUserById(fileRequest.user_id)
+    if (!owner) return apiError(404, API_ERRORS.NOT_FOUND, "This fileRequest link is closed or doesn't exist.")
 
     const tier = getTierLimits(normalizeTier(owner.tier))
 
@@ -42,12 +42,12 @@ export async function handleFunnelMeta(
     }
 
     return NextResponse.json({
-      publicKey: funnel.public_key,
-      maxUploadSize: tier.maxFunnelUploadSize,
+      publicKey: fileRequest.public_key,
+      maxUploadSize: tier.maxRequestUploadSize,
       owner: { displayName: owner.display_name, avatarUrl, verified: owner.verified },
     })
   } catch (error) {
-    console.error("[Funnel Meta] error:", error)
+    console.error("[Request Meta] error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Internal Server Error")
   }
 }

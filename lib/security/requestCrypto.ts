@@ -1,4 +1,4 @@
-// Client-side hybrid crypto for Funnel drops. Owner's RSA-OAEP public key wraps
+// Client-side hybrid crypto for request drops. Owner's RSA-OAEP public key wraps
 // the sender's random AES-GCM key; the private key is AES-GCM-wrapped with the
 // account master key before it's sent to the server, same as the nickname.
 
@@ -10,14 +10,14 @@ function assertWebCrypto(): void {
 
 const RSA_PARAMS = { name: "RSA-OAEP", hash: "SHA-256" } as const
 
-export interface FunnelKeypairExport {
+export interface RequestKeypairExport {
   publicKey: string        // SPKI, base64
   wrappedPrivateKey: string // PKCS8, AES-GCM-wrapped by master key ("iv:cipher")
 }
 
 // Generate a keypair and return the server-storable material: the public key in
 // the clear and the private key wrapped by the account master key.
-export async function generateWrappedFunnelKeypair(masterKey: CryptoKey): Promise<FunnelKeypairExport> {
+export async function generateWrappedRequestKeypair(masterKey: CryptoKey): Promise<RequestKeypairExport> {
   assertWebCrypto()
   const pair = await crypto.subtle.generateKey(
     { name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
@@ -37,8 +37,8 @@ export async function generateWrappedFunnelKeypair(masterKey: CryptoKey): Promis
   }
 }
 
-// Sender side: import the funnel public key and RSA-wrap a raw AES key.
-export async function importFunnelPublicKey(spkiBase64: string): Promise<CryptoKey> {
+// Sender side: import the fileRequest public key and RSA-wrap a raw AES key.
+export async function importRequestPublicKey(spkiBase64: string): Promise<CryptoKey> {
   assertWebCrypto()
   return crypto.subtle.importKey("spki", fromBase64(spkiBase64), RSA_PARAMS, false, ["encrypt"])
 }
@@ -51,7 +51,7 @@ export async function wrapAesKey(rawAesKey: ArrayBuffer, publicKey: CryptoKey): 
 
 // Owner side: unwrap the private key with the master key, then use it to unwrap a
 // file's AES key back into an AES-GCM CryptoKey for decryption.
-export async function unwrapFunnelPrivateKey(wrappedPrivateKey: string, masterKey: CryptoKey): Promise<CryptoKey> {
+export async function unwrapRequestPrivateKey(wrappedPrivateKey: string, masterKey: CryptoKey): Promise<CryptoKey> {
   assertWebCrypto()
   const colon = wrappedPrivateKey.indexOf(":")
   if (colon === -1) throw new Error("Malformed wrapped private key")

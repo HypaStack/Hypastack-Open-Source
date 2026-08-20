@@ -8,13 +8,13 @@ import { LoadingSvg } from "@/components/ui/loading-svg"
 import { AlertMessage } from "@/components/ui/alert-message"
 import { getSessionKey } from "@/lib/security/cryptoClient"
 import { Button, Card, TextField, InputGroup } from "@heroui/react"
-import { generateWrappedFunnelKeypair } from "@/lib/security/funnelCrypto"
+import { generateWrappedRequestKeypair } from "@/lib/security/requestCrypto"
 import { apiFetch } from "@/lib/http/fetch"
 
 const PAD = "px-3"
 const SECTION = "text-[15px] font-semibold text-foreground"
 
-export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function RequestCreateTray({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [mounted, setMounted] = useState(false)
   const [customSlug, setCustomSlug] = useState("")
   const [creating, setCreating] = useState(false)
@@ -28,7 +28,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
     if (open) { setCustomSlug(""); setError(""); setLink(""); setCopied(false) }
   }, [open])
 
-  const funnelUrl = (slug: string) =>
+  const requestUrl = (slug: string) =>
     typeof window !== "undefined" ? `${window.location.origin}/requests/${slug}` : `/requests/${slug}`
 
   const create = async () => {
@@ -39,7 +39,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
       const master = await getSessionKey()
       if (!master) { setError("Please sign in again to create a request."); return }
 
-      const { publicKey, wrappedPrivateKey } = await generateWrappedFunnelKeypair(master)
+      const { publicKey, wrappedPrivateKey } = await generateWrappedRequestKeypair(master)
       const csrfRes = await apiFetch("/api/v2/csrf")
       const csrfToken = (await csrfRes.json()).token || ""
 
@@ -51,7 +51,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
       const data = await res.json().catch(() => ({}))
       if (!res.ok) { setError(data.message || "Couldn't create the request."); return }
 
-      const url = funnelUrl(data.slug)
+      const url = requestUrl(data.slug)
       setLink(url)
       try { await navigator.clipboard.writeText(url); setCopied(true) } catch {}
     } catch {

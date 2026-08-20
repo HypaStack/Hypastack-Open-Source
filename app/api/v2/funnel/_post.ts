@@ -5,11 +5,11 @@ import { getUserTier } from "@/lib/models/userModel"
 import { getTierLimits, normalizeTier, isPaidTier } from "@/constants/tier-limits"
 import { validateSlug } from "@/lib/validation/slug"
 import {
-  generateFunnelId,
-  createFunnelWithCap,
-  isFunnelSlugTaken,
-  suggestAvailableFunnelSlugs,
-} from "@/lib/models/funnelModel"
+  generateRequestId,
+  createRequestWithCap,
+  isRequestSlugTaken,
+  suggestAvailableRequestSlugs,
+} from "@/lib/models/requestModel"
 import { API_ERRORS } from "@/constants"
 import { errorCode } from "@/lib/errors"
 
@@ -19,7 +19,7 @@ import { errorCode } from "@/lib/errors"
 const MAX_PUBLIC_KEY = 1000
 const MAX_WRAPPED_KEY = 4000
 
-export async function handleFunnelCreate({
+export async function handleRequestCreate({
   request,
   user,
 }: {
@@ -46,7 +46,7 @@ export async function handleFunnelCreate({
   }
 
   const tier = getTierLimits(userTier)
-  const id = generateFunnelId()
+  const id = generateRequestId()
 
   // Custom slug (paid plans). Otherwise the random 12-char id doubles as the slug
   // (it already satisfies the slug charset and min length).
@@ -56,8 +56,8 @@ export async function handleFunnelCreate({
     if (!slugCheck.ok) {
       return apiError(400, API_ERRORS.BAD_REQUEST, slugCheck.error || "Invalid custom link")
     }
-    if (await isFunnelSlugTaken(slugCheck.slug)) {
-      const suggestions = await suggestAvailableFunnelSlugs(slugCheck.slug)
+    if (await isRequestSlugTaken(slugCheck.slug)) {
+      const suggestions = await suggestAvailableRequestSlugs(slugCheck.slug)
       return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug: slugCheck.slug, suggestions })
     }
     slug = slugCheck.slug
@@ -65,17 +65,17 @@ export async function handleFunnelCreate({
 
   try {
     // Atomic cap enforcement, no TOCTOU across concurrent creates.
-    const result = await createFunnelWithCap(
+    const result = await createRequestWithCap(
       { id, slug, user_id: user.userId, public_key: publicKey, private_key_wrapped: wrappedPrivateKey },
-      tier.maxFunnelLinks,
+      tier.maxRequestLinks,
     )
     if (result === "cap") {
-      return apiError(403, API_ERRORS.FORBIDDEN, "You've reached your active funnel link limit.")
+      return apiError(403, API_ERRORS.FORBIDDEN, "You've reached your active fileRequest link limit.")
     }
   } catch (e) {
     // Lost a slug race.
     if (errorCode(e) === "23505") {
-      const suggestions = await suggestAvailableFunnelSlugs(slug)
+      const suggestions = await suggestAvailableRequestSlugs(slug)
       return apiError(409, API_ERRORS.CONFLICT, "Custom link already taken", { slug, suggestions })
     }
     throw e

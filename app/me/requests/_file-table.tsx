@@ -4,7 +4,7 @@ import { Table, Checkbox } from "@heroui/react"
 import { type Selection } from "react-aria-components"
 import { formatBytes } from "@/lib/format"
 
-export interface FunnelFileDto {
+export interface RequestFileDto {
   id: string
   nameEncrypted: string
   wrappedKey: string
@@ -28,13 +28,13 @@ function SelectionCheckbox() {
   )
 }
 
-export function FunnelFileTable({
+export function RequestFileTable({
   files,
   names,
   selectedIds,
   onSelectionChange,
 }: {
-  files: FunnelFileDto[]
+  files: RequestFileDto[]
   names: Record<string, string>
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void

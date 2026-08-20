@@ -12,8 +12,8 @@ export interface TierLimits {
   maxCdnFilesPerUpload: number
   maxTotalFiles: number
   expirationMultiplier: number
-  maxFunnelUploadSize: number
-  maxFunnelLinks: number
+  maxRequestUploadSize: number
+  maxRequestLinks: number
   maxApiKeys: number
 }
 
@@ -37,8 +37,8 @@ export const FREE_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 3,
   maxTotalFiles: 6, // 3 CDN + 3 Normal
   expirationMultiplier: 1,
-  maxFunnelUploadSize: 0, // Funnel not available on Free
-  maxFunnelLinks: 0,
+  maxRequestUploadSize: 0, // FileRequest not available on Free
+  maxRequestLinks: 0,
   maxApiKeys: 0, // API not available on Free
 }
 
@@ -53,8 +53,8 @@ const PLUS_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 45,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 2,
-  maxFunnelUploadSize: 100 * MB,
-  maxFunnelLinks: 10,
+  maxRequestUploadSize: 100 * MB,
+  maxRequestLinks: 10,
   maxApiKeys: 1,
 }
 
@@ -69,8 +69,8 @@ const PRO_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: 100,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 3,
-  maxFunnelUploadSize: 300 * MB,
-  maxFunnelLinks: 25,
+  maxRequestUploadSize: 300 * MB,
+  maxRequestLinks: 25,
   maxApiKeys: 3,
 }
 
@@ -85,8 +85,8 @@ export const MAX_LIMITS: TierLimits = {
   maxCdnFilesPerUpload: UNLIMITED,
   maxTotalFiles: 0, // Unrestricted (bottlenecked by link count)
   expirationMultiplier: 4,
-  maxFunnelUploadSize: 1000 * MB,
-  maxFunnelLinks: 50,
+  maxRequestUploadSize: 1000 * MB,
+  maxRequestLinks: 50,
   maxApiKeys: 5,
 }
 

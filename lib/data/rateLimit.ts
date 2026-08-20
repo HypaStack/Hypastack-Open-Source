@@ -216,9 +216,9 @@ export async function checkProxyTokenRateLimit(ip: string): Promise<RateLimitRes
   return checkRateLimit(ip, 'proxytoken', WINDOW_MINUTES.proxyToken, MAX_ATTEMPTS.proxyToken.free)
 }
 
-/** Throttle anonymous funnel drops per IP, the link is one-time, so this mainly
+/** Throttle anonymous fileRequest drops per IP, the link is one-time, so this mainly
  *  caps repeated init attempts and abuse. */
-export async function checkFunnelUploadRateLimit(ip: string): Promise<RateLimitResult> {
-  return checkRateLimit(ip, 'funnel_upload', WINDOW_MINUTES.funnelUpload, MAX_ATTEMPTS.funnelUpload.free)
+export async function checkRequestUploadRateLimit(ip: string): Promise<RateLimitResult> {
+  return checkRateLimit(ip, 'funnel_upload', WINDOW_MINUTES.requestUpload, MAX_ATTEMPTS.requestUpload.free)
 }
 

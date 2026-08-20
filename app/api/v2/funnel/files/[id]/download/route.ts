@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { withAuth } from "@/lib/http/route"
 import { apiError } from "@/lib/http/apiError"
 import { getPresignedDownloadUrl } from "@/lib/storage/r2"
-import { getFunnelFileForOwner } from "@/lib/models/funnelModel"
+import { getRequestFileForOwner } from "@/lib/models/requestModel"
 import { API_ERRORS, PRESIGNED_TTL_SECONDS } from "@/constants"
 
 export const dynamic = "force-dynamic"
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic"
 // fetched and decrypted in the browser; disposition is inline since the real
 // filename is applied client-side after decryption.
 export const GET = withAuth<{ id: string }>(async ({ user, params }) => {
-  const file = await getFunnelFileForOwner(params.id, user.userId)
+  const file = await getRequestFileForOwner(params.id, user.userId)
   if (!file) return apiError(404, API_ERRORS.NOT_FOUND, "File not found")
 
   const url = await getPresignedDownloadUrl({
@@ -22,4 +22,4 @@ export const GET = withAuth<{ id: string }>(async ({ user, params }) => {
     expiresIn: PRESIGNED_TTL_SECONDS,
   })
   return NextResponse.json({ url })
-}, { rateLimit: true, label: "Funnel File Download" })
+}, { rateLimit: true, label: "Request File Download" })

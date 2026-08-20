@@ -57,8 +57,8 @@ const SECTIONS: Section[] = [
     title: "Requests",
     rows: [
       all("One-time inbound file drops"),
-      derive((l) => String(l.maxFunnelLinks), "funnel links"),
-      derive((l) => f(l.maxFunnelUploadSize), "per funnel file"),
+      derive((l) => String(l.maxRequestLinks), "fileRequest links"),
+      derive((l) => f(l.maxRequestUploadSize), "per fileRequest file"),
     ],
   },
   {

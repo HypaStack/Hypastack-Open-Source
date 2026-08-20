@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/http/apiError"
-import { checkFunnelUploadRateLimit } from "@/lib/data/rateLimit"
+import { checkRequestUploadRateLimit } from "@/lib/data/rateLimit"
 import { getHashedIp } from "@/lib/http/ip"
 import { headCdnObject, deleteByKey } from "@/lib/storage/r2"
 import { completeMultipartUpload } from "@/lib/storage/r2Multipart"
@@ -8,12 +8,12 @@ import { getTotalStorageUsed } from "@/lib/models/cdnModel"
 import { getUserById } from "@/lib/models/userModel"
 import { getTierLimits, normalizeTier } from "@/constants/tier-limits"
 import {
-  getActiveFunnelBySlug,
-  consumeFunnel,
-  createFunnelFile,
-  funnelObjectKey,
-  deleteFunnelStaging,
-} from "@/lib/models/funnelModel"
+  getActiveRequestBySlug,
+  consumeRequest,
+  createRequestFile,
+  requestObjectKey,
+  deleteRequestStaging,
+} from "@/lib/models/requestModel"
 import { API_ERRORS } from "@/constants"
 
 const FILE_ID_RE = /^[a-z0-9]{12}$/
@@ -22,14 +22,14 @@ const MAX_WRAPPED_KEY = 1500
 
 // Finalize a drop: verify the ciphertext landed, claim the one-time link (burns
 // it), and record the received file with the crypto material the owner needs.
-export async function handleFunnelComplete(
+export async function handleRequestComplete(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   try {
     const { slug } = await params
 
-    const rl = await checkFunnelUploadRateLimit(getHashedIp(request))
+    const rl = await checkRequestUploadRateLimit(getHashedIp(request))
     if (!rl.allowed) return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "429 Too Many Requests")
 
     const body = await request.json()
@@ -45,10 +45,10 @@ export async function handleFunnelComplete(
       return apiError(400, API_ERRORS.BAD_REQUEST, "Invalid wrapped key")
     }
 
-    const funnel = await getActiveFunnelBySlug(slug)
-    if (!funnel) return apiError(410, API_ERRORS.GONE, "This funnel link is already closed.")
+    const fileRequest = await getActiveRequestBySlug(slug)
+    if (!fileRequest) return apiError(410, API_ERRORS.GONE, "This fileRequest link is already closed.")
 
-    const r2Key = funnelObjectKey(funnel.id, fileId)
+    const r2Key = requestObjectKey(fileRequest.id, fileId)
 
     // Finalize the multipart object before we can HEAD it.
     if (uploadId && Array.isArray(parts)) {
@@ -63,27 +63,27 @@ export async function handleFunnelComplete(
     if (!head) return apiError(404, API_ERRORS.NOT_FOUND, "Upload not found in storage. Did it finish?")
 
     // Re-check the owner's storage against the real (R2-reported) size.
-    const owner = await getUserById(funnel.user_id)
-    if (!owner) return apiError(410, API_ERRORS.GONE, "This funnel link is already closed.")
+    const owner = await getUserById(fileRequest.user_id)
+    if (!owner) return apiError(410, API_ERRORS.GONE, "This fileRequest link is already closed.")
     const tier = getTierLimits(normalizeTier(owner.tier))
-    const currentStorage = await getTotalStorageUsed(funnel.user_id)
+    const currentStorage = await getTotalStorageUsed(fileRequest.user_id)
     if (currentStorage + head.size > tier.maxCdnStorage) {
       await deleteByKey(r2Key).catch(() => {})
       return apiError(413, API_ERRORS.PAYLOAD_TOO_LARGE, "The recipient doesn't have enough storage for this file.")
     }
 
     // Atomically claim the one-time link. If a concurrent drop already won, back out.
-    const claimed = await consumeFunnel(funnel.id)
+    const claimed = await consumeRequest(fileRequest.id)
     if (!claimed) {
       await deleteByKey(r2Key).catch(() => {})
-      return apiError(410, API_ERRORS.GONE, "This funnel link is already closed.")
+      return apiError(410, API_ERRORS.GONE, "This fileRequest link is already closed.")
     }
 
     try {
-      await createFunnelFile({
+      await createRequestFile({
         id: fileId,
-        funnel_id: funnel.id,
-        user_id: funnel.user_id,
+        funnel_id: fileRequest.id,
+        user_id: fileRequest.user_id,
         r2_key: r2Key,
         name_encrypted: nameEncrypted,
         file_size: head.size,
@@ -99,11 +99,11 @@ export async function handleFunnelComplete(
 
     // Clear the in-flight marker so the sweep won't touch this now-live object.
     // Best-effort: the sweep also skips ids that became a funnel_files row.
-    await deleteFunnelStaging(fileId).catch(() => {})
+    await deleteRequestStaging(fileId).catch(() => {})
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("[Funnel Complete] error:", error)
+    console.error("[Request Complete] error:", error)
     return apiError(500, API_ERRORS.INTERNAL_SERVER_ERROR, "500 Internal Server Error")
   }
 }
