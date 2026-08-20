@@ -11,12 +11,14 @@ import { isBiometricSupported, enrollBiometric } from "@/lib/security/biometric"
 import { apiFetch } from "@/lib/http/fetch"
 import { Button, TextField, Label, Input, Checkbox } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
+import { BlacklistAlert } from "@/components/ui/blacklist-alert"
 import { errorMessage } from "@/lib/errors"
 
 export default function CreateAccountPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isBlacklisted, setIsBlacklisted] = useState(false)
   const [nickname, setNickname] = useState("")
   const [inviteCode, setInviteCode] = useState("")
   const [generatedKey, setGeneratedKey] = useState<string | null>(null)
@@ -55,6 +57,7 @@ export default function CreateAccountPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setIsBlacklisted(false)
     if (!canSubmit) return
     setIsLoading(true)
     try {
@@ -71,11 +74,16 @@ export default function CreateAccountPage() {
         body: JSON.stringify({ userId, accessKey, nickname_encrypted, inviteCode: inviteCode.trim(), turnstileToken, csrfToken }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "Failed to create account")
+      if (!response.ok) {
+        const err = new Error(data.error || "Failed to create account") as Error & { blacklisted?: boolean }
+        if (data.blacklisted) err.blacklisted = true
+        throw err
+      }
       await storeSessionKey(masterKey)
       setGeneratedKey(accessKey)
     } catch (err) {
       setError(errorMessage(err))
+      setIsBlacklisted((err as { blacklisted?: boolean })?.blacklisted === true)
     } finally {
       setIsLoading(false)
     }
@@ -174,9 +182,13 @@ export default function CreateAccountPage() {
             </div>
 
             {error && (
-              <AlertMessage tone="error" className="mb-5">
-                {error}
-              </AlertMessage>
+              isBlacklisted ? (
+                <div className="mb-5"><BlacklistAlert /></div>
+              ) : (
+                <AlertMessage tone="error" className="mb-5">
+                  {error}
+                </AlertMessage>
+              )
             )}
 
             <form onSubmit={handleSubmit} className="space-y-3">

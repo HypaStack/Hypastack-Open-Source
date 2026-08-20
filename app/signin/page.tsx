@@ -11,12 +11,14 @@ import { isBiometricSupported, isBiometricEnrolled, enrollBiometric, unlockWithB
 import { apiFetch } from "@/lib/http/fetch"
 import { Button, TextField, Label, Input } from "@heroui/react"
 import { AlertMessage } from "@/components/ui/alert-message"
+import { BlacklistAlert } from "@/components/ui/blacklist-alert"
 import { Loader } from "@/components/ui/loader"
 import { errorMessage } from "@/lib/errors"
 export default function SignInPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isBlacklisted, setIsBlacklisted] = useState(false)
   const [accessKey, setAccessKey] = useState("")
   const [turnstileToken, setTurnstileToken] = useState(process.env.NODE_ENV === "development" ? "dev-bypass" : "")
   const [bioEnrolled, setBioEnrolled] = useState(false)
@@ -52,7 +54,11 @@ export default function SignInPage() {
       body: JSON.stringify({ accessKey: key, turnstileToken, csrfToken }),
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || "Failed to sign in")
+    if (!response.ok) {
+      const err = new Error(data.error || "Failed to sign in") as Error & { blacklisted?: boolean }
+      if (data.blacklisted) err.blacklisted = true
+      throw err
+    }
     // cid_ identifiers don't embed the id, so the server returns it; legacy
     // hpsk_ keys fall back to extracting it locally.
     const userId = data.userId || extractUserIdFromAccessKey(key)
@@ -64,6 +70,7 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setIsBlacklisted(false)
     setIsLoading(true)
     try {
       await runLogin(accessKey)
@@ -77,12 +84,14 @@ export default function SignInPage() {
       goToApp()
     } catch (err) {
       setError(errorMessage(err))
+      setIsBlacklisted((err as { blacklisted?: boolean })?.blacklisted === true)
       setIsLoading(false)
     }
   }
 
   const handleBiometricUnlock = async () => {
     setError("")
+    setIsBlacklisted(false)
     setBioStage("verifying")
     try {
       const key = await unlockWithBiometric()
@@ -95,6 +104,7 @@ export default function SignInPage() {
       goToApp()
     } catch (err) {
       setError(errorMessage(err, "Biometric sign-in failed"))
+      setIsBlacklisted((err as { blacklisted?: boolean })?.blacklisted === true)
       setBioStage(null)
       setIsLoading(false)
     }
@@ -176,7 +186,7 @@ export default function SignInPage() {
                 </div>
                 {error && (
                   <div>
-                    <AlertMessage tone="error" style={{ marginBottom: 0 }}>{error}</AlertMessage>
+                    {isBlacklisted ? <BlacklistAlert /> : <AlertMessage tone="error" style={{ marginBottom: 0 }}>{error}</AlertMessage>}
                   </div>
                 )}
                 <Button
