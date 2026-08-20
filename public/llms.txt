@@ -39,4 +39,4 @@ Key facts, kept consistent with the live site and the source code:
 ## Contact
 
 - [Developer](https://usekiko.com): Kiko, solo developer
-- [Support (Telegram)](https://t.me/t_usekiko)
+- [Support](mailto:usekiko@hypamail.me)
