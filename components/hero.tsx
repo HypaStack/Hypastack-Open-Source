@@ -10,7 +10,8 @@ import { MIcon } from "@/components/ui/material-icon";
 import { toPressHandler } from "@/components/ui/button-press";
 import { useAuth } from "@/hooks/useAuth";
 
-// The overlapping stack in the headline, drawn back to front.
+// The overlapping stack in the headline, drawn back to front. Ring is the page
+// background, which is what cuts each logo out of the one behind it.
 const THE_OLD_GUARD = [
   { src: "https://r2.hypastack.com/cdn/ycnwp0rcsund/dropbox-logo.png", alt: "Dropbox", rotate: -9 },
   { src: "https://r2.hypastack.com/cdn/i9tog2bv4rtq/google-logo.png", alt: "Google", rotate: 7 },
@@ -81,7 +82,7 @@ export function Hero() {
                 {THE_OLD_GUARD.map((logo, i) => (
                   <Avatar
                     key={logo.alt}
-                    className="relative shrink-0 rounded-full bg-transparent select-none pointer-events-none"
+                    className="relative shrink-0 rounded-full bg-transparent ring-[0.06em] ring-black select-none pointer-events-none"
                     style={{
                       // em, not a fixed Avatar size, so they keep scaling with the clamped headline
                       width: "0.85em",
