@@ -116,9 +116,9 @@ export default function FunnelDropPage({ params }: { params: Promise<{ slug: str
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
             <Card variant="transparent" className="bg-overlay border !border-solid border-white/10 rounded-[16px]">
               <Card.Header className="gap-2">
-                <Card.Title className="text-xl">Funnel closed</Card.Title>
+                <Card.Title className="text-xl">Request closed</Card.Title>
                 <Card.Description>
-                  This drop link has already been used or doesn&apos;t exist. Funnel links work exactly once.
+                  This drop link has already been used or doesn&apos;t exist. Request links work exactly once.
                 </Card.Description>
               </Card.Header>
               <Card.Footer className="gap-2">

@@ -24,19 +24,19 @@ const PLAN_META: Record<PreferencesTier, { label: string; monthly: string; annua
     label: "Plus",
     monthly: "13.99 € / month",
     annual: "139.99 € / year",
-    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Developer API (1 key)"],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Requests", "Developer API (1 key)"],
   },
   pro: {
     label: "Pro",
     monthly: "24.99 € / month",
     annual: "249.99 € / year",
-    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Developer API (3 keys)", "Fast support"],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Requests", "Developer API (3 keys)", "Fast support"],
   },
   max: {
     label: "Max",
     monthly: "32.99 € / month",
     annual: "329.99 € / year",
-    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Funnels", "Developer API (5 keys)", "Priority support"],
+    features: ["Custom share links (files + CDN)", "Custom expiration up to 30 days", "Custom display name and banner (Branding)", "Create Requests", "Developer API (5 keys)", "Priority support"],
   },
 }
 

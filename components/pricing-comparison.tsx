@@ -54,7 +54,7 @@ const SECTIONS: Section[] = [
   },
   {
     icon: "move_to_inbox",
-    title: "Funnels",
+    title: "Requests",
     rows: [
       all("One-time inbound file drops"),
       derive((l) => String(l.maxFunnelLinks), "funnel links"),

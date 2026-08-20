@@ -37,7 +37,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
     if (files.length === 0) return
     const confirmed = await hypaConfirm({
       title: `Delete all ${files.length} file(s) permanently?`,
-      description: "This will wipe every file in your Drive. This cannot be undone.",
+      description: "This will wipe every file in your Storage. This cannot be undone.",
       confirmText: "Wipe all",
       cancelText: "Cancel",
     })
@@ -63,7 +63,7 @@ export function AccountTab({ user, storage, onSwitchTab }: { user: PreferencesUs
   const handleDeleteAccount = async () => {
     const confirmed = await hypaConfirm({
       title: "Delete your account permanently?",
-      description: "All files, Edge assets, and your account will be permanently erased. This cannot be undone.",
+      description: "All files, Hosting assets, and your account will be permanently erased. This cannot be undone.",
       confirmText: "Delete forever",
       cancelText: "Cancel",
     })

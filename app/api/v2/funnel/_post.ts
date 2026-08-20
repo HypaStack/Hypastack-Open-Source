@@ -42,7 +42,7 @@ export async function handleFunnelCreate({
 
   const userTier = normalizeTier(await getUserTier(user.userId))
   if (!isPaidTier(userTier)) {
-    return apiError(403, API_ERRORS.FORBIDDEN, "Funnels are available on the Plus plan and above.")
+    return apiError(403, API_ERRORS.FORBIDDEN, "Requests are available on the Plus plan and above.")
   }
 
   const tier = getTierLimits(userTier)

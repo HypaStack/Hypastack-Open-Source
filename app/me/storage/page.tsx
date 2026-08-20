@@ -458,7 +458,7 @@ function FilesPageInner() {
       {/* h-10 keeps the headline centred on the same line as the sidebar's top row. */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-3 sm:h-10 mb-2">
         <h1 className="shrink-0 text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
-          <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Drive</span>
+          <span className={`cursor-pointer hover:underline hover:text-[#171717] dark:hover:text-[#e3e3e3] transition-colors ${currentFolderId ? "text-[#999] dark:text-[#898e97]" : "text-[#333] dark:text-[#ccc]"}`} onClick={() => setCurrentFolderId(null)}>Storage</span>
           {getBreadcrumbs().map((f, i, arr) => (
             <span key={f.id} className="flex items-center gap-2 text-[#666] dark:text-[#898e97]">
               <MIcon name="chevron_right" size={20} className="text-[#999] dark:text-[#a1a1aa]" />
@@ -646,7 +646,7 @@ function FilesPageInner() {
             <ContextMenuSub icon="drive_file_move" label="Move file" title="Move to">
               <ContextMenuItem
                 icon="hard_drive"
-                label="Drive"
+                label="Storage"
                 disabled={activeContextMenuFile.folderId === null}
                 onClick={() => { moveFiles([activeContextMenuFile.id], null); setOpenMenuId(null); setContextMenuPos(null) }}
               />

@@ -67,7 +67,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
 
   if (!mounted) return null
 
-  const footerTitle = link ? "Funnel ready" : "New funnel"
+  const footerTitle = link ? "Request ready" : "New request"
   const footerSub = link
     ? "Share the link, it works once, then closes."
     : creating
@@ -98,7 +98,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
           >
             <Card.Header className="flex-row shrink-0 items-center justify-between gap-3 px-3 pt-3 pb-2">
               <div className="flex min-w-0 flex-col">
-                <Card.Title className="text-lg">New funnel</Card.Title>
+                <Card.Title className="text-lg">New request</Card.Title>
                 <Card.Description>One-time drop link</Card.Description>
               </div>
               <Button
@@ -147,7 +147,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                     >
                       <InputGroup>
                         <InputGroup.Prefix>/funnel/</InputGroup.Prefix>
-                        <InputGroup.Input placeholder="my-funnel" />
+                        <InputGroup.Input placeholder="my-request" />
                       </InputGroup>
                     </TextField>
                     <p className="mt-1.5 text-[12px] text-muted">

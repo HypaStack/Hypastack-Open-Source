@@ -36,7 +36,7 @@ export default function AdminPage() {
     <div className="flex-1 min-h-0 overflow-y-auto pb-10">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          {/* same heading as Drive, Edge and Funnel */}
+          {/* same heading as Storage, Hosting and Requests */}
           <Typography type="h2" className="text-[28px] font-medium text-[#171717] dark:text-[#e3e3e3]">Admin</Typography>
           <Typography type="body-sm" color="muted">
             Invite codes, accounts and the IP blacklist.

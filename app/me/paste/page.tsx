@@ -45,7 +45,7 @@ export default function BinPage() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-          <span className="text-[#333] dark:text-[#ccc]">New Bin</span>
+          <span className="text-[#333] dark:text-[#ccc]">New Paste</span>
         </h1>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">

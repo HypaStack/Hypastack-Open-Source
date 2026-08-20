@@ -44,7 +44,7 @@ export const POST = withApiKey(async ({ request, requestId, userId, tier, rate }
     })
   }
 
-  // Combined Drive + CDN ceiling, same rule the dashboard enforces.
+  // Combined Storage + CDN ceiling, same rule the dashboard enforces.
   if (limits.maxTotalFiles > 0) {
     const [fileStats, cdnStats] = await Promise.all([
       getUserFileStats(userId),

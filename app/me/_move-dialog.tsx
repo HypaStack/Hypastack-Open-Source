@@ -4,7 +4,7 @@ import { useState } from "react"
 import { MIcon } from "@/components/ui/material-icon"
 import { Button, Chip, Modal, typographyVariants } from "@heroui/react"
 
-/** Stands in for the Drive root, which has no folder id. */
+/** Stands in for the Storage root, which has no folder id. */
 const ROOT_KEY = "__root"
 
 export interface MoveTarget {

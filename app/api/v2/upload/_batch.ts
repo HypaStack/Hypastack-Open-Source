@@ -93,7 +93,7 @@ export async function handleUploadBatch(body: UploadBatchBody, userId: string) {
     return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your limit of ${tier.maxFileLinks} active file links on your current plan.`)
   }
   if (tier.maxTotalFiles > 0 && fileStats.activeFiles + cdnStats.totalAssets + files.length > tier.maxTotalFiles) {
-    return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`)
+    return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your total limit of ${tier.maxTotalFiles} files (Storage + Hosting combined). Upgrade your plan or delete existing files.`)
   }
 
   for (const f of files) {

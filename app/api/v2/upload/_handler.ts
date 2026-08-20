@@ -56,7 +56,7 @@ export async function handleUploadPost(request: NextRequest) {
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets
       if (totalFiles >= tier.maxTotalFiles) {
-          return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your total limit of ${tier.maxTotalFiles} files (Drive + CDN combined). Upgrade your plan or delete existing files.`)
+          return apiError(403, API_ERRORS.FORBIDDEN, `You have reached your total limit of ${tier.maxTotalFiles} files (Storage + Hosting combined). Upgrade your plan or delete existing files.`)
       }
     }
 

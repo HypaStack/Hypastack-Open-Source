@@ -59,7 +59,7 @@ export default function FunnelInboxPage() {
       } else {
         if (notify) {
           const fresh = nextFiles.filter((f) => !seenIds.current!.has(f.id))
-          fresh.forEach(() => hypaToast({ title: "New file received", description: "A file just landed in your funnel inbox." }))
+          fresh.forEach(() => hypaToast({ title: "New file received", description: "A file just landed in your requests inbox." }))
         }
         seenIds.current = new Set(nextFiles.map((f) => f.id))
       }
@@ -133,12 +133,12 @@ export default function FunnelInboxPage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-[440px]">
-          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Funnel</h1>
+          <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Requests</h1>
           <p className="mt-2 text-[13px] text-[#666] dark:text-[#898e97] leading-relaxed">
             Create one-time links and receive files straight to your inbox, encrypted so only you can open them.
           </p>
           <AlertMessage tone="info" className="mt-5" style={{ marginBottom: 0, fontSize: 13, lineHeight: "20px" }}>
-            Funnels are available on the Plus, Pro and Max plans.
+            Requests are available on the Plus, Pro and Max plans.
           </AlertMessage>
           <div className="mt-5">
             <ButtonLink href="/pricing" variant="primary" size="md" aria-label="See plans">
@@ -154,7 +154,7 @@ export default function FunnelInboxPage() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-2 shrink-0">
         <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3] flex items-center gap-2 whitespace-nowrap">
-          <span className="text-[#333] dark:text-[#ccc]">Funnel</span>
+          <span className="text-[#333] dark:text-[#ccc]">Requests</span>
         </h1>
 
         <motion.div layout className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -206,7 +206,7 @@ export default function FunnelInboxPage() {
               <motion.div layout>
                 <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
                   <MIcon name="add_link" size={15} className="shrink-0" />
-                  <span>Create funnel</span>
+                  <span>Create request</span>
                 </Button>
               </motion.div>
             </>
@@ -224,7 +224,7 @@ export default function FunnelInboxPage() {
           <p style={{ fontSize: 15, color: "#a1a1aa", marginBottom: 16 }}>No files yet</p>
           <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
             <MIcon name="add_link" size={14} />
-            Create funnel
+            Create request
           </Button>
         </div>
       ) : (

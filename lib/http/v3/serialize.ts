@@ -50,7 +50,7 @@ export function toV3CdnAsset(asset: CdnAsset): V3CdnAsset {
   return {
     object: "cdn_asset",
     id: asset.id,
-    // Not decrypted: CDN names are stored as sanitized plaintext, unlike Drive
+    // Not decrypted: CDN names are stored as sanitized plaintext, unlike Storage
     // filenames. decryptFilename would pass them through untouched, but only by
     // way of its can't-decrypt fallback, relying on that would be an accident.
     name: asset.original_name,

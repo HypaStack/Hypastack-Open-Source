@@ -31,7 +31,7 @@ function resolveConcurrency(tierCap: number, files: FileWithPreview[]): number {
   return Math.max(1, Math.min(cap, files.length))
 }
 
-// Batched init, direct PUT per file to R2 (unencrypted, unlike Drive), batched finalize.
+// Batched init, direct PUT per file to R2 (unencrypted, unlike Storage), batched finalize.
 export async function runCdnUpload(
   files: FileWithPreview[],
   csrfToken: string,

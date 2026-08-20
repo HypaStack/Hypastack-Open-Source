@@ -82,7 +82,7 @@ export async function handleCdnUploadInitPost(request: NextRequest) {
       return apiError(403, API_ERRORS.FORBIDDEN, "CDN Asset Limit Reached")
     }
 
-    // Check total file cap (Drive + CDN combined)
+    // Check total file cap (Storage + CDN combined)
     if (tier.maxTotalFiles > 0) {
       const totalFiles = fileStats.activeFiles + cdnStats.totalAssets + filesToInit.length
       if (totalFiles > tier.maxTotalFiles) {
