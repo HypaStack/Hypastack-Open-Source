@@ -222,6 +222,10 @@ function ManageLayoutInner({
   const sectionItems = user?.isOwner ? [...SECTION_BUTTONS, ADMIN_NAV_ITEM] : SECTION_BUTTONS
   return (
     <>
+    {/* Until the dashboard mounts there is nothing painting over the html element's
+        --background, and that is not the pitch black the dashboard itself uses. */}
+    {!user && <div className="fixed inset-0 bg-black" />}
+
     {/* Sits over the real dashboard so it can fade off it, rather than blinking out. */}
     <AnimatePresence>
       {showSkeleton && (
