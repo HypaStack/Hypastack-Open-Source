@@ -5,6 +5,7 @@ import { isValidDiscordWebhook } from "@/lib/integrations/discordWebhook"
 import { checkAppealRateLimit } from "@/lib/data/rateLimit"
 import { getHashedIp } from "@/lib/http/ip"
 import { verifyTurnstileToken } from "@/lib/security/turnstile"
+import { isAppealEligible } from "@/lib/security/appealGate"
 import { API_ERRORS, MAX_APPEAL_LENGTH } from "@/constants"
 
 const AppealSchema = z.object({
@@ -18,6 +19,10 @@ const AppealSchema = z.object({
 // Turnstile and a per-IP cap carry the abuse protection instead.
 export async function POST(request: NextRequest) {
   try {
+    if (!(await isAppealEligible(request))) {
+      return apiError(403, API_ERRORS.FORBIDDEN, "There is nothing to appeal on this connection.")
+    }
+
     const validation = AppealSchema.safeParse(await request.json().catch(() => null))
     if (!validation.success) {
       return apiError(400, API_ERRORS.BAD_REQUEST, validation.error.issues[0].message)

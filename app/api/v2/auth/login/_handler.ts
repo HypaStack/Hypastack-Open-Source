@@ -10,6 +10,7 @@ import { validateCsrfToken } from "@/lib/security/security"
 import { getHashedIp } from "@/lib/http/ip"
 import { rejectIfBlacklisted, enforceOwnerIpGate } from "@/lib/security/ownerGate"
 import { rememberAccount } from "@/lib/security/accountsCookie"
+import { grantAppealAccess } from "@/lib/security/appealGate"
 import { API_ERRORS } from "@/constants"
 
 // keeping timing consistent.
@@ -95,6 +96,8 @@ export async function handleLoginPost(request: NextRequest) {
     }
 
     if (matchedSuspended) {
+      // last point the server knows who they are, so let them reach /appeal
+      await grantAppealAccess()
       return apiError(403, API_ERRORS.FORBIDDEN, "Account suspended")
     }
 

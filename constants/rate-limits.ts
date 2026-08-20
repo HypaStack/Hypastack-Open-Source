@@ -11,8 +11,7 @@ export const WINDOW_MINUTES = {
   requestUpload: 5,
   accountSwitch: 1,
   feedback: 5,
-  // one calendar-ish month, appeals are not meant to be resubmitted
-  appeal: 60 * 24 * 30,
+  appeal: 60,
 } as const
 
 export const MAX_ATTEMPTS = {
