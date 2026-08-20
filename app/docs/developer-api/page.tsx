@@ -117,7 +117,7 @@ export default function DeveloperApiDocs() {
               </SectionHeading>
               <CodeBlock label="v3-reference.mjs" code={REFERENCE_SCRIPT} />
 
-              <Card variant="transparent" className="mt-14 !gap-1 rounded-[16px] border !border-solid border-white/10 bg-overlay px-5 py-4">
+              <Card className="mt-14 !gap-1 rounded-[16px] px-5 py-4">
                 <Typography type="body-sm" weight="medium" className="text-foreground">Something not working?</Typography>
                 <Typography type="body-sm" color="muted" className="leading-relaxed">
                   Grab the <code className="text-foreground font-mono">request_id</code> from the response and send it to{" "}

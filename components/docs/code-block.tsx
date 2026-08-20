@@ -8,9 +8,9 @@ export function CodeBlock({ code, label }: { code: string; label?: string }) {
   const [copied, setCopied] = useState(false)
 
   return (
-    <Card variant="transparent" className="relative group !p-0 !gap-0 overflow-hidden rounded-[16px] border !border-solid border-white/10 bg-overlay">
+    <Card className="relative group !p-0 !gap-0 overflow-hidden rounded-[16px]">
       {label && (
-        <Card.Header className="flex-row items-center gap-2 px-4 py-2.5 border-b border-white/10">
+        <Card.Header className="flex-row items-center gap-2 px-4 py-2.5 border-b border-white/[0.06]">
           <Typography type="body-xs" weight="medium" className="tracking-[0.06em] uppercase text-muted">{label}</Typography>
         </Card.Header>
       )}
