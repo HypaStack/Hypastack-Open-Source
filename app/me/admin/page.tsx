@@ -2,8 +2,8 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { Spinner, Tabs, Typography } from "@heroui/react"
 import { useManage } from "@/hooks/useManage"
-import { LoadingSvg } from "@/components/ui/loading-svg"
 import { InviteCodesPanel } from "./_invite-codes"
 import { AccountsPanel } from "./_accounts"
 import { BlacklistPanel } from "./_blacklist"
@@ -24,7 +24,7 @@ export default function AdminPage() {
   if (isLoading || !user) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <LoadingSvg />
+        <Spinner size="lg" />
       </div>
     )
   }
@@ -32,11 +32,29 @@ export default function AdminPage() {
   if (!user.isOwner) return null
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-8 pb-8">
-      <h1 className="text-[28px] font-medium tracking-tight text-[#171717] dark:text-[#e3e3e3]">Admin</h1>
-      <InviteCodesPanel />
-      <AccountsPanel />
-      <BlacklistPanel />
+    <div className="flex-1 min-h-0 overflow-y-auto pb-10">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-1">
+          <Typography type="h2" className="text-foreground">Admin</Typography>
+          <Typography type="body-sm" color="muted">
+            Invite codes, accounts and the IP blacklist.
+          </Typography>
+        </div>
+
+        <Tabs defaultSelectedKey="invites">
+          <Tabs.ListContainer className="self-start">
+            <Tabs.List aria-label="Admin sections">
+              <Tabs.Tab id="invites"><Tabs.Indicator />Invite codes</Tabs.Tab>
+              <Tabs.Tab id="accounts"><Tabs.Indicator />Accounts</Tabs.Tab>
+              <Tabs.Tab id="blacklist"><Tabs.Indicator />Blacklist</Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
+
+          <Tabs.Panel id="invites" className="p-0"><InviteCodesPanel /></Tabs.Panel>
+          <Tabs.Panel id="accounts" className="p-0"><AccountsPanel /></Tabs.Panel>
+          <Tabs.Panel id="blacklist" className="p-0"><BlacklistPanel /></Tabs.Panel>
+        </Tabs>
+      </div>
     </div>
   )
 }
