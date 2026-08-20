@@ -225,6 +225,13 @@ const nextConfig = {
   // Redirects for SEO
   async redirects() {
     return [
+      // Requests used to live at /funnel/<slug>. Drop links are handed to other
+      // people, so the old ones have to keep resolving.
+      {
+        source: "/funnel/:slug",
+        destination: "/requests/:slug",
+        permanent: true,
+      },
       {
         source: "/policy",
         destination: "/privacy",

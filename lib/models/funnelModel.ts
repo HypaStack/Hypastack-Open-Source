@@ -119,7 +119,7 @@ export async function deleteFunnelStaging(id: string): Promise<void> {
   await pool.query(`DELETE FROM funnel_staging WHERE id = $1`, [id])
 }
 
-// The slug is the public path segment (`/funnel/<slug>`), so it must be unique
+// The slug is the public path segment (`/requests/<slug>`), so it must be unique
 // across funnels. The `id = $1` clause guards against a slug colliding with a
 // random funnel id.
 export async function isFunnelSlugTaken(slug: string): Promise<boolean> {

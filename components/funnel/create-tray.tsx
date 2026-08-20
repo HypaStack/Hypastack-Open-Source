@@ -29,7 +29,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
   }, [open])
 
   const funnelUrl = (slug: string) =>
-    typeof window !== "undefined" ? `${window.location.origin}/funnel/${slug}` : `/funnel/${slug}`
+    typeof window !== "undefined" ? `${window.location.origin}/requests/${slug}` : `/requests/${slug}`
 
   const create = async () => {
     if (creating) return
@@ -37,7 +37,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
     setError("")
     try {
       const master = await getSessionKey()
-      if (!master) { setError("Please sign in again to create a funnel."); return }
+      if (!master) { setError("Please sign in again to create a request."); return }
 
       const { publicKey, wrappedPrivateKey } = await generateWrappedFunnelKeypair(master)
       const csrfRes = await apiFetch("/api/v2/csrf")
@@ -49,13 +49,13 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
         body: JSON.stringify({ csrfToken, publicKey, wrappedPrivateKey, customSlug: customSlug.trim() || undefined }),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) { setError(data.message || "Couldn't create the funnel."); return }
+      if (!res.ok) { setError(data.message || "Couldn't create the request."); return }
 
       const url = funnelUrl(data.slug)
       setLink(url)
       try { await navigator.clipboard.writeText(url); setCopied(true) } catch {}
     } catch {
-      setError("Couldn't create the funnel. Please try again.")
+      setError("Couldn't create the request. Please try again.")
     } finally {
       setCreating(false)
     }
@@ -146,7 +146,7 @@ export function FunnelCreateTray({ open, onClose }: { open: boolean; onClose: ()
                       className="w-full"
                     >
                       <InputGroup>
-                        <InputGroup.Prefix>/funnel/</InputGroup.Prefix>
+                        <InputGroup.Prefix>/requests/</InputGroup.Prefix>
                         <InputGroup.Input placeholder="my-request" />
                       </InputGroup>
                     </TextField>
