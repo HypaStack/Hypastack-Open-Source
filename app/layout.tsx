@@ -253,10 +253,10 @@ export default async function RootLayout({
                 },
                 {
                   "@type": "APIReference",
-                  "@id": `${SITE_URL}/docs/developer-api#apireference`,
+                  "@id": "https://docs.hypastack.com/api-reference/overview#apireference",
                   name: "Hypastack Developer API",
                   headline: "Hypastack Developer API (v3)",
-                  url: `${SITE_URL}/docs/developer-api`,
+                  url: "https://docs.hypastack.com/api-reference/overview",
                   description:
                     "REST API for driving Hypastack files and CDN assets from your own code. Bearer-token auth with scoped keys, plain JSON, no SDK. Files uploaded through the API are not end-to-end encrypted (there is no browser to hold the key) and are readable by the operator; CDN assets are public by design. The zero-knowledge guarantee applies only to uploads made through the website.",
                   targetPlatform: "https://api.hypastack.com/v3",
