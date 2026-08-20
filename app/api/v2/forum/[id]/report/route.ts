@@ -35,7 +35,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       message: "Report submitted. You can also contact me directly.",
-      contact: "https://t.me/t_usekiko",
+      contact: "usekiko@hypamail.me",
     })
   } catch (error) {
     console.error("[Forum Report] POST error:", error)
