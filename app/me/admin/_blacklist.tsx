@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, Table } from "@heroui/react"
-import { LoadingSvg } from "@/components/ui/loading-svg"
+import { Button, Card, Spinner, Table, Typography } from "@heroui/react"
 import { apiFetch } from "@/lib/http/fetch"
 import { hypaConfirm, hypaError } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -44,41 +43,58 @@ export function BlacklistPanel() {
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-[18px] font-medium text-[#171717] dark:text-[#e3e3e3]">Blacklisted IPs</h2>
+    <Card>
+      <Card.Header>
+        <Card.Title>Blacklisted IPs</Card.Title>
+        <Card.Description>
+          Stored hashed, never raw. A blacklisted IP can neither sign in nor register.
+        </Card.Description>
+      </Card.Header>
 
-      {entries === null ? (
-        <div className="py-8 flex justify-center"><LoadingSvg /></div>
-      ) : entries.length === 0 ? (
-        <p className="text-[13.5px] text-[#898e97]">Nobody's blacklisted right now.</p>
-      ) : (
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="Blacklisted IPs">
-              <Table.Header>
-                <Table.Column isRowHeader>IP hash</Table.Column>
-                <Table.Column>Reason</Table.Column>
-                <Table.Column>Blacklisted</Table.Column>
-                <Table.Column className="w-24 text-right">Actions</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {entries.map((e) => (
-                  <Table.Row key={e.ipHash} id={e.ipHash}>
-                    <Table.Cell className="py-1.5"><code className="text-[12.5px] font-mono">{e.ipHash}</code></Table.Cell>
-                    <Table.Cell className="py-1.5 text-muted">{e.reason ?? "no reason logged"}</Table.Cell>
-                    <Table.Cell className="py-1.5 text-muted">{new Date(e.createdAt).toLocaleString()}</Table.Cell>
-                    <Table.Cell className="py-1.5 text-right">
-                      <Button variant="secondary" size="sm" onPress={() => handleRemove(e.ipHash)}>
-                        Remove
-                      </Button>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
-      )}
-    </section>
+      <Card.Content className="gap-0">
+        {entries === null ? (
+          <div className="flex justify-center py-10"><Spinner /></div>
+        ) : (
+          <Table variant="secondary">
+            <Table.ScrollContainer>
+              <Table.Content aria-label="Blacklisted IPs">
+                <Table.Header>
+                  <Table.Column isRowHeader>IP hash</Table.Column>
+                  <Table.Column>Reason</Table.Column>
+                  <Table.Column>Blacklisted</Table.Column>
+                  <Table.Column className="w-28 text-right">Actions</Table.Column>
+                </Table.Header>
+                <Table.Body
+                  renderEmptyState={() => (
+                    <Typography type="body-sm" color="muted" className="block py-10 text-center">
+                      Nobody&apos;s blacklisted right now.
+                    </Typography>
+                  )}
+                >
+                  {entries.map((e) => (
+                    <Table.Row key={e.ipHash} id={e.ipHash}>
+                      <Table.Cell className="py-2">{e.ipHash}</Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">{e.reason ?? "no reason logged"}</Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Typography type="body-sm" color="muted">
+                          {new Date(e.createdAt).toLocaleString()}
+                        </Typography>
+                      </Table.Cell>
+                      <Table.Cell className="py-2">
+                        <Button variant="secondary" size="sm" className="float-right" onPress={() => handleRemove(e.ipHash)}>
+                          Remove
+                        </Button>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
+        )}
+      </Card.Content>
+    </Card>
   )
 }
