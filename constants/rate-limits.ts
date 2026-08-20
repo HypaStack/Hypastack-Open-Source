@@ -10,7 +10,9 @@ export const WINDOW_MINUTES = {
   proxyToken: 1,
   requestUpload: 5,
   accountSwitch: 1,
-  feedback: 10,
+  feedback: 5,
+  // one calendar-ish month, appeals are not meant to be resubmitted
+  appeal: 60 * 24 * 30,
 } as const
 
 export const MAX_ATTEMPTS = {
@@ -25,7 +27,8 @@ export const MAX_ATTEMPTS = {
   proxyToken:     { free: 60 },
   requestUpload:   { free: 20 },
   accountSwitch:  { free: 10 },
-  feedback:       { free: 3 },
+  feedback:       { free: 1,  plus: 3,  pro: 5,   max: 10 },
+  appeal:         { free: 1 },
 } as const
 
 /**

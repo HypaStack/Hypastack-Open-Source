@@ -167,7 +167,7 @@ function ManageLayoutInner({
       setFeedbackOpen(false)
       setFeedbackText("")
       setFeedbackLinkAccount(true)
-      toast.success("Feedback sent", { description: "Thanks, we read every one of these." })
+      toast.success("Feedback sent", { description: "Thanks. We read every one of these." })
     } catch (err) {
       toast.danger(errorMessage(err))
     } finally {

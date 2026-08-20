@@ -4,6 +4,7 @@ import { withAuth } from "@/lib/http/route"
 import { apiError } from "@/lib/http/apiError"
 import { isValidDiscordWebhook } from "@/lib/integrations/discordWebhook"
 import { checkFeedbackRateLimit } from "@/lib/data/rateLimit"
+import { getUserById } from "@/lib/models/userModel"
 import { API_ERRORS, MAX_FEEDBACK_LENGTH } from "@/constants"
 
 const FeedbackSchema = z.object({
@@ -18,7 +19,9 @@ export const POST = withAuth(async ({ request, user }) => {
   }
   const { message, linkAccount } = validation.data
 
-  const rateLimit = await checkFeedbackRateLimit(user.userId)
+  // paid plans get a bigger allowance, see MAX_ATTEMPTS.feedback
+  const account = await getUserById(user.userId)
+  const rateLimit = await checkFeedbackRateLimit(user.userId, account?.tier ?? "free")
   if (!rateLimit.allowed) {
     return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "rate limit exceeded")
   }

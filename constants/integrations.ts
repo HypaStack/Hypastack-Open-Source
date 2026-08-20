@@ -17,3 +17,6 @@ export const DISCORD_MAX_CONTENT_LENGTH = 2000
 
 /** Feedback body cap, well under Discord's 2000 so the header always fits. */
 export const MAX_FEEDBACK_LENGTH = 1500
+
+/** Appeal body cap, the header carries an account id and an ip hash too. */
+export const MAX_APPEAL_LENGTH = 1200
