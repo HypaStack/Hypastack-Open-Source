@@ -532,6 +532,15 @@ CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE F
       // v2 CDN uploads stage the same way v3 does, and a v2 init can carry a
       // custom slug, so the staging row has to remember it for completion.
       { version: '2026-07-25-cdn-staging-slug', sql: `ALTER TABLE cdn_staging ADD COLUMN IF NOT EXISTS slug VARCHAR(64)` },
+      // Registration is invite-only: a code is claimed atomically alongside the
+      // account it creates, so used_by always points at a real account.
+      { version: '2026-08-20-invite-codes', sql: `CREATE TABLE IF NOT EXISTS invite_codes (
+        code       VARCHAR(64)  PRIMARY KEY,
+        used_by    VARCHAR(36),
+        used_at    TIMESTAMPTZ,
+        created_at TIMESTAMPTZ  DEFAULT NOW()
+      )` },
+      { version: '2026-08-20-invite-codes-used-by-idx', sql: `CREATE INDEX IF NOT EXISTS idx_invite_codes_used_by ON invite_codes(used_by)` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
