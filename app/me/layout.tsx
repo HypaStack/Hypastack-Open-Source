@@ -23,6 +23,9 @@ import {
   API_BASE,
 } from "@/constants"
 import { getTierLimits, normalizeTier, type Tier } from "@/constants/tier-limits"
+import { MAX_FEEDBACK_LENGTH } from "@/constants"
+import { apiFetch } from "@/lib/http/fetch"
+import { errorMessage } from "@/lib/errors"
 
 const TIER_CHIP_COLOR: Record<Tier, "default" | "accent" | "warning" | "danger"> = {
   free: "default",
@@ -148,6 +151,29 @@ function ManageLayoutInner({
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [feedbackLinkAccount, setFeedbackLinkAccount] = useState(true)
   const [feedbackText, setFeedbackText] = useState("")
+  const [feedbackSending, setFeedbackSending] = useState(false)
+
+  const sendFeedback = async () => {
+    setFeedbackSending(true)
+    try {
+      const res = await apiFetch("/api/v2/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: feedbackText.trim(), linkAccount: feedbackLinkAccount }),
+      })
+      if (res.status === 429) throw new Error("You're sending feedback too quickly, give it a minute.")
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || "Couldn't send your feedback")
+      setFeedbackOpen(false)
+      setFeedbackText("")
+      setFeedbackLinkAccount(true)
+      toast.success("Feedback sent", { description: "Thanks, we read every one of these." })
+    } catch (err) {
+      toast.danger(errorMessage(err))
+    } finally {
+      setFeedbackSending(false)
+    }
+  }
 
   const openPreferences = useCallback((tab: PreferencesTab) => {
     setPreferencesTab(tab)
@@ -532,7 +558,7 @@ function ManageLayoutInner({
                 <Modal.CloseTrigger />
               </Modal.Header>
               <Modal.Body className="space-y-4">
-                <TextField value={feedbackText} onChange={setFeedbackText} className="w-full">
+                <TextField value={feedbackText} onChange={setFeedbackText} className="w-full" maxLength={MAX_FEEDBACK_LENGTH}>
                   <Label>What's on your mind?</Label>
                   <TextArea rows={4} className="resize-none" placeholder="Tell us what's working, what's not..." />
                 </TextField>
@@ -546,18 +572,13 @@ function ManageLayoutInner({
                 </Switch>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="tertiary" onPress={() => setFeedbackOpen(false)}>Cancel</Button>
+                <Button variant="tertiary" isDisabled={feedbackSending} onPress={() => setFeedbackOpen(false)}>Cancel</Button>
                 <Button
                   variant="primary"
-                  isDisabled={!feedbackText.trim()}
-                  onPress={() => {
-                    setFeedbackOpen(false)
-                    setFeedbackText("")
-                    setFeedbackLinkAccount(true)
-                    toast.success("Feedback sent", { description: "Thanks, we read every one of these." })
-                  }}
+                  isDisabled={!feedbackText.trim() || feedbackSending}
+                  onPress={sendFeedback}
                 >
-                  Submit
+                  {feedbackSending ? "Sending..." : "Submit"}
                 </Button>
               </Modal.Footer>
             </Modal.Dialog>

@@ -14,3 +14,6 @@ export const WEBHOOK_BATCH_DELAY_MS = 10_000
 
 /** Discord's hard cap on message content length */
 export const DISCORD_MAX_CONTENT_LENGTH = 2000
+
+/** Feedback body cap, well under Discord's 2000 so the header always fits. */
+export const MAX_FEEDBACK_LENGTH = 1500

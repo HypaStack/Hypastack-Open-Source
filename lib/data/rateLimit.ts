@@ -205,6 +205,11 @@ export async function checkAccountSwitchRateLimit(ip: string): Promise<RateLimit
   return checkRateLimit(ip, 'account_switch', WINDOW_MINUTES.accountSwitch, MAX_ATTEMPTS.accountSwitch.free)
 }
 
+/** Feedback goes straight out to a webhook, so it's capped per account. */
+export async function checkFeedbackRateLimit(accountId: string): Promise<RateLimitResult> {
+  return checkRateLimit(accountId, 'feedback', WINDOW_MINUTES.feedback, MAX_ATTEMPTS.feedback.free)
+}
+
 /** 5 reports per IP per 10 minutes, prevents forum_reports table flooding */
 export async function checkForumReportRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'forum_report', 10, 5)

@@ -10,6 +10,7 @@ export const WINDOW_MINUTES = {
   proxyToken: 1,
   requestUpload: 5,
   accountSwitch: 1,
+  feedback: 10,
 } as const
 
 export const MAX_ATTEMPTS = {
@@ -24,6 +25,7 @@ export const MAX_ATTEMPTS = {
   proxyToken:     { free: 60 },
   requestUpload:   { free: 20 },
   accountSwitch:  { free: 10 },
+  feedback:       { free: 3 },
 } as const
 
 /**
