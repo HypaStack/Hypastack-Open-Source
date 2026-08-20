@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
-import { Card, ScrollShadow, Typography } from "@heroui/react"
+import { Card, Chip, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { DocNav } from "@/components/docs/doc-nav"
 import { DocGuide } from "@/components/docs/doc-guide"
@@ -63,19 +63,6 @@ export default function DeveloperApiDocs() {
         }}
       />
       <section className="flex-1 pt-16 pb-40">
-        <div className="mx-auto max-w-[900px] px-6 sm:px-10 flex flex-col items-center text-center mb-20">
-          <Typography type="h1" align="center" className="text-[clamp(38px,4.6vw,58px)] text-foreground">
-            Build on Hypastack
-          </Typography>
-          <Typography type="body" align="center" color="muted" className="mt-4 max-w-[52ch]">
-            Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
-            make an HTTP request, you already know this API.
-          </Typography>
-          <Typography type="body-sm" color="muted" className="mt-8 font-mono">
-            Base URL <span className="text-foreground/30 mx-1.5">·</span> <code className="text-foreground">https://api.hypastack.com/v3</code>
-          </Typography>
-        </div>
-
         {/* Sidebar is fixed to the viewport so it stays put top-to-bottom while the page scrolls; only its own list scrolls. */}
         <aside className="hidden lg:flex lg:flex-col fixed left-6 xl:left-10 top-10 bottom-8 w-[200px]">
           <ScrollShadow className="flex-1 pr-1" size={28}>
@@ -86,6 +73,20 @@ export default function DeveloperApiDocs() {
 
         <div className="px-6 sm:px-10">
           <div className="lg:pl-[240px]">
+            <div className="max-w-[640px] mb-20">
+              <Typography type="h1" className="text-[clamp(32px,4.6vw,52px)] text-foreground">
+                Build on Hypastack
+              </Typography>
+              <Typography type="body" color="muted" className="mt-4 max-w-[52ch]">
+                Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
+                make an HTTP request, you already know this API.
+              </Typography>
+              <Chip size="lg" className="mt-8 gap-2 font-mono max-w-full flex-wrap !shrink">
+                <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-muted">Base URL</span>
+                <code className="text-foreground">https://api.hypastack.com/v3</code>
+              </Chip>
+            </div>
+
             <DocGuide />
 
             <SectionHeading id="files" title="Files">
