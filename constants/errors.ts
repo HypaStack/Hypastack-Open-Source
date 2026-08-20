@@ -19,4 +19,5 @@ export const API_ERRORS = {
   GATEWAY_TIMEOUT: "We're having trouble reaching our servers. Please try again shortly.",
   INVALID_IDENTIFIER: "Seems like the identifier is invalid, check if it's correct and try again",
   INVALID_INVITE_CODE: "That invite code isn't valid, or it's already been used.",
+  BLACKLISTED: "Your accounts are suspended and you've been blacklisted.",
 } as const;
