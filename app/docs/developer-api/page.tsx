@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { readFileSync } from "fs"
 import { join } from "path"
-import { Card, Chip, Typography } from "@heroui/react"
+import { Card, Chip, ScrollShadow, Typography } from "@heroui/react"
 import { safeJsonLd } from "@/lib/seo/jsonLd"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -68,20 +68,16 @@ export default function DeveloperApiDocs() {
 
       <section className="flex-1 pt-32 pb-40">
         <div className="mx-auto max-w-[1180px] px-6 sm:px-10">
-          {/* Hero, centred with the same soft spotlight the marketing pages use */}
-          <div className="relative text-center mb-20">
-            <div className="pointer-events-none absolute left-1/2 -top-32 -translate-x-1/2 w-[440px] max-w-[85vw] h-[260px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.09),transparent_70%)] blur-2xl" />
-            <Typography type="body-xs" weight="semibold" className="relative tracking-[0.14em] uppercase text-muted mb-4">
-              Developer API · v3
-            </Typography>
-            <Typography type="h1" className="relative text-[clamp(38px,4.6vw,58px)] text-foreground">
+          {/* Hero, fully centred */}
+          <div className="flex flex-col items-center text-center mb-20">
+            <Typography type="h1" align="center" className="text-[clamp(38px,4.6vw,58px)] text-foreground">
               Build on Hypastack
             </Typography>
-            <Typography type="body" color="muted" className="relative mt-4 max-w-[52ch] mx-auto">
+            <Typography type="body" align="center" color="muted" className="mt-4 max-w-[52ch]">
               Drive your files and your CDN from your own code. Plain REST, plain JSON, no SDK to install. If you can
               make an HTTP request, you already know this API.
             </Typography>
-            <Chip size="lg" variant="soft" className="relative mt-8 gap-3">
+            <Chip size="lg" variant="soft" className="mt-8 gap-3">
               <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-muted">Base URL</span>
               <code className="text-[13px] text-foreground font-mono">https://api.hypastack.com/v3</code>
             </Chip>
@@ -89,15 +85,11 @@ export default function DeveloperApiDocs() {
 
           <div className="flex gap-12">
             {/* Fixed height (not max-height) is what makes this scroll, self-start stops it stretching. */}
-            <aside
-              className="hidden lg:block w-[190px] shrink-0 self-start sticky top-28 h-[calc(100vh-9rem)] overflow-y-auto overscroll-contain pr-1"
-              style={{
-                maskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
-                WebkitMaskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
-              }}
-            >
-              <DocNav />
-              <div aria-hidden className="h-8" />
+            <aside className="hidden lg:block w-[190px] shrink-0 self-start sticky top-28 h-[calc(100vh-9rem)]">
+              <ScrollShadow className="h-full pr-1" size={28}>
+                <DocNav />
+                <div aria-hidden className="h-8" />
+              </ScrollShadow>
             </aside>
 
             <div className="min-w-0 flex-1 max-w-[760px]">

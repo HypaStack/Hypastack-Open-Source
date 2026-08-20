@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Typography } from "@heroui/react"
+import { Header, ListBox, ListBoxItem, ListBoxSection, Typography } from "@heroui/react"
 import { FILE_ENDPOINTS, CDN_ENDPOINTS } from "@/lib/docs/v3-endpoints"
 
 const GUIDE = [
@@ -44,30 +44,29 @@ export function DocNav() {
   }, [])
 
   return (
-    <nav>
+    <ListBox aria-label="Documentation navigation" selectionMode="none" className="!p-0">
       {GROUPS.map((group) => (
-        <div key={group.title} className="mb-6">
-          <Typography type="body-xs" weight="semibold" className="tracking-[0.08em] uppercase text-muted mb-2 px-2">
-            {group.title}
-          </Typography>
-          <ul className="space-y-0.5">
-            {group.items.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  className={`block px-2 py-1 rounded-md text-[13px] transition-colors ${
-                    active === item.id
-                      ? "text-foreground bg-white/[0.06] font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/[0.03]"
-                  }`}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ListBoxSection key={group.title} className="mt-6 first:mt-0">
+          <Header>
+            <Typography type="body-xs" weight="semibold" className="tracking-[0.08em] uppercase text-muted px-2 mb-2">
+              {group.title}
+            </Typography>
+          </Header>
+          {group.items.map((item) => (
+            <ListBoxItem
+              key={item.id}
+              id={item.id}
+              href={`#${item.id}`}
+              textValue={item.label}
+              className={`min-h-0 py-1.5 text-[13px] ${
+                active === item.id ? "bg-default text-foreground font-medium" : "text-muted-foreground"
+              }`}
+            >
+              {item.label}
+            </ListBoxItem>
+          ))}
+        </ListBoxSection>
       ))}
-    </nav>
+    </ListBox>
   )
 }
