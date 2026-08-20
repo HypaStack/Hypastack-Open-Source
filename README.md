@@ -49,7 +49,7 @@ No, and I'd rather say that plainly than let the word "public repo" do the lying
 
 ## Found a bug, or something worse?
 
-Bug reports are genuinely welcome, [open an issue](https://github.com/HypaStack/Hypastack-Open-Source/issues). Security findings even more so, please email me directly at **usekiko@hypamail.me** instead of filing a public issue. Full details, including why I can promise not to come after you for an honest finding, are in [CONTRIBUTING.md](./CONTRIBUTING.md) and [SECURITY.md](./SECURITY.md).
+Bug reports are genuinely welcome, [open an issue](https://github.com/hypaware/Hypastack/issues). Security findings even more so, please email me directly at **usekiko@hypamail.me** instead of filing a public issue. Full details, including why I can promise not to come after you for an honest finding, are in [CONTRIBUTING.md](./CONTRIBUTING.md) and [SECURITY.md](./SECURITY.md).
 
 ## Stack
 
@@ -59,8 +59,8 @@ TypeScript and Next.js for the web app, Go for CPU-heavy hashing, Erlang for bac
 
 Everyone who's filed a bug, reported a security issue, or otherwise made this thing better than I could alone:
 
-<a href="https://github.com/HypaStack/Hypastack-Open-Source/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HypaStack/Hypastack-Open-Source" alt="Contributors" />
+<a href="https://github.com/hypaware/Hypastack/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hypaware/Hypastack" alt="Contributors" />
 </a>
 
 ---

@@ -145,7 +145,7 @@ const nextConfig = {
           {
             key: "Link",
             value:
-              '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://github.com/HypaStack/Hypastack-Open-Source#the-stack>; rel="service-doc"',
+              '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", <https://github.com/hypaware/Hypastack#the-stack>; rel="service-doc"',
           },
         ],
       },

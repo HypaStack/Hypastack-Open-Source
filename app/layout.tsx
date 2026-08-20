@@ -183,7 +183,7 @@ export default async function RootLayout({
                   },
                   sameAs: [
                     "https://github.com/HypaStack",
-                    "https://github.com/HypaStack/Hypastack-Open-Source",
+                    "https://github.com/hypaware/Hypastack",
                   ],
                   contactPoint: {
                     "@type": "ContactPoint",
@@ -221,7 +221,7 @@ export default async function RootLayout({
                     priceCurrency: "USD",
                     description: "Free plan. Paid plans raise storage and upload limits.",
                   },
-                  license: "https://github.com/HypaStack/Hypastack-Open-Source/blob/main/LICENSE",
+                  license: "https://github.com/hypaware/Hypastack/blob/main/LICENSE",
                   screenshot: PREVIEW_URL,
                   featureList: [
                     "Any file you upload is E2E Encrypted",
@@ -244,9 +244,9 @@ export default async function RootLayout({
                   "@type": "SoftwareSourceCode",
                   "@id": `${SITE_URL}/#sourcecode`,
                   name: "Hypastack source code",
-                  codeRepository: "https://github.com/HypaStack/Hypastack-Open-Source",
+                  codeRepository: "https://github.com/hypaware/Hypastack",
                   programmingLanguage: ["TypeScript", "Go", "Erlang", "Rust"],
-                  license: "https://github.com/HypaStack/Hypastack-Open-Source/blob/main/LICENSE",
+                  license: "https://github.com/hypaware/Hypastack/blob/main/LICENSE",
                   about: {
                     "@id": `${SITE_URL}/#webapp`,
                   },
