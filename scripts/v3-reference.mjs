@@ -78,7 +78,7 @@ async function upload(resource, bytes, name, contentType, extra = {}) {
 }
 
 async function main() {
-  // ── Files ────────────────────────────────────────────────────────────────
+  // files
 
   const { data: files, remaining, limit } = await api("GET", "/files?limit=10")
   console.log(`Files: ${files.data.length}${files.has_more ? "+" : ""}   budget ${remaining}/${limit}`)
@@ -105,7 +105,7 @@ async function main() {
   console.log(`Download URL good until ${link.expires_at}`)
   console.log(`  ${(await fetch(link.download_url).then((r) => r.text())).trim()}`)
 
-  // ── CDN ──────────────────────────────────────────────────────────────────
+  // cdn
 
   const { data: assets } = await api("GET", "/cdn/assets?limit=10")
   console.log(`CDN assets: ${assets.data.length}${assets.has_more ? "+" : ""}`)
@@ -128,7 +128,7 @@ async function main() {
   const swapped = await api("POST", `/cdn/assets/${asset.id}/complete`)
   console.log(`Swapped in place, same URL, now ${swapped.data.size} bytes`)
 
-  // ── Errors ───────────────────────────────────────────────────────────────
+  // errors
 
   try {
     await api("GET", "/files/does-not-exist")
@@ -137,7 +137,7 @@ async function main() {
     console.log(`Expected failure: ${err.status} ${err.code} (request ${err.requestId})`)
   }
 
-  // ── Cleanup ──────────────────────────────────────────────────────────────
+  // cleanup
 
   await api("DELETE", `/files/${file.id}`)
   await api("DELETE", `/cdn/assets/${asset.id}`)
