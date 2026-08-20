@@ -548,6 +548,13 @@ CREATE TRIGGER trg_set_tier_expiry BEFORE UPDATE ON users FOR EACH ROW EXECUTE F
       { version: '2026-08-20-user-suspended', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended BOOLEAN NOT NULL DEFAULT FALSE` },
       { version: '2026-08-20-user-suspended-at', sql: `ALTER TABLE users ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ` },
       { version: '2026-08-20-users-created-at-idx', sql: `CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)` },
+      // Hashed IPs only, same HMAC as rate limiting, so a blacklist entry
+      // never holds a raw IP at rest. Blocks both login and registration.
+      { version: '2026-08-20-blacklisted-ips', sql: `CREATE TABLE IF NOT EXISTS blacklisted_ips (
+        ip_hash    VARCHAR(32) PRIMARY KEY,
+        reason     TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )` },
     ]
     for (const migration of INCREMENTAL_MIGRATIONS) {
       const done = await client.query(`SELECT 1 FROM schema_migrations WHERE version = $1`, [migration.version])
