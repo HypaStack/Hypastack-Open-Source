@@ -65,7 +65,7 @@ export function DeveloperTab({ user, onSwitchTab }: { user: PreferencesUser; onS
               Every endpoint, every error code, with copyable examples.
             </Typography>
           </div>
-          <ButtonLink href="/docs/developer-api" variant="tertiary" size="sm" style={{ height: 32, gap: 6 }}>
+          <ButtonLink href="https://docs.hypastack.com/api-reference/overview" target="_blank" rel="noopener noreferrer" variant="tertiary" size="sm" style={{ height: 32, gap: 6 }}>
             Read the docs
             <MIcon name="open_in_new" size={14} />
           </ButtonLink>
