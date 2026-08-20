@@ -17,6 +17,7 @@ const RegisterSchema = z.object({
     .min(10, "Ciphertext too short")
     .max(500, "Ciphertext too long")
     .regex(CIPHERTEXT_REGEX, "Invalid ciphertext format"),
+  inviteCode: z.string().min(1, "Invite code required").max(64),
   turnstileToken: z.string().optional().default(""),
   csrfToken: z.string().min(1, "CSRF token required"),
 })
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
         return apiError(400, API_ERRORS.BAD_REQUEST, validation.error.issues[0].message)
     }
 
-    const { userId, accessKey, nickname_encrypted, turnstileToken, csrfToken } = validation.data
+    const { userId, accessKey, nickname_encrypted, inviteCode, turnstileToken, csrfToken } = validation.data
 
     // Legacy hpsk_ keys encode the user id as hpsk_<uuid-no-hyphens>_<secret>;
     // reject any registration whose declared userId disagrees with the key so a
@@ -63,12 +64,16 @@ export async function POST(request: NextRequest) {
 
     const { hash: passwordHash } = await hashPasswordAsync(accessKey)
 
-    await createUser({
+    const created = await createUser({
       id: userId,
       nickname_encrypted,
       password_hash: passwordHash,
+      inviteCode,
       key_lookup: computeKeyLookup(accessKey),
     })
+    if (!created) {
+      return apiError(403, API_ERRORS.INVALID_INVITE_CODE, "Invalid or already-used invite code")
+    }
 
     return NextResponse.json({ success: true })
 
