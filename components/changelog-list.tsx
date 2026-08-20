@@ -34,7 +34,7 @@ const RELEASES: Release[] = [
       { type: "new", text: "Redesigned upload tray with a live file table and toggle-hidden options." },
       { type: "new", text: "New pricing page with a real plan comparison table." },
       { type: "improved", text: "Storage usage now shown right in the sidebar." },
-      { type: "improved", text: "Bin and download pages are cleaner and load faster." },
+      { type: "improved", text: "Paste and download pages are cleaner and load faster." },
       { type: "fixed", text: "Dozens of small spacing, alignment and color inconsistencies." },
     ],
   },
@@ -53,7 +53,7 @@ const RELEASES: Release[] = [
     date: "January 2026",
     title: "CDN and custom links",
     items: [
-      { type: "new", text: "Edge: host assets on permanent, public URLs." },
+      { type: "new", text: "Hosting: host assets on permanent, public URLs." },
       { type: "new", text: "Custom share links on paid plans." },
       { type: "fixed", text: "Expiration timers no longer drift under heavy load." },
     ],

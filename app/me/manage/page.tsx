@@ -37,7 +37,7 @@ export default function AdminPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           {/* same heading as Storage, Hosting and Requests */}
-          <Typography type="h2" className="text-[28px] font-medium text-[#171717] dark:text-[#e3e3e3]">Admin</Typography>
+          <Typography type="h2" className="text-[28px] font-medium text-[#171717] dark:text-[#e3e3e3]">Manage</Typography>
           <Typography type="body-sm" color="muted">
             Invite codes, accounts and the IP blacklist.
           </Typography>
@@ -46,7 +46,7 @@ export default function AdminPage() {
         <AdminDataProvider>
           <Tabs defaultSelectedKey="invites">
             <Tabs.ListContainer className="w-full max-w-xl">
-              <Tabs.List aria-label="Admin sections" className="w-full">
+              <Tabs.List aria-label="Manage sections" className="w-full">
                 <Tabs.Tab id="invites" className="flex-1 whitespace-nowrap">
                   <Tabs.Indicator />Invite codes
                 </Tabs.Tab>

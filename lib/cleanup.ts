@@ -81,7 +81,7 @@ export async function cleanupStaging(): Promise<{
 }
 
 // Delete unused fileRequest links older than 7 days (never dropped into). There's no
-// R2 object for an unused link, just the row and its keypair. Consumed funnels
+// R2 object for an unused link, just the row and its keypair. Consumed requests
 // are kept so their received file stays decryptable.
 async function cleanupUnusedRequests(): Promise<{ cleaned: number; errors: string[] }> {
   const errors: string[] = []
@@ -93,7 +93,7 @@ async function cleanupUnusedRequests(): Promise<{ cleaned: number; errors: strin
       `DELETE FROM funnels WHERE status = 'active' AND created_at < NOW() - INTERVAL '7 days'`
     )
     cleaned = result.rowCount ?? 0
-    if (cleaned > 0) console.log(`[Cleanup] Unused funnels: cleaned=${cleaned}`)
+    if (cleaned > 0) console.log(`[Cleanup] Unused requests: cleaned=${cleaned}`)
   } catch (error) {
     console.error('[Cleanup] Fatal error in cleanupUnusedRequests:', error)
     errors.push(`Fatal error: ${errorMessage(error)}`)

@@ -67,7 +67,7 @@ export function AccountsPanel() {
   const handleDelete = async (id: string) => {
     const confirmed = await hypaConfirm({
       title: "Delete this account permanently?",
-      description: "Their files, CDN assets, funnels, sessions and API keys are all deleted. This cannot be undone.",
+      description: "Their files, CDN assets, requests, sessions and API keys are all deleted. This cannot be undone.",
       confirmText: "Delete forever",
       destructive: true,
       onConfirm: async () => {

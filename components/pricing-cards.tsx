@@ -39,7 +39,7 @@ function bullets(tier: PreferencesTier): string[] {
         links,
         "Custom share links",
         "Custom expiration up to 30 days",
-        `Create funnels, ${l.maxRequestLinks} links`,
+        `Create requests, ${l.maxRequestLinks} links`,
         "Download-page branding",
       ]
     case "pro":

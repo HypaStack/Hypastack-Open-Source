@@ -36,8 +36,8 @@ I'm a solo developer, and I built Hypastack because I got tired of "private" fil
 
 - **Secure File Sharing**: encrypted client-side (AES-GCM 256) before upload. The decryption key lives in the URL fragment, which never reaches the server. I genuinely cannot read these files.
 - **Permanent CDN Hosting**: public, permanent links for images and static assets. Not encrypted (a browser has to render them), but EXIF/GPS/camera metadata is stripped on upload.
-- **The Bin**: a short recovery window for anything you delete by accident, before it's gone for good.
-- **Funnels**: collect one-time file drops from people who don't have (or don't want) an account.
+- **Paste**: a short recovery window for anything you delete by accident, before it's gone for good.
+- **Requests**: collect one-time file drops from people who don't have (or don't want) an account.
 - **Forum**: a public community board with file attachments.
 - **Developer API**: plain REST, plain JSON, bearer tokens with scoped keys. No SDK required. See [docs.hypastack.com](https://docs.hypastack.com/api-reference/overview).
 
