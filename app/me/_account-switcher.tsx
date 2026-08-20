@@ -1,14 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import { Chip, Dropdown, toast } from "@heroui/react"
+import { Button, Chip, Dropdown, toast } from "@heroui/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { apiFetch } from "@/lib/http/fetch"
 import { API_BASE, SIDEBAR_WIDTH } from "@/constants"
-import { decryptE2E, getStoredMasterKey, activateStoredMasterKey } from "@/lib/security/cryptoClient"
+import { decryptE2E, getStoredMasterKey, activateStoredMasterKey, forgetStoredMasterKey } from "@/lib/security/cryptoClient"
 import { errorMessage } from "@/lib/errors"
 
 const DEFAULT_AVATAR = "https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg"
+const RATE_LIMITED = "You're performing actions too quickly, slow down."
+
+async function csrf(): Promise<string> {
+  const res = await apiFetch("/api/v2/csrf", { credentials: "include" })
+  const { token } = await res.json()
+  return token
+}
 
 interface SwitchableAccount {
   id: string
@@ -44,7 +51,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
   ])
   const [canAddMore, setCanAddMore] = useState(true)
   const [loaded, setLoaded] = useState(false)
-  const [switching, setSwitching] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   const load = async () => {
     try {
@@ -67,15 +74,14 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
       window.location.assign("/signin?add=1")
       return
     }
-    setSwitching(true)
+    setBusy(true)
     try {
-      const csrfRes = await apiFetch("/api/v2/csrf", { credentials: "include" })
-      const { token: csrfToken } = await csrfRes.json()
       const res = await apiFetch("/api/v2/auth/switch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: account.id, csrfToken }),
+        body: JSON.stringify({ userId: account.id, csrfToken: await csrf() }),
       })
+      if (res.status === 429) throw new Error(RATE_LIMITED)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to switch account")
       activateStoredMasterKey(account.id)
@@ -83,7 +89,41 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
       window.location.assign("/me/storage")
     } catch (err) {
       toast.danger(errorMessage(err))
-      setSwitching(false)
+      setBusy(false)
+    }
+  }
+
+  const signOut = async (account: SwitchableAccount) => {
+    setBusy(true)
+    try {
+      const res = await apiFetch("/api/v2/auth/accounts/signout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: account.id, csrfToken: await csrf() }),
+      })
+      if (res.status === 429) throw new Error(RATE_LIMITED)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to sign out")
+
+      forgetStoredMasterKey(account.id)
+
+      if (!account.isCurrent) {
+        setAccounts((prev) => prev.filter((a) => a.id !== account.id))
+        setCanAddMore(true)
+        setBusy(false)
+        return
+      }
+      // signed out of the account in use: the server handed the session to the
+      // next one, so make its key active before anything tries to decrypt
+      if (data.next) {
+        activateStoredMasterKey(data.next)
+        window.location.assign("/me/storage")
+      } else {
+        window.location.assign("/")
+      }
+    } catch (err) {
+      toast.danger(errorMessage(err))
+      setBusy(false)
     }
   }
 
@@ -116,7 +156,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
         <Dropdown.Menu
           aria-label="Accounts"
           className="p-1.5"
-          disabledKeys={switching ? accounts.map((a) => a.id).concat("add-account") : []}
+          disabledKeys={busy ? accounts.map((a) => a.id).concat("add-account") : []}
         >
           {accounts.map((account) => (
             <Dropdown.Item
@@ -140,12 +180,31 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
                 onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
               />
               <span className="min-w-0 truncate">{account.name}</span>
-              {account.isCurrent && (
-                <Chip size="sm" color="accent" className="ml-auto shrink-0 text-[11px]">
-                  <MIcon name="check_circle" size={12} />
-                  Logged in
-                </Chip>
-              )}
+              <span className="ml-auto flex shrink-0 items-center gap-1">
+                {account.isCurrent && (
+                  <Chip size="sm" color="accent" className="shrink-0 text-[11px]">
+                    <MIcon name="check_circle" size={12} />
+                    Logged in
+                  </Chip>
+                )}
+                {/* react-aria presses don't bubble, and the pointer handler stops
+                    the raw event, so hitting this never fires the row's switch */}
+                <span
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="ghost"
+                    aria-label={`Sign out ${account.name}`}
+                    isDisabled={busy}
+                    onPress={() => signOut(account)}
+                  >
+                    <MIcon name="logout" size={14} />
+                  </Button>
+                </span>
+              </span>
             </Dropdown.Item>
           ))}
           {canAddMore ? (

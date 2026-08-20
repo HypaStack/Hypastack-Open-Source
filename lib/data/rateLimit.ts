@@ -200,6 +200,11 @@ export async function checkV3KeyRateLimit(keyId: string, maxRequests: number): P
   return checkRateLimit(keyId, 'v3', 1, maxRequests)
 }
 
+/** Switching and signing out accounts, 10 a minute per IP. Enough for real use, not for hammering. */
+export async function checkAccountSwitchRateLimit(ip: string): Promise<RateLimitResult> {
+  return checkRateLimit(ip, 'account_switch', WINDOW_MINUTES.accountSwitch, MAX_ATTEMPTS.accountSwitch.free)
+}
+
 /** 5 reports per IP per 10 minutes, prevents forum_reports table flooding */
 export async function checkForumReportRateLimit(ip: string): Promise<RateLimitResult> {
   return checkRateLimit(ip, 'forum_report', 10, 5)

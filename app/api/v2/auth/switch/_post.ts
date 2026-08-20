@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import crypto from "crypto"
 import { z } from "zod"
 import { apiError } from "@/lib/http/apiError"
-import { generateToken, setAuthCookie, setRefreshCookie } from "@/lib/security/auth"
-import { readAccounts, forgetAccount } from "@/lib/security/accountsCookie"
-import { getLiveSessionByRefreshHash, getUserForAuthById, isOwner, updateLastLogin } from "@/lib/models/userModel"
+import { readAccounts } from "@/lib/security/accountsCookie"
+import { activateStashedAccount } from "@/lib/security/accountSwitch"
 import { validateCsrfToken } from "@/lib/security/security"
-import { rejectIfBlacklisted, enforceOwnerIpGate } from "@/lib/security/ownerGate"
+import { rejectIfBlacklisted } from "@/lib/security/ownerGate"
+import { checkAccountSwitchRateLimit } from "@/lib/data/rateLimit"
+import { getHashedIp } from "@/lib/http/ip"
 import { API_ERRORS } from "@/constants"
 
 const SwitchSchema = z.object({
@@ -14,12 +14,15 @@ const SwitchSchema = z.object({
   csrfToken: z.string().min(1, "CSRF Token not found"),
 })
 
-// Resumes a session the browser already holds. Every gate login runs has to run
-// here too, otherwise switching would be a way around them.
 export async function POST(request: NextRequest) {
   try {
     const blacklisted = await rejectIfBlacklisted(request)
     if (blacklisted) return blacklisted
+
+    const rateLimit = await checkAccountSwitchRateLimit(getHashedIp(request))
+    if (!rateLimit.allowed) {
+      return apiError(429, API_ERRORS.TOO_MANY_REQUESTS, "rate limit exceeded")
+    }
 
     const validation = SwitchSchema.safeParse(await request.json())
     if (!validation.success) {
@@ -36,32 +39,8 @@ export async function POST(request: NextRequest) {
       return apiError(401, API_ERRORS.UNAUTHORIZED, "Not signed in on that account")
     }
 
-    // The cookie names an account, it doesn't prove anything. The refresh token
-    // has to still match a live session row for that exact user.
-    const refreshTokenHash = crypto.createHash("sha256").update(stashed.refreshToken).digest("hex")
-    const session = await getLiveSessionByRefreshHash(userId, refreshTokenHash)
-    if (!session) {
-      await forgetAccount(userId)
-      return apiError(401, API_ERRORS.UNAUTHORIZED, "That session has expired, sign in again")
-    }
-
-    const user = await getUserForAuthById(userId)
-    if (!user) {
-      await forgetAccount(userId)
-      return apiError(404, API_ERRORS.NOT_FOUND, "Account no longer exists")
-    }
-    if (user.suspended) {
-      return apiError(403, API_ERRORS.FORBIDDEN, "Account suspended")
-    }
-
-    if (await isOwner(userId)) {
-      const ownerGate = await enforceOwnerIpGate(request)
-      if (ownerGate) return ownerGate
-    }
-
-    await updateLastLogin(userId)
-    await setAuthCookie(generateToken({ userId, sessionId: session.id }))
-    await setRefreshCookie(stashed.refreshToken)
+    const failure = await activateStashedAccount(request, stashed)
+    if (failure) return failure
 
     return NextResponse.json({ success: true, userId })
   } catch (error) {
