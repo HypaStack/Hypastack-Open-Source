@@ -9,6 +9,9 @@ export const MAX_NOTE_LENGTH = 100
 /** Auth cookie lifetime in seconds (7 days) */
 export const AUTH_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 
+/** How many accounts stay signed in at once in the switcher (~140 bytes each in the cookie) */
+export const MAX_SWITCHABLE_ACCOUNTS = 5
+
 /**
  * Fixed PRF salt label for the biometric unlock passkey. Changing it changes
  * every credential's PRF output and orphans all enrolled vaults, never bump

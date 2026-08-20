@@ -42,6 +42,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
   const [accounts, setAccounts] = useState<SwitchableAccount[]>([
     { id: userId, name: nickname, isCurrent: true, canSwitch: true },
   ])
+  const [canAddMore, setCanAddMore] = useState(true)
   const [loaded, setLoaded] = useState(false)
   const [switching, setSwitching] = useState(false)
 
@@ -52,6 +53,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
       if (!res.ok) throw new Error(data.error || "Failed to load accounts")
       const list = await Promise.all((data.accounts as ApiAccount[]).map(toSwitchable))
       if (list.length > 0) setAccounts(list)
+      setCanAddMore(data.canAddMore !== false)
       setLoaded(true)
     } catch (err) {
       toast.danger(errorMessage(err))
@@ -62,7 +64,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
     // Without the master key nothing on the account would decrypt, so send them
     // through a real sign-in instead of into a half-broken session.
     if (!account.canSwitch) {
-      window.location.href = "/signin?add=1"
+      window.location.assign("/signin?add=1")
       return
     }
     setSwitching(true)
@@ -78,7 +80,7 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
       if (!res.ok) throw new Error(data.error || "Failed to switch account")
       activateStoredMasterKey(account.id)
       // full reload, every cached list and decrypted name belongs to the old account
-      window.location.href = "/me/storage"
+      window.location.assign("/me/storage")
     } catch (err) {
       toast.danger(errorMessage(err))
       setSwitching(false)
@@ -146,15 +148,17 @@ export function AccountSwitcher({ userId, nickname, hasAvatar }: { userId: strin
               )}
             </Dropdown.Item>
           ))}
-          <Dropdown.Item
-            id="add-account"
-            textValue="Add another account"
-            onAction={() => { window.location.href = "/signin?add=1" }}
-            className="flex items-center gap-2"
-          >
-            <MIcon name="add" size={20} className="shrink-0" />
-            <span>Add another account</span>
-          </Dropdown.Item>
+          {canAddMore ? (
+            <Dropdown.Item
+              id="add-account"
+              textValue="Add another account"
+              onAction={() => { window.location.assign("/signin?add=1") }}
+              className="flex items-center gap-2"
+            >
+              <MIcon name="add" size={20} className="shrink-0" />
+              <span>Add another account</span>
+            </Dropdown.Item>
+          ) : null}
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown>

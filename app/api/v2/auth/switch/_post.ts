@@ -3,7 +3,7 @@ import crypto from "crypto"
 import { z } from "zod"
 import { apiError } from "@/lib/http/apiError"
 import { generateToken, setAuthCookie, setRefreshCookie } from "@/lib/security/auth"
-import { readAccounts, forgetAccount, rememberAccount } from "@/lib/security/accountsCookie"
+import { readAccounts, forgetAccount } from "@/lib/security/accountsCookie"
 import { getLiveSessionByRefreshHash, getUserForAuthById, isOwner, updateLastLogin } from "@/lib/models/userModel"
 import { validateCsrfToken } from "@/lib/security/security"
 import { rejectIfBlacklisted, enforceOwnerIpGate } from "@/lib/security/ownerGate"
@@ -62,8 +62,6 @@ export async function POST(request: NextRequest) {
     await updateLastLogin(userId)
     await setAuthCookie(generateToken({ userId, sessionId: session.id }))
     await setRefreshCookie(stashed.refreshToken)
-    // move it to the front so the switcher lists most-recently-used first
-    await rememberAccount(userId, stashed.refreshToken)
 
     return NextResponse.json({ success: true, userId })
   } catch (error) {

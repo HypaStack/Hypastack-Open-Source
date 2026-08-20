@@ -1,12 +1,10 @@
 import { cookies } from "next/headers"
-import { AUTH_COOKIE_MAX_AGE_SECONDS } from "@/constants"
+import { AUTH_COOKIE_MAX_AGE_SECONDS, MAX_SWITCHABLE_ACCOUNTS } from "@/constants"
 
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined
 const COOKIE_NAME = "hpsk_accounts"
 
-// Enough for a handful of accounts without pushing the request headers around.
-// Each entry is ~140 bytes.
-const MAX_ACCOUNTS = 5
+const MAX_ACCOUNTS = MAX_SWITCHABLE_ACCOUNTS
 
 export interface StashedAccount {
   userId: string
@@ -48,10 +46,22 @@ export async function writeAccounts(list: StashedAccount[]): Promise<void> {
   })
 }
 
-/** Most recent login goes first, and a second login on the same account replaces its token. */
+/**
+ * Order is stable: an account keeps its slot for as long as it's signed in, so
+ * the switcher doesn't reshuffle under the cursor. Signing in again on an
+ * account already listed just refreshes its token in place.
+ */
 export async function rememberAccount(userId: string, refreshToken: string): Promise<void> {
-  const rest = (await readAccounts()).filter((a) => a.userId !== userId)
-  await writeAccounts([{ userId, refreshToken }, ...rest])
+  const existing = await readAccounts()
+  const at = existing.findIndex((a) => a.userId === userId)
+  if (at !== -1) {
+    existing[at] = { userId, refreshToken }
+    await writeAccounts(existing)
+    return
+  }
+  // at capacity the oldest account makes room, never the one just signed into
+  const room = existing.slice(Math.max(0, existing.length - (MAX_ACCOUNTS - 1)))
+  await writeAccounts([...room, { userId, refreshToken }])
 }
 
 export async function forgetAccount(userId: string): Promise<void> {
