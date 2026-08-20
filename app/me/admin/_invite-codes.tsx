@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, TextField, Input, Label } from "@heroui/react"
+import { Button, InputGroup, Table } from "@heroui/react"
 import { MIcon } from "@/components/ui/material-icon"
 import { LoadingSvg } from "@/components/ui/loading-svg"
 import { apiFetch } from "@/lib/http/fetch"
@@ -33,7 +33,8 @@ export function InviteCodesPanel() {
 
   useEffect(() => { load() }, [])
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault()
     const n = Number(count) || 1
     setGenerating(true)
     try {
@@ -77,15 +78,24 @@ export function InviteCodesPanel() {
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <h2 className="text-[18px] font-medium text-[#171717] dark:text-[#e3e3e3]">Invite codes</h2>
-        <div className="flex items-end gap-2">
-          <TextField value={count} onChange={setCount} className="w-20">
-            <Label className="text-[12px]">Count</Label>
-            <Input type="number" min={1} max={100} />
-          </TextField>
-          <Button variant="primary" size="sm" onPress={handleGenerate} isDisabled={generating} style={{ height: 38 }}>
-            {generating ? "Generating..." : "Generate"}
-          </Button>
-        </div>
+        <form onSubmit={handleGenerate}>
+          <InputGroup>
+            <InputGroup.Input
+              type="number"
+              min={1}
+              max={100}
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              aria-label="How many codes to generate"
+              className="w-16"
+            />
+            <InputGroup.Suffix className="p-0.5">
+              <Button type="submit" variant="primary" size="sm" isDisabled={generating}>
+                {generating ? "Generating..." : "Generate"}
+              </Button>
+            </InputGroup.Suffix>
+          </InputGroup>
+        </form>
       </div>
 
       {codes === null ? (
@@ -93,28 +103,43 @@ export function InviteCodesPanel() {
       ) : codes.length === 0 ? (
         <p className="text-[13.5px] text-[#898e97]">No invite codes yet, generate some above.</p>
       ) : (
-        <div className="divide-y divide-[rgba(255,255,255,0.06)] border-t border-b border-[rgba(255,255,255,0.06)]">
-          {codes.map((c) => (
-            <div key={c.code} className="py-2.5 flex items-center gap-3 flex-wrap">
-              <code className="text-[13px] text-[#171717] dark:text-[#e3e3e3] font-mono">{c.code}</code>
-              {c.usedBy ? (
-                <span className="text-[12px] text-[#898e97]">used by {c.usedBy}</span>
-              ) : (
-                <span className="text-[12px] text-[#3fb950]">unused</span>
-              )}
-              <div className="ml-auto flex items-center gap-1">
-                <Button variant="ghost" size="sm" isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
-                  <MIcon name="content_copy" size={14} />
-                </Button>
-                {!c.usedBy && (
-                  <Button variant="ghost" size="sm" isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
-                    <MIcon name="delete" size={14} />
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Table>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="Invite codes">
+              <Table.Header>
+                <Table.Column isRowHeader>Code</Table.Column>
+                <Table.Column>Status</Table.Column>
+                <Table.Column className="w-20 text-right">Actions</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {codes.map((c) => (
+                  <Table.Row key={c.code} id={c.code}>
+                    <Table.Cell><code className="text-[13px] font-mono">{c.code}</code></Table.Cell>
+                    <Table.Cell>
+                      {c.usedBy ? (
+                        <span className="text-muted">used by {c.usedBy}</span>
+                      ) : (
+                        <span className="text-success">unused</span>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="secondary" size="sm" isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
+                          <MIcon name="content_copy" size={14} />
+                        </Button>
+                        {!c.usedBy && (
+                          <Button variant="danger-soft" size="sm" isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
+                            <MIcon name="delete" size={14} />
+                          </Button>
+                        )}
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
+        </Table>
       )}
     </section>
   )
