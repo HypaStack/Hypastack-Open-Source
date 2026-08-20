@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button, InputGroup, Table } from "@heroui/react"
+import {
+  Button, ButtonGroup, Card, Chip, Form, Input, Label, NumberField,
+  Spinner, Table, TextField, Typography,
+} from "@heroui/react"
 import { MIcon } from "@/components/ui/material-icon"
-import { LoadingSvg } from "@/components/ui/loading-svg"
 import { apiFetch } from "@/lib/http/fetch"
 import { hypaConfirm, hypaToast, hypaError } from "@/components/ui/hypa-notif"
 import { errorMessage } from "@/lib/errors"
@@ -19,8 +21,8 @@ interface InviteCode {
 export function InviteCodesPanel() {
   const [codes, setCodes] = useState<InviteCode[] | null>(null)
   const [customCode, setCustomCode] = useState("")
-  const [count, setCount] = useState("1")
-  const [maxUses, setMaxUses] = useState("1")
+  const [count, setCount] = useState(1)
+  const [maxUses, setMaxUses] = useState(1)
   const [generating, setGenerating] = useState(false)
 
   const load = async () => {
@@ -40,12 +42,10 @@ export function InviteCodesPanel() {
     e.preventDefault()
     setGenerating(true)
     try {
-      const body: Record<string, unknown> = { maxUses: Number(maxUses) || 1 }
-      if (customCode.trim()) {
-        body.code = customCode.trim()
-      } else {
-        body.count = Number(count) || 1
-      }
+      const body: Record<string, unknown> = { maxUses }
+      // a custom code is always exactly one code, count only applies to random ones
+      if (customCode.trim()) body.code = customCode.trim()
+      else body.count = count
       const res = await apiFetch("/api/v2/admin/invite-codes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -84,94 +84,107 @@ export function InviteCodesPanel() {
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h2 className="text-[18px] font-medium text-[#171717] dark:text-[#e3e3e3]">Invite codes</h2>
-        <form onSubmit={handleGenerate} className="flex items-center gap-2 flex-wrap">
-          <InputGroup>
-            <InputGroup.Prefix className="text-[11px]">code</InputGroup.Prefix>
-            <InputGroup.Input
-              value={customCode}
-              onChange={(e) => setCustomCode(e.target.value)}
-              placeholder="leave blank for random"
-              aria-label="Custom invite code"
-              className="w-40"
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputGroup.Prefix className="text-[11px]">uses</InputGroup.Prefix>
-            <InputGroup.Input
-              type="number"
-              min={1}
-              max={100000}
-              value={maxUses}
-              onChange={(e) => setMaxUses(e.target.value)}
-              aria-label="Max uses per code"
-              className="w-16"
-            />
-          </InputGroup>
-          {!customCode.trim() && (
-            <InputGroup>
-              <InputGroup.Prefix className="text-[11px]">count</InputGroup.Prefix>
-              <InputGroup.Input
-                type="number"
-                min={1}
-                max={100}
-                value={count}
-                onChange={(e) => setCount(e.target.value)}
-                aria-label="How many codes to generate"
-                className="w-16"
-              />
-            </InputGroup>
-          )}
-          <Button type="submit" variant="primary" size="sm" isDisabled={generating}>
-            {generating ? "Generating..." : "Generate"}
-          </Button>
-        </form>
-      </div>
+    <Card>
+      <Card.Header>
+        <Card.Title>Invite codes</Card.Title>
+        <Card.Description>
+          Leave the code blank for a random one. Each code works until it hits its max uses.
+        </Card.Description>
+      </Card.Header>
 
-      {codes === null ? (
-        <div className="py-8 flex justify-center"><LoadingSvg /></div>
-      ) : codes.length === 0 ? (
-        <p className="text-[13.5px] text-[#898e97]">No invite codes yet, generate some above.</p>
-      ) : (
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="Invite codes">
-              <Table.Header>
-                <Table.Column isRowHeader>Code</Table.Column>
-                <Table.Column>Uses</Table.Column>
-                <Table.Column className="w-20 text-right">Actions</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {codes.map((c) => (
-                  <Table.Row key={c.code} id={c.code}>
-                    <Table.Cell className="py-1.5">{c.code}</Table.Cell>
-                    <Table.Cell className="py-1.5">
-                      <span className={c.usesCount >= c.maxUses ? "text-muted" : "text-success"}>
-                        {c.usesCount}/{c.maxUses}
-                      </span>
-                      {c.redeemedBy.length > 0 && (
-                        <span className="text-muted"> &middot; last by {c.redeemedBy[c.redeemedBy.length - 1]}</span>
-                      )}
-                    </Table.Cell>
-                    <Table.Cell className="py-1.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="secondary" size="sm" isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
-                          <MIcon name="content_copy" size={14} />
-                        </Button>
-                        <Button variant="danger-soft" size="sm" isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
-                          <MIcon name="delete" size={14} />
-                        </Button>
-                      </div>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
-      )}
-    </section>
+      <Card.Content className="gap-4">
+        <Form onSubmit={handleGenerate} className="flex flex-row flex-wrap items-end gap-3">
+          <TextField value={customCode} onChange={setCustomCode} maxLength={64} className="w-56">
+            <Label>Code</Label>
+            <Input placeholder="random if blank" spellCheck={false} autoComplete="off" />
+          </TextField>
+
+          <NumberField value={maxUses} onChange={setMaxUses} minValue={1} maxValue={100000} className="w-36">
+            <Label>Max uses</Label>
+            <NumberField.Group>
+              <NumberField.DecrementButton />
+              <NumberField.Input />
+              <NumberField.IncrementButton />
+            </NumberField.Group>
+          </NumberField>
+
+          {!customCode.trim() && (
+            <NumberField value={count} onChange={setCount} minValue={1} maxValue={100} className="w-36">
+              <Label>How many</Label>
+              <NumberField.Group>
+                <NumberField.DecrementButton />
+                <NumberField.Input />
+                <NumberField.IncrementButton />
+              </NumberField.Group>
+            </NumberField>
+          )}
+
+          <Button type="submit" variant="primary" isDisabled={generating}>
+            {generating ? <Spinner size="sm" /> : <MIcon name="add" size={16} />}
+            Generate
+          </Button>
+        </Form>
+
+        {codes === null ? (
+          <div className="flex justify-center py-10"><Spinner /></div>
+        ) : (
+          <Table variant="secondary">
+            <Table.ScrollContainer>
+              <Table.Content aria-label="Invite codes">
+                <Table.Header>
+                  <Table.Column isRowHeader>Code</Table.Column>
+                  <Table.Column>Uses</Table.Column>
+                  <Table.Column>Last redeemed by</Table.Column>
+                  <Table.Column>Created</Table.Column>
+                  <Table.Column className="w-28 text-right">Actions</Table.Column>
+                </Table.Header>
+                <Table.Body
+                  renderEmptyState={() => (
+                    <Typography type="body-sm" color="muted" className="block py-10 text-center">
+                      No invite codes yet, generate some above.
+                    </Typography>
+                  )}
+                >
+                  {codes.map((c) => {
+                    const spent = c.usesCount >= c.maxUses
+                    return (
+                      <Table.Row key={c.code} id={c.code}>
+                        <Table.Cell className="py-2">{c.code}</Table.Cell>
+                        <Table.Cell className="py-2">
+                          <Chip size="sm" variant="soft" color={spent ? "default" : "success"}>
+                            {c.usesCount}/{c.maxUses}
+                          </Chip>
+                        </Table.Cell>
+                        <Table.Cell className="py-2">
+                          <Typography type="body-sm" color="muted">
+                            {c.redeemedBy.at(-1) ?? "nobody yet"}
+                          </Typography>
+                        </Table.Cell>
+                        <Table.Cell className="py-2">
+                          <Typography type="body-sm" color="muted">
+                            {new Date(c.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </Table.Cell>
+                        <Table.Cell className="py-2">
+                          {/* only Buttons go straight in here, ButtonGroup clones its direct children and the marker prop leaks onto anything else */}
+                          <ButtonGroup variant="secondary" size="sm" className="float-right">
+                            <Button isIconOnly aria-label="Copy code" onPress={() => handleCopy(c.code)}>
+                              <MIcon name="content_copy" size={14} />
+                            </Button>
+                            <Button isIconOnly aria-label="Revoke code" onPress={() => handleRevoke(c.code)}>
+                              <MIcon name="delete" size={14} />
+                            </Button>
+                          </ButtonGroup>
+                        </Table.Cell>
+                      </Table.Row>
+                    )
+                  })}
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
+        )}
+      </Card.Content>
+    </Card>
   )
 }
