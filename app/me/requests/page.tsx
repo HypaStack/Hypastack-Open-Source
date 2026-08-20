@@ -204,7 +204,7 @@ export default function FunnelInboxPage() {
                 )}
               </AnimatePresence>
               <motion.div layout>
-                <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
+                <Button variant="primary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
                   <MIcon name="add_link" size={15} className="shrink-0" />
                   <span>Create request</span>
                 </Button>
@@ -221,11 +221,7 @@ export default function FunnelInboxPage() {
       ) : files.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center min-h-[60vh] h-full">
           <MIcon name="inbox" size={40} style={{ color: "#555", marginBottom: 12 }} />
-          <p style={{ fontSize: 15, color: "#a1a1aa", marginBottom: 16 }}>No files yet</p>
-          <Button variant="tertiary" size="md" onPress={() => setTrayOpen(true)} style={{ gap: 8 }}>
-            <MIcon name="add_link" size={14} />
-            Create request
-          </Button>
+          <p style={{ fontSize: 15, color: "#a1a1aa" }}>No files yet</p>
         </div>
       ) : (
         <FunnelFileTable
