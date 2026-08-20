@@ -98,7 +98,7 @@ export default function ChildSafety() {
 
             <LegalSection title="Reporting">
               <LegalParagraph>
-                If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="text-primary font-medium">#...</code> fragment) via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. I will act within 24 hours.
+                If you encounter CSAM or any content that endangers children, send the file URL (without any <code className="text-primary font-medium">#...</code> fragment) via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong>. I will act within 24 hours.
               </LegalParagraph>
               <LegalParagraph>
                 <strong className="text-foreground">Do not send me the decryption key.</strong> I will not ask for it. Receiving and decrypting content to verify a CSAM report creates direct legal liability for me. I do not and will not do this.

@@ -74,7 +74,7 @@ export default function CoppaGdpr() {
 
             <LegalSection title="4. Submitting a Privacy Request">
               <LegalParagraph>
-                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact me via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>.
+                If you are an EU citizen seeking to execute a Subject Access Request (SAR), or a parent or guardian seeking COPPA remediation, please contact me via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong>.
               </LegalParagraph>
               <LegalParagraph>
                 What I can return depends on how the data reached me, and I would rather set that out precisely than promise something inaccurate:

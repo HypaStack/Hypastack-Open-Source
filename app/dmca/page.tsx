@@ -41,7 +41,7 @@ export default function DmcaPolicy() {
           >
             <LegalSection title="How to File a Takedown">
               <LegalParagraph>
-                Send a message via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
+                Send a message via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong> with:
               </LegalParagraph>
               <LegalList>
                 <li>The URL of the infringing content on Hypastack</li>
@@ -68,7 +68,7 @@ export default function DmcaPolicy() {
             <LegalSection title="Counter-Notification">
               <LegalParagraph>
                 If your content was removed and you believe it was not infringing, you may submit
-                a counter-notification via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with:
+                a counter-notification via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong> with:
               </LegalParagraph>
               <LegalList>
                 <li>Your contact information</li>
@@ -89,7 +89,7 @@ export default function DmcaPolicy() {
 
             <LegalSection title="Contact">
               <LegalParagraph>
-                Telegram: <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>
+                Email: <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong>
               </LegalParagraph>
             </LegalSection>
           </LegalDocument>

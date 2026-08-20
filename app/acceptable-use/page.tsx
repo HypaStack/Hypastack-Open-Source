@@ -79,7 +79,7 @@ export default function AcceptableUse() {
                 Consequently, my enforcement mechanisms rely on:
               </LegalParagraph>
               <LegalList>
-                <li><strong className="text-foreground">User Reports:</strong> I actively process abuse reports sent via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
+                <li><strong className="text-foreground">User Reports:</strong> I actively process abuse reports sent via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong>. A valid report should include the URL of the file. Please do not include the decryption key fragment.</li>
                 <li><strong className="text-foreground">Traffic Analysis:</strong> I monitor anomalous traffic patterns, bandwidth spikes, and request origins to detect automated abuse or malware distribution networks.</li>
                 <li><strong className="text-foreground">Metadata Heuristics:</strong> I utilize unencrypted metadata (file size ratios, upload patterns) to identify coordinated abuse campaigns.</li>
               </LegalList>
@@ -93,7 +93,7 @@ export default function AcceptableUse() {
 
             <LegalSection title="4. Reporting Abuse">
               <LegalParagraph>
-                If you encounter content hosted on Hypastack that violates this policy, send a report to <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong> with the file link and a brief description of the violation.
+                If you encounter content hosted on Hypastack that violates this policy, send a report to <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong> with the file link and a brief description of the violation.
               </LegalParagraph>
               <LegalParagraph>
                 <strong className="text-foreground">Do not include the decryption key fragment.</strong> I will not ask for it, and you should not send it. Receiving the key would require me to actively decrypt and view potentially illegal content, including CSAM, which creates direct legal liability for me under laws governing possession and viewing of such material. I am not equipped or willing to act as a human review queue for illegal content.

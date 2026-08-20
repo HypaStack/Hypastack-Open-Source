@@ -117,7 +117,7 @@ export default function PrivacyPolicy() {
                 <li><strong className="text-foreground">Portability:</strong> You can request an export of the account metadata I hold, in a structured format.</li>
               </LegalList>
               <LegalParagraph>
-                To exercise any of these, reach out via <strong className="text-foreground"><a href="https://t.me/t_usekiko" className="underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">https://t.me/t_usekiko</a></strong>, or see the fuller request process on my <a href="/coppa-gdpr" className="underline hover:opacity-70 transition-opacity">COPPA & GDPR page</a>. I am a solo developer, not a company with a dedicated privacy team, so treat response times accordingly, I will get to it, but I do not have a formally designated Data Protection Officer at this time.
+                To exercise any of these, reach out via <strong className="text-foreground"><a href="mailto:usekiko@hypamail.me" className="underline hover:opacity-70 transition-opacity">usekiko@hypamail.me</a></strong>, or see the fuller request process on my <a href="/coppa-gdpr" className="underline hover:opacity-70 transition-opacity">COPPA & GDPR page</a>. I am a solo developer, not a company with a dedicated privacy team, so treat response times accordingly, I will get to it, but I do not have a formally designated Data Protection Officer at this time.
               </LegalParagraph>
             </LegalSection>
 
