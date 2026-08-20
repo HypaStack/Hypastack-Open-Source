@@ -7,6 +7,9 @@ export const STORAGE_KEY_INTERRUPTED_UPLOAD = "hypa_interrupted_upload"
 /** Exported E2E master key for the active session */
 export const STORAGE_KEY_E2E_MASTER = "hpsk_e2e_master"
 
+/** Per-account E2E master keys, so switching accounts doesn't need the passkey again */
+export const STORAGE_KEY_E2E_MASTER_VAULT = "hpsk_e2e_masters"
+
 /** Biometric unlock vault (credential id + wrapped access key) */
 export const STORAGE_KEY_BIOMETRIC = "hpsk_bio_v1"
 

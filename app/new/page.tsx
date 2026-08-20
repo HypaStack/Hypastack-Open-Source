@@ -79,7 +79,7 @@ export default function CreateAccountPage() {
         if (data.blacklisted) err.blacklisted = true
         throw err
       }
-      await storeSessionKey(masterKey)
+      await storeSessionKey(masterKey, userId)
       setGeneratedKey(accessKey)
     } catch (err) {
       setError(errorMessage(err))

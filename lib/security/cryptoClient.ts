@@ -1,4 +1,4 @@
-import { STORAGE_KEY_E2E_MASTER } from "@/constants"
+import { STORAGE_KEY_E2E_MASTER, STORAGE_KEY_E2E_MASTER_VAULT } from "@/constants"
 
 function assertWebCrypto(): void {
   if (typeof crypto === "undefined" || !crypto.subtle) {
@@ -91,14 +91,65 @@ export async function decryptE2E(encryptedStr: string, key: CryptoKey): Promise<
   }
 }
 
-export async function storeSessionKey(key: CryptoKey): Promise<void> {
+export async function storeSessionKey(key: CryptoKey, userId?: string): Promise<void> {
   try {
     assertWebCrypto()
     const rawKey = await crypto.subtle.exportKey("raw", key)
     const keyBase64 = arrayBufferToBase64(rawKey)
     localStorage.setItem(STORAGE_KEY_E2E_MASTER, keyBase64)
+    // keep a copy per account so switching back doesn't need the passkey again
+    if (userId) writeMasterVault({ ...readMasterVault(), [userId]: keyBase64 })
   } catch (err) {
     console.error("Failed to store session key:", err)
+  }
+}
+
+// Master keys never leave this browser, exactly like the active one. Switching
+// accounts just promotes one of these into the active slot.
+type MasterVault = Record<string, string>
+
+function readMasterVault(): MasterVault {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_E2E_MASTER_VAULT)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === "object" ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function writeMasterVault(vault: MasterVault): void {
+  localStorage.setItem(STORAGE_KEY_E2E_MASTER_VAULT, JSON.stringify(vault))
+}
+
+export function hasStoredMasterKey(userId: string): boolean {
+  return Boolean(readMasterVault()[userId])
+}
+
+/** Promotes a stashed account key into the active slot. False if we don't hold it. */
+export function activateStoredMasterKey(userId: string): boolean {
+  const keyBase64 = readMasterVault()[userId]
+  if (!keyBase64) return false
+  localStorage.setItem(STORAGE_KEY_E2E_MASTER, keyBase64)
+  return true
+}
+
+export function forgetStoredMasterKey(userId: string): void {
+  const vault = readMasterVault()
+  delete vault[userId]
+  writeMasterVault(vault)
+}
+
+/** Reads one account's key without making it active, for decrypting switcher names. */
+export async function getStoredMasterKey(userId: string): Promise<CryptoKey | null> {
+  const keyBase64 = readMasterVault()[userId]
+  if (!keyBase64) return null
+  try {
+    assertWebCrypto()
+    return await crypto.subtle.importKey("raw", base64ToArrayBuffer(keyBase64), "AES-GCM", true, ["encrypt", "decrypt"])
+  } catch {
+    return null
   }
 }
 

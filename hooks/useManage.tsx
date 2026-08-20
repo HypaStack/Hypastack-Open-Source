@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
-import { getSessionKey, decryptE2E } from "@/lib/security/cryptoClient"
+import { getSessionKey, decryptE2E, forgetStoredMasterKey } from "@/lib/security/cryptoClient"
 import { apiFetch } from "@/lib/http/fetch"
 import { SESSION_FETCH_MAX_RETRIES, SESSION_FETCH_RETRY_DELAY_MS, STORAGE_KEY_E2E_MASTER } from "@/constants"
 import { resumeWebhookQueue } from "@/lib/integrations/discordWebhook"
@@ -192,6 +192,7 @@ export function ManageProvider({ children }: { children: ReactNode }) {
       console.error("Logout failed:", error)
     } finally {
       // never leave a stale master key behind, even if the request failed
+      if (user?.id) forgetStoredMasterKey(user.id)
       setUser(null)
       setStats(null)
       setFiles([])

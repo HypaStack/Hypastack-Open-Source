@@ -27,13 +27,22 @@ export default function SignInPage() {
   const [pendingKey, setPendingKey] = useState("")
   const [enrolling, setEnrolling] = useState(false)
   const { isAuthenticated, isLoading: authLoading } = useAuth()
+  // ?add=1 comes from the account switcher: already signed in, adding another one
+  const [addingAccount, setAddingAccount] = useState(false)
 
   useEffect(() => {
-    isBiometricSupported().then((ok) => setBioEnrolled(ok && isBiometricEnrolled()))
+    setAddingAccount(new URLSearchParams(window.location.search).get("add") === "1")
   }, [])
   useEffect(() => {
+    // the enrolled biometric unlocks the account already signed in here, which
+    // is not the one being added
+    if (addingAccount) return
+    isBiometricSupported().then((ok) => setBioEnrolled(ok && isBiometricEnrolled()))
+  }, [addingAccount])
+  useEffect(() => {
+    if (addingAccount) return
     if (!authLoading && isAuthenticated) router.replace("/me/storage")
-  }, [isAuthenticated, authLoading, router])
+  }, [isAuthenticated, authLoading, router, addingAccount])
 
   const goToApp = () => {
     const params = new URLSearchParams(window.location.search)
@@ -64,7 +73,7 @@ export default function SignInPage() {
     const userId = data.userId || extractUserIdFromAccessKey(key)
     if (!userId) throw new Error("Invalid passkey format")
     const masterKey = await deriveMasterKey(key, userId)
-    await storeSessionKey(masterKey)
+    await storeSessionKey(masterKey, userId)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

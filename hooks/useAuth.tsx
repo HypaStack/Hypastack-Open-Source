@@ -3,6 +3,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback, useRef } from "react"
 import { apiFetch } from "@/lib/http/fetch"
 import { SESSION_FETCH_MAX_RETRIES, SESSION_FETCH_RETRY_DELAY_MS, STORAGE_KEY_E2E_MASTER } from "@/constants"
+import { forgetStoredMasterKey } from "@/lib/security/cryptoClient"
 
 interface AuthContextType {
   userId: string | null
@@ -76,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Logout failed:", error)
     } finally {
       // never leave a stale master key behind, even if the request failed
+      if (userId) forgetStoredMasterKey(userId)
       setUserId(null)
       localStorage.removeItem(STORAGE_KEY_E2E_MASTER)
       window.location.href = "/"

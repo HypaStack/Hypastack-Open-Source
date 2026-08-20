@@ -14,6 +14,7 @@ import { TierAnnouncementModal } from "@/components/tier-announcement-modal"
 import { useTheme } from "@/hooks/useTheme"
 import { UploadZone } from "@/components/upload"
 import { ManageSkeleton } from "./_skeleton"
+import { AccountSwitcher } from "./_account-switcher"
 import {
   type NavItem,
   SECTION_BUTTONS,
@@ -222,63 +223,7 @@ function ManageLayoutInner({
         style={{ width: SIDEBAR_WIDTH }}
       >
         <div className="relative z-20 shrink-0 flex items-center gap-2 px-0 pt-2" style={{ width: SIDEBAR_CONTENT_WIDTH }}>
-          <Dropdown>
-            <Dropdown.Trigger
-              aria-label="Switch account"
-              className="flex min-w-0 flex-1 items-center gap-2.5 rounded-3xl transition-colors duration-150 cursor-pointer bg-background border border-white/10 text-foreground hover:bg-white/5 data-[pressed=true]:!transform-none active:!transform-none"
-              style={{ height: 38, paddingLeft: 8, paddingRight: 8, fontSize: 14 }}
-            >
-              <img decoding="async"
-                src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
-                alt={user.nickname}
-                className="shrink-0 object-cover rounded-full select-none pointer-events-none"
-                style={{ width: "1.3em", height: "1.3em" }}
-                draggable={false}
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
-              />
-              <span className="min-w-0 flex-1 truncate text-left font-medium">{user.nickname}</span>
-              <MIcon name="expand_all" size={10} className="shrink-0 text-muted" />
-            </Dropdown.Trigger>
-
-            <Dropdown.Popover
-              placement="bottom"
-              containerPadding={8}
-              offset={8}
-              className="p-0 overflow-hidden bg-background border border-white/10"
-              style={{ width: SIDEBAR_CONTENT_WIDTH }}
-            >
-              <Dropdown.Menu aria-label="Accounts" className="p-1.5">
-                <Dropdown.Item
-                  id="current"
-                  textValue={user.nickname}
-                  onAction={() => toast.warning("You're already logged in on this account")}
-                  className="flex items-center gap-2"
-                >
-                  <img decoding="async"
-                    src={user.avatarUrl ? `${API_BASE}/avatar` : 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg'}
-                    alt={user.nickname}
-                    className="h-5 w-5 shrink-0 rounded-full object-cover select-none pointer-events-none"
-                    draggable={false}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://r2.hypastack.com/cdn/hypadefaultprofilepicture/default-pfp.jpg' }}
-                  />
-                  <span className="min-w-0 truncate">{user.nickname}</span>
-                  <Chip size="sm" color="accent" className="ml-auto shrink-0 text-[11px]">
-                    <MIcon name="check_circle" size={12} />
-                    Logged in
-                  </Chip>
-                </Dropdown.Item>
-                <Dropdown.Item
-                  id="add-account"
-                  textValue="Add another account"
-                  onAction={() => toast.warning("We're working on that, stay tuned!")}
-                  className="flex items-center gap-2"
-                >
-                  <MIcon name="add" size={20} className="shrink-0" />
-                  <span>Add another account</span>
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown.Popover>
-          </Dropdown>
+          <AccountSwitcher userId={user.id} nickname={user.nickname} hasAvatar={Boolean(user.avatarUrl)} />
 
           <DockButton collapsed={false} onPress={() => setSidebarCollapsed(true)} />
         </div>
