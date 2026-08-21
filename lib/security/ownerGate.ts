@@ -2,6 +2,7 @@ import { NextRequest } from "next/server"
 import { apiError } from "@/lib/http/apiError"
 import { getRawIp, getHashedIp } from "@/lib/http/ip"
 import { isIpBlacklisted, blacklistIp } from "@/lib/models/blacklistModel"
+import { ipMatchesAny } from "@/lib/security/ipMatch"
 import { API_ERRORS } from "@/constants"
 
 // Reject anything from a blacklisted IP before it even reaches auth logic.
@@ -27,8 +28,18 @@ export async function enforceOwnerIpGate(request: NextRequest): Promise<Response
   if (process.env.NODE_ENV !== "production") return null
 
   const allowed = (process.env.OWNER_ALLOWED_IPS || "").split(",").map((s) => s.trim()).filter(Boolean)
+
+  // An unset or empty allowlist used to mean "nothing matches", which locked the
+  // owner out and blacklisted them for a config mistake. Off is the safer read.
+  if (allowed.length === 0) {
+    console.warn("[ownerGate] OWNER_ALLOWED_IPS is empty, the owner IP gate is disabled")
+    return null
+  }
+
+  // Entries can be plain addresses or prefixes. A dual-stack client arrives over
+  // IPv6 and rotates its interface id, so an exact match alone kept failing.
   const rawIp = getRawIp(request)
-  if (allowed.includes(rawIp)) return null
+  if (ipMatchesAny(rawIp, allowed)) return null
 
   // "unknown" means the proxy headers didn't resolve to anything, not a real
   // caller. Never blacklist that, it could be any number of unrelated people
