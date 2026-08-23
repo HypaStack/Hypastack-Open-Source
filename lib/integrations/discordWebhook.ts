@@ -9,12 +9,53 @@ import {
   WEBHOOK_LOG_EVENT,
   WEBHOOK_LOG_MAX_ENTRIES,
   WEBHOOK_BATCH_DELAY_MS,
-  DISCORD_MAX_CONTENT_LENGTH,
+  DISCORD_MAX_EMBEDS_PER_MESSAGE,
+  DISCORD_MAX_EMBED_TITLE_LENGTH,
+  DISCORD_EMBED_COLOR,
 } from "@/constants"
+import { formatBytes } from "@/lib/format"
 
 export interface WebhookConfig {
   url: string
   enabled: boolean
+  /**
+   * Off by default. Everything else about an upload is encrypted client-side,
+   * so putting the plaintext filename into a chat channel has to be something
+   * the user asks for, never something they get handed.
+   */
+  includeFilenames: boolean
+}
+
+/** One uploaded file as the webhook layer sees it. Name/size may be unknown
+ *  (NaN / "") on the fallback path where only links survived. */
+export interface UploadEntry {
+  link: string
+  name: string
+  size: number
+}
+
+export interface UploadMeta {
+  /**
+   * null means the upload never expires (CDN assets live on permanent URLs).
+   * That is a different statement from "we don't know", which is what a
+   * non-positive value means, so the two render differently.
+   */
+  expirationMinutes: number | null
+  burnOnRead: boolean
+}
+
+interface EmbedField {
+  name: string
+  value: string
+  inline?: boolean
+}
+
+export interface DiscordEmbed {
+  title: string
+  url: string
+  color: number
+  timestamp: string
+  fields: EmbedField[]
 }
 
 export interface WebhookLogEntry {
@@ -24,15 +65,23 @@ export interface WebhookLogEntry {
   error?: string
 }
 
+const EMPTY_CONFIG: WebhookConfig = { url: "", enabled: false, includeFilenames: false }
+
 export function getWebhookConfig(): WebhookConfig {
-  if (typeof window === "undefined") return { url: "", enabled: false }
+  if (typeof window === "undefined") return { ...EMPTY_CONFIG }
   try {
     const raw = localStorage.getItem(STORAGE_KEY_DISCORD_WEBHOOK)
-    if (!raw) return { url: "", enabled: false }
+    if (!raw) return { ...EMPTY_CONFIG }
     const p = JSON.parse(raw)
-    return { url: typeof p.url === "string" ? p.url : "", enabled: !!p.enabled }
+    // Configs stored before filenames were opt-in have no such key, and the
+    // safe reading of a missing privacy flag is "off".
+    return {
+      url: typeof p.url === "string" ? p.url : "",
+      enabled: !!p.enabled,
+      includeFilenames: !!p.includeFilenames,
+    }
   } catch {
-    return { url: "", enabled: false }
+    return { ...EMPTY_CONFIG }
   }
 }
 
@@ -68,14 +117,19 @@ function stripKey(link: string): string {
   return link.split("#")[0]
 }
 
-async function post(url: string, content: string, retries = 3): Promise<void> {
+interface DiscordPayload {
+  content?: string
+  embeds?: DiscordEmbed[]
+}
+
+async function post(url: string, payload: DiscordPayload, retries = 3): Promise<void> {
   let lastErr: unknown
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await apiFetch("/api/v2/integrations/discord", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, content }),
+        body: JSON.stringify({ url, ...payload }),
       })
       const data = await res.json().catch(() => ({ ok: false, status: 0 }))
       // Discord rate-limits with 429; any non-ok is retryable transient error.
@@ -91,14 +145,17 @@ async function post(url: string, content: string, retries = 3): Promise<void> {
 
 // One-off connectivity check for the settings UI. Not logged.
 export async function sendTest(url: string): Promise<void> {
-  await post(url, "Hypastack webhook connected. You'll get a ping here on each upload.")
+  await post(url, { content: "Hypastack webhook connected. You'll get a ping here on each upload." })
 }
 
 // ── Persistent send queue ──────────────────────────────────────────────────
 // Messages wait in localStorage until delivered, closing the tab mid-drain loses nothing.
 
+// `content` still appears on entries queued before embeds landed, so the drain
+// loop has to keep handling both shapes.
 interface QueueEntry {
-  content: string
+  content?: string
+  embeds?: DiscordEmbed[]
   label: string
 }
 
@@ -129,7 +186,7 @@ async function drainQueue(url: string): Promise<void> {
       if (q.length === 0) break
       const head = q[0]
       try {
-        await post(url, head.content)
+        await post(url, head.embeds ? { embeds: head.embeds } : { content: head.content ?? "" })
         pushLog({ ts: Date.now(), ok: true, link: head.label })
       } catch (e) {
         pushLog({ ts: Date.now(), ok: false, link: head.label, error: e instanceof Error ? e.message : "Failed" })
@@ -151,38 +208,83 @@ export function resumeWebhookQueue(): void {
   if (getQueue().length > 0) void drainQueue(cfg.url)
 }
 
-// Fire-and-forget, never throws, a webhook problem must not affect upload UX.
-// Multi-file uploads pack into one message, split only past Discord's 2000-char cap.
-export async function dispatchUploadLinks(links: string[]): Promise<void> {
-  const cfg = getWebhookConfig()
-  if (!cfg.enabled || !isValidDiscordWebhook(cfg.url) || links.length === 0) return
-  const safe = links.map(stripKey)
+function truncate(text: string, max: number): string {
+  return text.length <= max ? text : text.slice(0, max - 1) + "…"
+}
 
-  const entries: QueueEntry[] = []
-  if (safe.length === 1) {
-    entries.push({ content: `New Hypastack upload: ${safe[0]}`, label: safe[0] })
-  } else {
-    const batches: string[][] = []
-    let current: string[] = []
-    let length = 0
-    for (const link of safe) {
-      // +1 for the newline; keep 40 chars of headroom for the header line.
-      if (current.length > 0 && length + link.length + 1 > DISCORD_MAX_CONTENT_LENGTH - 40) {
-        batches.push(current)
-        current = []
-        length = 0
-      }
-      current.push(link)
-      length += link.length + 1
+/**
+ * Builds the embeds for one upload batch. Pure and exported so the privacy
+ * rules (no filename unless opted in, never a key fragment) can be tested
+ * without a browser.
+ *
+ * `now` is injectable because the expiry timestamp is derived from it.
+ */
+export function buildUploadEmbeds(
+  uploads: UploadEntry[],
+  meta: UploadMeta,
+  includeFilenames: boolean,
+  now: number = Date.now(),
+): DiscordEmbed[] {
+  const timestamp = new Date(now).toISOString()
+
+  return uploads.map((upload) => {
+    const fields: EmbedField[] = []
+
+    // Unknown on the fallback path, where a link was recovered without its file.
+    if (Number.isFinite(upload.size) && upload.size >= 0) {
+      fields.push({ name: "Size", value: formatBytes(upload.size), inline: true })
     }
-    if (current.length > 0) batches.push(current)
-    for (const batch of batches) {
-      entries.push({
-        content: `${batch.length} new Hypastack uploads\n${batch.join("\n")}`,
-        label: batch.length === 1 ? batch[0] : `${batch[0]} +${batch.length - 1} more`,
-      })
+
+    // Discord's own relative timestamp, so the embed still reads correctly
+    // whenever it is scrolled back to, not just when it arrived. A permanent
+    // upload says so outright rather than dropping the field, which would be
+    // indistinguishable from an expiry we couldn't work out.
+    if (meta.expirationMinutes === null) {
+      fields.push({ name: "Expires", value: "Never", inline: true })
+    } else if (Number.isFinite(meta.expirationMinutes) && meta.expirationMinutes > 0) {
+      const expiresAt = Math.floor((now + meta.expirationMinutes * 60_000) / 1000)
+      fields.push({ name: "Expires", value: `<t:${expiresAt}:R>`, inline: true })
     }
+
+    if (meta.burnOnRead) {
+      fields.push({ name: "Burn on read", value: "Yes", inline: true })
+    }
+
+    // The title is the one place a filename could reach the channel, so it is
+    // gated here rather than at the call site.
+    const named = includeFilenames && upload.name.trim() !== ""
+
+    return {
+      title: named ? truncate(upload.name, DISCORD_MAX_EMBED_TITLE_LENGTH) : "New Hypastack upload",
+      url: stripKey(upload.link),
+      color: DISCORD_EMBED_COLOR,
+      timestamp,
+      fields,
+    }
+  })
+}
+
+/** Splits embeds across messages, since Discord rejects a payload carrying more than ten. */
+export function chunkEmbeds(embeds: DiscordEmbed[]): DiscordEmbed[][] {
+  const chunks: DiscordEmbed[][] = []
+  for (let i = 0; i < embeds.length; i += DISCORD_MAX_EMBEDS_PER_MESSAGE) {
+    chunks.push(embeds.slice(i, i + DISCORD_MAX_EMBEDS_PER_MESSAGE))
   }
+  return chunks
+}
+
+// Fire-and-forget, never throws, a webhook problem must not affect upload UX.
+// Multi-file uploads pack into one message, split only past Discord's ten-embed cap.
+export async function dispatchUploadLinks(uploads: UploadEntry[], meta: UploadMeta): Promise<void> {
+  const cfg = getWebhookConfig()
+  if (!cfg.enabled || !isValidDiscordWebhook(cfg.url) || uploads.length === 0) return
+
+  const embeds = buildUploadEmbeds(uploads, meta, cfg.includeFilenames)
+  const entries: QueueEntry[] = chunkEmbeds(embeds).map((chunk) => ({
+    embeds: chunk,
+    // The log is the user's own record, so it holds links, never filenames.
+    label: chunk.length === 1 ? chunk[0].url : `${chunk[0].url} +${chunk.length - 1} more`,
+  }))
 
   setQueue([...getQueue(), ...entries])
   await drainQueue(cfg.url)

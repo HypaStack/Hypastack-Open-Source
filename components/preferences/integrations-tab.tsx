@@ -10,12 +10,14 @@ import { SettingsCard } from "./settings-card"
 export function IntegrationsTab() {
   const [url, setUrl] = useState("")
   const [enabled, setEnabled] = useState(false)
+  const [includeFilenames, setIncludeFilenames] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     const cfg = getWebhookConfig()
     setUrl(cfg.url)
     setEnabled(cfg.enabled)
+    setIncludeFilenames(cfg.includeFilenames)
   }, [])
 
   // Turning it on always routes through the modal so a valid URL is set first;
@@ -25,15 +27,20 @@ export function IntegrationsTab() {
       setModalOpen(true)
     } else {
       setEnabled(false)
-      setWebhookConfig({ url, enabled: false })
+      setWebhookConfig({ url, enabled: false, includeFilenames })
     }
   }
 
   const handleModalSave = (newUrl: string) => {
     setUrl(newUrl)
     setEnabled(true)
-    setWebhookConfig({ url: newUrl, enabled: true })
+    setWebhookConfig({ url: newUrl, enabled: true, includeFilenames })
     setModalOpen(false)
+  }
+
+  const handleFilenamesToggle = (v: boolean) => {
+    setIncludeFilenames(v)
+    setWebhookConfig({ url, enabled, includeFilenames: v })
   }
 
   return (
@@ -70,6 +77,28 @@ export function IntegrationsTab() {
           </div>
         </div>
       </SettingsCard>
+
+      {enabled && (
+        <SettingsCard>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <Typography type="body" weight="semibold" className="text-foreground">Include filenames</Typography>
+              <Typography type="body-sm" color="muted" className="mt-0.5 leading-relaxed">
+                Off by default. Your files are encrypted in the browser and Hypastack never sees their names &mdash; turning this on writes them, in the clear, into your Discord channel and anywhere that channel is backed up. Leave it off and every notification just reads &ldquo;New Hypastack upload&rdquo;.
+              </Typography>
+            </div>
+            <div className="shrink-0">
+              <Switch isSelected={includeFilenames} onChange={handleFilenamesToggle} aria-label="Include filenames in Discord notifications">
+                <Switch.Content>
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch.Content>
+              </Switch>
+            </div>
+          </div>
+        </SettingsCard>
+      )}
 
       <WebhookDialog
         open={modalOpen}
