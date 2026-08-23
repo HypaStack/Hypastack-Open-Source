@@ -19,7 +19,7 @@ import { copyToClipboard, notifyDesktopUploadComplete } from "./desktop"
 import { uploadSingle, uploadMultipart, initBatchUpload, uploadBatchSimple, uploadBatchMultipart } from "./transport"
 import { runCdnUpload } from "./cdn-upload"
 import { resumeMultipartUpload } from "./resume"
-import { dispatchUploadLinks } from "@/lib/integrations/discordWebhook"
+import { dispatchUploadLinks, type UploadEntry } from "@/lib/integrations/discordWebhook"
 import { errorMessage as errMsg } from "@/lib/errors"
 
 export function useUpload({
@@ -454,7 +454,27 @@ export function useUpload({
     const links = shareUrls.length ? shareUrls : (shareUrl ? shareUrl.split("\n").filter(Boolean) : [])
     if (!links.length) return
     webhookSentRef.current = true
-    dispatchUploadLinks(links)
+
+    // shareUrls is built index-parallel with files, the same assumption
+    // handleCopyOne already makes. A zipped batch is the exception: many files,
+    // one uploaded archive, so the archive is what the embed should describe.
+    // Anything that doesn't line up (the shareUrl newline-split fallback, a
+    // partial batch) degrades to a link-only entry rather than mislabelling one.
+    const aligned = zippedFile ? links.length === 1 : links.length === files.length
+    const uploads: UploadEntry[] = links.map((link, i) => {
+      const source = zippedFile ?? files[i]?.file
+      return aligned && source
+        ? { link, name: source.name, size: source.size }
+        : { link, name: "", size: Number.NaN }
+    })
+
+    // CDN assets sit on permanent URLs (no expires_at column) and can't burn on
+    // read, so they report "Never" rather than an expiry the tray never set.
+    dispatchUploadLinks(uploads, {
+      expirationMinutes: uploadType === "cdn" ? null : expirationMinutes,
+      burnOnRead: uploadType === "cdn" ? false : burnOnRead,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, shareUrl, shareUrls])
 
   const handleCopy = async () => {

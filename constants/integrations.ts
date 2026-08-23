@@ -20,3 +20,20 @@ export const MAX_FEEDBACK_LENGTH = 1500
 
 /** Appeal body cap, the header carries an account id and an ip hash too. */
 export const MAX_APPEAL_LENGTH = 1200
+
+/** Discord's hard cap on embeds per message; more than this rejects the whole payload. */
+export const DISCORD_MAX_EMBEDS_PER_MESSAGE = 10
+
+/** Discord embed field limits, enforced client-side and re-checked by the relay. */
+export const DISCORD_MAX_EMBED_TITLE_LENGTH = 256
+export const DISCORD_MAX_EMBED_URL_LENGTH = 2048
+export const DISCORD_MAX_EMBED_FIELDS = 25
+export const DISCORD_MAX_EMBED_FIELD_NAME_LENGTH = 256
+export const DISCORD_MAX_EMBED_FIELD_VALUE_LENGTH = 1024
+
+/**
+ * Sidebar colour on every upload embed. The app's own palette is near-black on
+ * near-white, and either extreme disappears into one of Discord's two themes,
+ * so this is the muted-foreground grey, which reads on both.
+ */
+export const DISCORD_EMBED_COLOR = 0x898e97
